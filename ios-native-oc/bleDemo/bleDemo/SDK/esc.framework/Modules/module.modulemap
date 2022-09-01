@@ -1,0 +1,11 @@
+framework module esc {
+  umbrella header "esc.h"
+
+  export *
+  module * { export * }
+}
+
+module esc.Swift {
+    header "esc-Swift.h"
+    requires objc
+}

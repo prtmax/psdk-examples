@@ -1,0 +1,11 @@
+framework module tspl {
+  umbrella header "tspl.h"
+
+  export *
+  module * { export * }
+}
+
+module tspl.Swift {
+    header "tspl-Swift.h"
+    requires objc
+}

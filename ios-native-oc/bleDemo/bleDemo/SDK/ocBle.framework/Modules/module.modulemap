@@ -1,0 +1,11 @@
+framework module ocBle {
+  umbrella header "ocBle.h"
+
+  export *
+  module * { export * }
+}
+
+module ocBle.Swift {
+    header "ocBle-Swift.h"
+    requires objc
+}

@@ -1,0 +1,11 @@
+framework module adapter {
+  umbrella header "adapter.h"
+
+  export *
+  module * { export * }
+}
+
+module adapter.Swift {
+    header "adapter-Swift.h"
+    requires objc
+}
