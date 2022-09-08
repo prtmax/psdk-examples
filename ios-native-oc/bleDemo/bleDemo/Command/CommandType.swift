@@ -53,9 +53,13 @@ enum EventName:String{
     case status = "查询打印机状态"
     case thickness = "设置打印机浓度"
     
+    case barCode = "条形码"
+    case qrcode = "二维码"
+    case box = "画线(只能画横竖线)"
+    case cycle = "画圆"
     case line = "画线"
-    case image = "打印图片"
     
+    case image = "打印图片"
     case sample = "综合案例"
     
 }

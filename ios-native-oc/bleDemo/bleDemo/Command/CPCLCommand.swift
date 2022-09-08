@@ -18,12 +18,16 @@ class CPCLCommand: TypeC{
     }
     
     func commandList() -> Array<EventName> {
-        return [.sample]
+        return [.image,.sample]
     }
     
     
     func startAction(event: EventName) {
-        
+        if event == .image{
+            image()
+        }else{
+            sample()
+        }
     }
     
     

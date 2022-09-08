@@ -7,15 +7,15 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		E539760128BF6394007A1238 /* ListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E539760028BF6394007A1238 /* ListViewController.swift */; };
-		E539760328BF64CA007A1238 /* OCDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E539760228BF64CA007A1238 /* OCDetailViewController.swift */; };
 		E539760528C034C0007A1238 /* TestViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E539760428C034C0007A1238 /* TestViewController.swift */; };
-		E539760628C03E54007A1238 /* ocBle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E53975FE28BF6359007A1238 /* ocBle.framework */; };
-		E539760728C03E54007A1238 /* ocBle.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = E53975FE28BF6359007A1238 /* ocBle.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		E539760A28C060DD007A1238 /* ESCCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = E539760928C060DD007A1238 /* ESCCommand.swift */; };
-		E539760C28C060F3007A1238 /* CPCLCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = E539760B28C060F2007A1238 /* CPCLCommand.swift */; };
-		E539760E28C06106007A1238 /* TSPLCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = E539760D28C06106007A1238 /* TSPLCommand.swift */; };
-		E539761028C062B7007A1238 /* CommandType.swift in Sources */ = {isa = PBXBuildFile; fileRef = E539760F28C062B7007A1238 /* CommandType.swift */; };
+		E539761228C095DD007A1238 /* appleBle.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E539761128C095DD007A1238 /* appleBle.framework */; };
+		E539761428C09642007A1238 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E539761328C09642007A1238 /* ViewController.swift */; };
+		E54DA95E28C09D8A00AD3C42 /* father.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E54DA95D28C09D8A00AD3C42 /* father.framework */; };
+		E54DA97328C595E600AD3C42 /* ESCCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = E54DA96E28C595E600AD3C42 /* ESCCommand.swift */; };
+		E54DA97428C595E600AD3C42 /* TSPLCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = E54DA96F28C595E600AD3C42 /* TSPLCommand.swift */; };
+		E54DA97528C595E600AD3C42 /* TypeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E54DA97028C595E600AD3C42 /* TypeFactory.swift */; };
+		E54DA97628C595E600AD3C42 /* CPCLCommand.swift in Sources */ = {isa = PBXBuildFile; fileRef = E54DA97128C595E600AD3C42 /* CPCLCommand.swift */; };
+		E54DA97728C595E600AD3C42 /* CommandType.swift in Sources */ = {isa = PBXBuildFile; fileRef = E54DA97228C595E600AD3C42 /* CommandType.swift */; };
 		E551F7E928B76A060030739B /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E551F7E828B76A060030739B /* AppDelegate.swift */; };
 		E551F7EB28B76A060030739B /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E551F7EA28B76A060030739B /* SceneDelegate.swift */; };
 		E551F7F028B76A060030739B /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E551F7EE28B76A060030739B /* Main.storyboard */; };
@@ -27,8 +27,6 @@
 		E551F82428B852790030739B /* toolkit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E551F81F28B852790030739B /* toolkit.framework */; };
 		E551F82528B852790030739B /* cpcl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E551F82028B852790030739B /* cpcl.framework */; };
 		E551F82628B852790030739B /* adapter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E551F82128B852790030739B /* adapter.framework */; };
-		E551F82828B852790030739B /* father.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E551F82328B852790030739B /* father.framework */; };
-		E551F83928BCB4270030739B /* TypeFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = E551F83828BCB4270030739B /* TypeFactory.swift */; };
 		E551F90C28BDA9A10030739B /* tspl.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E551F90A28BDA9A10030739B /* tspl.framework */; };
 		E551F90D28BDA9A10030739B /* esc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E551F90B28BDA9A10030739B /* esc.framework */; };
 		E551F90F28BDED2A0030739B /* icon.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = E551F90E28BDED2A0030739B /* icon.jpeg */; };
@@ -58,7 +56,6 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				E539760728C03E54007A1238 /* ocBle.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -66,14 +63,15 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		E53975FE28BF6359007A1238 /* ocBle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = ocBle.framework; sourceTree = "<group>"; };
-		E539760028BF6394007A1238 /* ListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ListViewController.swift; sourceTree = "<group>"; };
-		E539760228BF64CA007A1238 /* OCDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OCDetailViewController.swift; sourceTree = "<group>"; };
 		E539760428C034C0007A1238 /* TestViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestViewController.swift; sourceTree = "<group>"; };
-		E539760928C060DD007A1238 /* ESCCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ESCCommand.swift; sourceTree = "<group>"; };
-		E539760B28C060F2007A1238 /* CPCLCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CPCLCommand.swift; sourceTree = "<group>"; };
-		E539760D28C06106007A1238 /* TSPLCommand.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TSPLCommand.swift; sourceTree = "<group>"; };
-		E539760F28C062B7007A1238 /* CommandType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommandType.swift; sourceTree = "<group>"; };
+		E539761128C095DD007A1238 /* appleBle.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = appleBle.framework; sourceTree = "<group>"; };
+		E539761328C09642007A1238 /* ViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		E54DA95D28C09D8A00AD3C42 /* father.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = father.framework; sourceTree = "<group>"; };
+		E54DA96E28C595E600AD3C42 /* ESCCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ESCCommand.swift; sourceTree = "<group>"; };
+		E54DA96F28C595E600AD3C42 /* TSPLCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TSPLCommand.swift; sourceTree = "<group>"; };
+		E54DA97028C595E600AD3C42 /* TypeFactory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TypeFactory.swift; sourceTree = "<group>"; };
+		E54DA97128C595E600AD3C42 /* CPCLCommand.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CPCLCommand.swift; sourceTree = "<group>"; };
+		E54DA97228C595E600AD3C42 /* CommandType.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommandType.swift; sourceTree = "<group>"; };
 		E551F7E528B76A060030739B /* bleDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bleDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E551F7E828B76A060030739B /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E551F7EA28B76A060030739B /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -89,8 +87,6 @@
 		E551F81F28B852790030739B /* toolkit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = toolkit.framework; sourceTree = "<group>"; };
 		E551F82028B852790030739B /* cpcl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = cpcl.framework; sourceTree = "<group>"; };
 		E551F82128B852790030739B /* adapter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = adapter.framework; sourceTree = "<group>"; };
-		E551F82328B852790030739B /* father.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = father.framework; sourceTree = "<group>"; };
-		E551F83828BCB4270030739B /* TypeFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TypeFactory.swift; sourceTree = "<group>"; };
 		E551F90A28BDA9A10030739B /* tspl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = tspl.framework; sourceTree = "<group>"; };
 		E551F90B28BDA9A10030739B /* esc.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = esc.framework; sourceTree = "<group>"; };
 		E551F90E28BDED2A0030739B /* icon.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = icon.jpeg; sourceTree = "<group>"; };
@@ -101,12 +97,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E54DA95E28C09D8A00AD3C42 /* father.framework in Frameworks */,
 				E551F82528B852790030739B /* cpcl.framework in Frameworks */,
 				E551F90D28BDA9A10030739B /* esc.framework in Frameworks */,
 				E551F82428B852790030739B /* toolkit.framework in Frameworks */,
+				E539761228C095DD007A1238 /* appleBle.framework in Frameworks */,
 				E551F82628B852790030739B /* adapter.framework in Frameworks */,
-				E539760628C03E54007A1238 /* ocBle.framework in Frameworks */,
-				E551F82828B852790030739B /* father.framework in Frameworks */,
 				E551F90C28BDA9A10030739B /* tspl.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -128,6 +124,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E54DA96D28C595E600AD3C42 /* Command */ = {
+			isa = PBXGroup;
+			children = (
+				E54DA96E28C595E600AD3C42 /* ESCCommand.swift */,
+				E54DA96F28C595E600AD3C42 /* TSPLCommand.swift */,
+				E54DA97028C595E600AD3C42 /* TypeFactory.swift */,
+				E54DA97128C595E600AD3C42 /* CPCLCommand.swift */,
+				E54DA97228C595E600AD3C42 /* CommandType.swift */,
+			);
+			path = Command;
+			sourceTree = "<group>";
+		};
 		E551F7DC28B76A060030739B = {
 			isa = PBXGroup;
 			children = (
@@ -151,17 +159,12 @@
 		E551F7E728B76A060030739B /* bleDemo */ = {
 			isa = PBXGroup;
 			children = (
+				E54DA96D28C595E600AD3C42 /* Command */,
 				E551F81E28B852790030739B /* SDK */,
 				E551F7E828B76A060030739B /* AppDelegate.swift */,
 				E551F7EA28B76A060030739B /* SceneDelegate.swift */,
-				E539760028BF6394007A1238 /* ListViewController.swift */,
+				E539761328C09642007A1238 /* ViewController.swift */,
 				E539760428C034C0007A1238 /* TestViewController.swift */,
-				E539760228BF64CA007A1238 /* OCDetailViewController.swift */,
-				E539760928C060DD007A1238 /* ESCCommand.swift */,
-				E539760B28C060F2007A1238 /* CPCLCommand.swift */,
-				E539760D28C06106007A1238 /* TSPLCommand.swift */,
-				E539760F28C062B7007A1238 /* CommandType.swift */,
-				E551F83828BCB4270030739B /* TypeFactory.swift */,
 				E551F7EE28B76A060030739B /* Main.storyboard */,
 				E551F7F128B76A070030739B /* Assets.xcassets */,
 				E551F90E28BDED2A0030739B /* icon.jpeg */,
@@ -191,13 +194,13 @@
 		E551F81E28B852790030739B /* SDK */ = {
 			isa = PBXGroup;
 			children = (
-				E53975FE28BF6359007A1238 /* ocBle.framework */,
+				E539761128C095DD007A1238 /* appleBle.framework */,
+				E54DA95D28C09D8A00AD3C42 /* father.framework */,
 				E551F81F28B852790030739B /* toolkit.framework */,
 				E551F82028B852790030739B /* cpcl.framework */,
 				E551F90B28BDA9A10030739B /* esc.framework */,
 				E551F90A28BDA9A10030739B /* tspl.framework */,
 				E551F82128B852790030739B /* adapter.framework */,
-				E551F82328B852790030739B /* father.framework */,
 			);
 			path = SDK;
 			sourceTree = "<group>";
@@ -335,15 +338,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E551F83928BCB4270030739B /* TypeFactory.swift in Sources */,
-				E539760A28C060DD007A1238 /* ESCCommand.swift in Sources */,
+				E54DA97328C595E600AD3C42 /* ESCCommand.swift in Sources */,
+				E54DA97428C595E600AD3C42 /* TSPLCommand.swift in Sources */,
 				E539760528C034C0007A1238 /* TestViewController.swift in Sources */,
-				E539761028C062B7007A1238 /* CommandType.swift in Sources */,
-				E539760128BF6394007A1238 /* ListViewController.swift in Sources */,
+				E539761428C09642007A1238 /* ViewController.swift in Sources */,
+				E54DA97528C595E600AD3C42 /* TypeFactory.swift in Sources */,
+				E54DA97728C595E600AD3C42 /* CommandType.swift in Sources */,
+				E54DA97628C595E600AD3C42 /* CPCLCommand.swift in Sources */,
 				E551F7E928B76A060030739B /* AppDelegate.swift in Sources */,
-				E539760C28C060F3007A1238 /* CPCLCommand.swift in Sources */,
-				E539760328BF64CA007A1238 /* OCDetailViewController.swift in Sources */,
-				E539760E28C06106007A1238 /* TSPLCommand.swift in Sources */,
 				E551F7EB28B76A060030739B /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

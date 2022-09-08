@@ -2,7 +2,7 @@
 //  TSPLCommand.swift
 //  bleDemo
 //
-//  Created by 蔡亚超 on 2022/9/1.
+//  Created by Well on 2022/9/1.
 //
 
 import Foundation
@@ -24,10 +24,14 @@ class TSPLCommand: TypeC{
         switch event {
         case .line:
             line()
+        case .barCode:
+            barcode()
         case .image:
             image()
         case .sample:
             sample()
+        case .batteryVolume:
+            batteryVolume()
         default:
             break
         }
@@ -35,7 +39,7 @@ class TSPLCommand: TypeC{
     }
     
     func commandList() -> Array<EventName> {
-        return [.image,.sample]
+        return [.line,.barCode,.image,.sample,.batteryVolume]
     }
     
 }
@@ -50,7 +54,7 @@ extension TSPLCommand{
             return TRealPage(width: 500, height: 500)
         }))
             .image(arg: TImage.build({
-                return TRealImage(startX: 100, startY: 100, width: 100, height: 100, image: TypeFactory.getImageData() ?? Data(), compress: true, mode: .OVERWRITE)
+                return TRealImage(startX: 100, startY: 100, width: 200, height: 200, image: TypeFactory.getImageData() ?? Data(), compress: true, mode: .OVERWRITE)
             }))
             .print(copies: 1)
             .write()
@@ -67,13 +71,13 @@ extension TSPLCommand{
             return TRealPage(width: 500, height: 500)
         }))
             .line(arg: TLine.build({
-                return TRealLine(startX: 0, startY: 0, endX: 10, endY: 10, width: 10, height: 10, mode: .DOTTED_M1)
+                return TRealLine(startX: 0, startY: 0, endX: 400, endY: 400, width: 10, height: 10, mode: .DOTTED_M1)
             }))
             .text(arg: TText.build({
                 return TRealText(startX: 50, startY: 50, xmulti: 5, ymulti: 5, isBold: true, content: "111113433rfffffff", font: Font.TSS16, rotation: .ROTATE_0)
             }))
             .image(arg: TImage.build({
-                return TRealImage(startX: 100, startY: 100, width: 100, height: 100, image: TypeFactory.getImageData() ?? Data(), compress: true, mode: .OVERWRITE)
+                return TRealImage(startX: 100, startY: 100, width: 300, height: 300, image: TypeFactory.getImageData() ?? Data(), compress: false, mode: .OVERWRITE)
             }))
             .print(copies: 1)
             .write()
@@ -132,14 +136,24 @@ extension TSPLCommand{
      * 打印边框
      */
     public func box() {
-      
+        let lifecycle = Lifecycle(connectedDevice: device)
+        let wroteReporter = TSPL.generic(lifecycle).box(arg: TBox.build({
+            return TRealBox(startX: 0, startY: 0, endX: 200, endY: 200, width: 200, radius: 100)
+        }))
+            .write()
+        printMsg(wroteReporter)
     }
     
     /**
      * 画圆
      */
     public func circle() {
-      
+        let lifecycle = Lifecycle(connectedDevice: device)
+        let wroteReporter = TSPL.generic(lifecycle).circle(arg: TCircle.build({
+            return TRealCircle(startX: 100, startY: 100, width: 100, radius: 50)
+        }))
+            .write()
+        printMsg(wroteReporter)
     }
 
     /**
@@ -157,7 +171,12 @@ extension TSPLCommand{
      *   打印二维条码DATAMATRIX
      */
     public func dmatrix(){
-      
+        let lifecycle = Lifecycle(connectedDevice: device)
+        let wroteReporter = TSPL.generic(lifecycle).dmatrix(arg: TDmatrix.build({
+            return TRealDmatrix(startX: 100, startY: 100, width: 100, height: 100, content: "23333333466666")
+        }))
+            .write()
+        printMsg(wroteReporter)
     }
     
     

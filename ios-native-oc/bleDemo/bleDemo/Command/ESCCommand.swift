@@ -2,7 +2,7 @@
 //  ESCCommand.swift
 //  bleDemo
 //
-//  Created by 蔡亚超 on 2022/9/1.
+//  Created by Well on 2022/9/1.
 //
 
 import UIKit
@@ -125,6 +125,7 @@ extension ESCCommand{
     public func name() {
         let lifecycle = Lifecycle(connectedDevice: device)
         let wroteReporter = ESC.generic(lifecycle).name().write()
+        
         printMsg(wroteReporter)
     }
     
@@ -191,7 +192,7 @@ extension ESCCommand{
         let lifecycle = Lifecycle(connectedDevice: device)
         let wroteReporter = ESC.generic(lifecycle)
             .line(arg: ELine.build({
-            ERealLine(x: 10, y: 10)
+            ERealLine(x: 10, y: 100)
         })).write()
         printMsg(wroteReporter)
     }
@@ -200,6 +201,8 @@ extension ESCCommand{
      *打印图片
      */
     public func image() {
+        
+        
         let lifecycle = Lifecycle(connectedDevice: device)
         
         let wroteReporter = ESC.generic(lifecycle).paperType(arg: EPaperType.build({
@@ -209,6 +212,8 @@ extension ESCCommand{
                 return ERealImage(image: UIImage.init(named: "icon2")!, width: 30, height: 30, compress: true)
             }))
             .write()
+       
+        
         printMsg(wroteReporter)
     }
 }

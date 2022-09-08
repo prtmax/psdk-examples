@@ -39,6 +39,22 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         
+//        let data = ViewController.processImage(image: UIImage(named: "icon3")!)
+//
+//
+//        guard let data = data else {
+//            return
+//        }
+//
+//        let bytes = [UInt8](data)
+//
+//        let str = data.dataToString()
+//
+//        print("\(str)")
+        
+        
+//        return
+        
         self.navigationItem.title = "蓝牙列表"
         self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: buttonTitle.rawValue, style: .done, target: self, action:#selector(rightBarButtonClick))
         
@@ -98,7 +114,6 @@ extension ViewController: BLEManagerDelegate {
         
         connectDevice = device
         print("连接成功")
-
         
         self.navigationItem.title = "蓝牙列表"
         let alert = UIAlertController.init(title: "连接成功", message: "请选择打印机类型", preferredStyle: .actionSheet)
@@ -126,9 +141,8 @@ extension ViewController: BLEManagerDelegate {
     }
     
     func goToDetailVC(_ type: CommandType) -> Void {
-        let sb = UIStoryboard.init(name: "Main", bundle: nil)
         
-        let detailVC = sb.instantiateViewController(identifier: "DetailViewController") as! DetailViewController
+        let detailVC = TestViewController()
         detailVC.connectDevice = self.connectDevice
         detailVC.type = type
         
@@ -191,6 +205,67 @@ extension ViewController{
 //            bleManager.stopScan()
 //        }
     }
+    
+    
+    public static func processImage(image: UIImage) -> Data? {
+        
+        guard let inputCGImage = image.cgImage else {
+            print("image is nil")
+            return Data()
+        }
+        
+        
+        let w = inputCGImage.width
+        let h = inputCGImage.height
+        var LineByte = w/8
+        if w % 8 != 0{
+            LineByte = w/8 + 1
+        }
+        
+        let colorSpace = CGColorSpaceCreateDeviceRGB()
+        let bytesPerPixel = 4
+        let bitsPerComponent = 8
+        let bitmapBytesPerRow = w * bytesPerPixel
+        
+        let inputPixels = UnsafeMutablePointer<UInt32>.allocate(capacity: w * h)
+        
+        let bitmapInfo = CGBitmapInfo(rawValue: CGImageAlphaInfo.premultipliedLast.rawValue|CGBitmapInfo.byteOrder32Big.rawValue)
+
+        let context = CGContext.init(data: inputPixels, width: w, height: h, bitsPerComponent: bitsPerComponent, bytesPerRow: bitmapBytesPerRow, space: colorSpace, bitmapInfo: bitmapInfo.rawValue)
+        context?.draw(inputCGImage, in: CGRect(x: 0, y: 0, width: w, height: h))
+        
+        var temp:UInt8
+        var data:Data = Data()
+        for i in 0..<h {
+            for j in 0..<LineByte {
+                temp = 0
+                for k in 0..<8 {
+                    if ((j * 8 + k) < w) {
+                        let currentPixel = inputPixels + (w * i) + j * 8 + k;
+                        let color = UInt32(currentPixel.pointee);
+                        let R = UInt32(color & 0xFF)
+                        let G = UInt32((color >> 8) & 0xFF)
+                        let B = UInt32((color >> 16) & 0xFF)
+                        
+//                        print("\(R),\(G),\(B)")
+                        
+                        let averageColor = UInt32((R + G + B)/3);
+                        
+                        if ((averageColor != -1) && averageColor <= 128){
+                            temp |= UInt8(128 >> k)
+//                            print(temp)
+                        }
+                    }
+                }
+                print(temp)
+                data.append(Data([temp]))
+            }
+        }
+        
+        free(inputPixels)
+        return data
+    }
+
     
     
     
