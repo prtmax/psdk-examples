@@ -1,0 +1,4 @@
+${PODS_ROOT}/Target Support Files/Pods-BleDemo/Pods-BleDemo-frameworks.sh
+${BUILT_PRODUCTS_DIR}/MBProgressHUD/MBProgressHUD.framework
+${BUILT_PRODUCTS_DIR}/MBProgressHUD+Add/MBProgressHUD_Add.framework
+${BUILT_PRODUCTS_DIR}/Masonry/Masonry.framework

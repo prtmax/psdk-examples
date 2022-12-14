@@ -1,0 +1,11 @@
+framework module cpcl {
+  umbrella header "cpcl.h"
+
+  export *
+  module * { export * }
+}
+
+module cpcl.Swift {
+    header "cpcl-Swift.h"
+    requires objc
+}

@@ -1,0 +1,24 @@
+PODS:
+  - Masonry (1.1.0)
+  - MBProgressHUD (1.0.0)
+  - "MBProgressHUD+Add (0.0.2)":
+    - MBProgressHUD (~> 1.0.0)
+
+DEPENDENCIES:
+  - Masonry
+  - "MBProgressHUD+Add"
+
+SPEC REPOS:
+  trunk:
+    - Masonry
+    - MBProgressHUD
+    - "MBProgressHUD+Add"
+
+SPEC CHECKSUMS:
+  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
+  MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
+  "MBProgressHUD+Add": 65c4d170c083a2a800ad4470d424ad5978f324c3
+
+PODFILE CHECKSUM: 69f13e952cf935fd1d1238d334f84867b828ba48
+
+COCOAPODS: 1.11.3

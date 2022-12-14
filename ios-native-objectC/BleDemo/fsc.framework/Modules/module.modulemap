@@ -1,0 +1,6 @@
+framework module fsc {
+  umbrella header "fsc.h"
+
+  export *
+  module * { export * }
+}
