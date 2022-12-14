@@ -1,0 +1,6 @@
+framework module adapter {
+  umbrella header "adapter.h"
+
+  export *
+  module * { export * }
+}

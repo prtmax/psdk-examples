@@ -1,0 +1,11 @@
+framework module appleBle {
+  umbrella header "appleBle.h"
+
+  export *
+  module * { export * }
+}
+
+module appleBle.Swift {
+    header "appleBle-Swift.h"
+    requires objc
+}

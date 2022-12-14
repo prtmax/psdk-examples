@@ -1,0 +1,11 @@
+framework module father {
+  umbrella header "father.h"
+
+  export *
+  module * { export * }
+}
+
+module father.Swift {
+    header "father-Swift.h"
+    requires objc
+}

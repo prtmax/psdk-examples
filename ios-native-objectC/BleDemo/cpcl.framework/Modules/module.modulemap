@@ -1,0 +1,6 @@
+framework module cpcl {
+  umbrella header "cpcl.h"
+
+  export *
+  module * { export * }
+}
