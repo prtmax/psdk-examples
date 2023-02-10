@@ -67,7 +67,7 @@
     if(!_btnBack){
         _btnBack = [[UIButton alloc]init];
         _btnBack .backgroundColor = UIColor.whiteColor;
-        [_btnBack setTitle:@"返回" forState:UIControlStateNormal];
+        [_btnBack setTitle:NSLocalizedString(@"back", nil) forState:UIControlStateNormal];
         _btnBack.titleLabel.font = [UIFont systemFontOfSize:14];
         [_btnBack addTarget:self action:@selector(backHandler) forControlEvents:UIControlEventTouchUpInside];
         [_btnBack setTitleColor:UIColor.blackColor forState:UIControlStateNormal];

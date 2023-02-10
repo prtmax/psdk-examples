@@ -41,7 +41,7 @@
     [super viewDidLoad];
     self.titleStr = @"BleDemo";
     [self setUI];
-    self.device = [FscBleApi sharedInstance];
+    self.device = [applebleApi sharedInstance];
     self.device.delegate = self;
     [self isNeedBackBtn:YES];
 }
@@ -54,11 +54,11 @@
     [self.view endEditing:YES];
 }
 -(void)scanAction{
-    if([_footerView.titleLabel.text isEqualToString:@"停止扫描"]){
-        [_footerView setTitle:@"扫描" forState:UIControlStateNormal];
+    if([_footerView.titleLabel.text isEqualToString:NSLocalizedString(@"scan.stop", nil)]){
+        [_footerView setTitle:NSLocalizedString(@"scan.start", nil) forState:UIControlStateNormal];
         [self.device stopScanPrinters];
     }else{
-        [_footerView setTitle:@"停止扫描" forState:UIControlStateNormal];
+        [_footerView setTitle:NSLocalizedString(@"scan.stop", nil) forState:UIControlStateNormal];
         [self.device startScanPrinters];
     }
     
@@ -113,7 +113,7 @@
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
                 usleep(3000);
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    self->_searchTF.attributedPlaceholder = [[NSAttributedString alloc]initWithString:@"请输入蓝牙名称" attributes:@{NSForegroundColorAttributeName:[UIColor lightGrayColor]}];
+                    self->_searchTF.attributedPlaceholder = [[NSAttributedString alloc]initWithString:NSLocalizedString(@"name.bluetooth.enter", nil) attributes:@{NSForegroundColorAttributeName:[UIColor lightGrayColor]}];
                 });
             });
         }
@@ -132,7 +132,7 @@
     if(!_footerView){
         _footerView = [[UIButton alloc]init];
         _footerView.backgroundColor = UIColor.lightGrayColor;
-        [_footerView setTitle:@"扫描" forState:UIControlStateNormal];
+        [_footerView setTitle:NSLocalizedString(@"scan.start", nil) forState:UIControlStateNormal];
         [_footerView addTarget:self action:@selector(scanAction) forControlEvents:UIControlEventTouchUpInside];
         
     }
@@ -305,7 +305,7 @@
 //    [self.device connect:peripheral];
 }
 -(void)selectArgType{
-    UIAlertController *alertController =  [UIAlertController alertControllerWithTitle:@"请先选择指令类型" message:@"alertVCMessage" preferredStyle:UIAlertControllerStyleAlert];
+    UIAlertController *alertController =  [UIAlertController alertControllerWithTitle:NSLocalizedString(@"select.instruction.type", nil) message:@"alertVCMessage" preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction* actionDefault = [UIAlertAction actionWithTitle:@"CPCL" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         [self selectCPCL];
     }];

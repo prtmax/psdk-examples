@@ -32,19 +32,19 @@
     _basicTspl.bleDidConnectPeripheral = ^(CBPeripheral * _Nonnull peripheral) {
         __strong typeof (weakSelf) strongSelf = weakSelf;
         [strongSelf.device start:@"FF00" on:peripheral];
-        strongSelf.labStatus.text = [NSString stringWithFormat:@"连接状态：%@ 连接成功",peripheral.name];
+        strongSelf.labStatus.text = [NSString stringWithFormat:NSLocalizedString(@"connect.status.succeed:%@", nil),peripheral.name];
     };
     _basicTspl.bleDidDisconnectPeripheral = ^(CBPeripheral * _Nonnull peripheral, NSError * _Nonnull error) {__strong typeof (weakSelf) strongSelf = weakSelf;
-        strongSelf.labStatus.text = [NSString stringWithFormat:@"连接状态：%@ 连接断开",peripheral.name];
+        strongSelf.labStatus.text = [NSString stringWithFormat:NSLocalizedString(@"connect.status.disconnected:%@", nil),peripheral.name];
     };
     _basicTspl.bleDidFailToConnectPeripheral = ^(CBPeripheral * _Nonnull peripheral, NSError * _Nonnull error) {
         __strong typeof (weakSelf) strongSelf = weakSelf;
-            strongSelf.labStatus.text = [NSString stringWithFormat:@"连接状态：%@ 连接失败",peripheral.name];
+            strongSelf.labStatus.text = [NSString stringWithFormat:NSLocalizedString(@"connect.status.failed:%@", nil),peripheral.name];
     };
     _basicTspl.didStart = ^(BOOL result) {
         __strong typeof (weakSelf) strongSelf = weakSelf;
         if(!result){
-            strongSelf.labStatus.text = [NSString stringWithFormat:@"连接状态：%@ 打印机开启失败",strongSelf.peripheral.name];
+            strongSelf.labStatus.text = [NSString stringWithFormat:NSLocalizedString(@"connect.status.turn_on:%@", nil),strongSelf.peripheral.name];
         }
     };
     self.titleStr = @"TSPL";
@@ -58,7 +58,7 @@
     btn.titleLabel.font = [UIFont systemFontOfSize:14];
     [self.contentView addSubview:btn];
     [self.contentView addSubview:self.labStatus];
-    self.labStatus.text = [NSString stringWithFormat:@"连接状态：%@ 连接成功",self.peripheral.name];
+    self.labStatus.text = [NSString stringWithFormat:NSLocalizedString(@"connect.status.succeed:%@", nil),self.peripheral.name];
     [self.labStatus mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.mas_equalTo(self.contentView);
         make.bottom.mas_equalTo(self.contentView).mas_offset(-[UIDevice p_safeDistanceBottom]);
@@ -126,7 +126,7 @@
     [_lock unlock];
 }
 -(void)printAction{
-    _myThread = [[NSThread alloc] initWithTarget:self selector:@selector(printImage) object:self];
+    _myThread = [[NSThread alloc] initWithTarget:self selector:@selector(printModelAction) object:self];
     [_myThread start];
 }
 -(void)printModelAction{

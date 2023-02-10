@@ -34,27 +34,27 @@
    
     _basicCPCL.bleDidConnectPeripheral = ^(CBPeripheral * _Nonnull peripheral) {
         __strong typeof (weakSelf) strongSelf = weakSelf;
-        strongSelf.labStatus.text = [NSString stringWithFormat:@"连接状态：%@ 连接成功",peripheral.name];
+        strongSelf.labStatus.text = [NSString stringWithFormat:NSLocalizedString(@"connect.status.succeed:%@", nil),peripheral.name];
     };
     _basicCPCL.bleDidDisconnectPeripheral = ^(CBPeripheral * _Nonnull peripheral, NSError * _Nonnull error) {
         __strong typeof (weakSelf) strongSelf = weakSelf;
-        strongSelf.labStatus.text = [NSString stringWithFormat:@"连接状态：%@ 连接断开",peripheral.name];
+        strongSelf.labStatus.text = [NSString stringWithFormat:NSLocalizedString(@"connect.status.disconnected:%@", nil),peripheral.name];
     };
     _basicCPCL.bleDidFailToConnectPeripheral = ^(CBPeripheral * _Nonnull peripheral, NSError * _Nonnull error) {
         __strong typeof (weakSelf) strongSelf = weakSelf;
-        strongSelf.labStatus.text = [NSString stringWithFormat:@"连接状态：%@ 连接失败",peripheral.name];
+        strongSelf.labStatus.text = [NSString stringWithFormat:NSLocalizedString(@"connect.status.failed:%@", nil),peripheral.name];
     };
     _basicCPCL.didStart = ^(BOOL result) {
         __strong typeof (weakSelf) strongSelf = weakSelf;
         if(!result){
-            strongSelf.labStatus.text = [NSString stringWithFormat:@"连接状态：%@ 打印机开启失败",strongSelf.peripheral.name];
+            strongSelf.labStatus.text = [NSString stringWithFormat:NSLocalizedString(@"connect.status.turn_on:%@", nil),strongSelf.peripheral.name];
         }
     };
     self.titleStr = @"CPCL";
     [self.contentView addSubview:self.tfNum];
     
     UIButton *btn1 =[[UIButton alloc]initWithFrame:CGRectMake(20 , 64, ([UIScreen mainScreen].bounds.size.width - 60)/2.0, 50)];
-    [btn1 setTitle:@"打印图片" forState:UIControlStateNormal];
+    [btn1 setTitle:NSLocalizedString(@"print.pictures", nil) forState:UIControlStateNormal];
     [btn1 setBackgroundColor:UIColor.lightGrayColor];
     [btn1 addTarget:self action:@selector(printBarcodeAction) forControlEvents:UIControlEventTouchUpInside];
     btn1.layer.cornerRadius = 10;
@@ -63,7 +63,7 @@
     btn1.titleLabel.font = [UIFont systemFontOfSize:14];
     [self.contentView addSubview:btn1];
     UIButton *btn2 =[[UIButton alloc]initWithFrame:CGRectMake(([UIScreen mainScreen].bounds.size.width )/2.0 +10 , 64,([UIScreen mainScreen].bounds.size.width - 60)/2.0, 50)];
-    [btn2 setTitle:@"打印二维码" forState:UIControlStateNormal];
+    [btn2 setTitle:NSLocalizedString(@"print.QR_code", nil) forState:UIControlStateNormal];
     [btn2 setBackgroundColor:UIColor.lightGrayColor];
     [btn2 addTarget:self action:@selector(printQrcodeAction) forControlEvents:UIControlEventTouchUpInside];
     btn2.layer.cornerRadius = 10;
@@ -72,7 +72,7 @@
     btn2.titleLabel.font = [UIFont systemFontOfSize:14];
     [self.contentView addSubview:btn2];
     UIButton *btn3 =[[UIButton alloc]initWithFrame:CGRectMake(20 , 134, [UIScreen mainScreen].bounds.size.width - 40, 50)];
-    [btn3 setTitle:@"打印模版 76*130" forState:UIControlStateNormal];
+    [btn3 setTitle:NSLocalizedString(@"print.template_76*130", nil) forState:UIControlStateNormal];
     [btn3 setBackgroundColor:UIColor.lightGrayColor];
     [btn3 addTarget:self action:@selector(printModeAction) forControlEvents:UIControlEventTouchUpInside];
     btn3.layer.cornerRadius = 10;
@@ -81,7 +81,7 @@
     btn3.titleLabel.font = [UIFont systemFontOfSize:14];
     [self.contentView addSubview:btn3];
     UIButton *btn4 =[[UIButton alloc]initWithFrame:CGRectMake(20 , 194, [UIScreen mainScreen].bounds.size.width - 40, 50)];
-    [btn4 setTitle:@"打印测试" forState:UIControlStateNormal];
+    [btn4 setTitle:NSLocalizedString(@"print.test", nil) forState:UIControlStateNormal];
     [btn4 setBackgroundColor:UIColor.lightGrayColor];
     [btn4 addTarget:self action:@selector(printTestAction) forControlEvents:UIControlEventTouchUpInside];
     btn4.layer.cornerRadius = 10;
@@ -90,7 +90,7 @@
     btn4.titleLabel.font = [UIFont systemFontOfSize:14];
     [self.contentView addSubview:btn4];
     [self.contentView addSubview:self.labStatus];
-    self.labStatus.text = [NSString stringWithFormat:@"连接状态：%@ 连接成功",self.peripheral.name];
+    self.labStatus.text = [NSString stringWithFormat:NSLocalizedString(@"connect.status.succeed:%@", nil),self.peripheral.name];
     [self.labStatus mas_makeConstraints:^(MASConstraintMaker *make) {
         make.left.right.mas_equalTo(self.contentView);
         make.bottom.mas_equalTo(self.contentView).mas_offset(-[UIDevice p_safeDistanceBottom]);
@@ -200,12 +200,12 @@ _basicCPCL.page([[CPage alloc]init].width(100).height(100))
 -(NSString *)safeWriteAndRead:(PSDK *)psdk{
     @try {
         WroteReporter *reporter = psdk.write();
-        if(![reporter getIsOk]) @throw @"写入失败";
+        if(![reporter getIsOk]) @throw NSLocalizedString(@"write.failed", nil);
         sleep(200);
-        return @"可能写入成功";
+        return NSLocalizedString(@"write.success", nil);
 //        NSData *bytes = psdk
     } @catch (NSException *exception) {
-        return @"写入可能失败";
+        return NSLocalizedString(@"write.fail", nil);
     } @finally {
         
     }
@@ -219,7 +219,7 @@ _basicCPCL.page([[CPage alloc]init].width(100).height(100))
         _tfNum.keyboardType = UIKeyboardTypeNumberPad;
         UIView *leftView =[[UIView alloc]initWithFrame:CGRectMake(0, 0, 90, 44)];
         UILabel *lab = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 70, 44)];
-        lab.text = @"样单数";
+        lab.text = NSLocalizedString(@"sample.number", nil);
         lab.font = [UIFont systemFontOfSize:14];
         lab.textAlignment = NSTextAlignmentRight;
         lab.textColor = UIColor.blackColor;
@@ -238,7 +238,6 @@ _basicCPCL.page([[CPage alloc]init].width(100).height(100))
         _labStatus.font = [UIFont systemFontOfSize:14];
         _labStatus.textColor = UIColor.whiteColor;
         _labStatus.textAlignment = NSTextAlignmentCenter;
-        _labStatus.text = @"乱麻中";
         _labStatus.backgroundColor = UIColor.redColor;
     }
     return _labStatus;
