@@ -41,7 +41,7 @@
     [super viewDidLoad];
     self.titleStr = @"BleDemo";
     [self setUI];
-    self.device = [applebleApi sharedInstance];
+    self.device = [IbridgeBleApi sharedInstance];
     self.device.delegate = self;
     [self isNeedBackBtn:YES];
 }

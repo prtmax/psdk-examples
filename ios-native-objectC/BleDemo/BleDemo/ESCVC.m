@@ -282,11 +282,12 @@
     [_lock unlock];
 }
 -(void)printContinuousPaperPrintingAction{
-    
+   
     for (int i = 0; i<self.totalCount; i++) {
         [_lock lock];
-        EImage *arg = [[EImage alloc]init].image([UIImage imageNamed:@"logo2"]).width(0).height(0);
+        EImage *arg = [[EImage alloc]init].image([UIImage imageNamed:@"dkl"]).width(0).height(0).mode(NORMAL).reverse(false).compress(false);
         _basicESC.wakeup().lineDot(1).enable().image(arg).lineDot(1).write();
+        NSLog(@"-----:_---:%@",[[_basicESC command]hex]);
         _basicESC.stopJob().write();
         [_lock unlock];}
 }

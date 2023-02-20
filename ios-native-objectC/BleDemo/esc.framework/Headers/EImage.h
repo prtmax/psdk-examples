@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , readonly) EImage *(^height)(int imageHeight);
 @property (nonatomic , readonly) EImage *(^mode)(Mode imageMode);
 @property (nonatomic , readonly) EImage *(^compress)(BOOL isCompress);
-
+@property (nonatomic , readonly) EImage *(^reverse)(BOOL isReverse);
 @end
 
 NS_ASSUME_NONNULL_END

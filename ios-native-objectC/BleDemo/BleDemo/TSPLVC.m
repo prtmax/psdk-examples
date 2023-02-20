@@ -57,6 +57,15 @@
     [btn setTitleColor:UIColor.blackColor forState:UIControlStateNormal];
     btn.titleLabel.font = [UIFont systemFontOfSize:14];
     [self.contentView addSubview:btn];
+    UIButton *btn1 =[[UIButton alloc]initWithFrame:CGRectMake(20 , 120, [UIScreen mainScreen].bounds.size.width - 40, 50)];
+    [btn1 setTitle:@"打印图片" forState:UIControlStateNormal];
+    [btn1 setBackgroundColor:UIColor.lightGrayColor];
+    [btn1 addTarget:self action:@selector(printImageAction) forControlEvents:UIControlEventTouchUpInside];
+    btn1.layer.cornerRadius = 10;
+    btn1.layer.masksToBounds = YES;
+    [btn1 setTitleColor:UIColor.blackColor forState:UIControlStateNormal];
+    btn1.titleLabel.font = [UIFont systemFontOfSize:14];
+    [self.contentView addSubview:btn1];
     [self.contentView addSubview:self.labStatus];
     self.labStatus.text = [NSString stringWithFormat:NSLocalizedString(@"connect.status.succeed:%@", nil),self.peripheral.name];
     [self.labStatus mas_makeConstraints:^(MASConstraintMaker *make) {
@@ -109,21 +118,25 @@
 }
 -(void)printImage{
     [_lock lock];
-    NSString *str = @"SELFTEST";
-    Raw *raw = [Raw createWithText:str];
+//    NSString *str = @"SELFTEST";
+//    Raw *raw = [Raw createWithText:str];
     _basicTspl
         .page([[TPage alloc]init].width(100).height(100))
         .direction([[TDirection alloc]init].direction(UP_OUT).mirror(NO_MIRROR))
         .gap(true)
         .cut(true)
         .cls()
-        .image([[TImage alloc]init].image([UIImage imageNamed:@"gezi"]).x(10).y(10).compress(true))
+        .image([[TImage alloc]init].image([UIImage imageNamed:@"dkl"]).x(10).y(10).compress(false).reverse(true))
         .print();
     Command *command = [_basicTspl command];
     NSLog(@"----:%@",[command hex]);
 
     _basicTspl.write();
     [_lock unlock];
+}
+-(void)printImageAction{
+    _myThread = [[NSThread alloc] initWithTarget:self selector:@selector(printImage) object:self];
+    [_myThread start];
 }
 -(void)printAction{
     _myThread = [[NSThread alloc] initWithTarget:self selector:@selector(printModelAction) object:self];

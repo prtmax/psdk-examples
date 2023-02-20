@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) CImagezg *(^height)(int imageHeight);
 @property (nonatomic, readonly) CImagezg *(^compress)(BOOL isCompress);
 @property (nonatomic ,readonly) CImagezg *(^image)(UIImage *img);
+@property (nonatomic, readonly) CImagezg *(^reverse)(BOOL isReverse);
 
 @end
 

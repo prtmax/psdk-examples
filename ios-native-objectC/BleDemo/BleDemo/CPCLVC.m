@@ -100,7 +100,7 @@
 }
 -(void)printImage{
     [_lock lock];
-    _basicCPCL.page([[CPage alloc]init].width(608).height(600)).image([[CImage alloc]init].image([UIImage imageNamed:@"test"]).startX(0).startY(0)).print([[CPrint alloc]init]).write();
+    _basicCPCL.page([[CPage alloc]init].width(608).height(600)).image([[CImage alloc]init].image([UIImage imageNamed:@"dkl"]).startX(0).startY(0).reverse(false).compress(false)).print([[CPrint alloc]init]).write();
     [_lock unlock];
 }
 -(void)printBarcodeAction{

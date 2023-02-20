@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic , readonly) TImage *(^height)(int imageHeight);
 @property (nonatomic , readonly) TImage *(^compress)(BOOL isCompress);
 @property (nonatomic , readonly) TImage *(^mode)(TImageMode imageMode);
-//@property (nonatomic , readonly) TImage *(^reverse)(BOOL reverse);反色调
+@property (nonatomic , readonly) TImage *(^reverse)(BOOL isReverse);//反色调
 @end
 
 NS_ASSUME_NONNULL_END
