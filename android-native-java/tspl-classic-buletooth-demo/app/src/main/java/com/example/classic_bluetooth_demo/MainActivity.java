@@ -1,8 +1,12 @@
 package com.example.classic_bluetooth_demo;
 
 
+import android.bluetooth.BluetoothManager;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.drawable.BitmapDrawable;
 import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
@@ -11,13 +15,19 @@ import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 
 
+import com.printer.psdk.device.adapter.ConnectedDevice;
 import com.printer.psdk.device.adapter.ReadOptions;
 import com.printer.psdk.device.adapter.types.WroteReporter;
 import com.printer.psdk.device.bluetooth.classic.ClassicBluetooth;
-import com.printer.psdk.device.bluetooth.classic.ConnectListen;
+import com.printer.psdk.device.bluetooth.classic.ConnectListener;
 import com.printer.psdk.device.bluetooth.classic.Connection;
 import com.printer.psdk.frame.father.PSDK;
-import com.printer.psdk.frame.logger.PLog;
+import com.printer.psdk.frame.father.args.common.Raw;
+import com.printer.psdk.frame.father.command.Command;
+import com.printer.psdk.frame.father.command.print.Commander;
+import com.printer.psdk.frame.father.listener.DataListener;
+import com.printer.psdk.frame.father.listener.ListenAction;
+import com.printer.psdk.frame.father.types.lifecycle.Lifecycle;
 import com.printer.psdk.tspl.GenericTSPL;
 import com.printer.psdk.tspl.TSPL;
 import com.printer.psdk.tspl.args.*;
@@ -25,6 +35,7 @@ import com.printer.psdk.tspl.mark.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -52,10 +63,12 @@ public class MainActivity extends AppCompatActivity {
         btnModel = findViewById(R.id.btnModel);
         BluetoothDevice device = getIntent().getParcelableExtra("device");
 
-        connection = ClassicBluetooth.getInstance().createConnection(device, new ConnectListen() {
+        connection = ClassicBluetooth.getInstance().createConnection(device, new ConnectListener() {
             @Override
-            public void onConnectSuccess() {
-                tspl = TSPL.generic(connection);
+            public void onConnectSuccess(ConnectedDevice connectedDevice) {
+                tspl = TSPL.generic(connectedDevice);
+                TSPL.generic(Lifecycle.builder().connectedDevice(connectedDevice).build());
+                dataListen(connectedDevice);
             }
 
             @Override
@@ -105,7 +118,12 @@ public class MainActivity extends AppCompatActivity {
             finish();
             return;
         }
-        connection.connect(null);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                connection.connect(null);
+            }
+        }).start();
         EditText etMsg = findViewById(R.id.etMsg);
         btnText.setOnClickListener(new View.OnClickListener() {
 
@@ -132,8 +150,11 @@ public class MainActivity extends AppCompatActivity {
         btnBitmap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
-                GenericTSPL _gtspl = tspl.page(TPage.builder().width(100).height(100).build())
+                BitmapFactory.Options mOptions = new BitmapFactory.Options();
+                mOptions.inScaled = false;
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.raw.p3, mOptions);
+                bitmap=Bitmap.createScaledBitmap(bitmap, 682, 1024, true);
+                GenericTSPL _gtspl = tspl.page(TPage.builder().width(100).height(150).build())
                         .direction(
                                 TDirection.builder()
                                         .direction(TDirection.Direction.UP_OUT)
@@ -146,8 +167,6 @@ public class MainActivity extends AppCompatActivity {
                         .image(
                                 TImage.builder()
                                         .image(bitmap2Bytes(bitmap))
-                                        .width(bitmap.getWidth())
-                                        .height(bitmap.getHeight())
                                         .compress(true)
                                         .build()
                         )
@@ -264,7 +283,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
-
+    private void dataListen(ConnectedDevice connectedDevice) {
+        DataListener.with(connectedDevice).listen(new ListenAction() {
+            @Override
+            public void action(byte[] bytes) {
+            //固件回传的数据
+            }
+        }).start();
+    }
     private byte[] bitmap2Bytes(Bitmap bm) {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         bm.compress(Bitmap.CompressFormat.PNG, 100, baos);

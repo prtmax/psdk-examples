@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Process;
+import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -16,6 +17,7 @@ import android.view.ViewGroup;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import com.printer.psdk.device.bluetooth.classic.BluetoothStateListen;
 import com.printer.psdk.device.bluetooth.classic.ClassicBluetooth;
 import com.printer.psdk.device.bluetooth.classic.DiscoveryListen;
 
@@ -52,6 +54,7 @@ public class ScanActivity extends AppCompatActivity {
         public void setName(String name) {
             this.name = name;
         }
+
         @Override
         public boolean equals(Object o) {
             if (this == o) return true;
@@ -73,9 +76,10 @@ public class ScanActivity extends AppCompatActivity {
         setContentView(R.layout.activity_scan);
         initViews();
 
-        ClassicBluetooth.getInstance().setDiscoveryListener(discoveryListener);
-        ClassicBluetooth.getInstance().initialize(getApplication());
 
+        ClassicBluetooth.getInstance().initialize(getApplication());
+        ClassicBluetooth.getInstance().setDiscoveryListener(discoveryListener);
+        ClassicBluetooth.getInstance().setBluetoothStateListener(bluetoothStateListen);
     }
 
     private void initViews() {
@@ -178,14 +182,20 @@ public class ScanActivity extends AppCompatActivity {
             tvEmpty.setVisibility(View.INVISIBLE);
             Device dev = new Device(device, rssi);
             if (!devList.contains(dev) && dev.getName() != null) {
-                if (!dev.getName().trim().equals("") && !dev.getName().isEmpty()) {
+                if (!dev.getName().trim().equals("") && !dev.getName().isEmpty() && !dev.getName().endsWith("_BLE") && !dev.getName().endsWith("-LE")) {
                     devList.add(dev);
                     listAdapter.notifyDataSetChanged();
                 }
             }
         }
     };
+    private final BluetoothStateListen bluetoothStateListen = new BluetoothStateListen() {
 
+        @Override
+        public void onBluetoothAdapterStateChanged(int i) {
+
+        }
+    };
 
     @Override
     protected void onResume() {
