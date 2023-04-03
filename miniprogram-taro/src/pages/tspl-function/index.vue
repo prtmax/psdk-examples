@@ -7,22 +7,13 @@
 </template>
 
 <script>
-import Taro from '@tarojs/taro'
+import Taro, { getCurrentInstance } from '@tarojs/taro'
 import { Raw } from '@psdk/frame-father'
 import { TBarCode, TImage, TPage } from '@psdk/tspl'
 import { CodeType } from '@psdk/tspl/build/types/codetype'
-import kfc from '../../assets/FFF.png'
-import logo from '../../assets/logo.png'
-import waybill from '../../assets/waybill-usps.png'
-
-definePageConfig({
-  navigationBarTitleText: "打印机"
-})
 
 export default {
-  name: 'Printer',
-  components: {
-  },
+  name: 'tspl',
   inject: ["printer"],
   data() {
     return {
@@ -40,7 +31,6 @@ export default {
           fun: this.printImage
         },
       ],
-      images: [logo, waybill, kfc]
     }
   },
   methods: {
@@ -64,6 +54,7 @@ export default {
       .write()
     },
     async printImage() {
+      console.log("printImage...")
       // 把图片画到离屏 canvas 上
       const canvas = Taro.createOffscreenCanvas({type: '2d', width: 20, height: 35});
       const ctx = canvas.getContext('2d');
@@ -93,10 +84,11 @@ export default {
     },
   },
   created() {
-    this.images.forEach(element => {
-      console.log(element)
-    });
-  },
+    const deviceName = getCurrentInstance().router.params.deviceName
+    Taro.setNavigationBarTitle({
+      title: deviceName
+    })
+  }
 }
 </script>
 

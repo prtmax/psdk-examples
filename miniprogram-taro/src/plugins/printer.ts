@@ -3,11 +3,13 @@ import {ConnectedDevice, Lifecycle} from '@psdk/frame-father';
 import {UpgradeCallback, UpdatePrinter} from "@psdk/frame-ota";
 import { GenericTSPL, TSPL } from '@psdk/tspl';
 import { GenericCPCL, CPCL } from '@psdk/cpcl';
+import { GenericESC, ESC } from '@psdk/esc';
 
 class Printer {
   private _connectedDevice?: ConnectedDevice;
   private _cpcl?: GenericCPCL;
   private _tspl?: GenericTSPL;
+  private _esc?: GenericESC;
 
   init(connectedDevice: ConnectedDevice) {
     this._connectedDevice = connectedDevice;
@@ -16,6 +18,7 @@ class Printer {
     this._cpcl = CPCL.generic(lifecycle);
       // @ts-ignore
     this._tspl = TSPL.generic(lifecycle);
+    this._esc = ESC.generic(lifecycle)
   }
 
   isConnected(): boolean {
@@ -51,6 +54,12 @@ class Printer {
     if (!this._connectedDevice)
       throw Error('The device is not connected');
     return this._tspl!;
+  }
+
+  esc(): GenericESC {
+    if (!this._connectedDevice)
+      throw Error('The device is not connected');
+    return this._esc!;
   }
 }
 
