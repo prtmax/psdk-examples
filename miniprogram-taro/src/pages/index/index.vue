@@ -1,16 +1,14 @@
-<!-- 
-  {"pages":["pages/index/index","pages/printer-function/index"],"permission":{"scope.userLocation":{"desc":"你的位置信息将用于小程序位置接口的效果展示"}},"window":{"backgroundTextStyle":"light","navigationBarBackgroundColor":"#fff","navigationBarTitleText":"WeChat","navigationBarTextStyle":"black"},"requiredPrivateInfos": [
-    "getLocation"
-  ]} 
--->
 <template>
   <view class="container">
-    <nut-button type="info"  class="searchBtn" @click="discoveryDevices">
+    <nut-button type="info"  
+                class="searchBtn" 
+                @click="discoveryDevices">
       搜索
     </nut-button>
 
     <nut-cell-group title="打印机列表">
-      <nut-cell v-for="device in source.devices" :key="device.deviceId"         
+      <nut-cell v-for="device in source.devices" 
+                :key="device.deviceId"         
                 :title="device.name"
                 @click="connectDevice(device)">
         <template v-slot:link>
@@ -19,6 +17,20 @@
       </nut-cell>
     </nut-cell-group>
 
+    <nut-popup position="bottom" 
+              closeable round 
+              :style="{ height: '30%' }" 
+              v-model:visible="showRound">
+      <div>
+        <h2 class="popup-title">请选择打印机指令</h2>
+        <button v-for="(item, index) in cmds" 
+                :key="index"
+                @click="cmdBtnClick(item)">
+          {{ item }}
+        </button>
+      </div>
+    </nut-popup>
+
   </view>
 </template>
 
@@ -26,6 +38,9 @@
 import { RectRight } from '@nutui/icons-vue-taro';
 import Taro from '@tarojs/taro';
 import { TaroBleBluetooth } from '@psdk/device-ble-taro'
+import kfc from '../../assets/F.png'
+import logo from '../../assets/logo.png'
+import waybill from '../../assets/waybill-usps.png'
 
 
 export default {
@@ -33,9 +48,7 @@ export default {
   components: {
     RectRight,
   },
-  inject: [
-      "printer"
-  ],
+  inject: ["printer"],
   created() {
     this.bluetooth.discovered((devices) => {
       console.log("discoveryDevices ...", devices);
@@ -48,50 +61,75 @@ export default {
         devices: [],
         showBluetoothError: null,
       },
-      cond: {
-        showBluetoothError: false,
-      },
       bluetooth: new TaroBleBluetooth({
         allowNoName: false
       }),
+      showRound: false,
+      cmds: ["tspl", "cpcl", "esc"],
+      connectDevice: null,
+      images: [kfc, logo, waybill]
     }
   },
   methods: {
-    gotoPrinter() {
-      console.log("gotoPrinter: ", Taro);
-      Taro.navigateTo({ url: '/pages/printer/index' });
+    cmdBtnClick(item) {
+      if(this.connectDevice === null) return
+      this.showRound = false
+      this.printer.init(this.connectDevice)
+      const deviceName = this.bluetooth.connectedDevice.deviceName()
+      switch (item) {
+        case "tspl":
+          Taro.navigateTo({ url: `/pages/tspl-function/index?deviceName=${deviceName}` })
+          break;
+        case "cpcl":
+          Taro.navigateTo({ url: `/pages/cpcl-function/index?deviceName=${deviceName}` })
+          break;
+        case "esc":
+          Taro.navigateTo({ url: `/pages/esc-function/index?deviceName=${deviceName}` })
+          break;
+      
+        default:
+          break;
+      }
     },
     async discoveryDevices() {
-      await this.bluetooth.startDiscovery()
-      
+      try {
+        await this.bluetooth.startDiscovery()
+      } catch (error) {
+        console.log("discovery error: ", error)
+        if(error.errCode === 10001) {
+          Taro.showToast({
+            title: "请开启手机蓝牙!",
+            icon: "error"
+          })
+        }
+      }
     },
     async connectDevice(device) {
-      console.log("connectDevice... ", device);
-      await this.bluetooth.connect(device)
-
+      if(this.connectDevice != null) {
+        await this.bluetooth.connectedDevice.disconnect()
+      }
       try {
         Taro.showLoading({
           title: "连接中...",
           mask: true
         })
-
         const connectDevice = await this.bluetooth.connect(device)
         if (!connectDevice.canRead) {
           Taro.showToast({
             title: '你的打印机不支持读取数据. 部分功能将不可用',
-            icon: "error"
+            icon: "error",
           })
         }
       
         Taro.showToast({
           title: '连接成功!'
         })
-
-        this.printer.init(connectDevice)
-        Taro.navigateTo({ url: "/pages/printer-function/index" });
+        this.showRound = true
+        this.connectDevice = connectDevice
+        console.log("连接设备: ", this.bluetooth.connectedDevice)
 
       } catch (error) { 
-        console.log(error)
+        console.log("connect error: ", error)
       }
     }
   }, 
@@ -123,6 +161,11 @@ export default {
   z-index: 10;
   bottom: 8rem;
   right: 1rem;
+}
+.popup-title {
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  text-align: center;
 }
 
 </style>

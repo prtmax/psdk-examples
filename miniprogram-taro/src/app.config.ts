@@ -1,7 +1,9 @@
 export default defineAppConfig({
   pages: [
     'pages/index/index',
-    'pages/printer-function/index',
+    'pages/tspl-function/index',
+    'pages/cpcl-function/index',
+    'pages/esc-function/index',
   ],
   permission: {
     'scope.userLocation': {
