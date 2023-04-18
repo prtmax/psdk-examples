@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">PrinterPower</string>
+    <string name="action_settings">Settings</string>
+    <string name="hello_world">Hello world!</string>
+
+    <string name="myButton1">power_on</string>
+    <string name="myButton2">power_off</string>
+    <string name="myButton3">power_reset</string>
+    <string name="myButton4">serail_open</string>
+    <string name="myButton5">打印测试</string>
+    <string name="myButton6">serial_close</string>
+
+
+</resources>

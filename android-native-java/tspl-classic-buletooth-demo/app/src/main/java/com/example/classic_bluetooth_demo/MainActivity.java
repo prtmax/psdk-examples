@@ -1,12 +1,9 @@
 package com.example.classic_bluetooth_demo;
 
 
-import android.bluetooth.BluetoothManager;
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
-import android.graphics.drawable.BitmapDrawable;
+
 import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,9 +19,6 @@ import com.printer.psdk.device.bluetooth.classic.ClassicBluetooth;
 import com.printer.psdk.device.bluetooth.classic.ConnectListener;
 import com.printer.psdk.device.bluetooth.classic.Connection;
 import com.printer.psdk.frame.father.PSDK;
-import com.printer.psdk.frame.father.args.common.Raw;
-import com.printer.psdk.frame.father.command.Command;
-import com.printer.psdk.frame.father.command.print.Commander;
 import com.printer.psdk.frame.father.listener.DataListener;
 import com.printer.psdk.frame.father.listener.ListenAction;
 import com.printer.psdk.frame.father.types.lifecycle.Lifecycle;
@@ -35,7 +29,6 @@ import com.printer.psdk.tspl.mark.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
 
 
 public class MainActivity extends AppCompatActivity {
