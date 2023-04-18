@@ -1,0 +1,30 @@
+<view class="center">
+  <view class="radio">
+			<view >指令选择:</view>
+			<radio-group class="radio" bindchange="radioChange">
+				<label class="list-cell-pd" wx:for="{{items}}" wx:key="index">
+					<view>
+						<radio value="{{item.type}}" checked="{{item.checked}}" style="transform:scale(0.8)"/>
+					</view>
+					<view>{{item.type}}</view>
+				</label>
+			</radio-group>
+		</view>
+	<button bindtap="openBluetooth" class="button">开始搜索</button>
+	<button bindtap="closeBluetooth" class="button">断开连接</button>
+	<button bindtap="writeModel" class="button">打印76*130模版</button>
+  <button bindtap="writeImage" class="button">打印图片</button>
+</view>
+<view class="venues_list">
+  <block wx:for="{{discoveredDevices}}" wx:for-item="item" wx:key="index">
+    <view class="venues_item">
+      <text class="status">设备名称:{{item.name}}</text>
+      <text class="status">设备ID:{{item.deviceId}}</text>
+      <text class="status">连接状态:{{connectedDeviceId == item.deviceId?"已连接":"未连接"}}</text>
+    
+      <view class="section">
+        <button type="warn" class="button" id="{{index}}" bindtap="connectTO">连接</button>
+      </view>
+    </view>
+  </block>
+</view>
