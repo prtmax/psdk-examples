@@ -1,0 +1,35 @@
+/**index.wxss**/
+.radio {
+  background-color: #FFFFFF;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+}
+.title {
+  max-lines: 1;
+  font-size: 30rpx;
+  font-weight: 500;
+  padding: 20rpx 0;
+  line-height: 1.5;
+}
+.list-cell-pd {
+  padding: 22rpx 30rpx;
+}
+.userinfo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  color: #aaa;
+}
+
+.userinfo-avatar {
+  overflow: hidden;
+  width: 128rpx;
+  height: 128rpx;
+  margin: 20rpx;
+  border-radius: 50%;
+}
+
+.usermotto {
+  margin-top: 200px;
+}
