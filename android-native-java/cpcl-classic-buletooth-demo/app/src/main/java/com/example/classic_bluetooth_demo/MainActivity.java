@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
     private void printNow() {
-        GenericCPCL _gcpcl = cpcl.page(CPage.builder().width(608).height(1040).copies(sampleNumber).build())
+        GenericCPCL _gcpcl = cpcl.page(CPage.builder().width(608).height(1040).copies(1).build())
                 .box(CBox.builder().topLeftX(0).topLeftY(1).bottomRightX(598).bottomRightY(664).lineWidth(2).build())
                 .line(CLine.builder().startX(0).startY(88).endX(598).endY(88).lineWidth(2).build())
                 .line(CLine.builder().startX(0).startY(88+128).endX(598).endY(88+128).lineWidth(2).build())
