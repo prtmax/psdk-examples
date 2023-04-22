@@ -10,10 +10,13 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface PImageTool : NSObject
-+(NSData *)Beeprt_DrawPic_pdfBy:(NSUInteger)x start_y:(NSUInteger)y img:(UIImage*)img Size:(CGSize) targetSize compress:(BOOL)compress;
-+(NSData *)codeBy:(NSData *)source;
++ (NSData *)Beeprt_DrawPic_pdfByImg:(UIImage*)img Size:(CGSize) targetSize compress:(BOOL)isCompress reverse:(BOOL)isReverse;
++ (NSData *)codeBy:(NSData *)source;
 + (UIImage *)imageByScalingBy:(UIImage *)sourceImage ToSize:(CGSize)targetSize;
-+(UIImage *)addImageBy:(UIImage*)img;
++ (UIImage *)addImageBy:(UIImage*)img;
++ (UIImage *)changeGrayImage:(UIImage *)oldImage ;
++ (UIImage *)inverColorImage:(UIImage *)image;
+
 @end
 
 NS_ASSUME_NONNULL_END

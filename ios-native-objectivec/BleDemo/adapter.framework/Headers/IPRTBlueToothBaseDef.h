@@ -7,14 +7,16 @@
 
 #import <Foundation/Foundation.h>
 
-NS_ASSUME_NONNULL_BEGIN
-typedef void (^ReceivedData)(NSData *revData, NSError * _Nullable error);
+
+typedef void (^ReceivedData)(NSData *revData, NSError *error);
+
+/**
+ * 连接状态
+ */
 typedef NS_ENUM (NSUInteger , ConnectionState){
+    /// 已连接
     CONNECTED,
+    /// 未连接
     DISCONNECT
 };
-@interface IPRTBlueToothBaseDef : NSObject
 
-@end
-
-NS_ASSUME_NONNULL_END

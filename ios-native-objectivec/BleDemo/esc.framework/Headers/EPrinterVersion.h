@@ -9,6 +9,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 查询打印机固件版本
+ */
 @interface EPrinterVersion : OnlyBinaryHeaderArg
 
 @end

@@ -9,6 +9,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 清除页面缓冲区
+ *
+ */
 @interface TClear : OnlyTextHeaderArg
 
 @end

@@ -9,6 +9,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 学习标签缝隙
+ */
 @interface ELearnLabelGap : OnlyBinaryHeaderArg
 
 @end

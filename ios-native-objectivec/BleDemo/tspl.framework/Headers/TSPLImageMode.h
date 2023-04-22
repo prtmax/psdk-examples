@@ -6,8 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
-typedef NS_ENUM (int, TImageMode)
-{
+typedef NS_ENUM (int, TImageMode) {
     /**
        * 覆盖前面的
        */

@@ -9,6 +9,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 查询打印机mac地址
+ */
 @interface EMac : OnlyBinaryHeaderArg
 
 @end

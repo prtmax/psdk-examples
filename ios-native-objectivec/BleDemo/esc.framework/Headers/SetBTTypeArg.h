@@ -9,6 +9,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 设置蓝牙类型
+ */
 @interface SetBTTypeArg : OnlyBinaryHeaderArg
 
 @end

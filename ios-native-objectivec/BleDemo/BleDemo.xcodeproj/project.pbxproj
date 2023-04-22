@@ -28,6 +28,7 @@
 		2497E745292B81F800CBEDAB /* father.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2497E73A292B81F700CBEDAB /* father.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		2497E746292B81F800CBEDAB /* esc.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2497E73B292B81F700CBEDAB /* esc.framework */; };
 		2497E747292B81F800CBEDAB /* esc.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 2497E73B292B81F700CBEDAB /* esc.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		249AFC3C2995EB4D009274A1 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 249AFC3E2995EB4D009274A1 /* Localizable.strings */; };
 		24B83768292C5713007B0F52 /* UIDevice+PAddition.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B83767292C5713007B0F52 /* UIDevice+PAddition.m */; };
 		24B8376B292C7C50007B0F52 /* ESCVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B8376A292C7C50007B0F52 /* ESCVC.m */; };
 		24B8376E292C7C5C007B0F52 /* TSPLVC.m in Sources */ = {isa = PBXBuildFile; fileRef = 24B8376D292C7C5C007B0F52 /* TSPLVC.m */; };
@@ -41,6 +42,8 @@
 		24D0D3B8294466620070B85B /* appleble.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24C8F1432937074200F20851 /* appleble.framework */; };
 		24D0D3B9294466620070B85B /* appleble.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 24C8F1432937074200F20851 /* appleble.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		31EF01BE1B3273DA30D75473 /* Pods_BleDemoTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FE38EA7560C456B328CF3204 /* Pods_BleDemoTests.framework */; };
+		B5E340A529EE589C00DBA133 /* unititled.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B5E340A329EE589C00DBA133 /* unititled.jpg */; };
+		B5E340A629EE589C00DBA133 /* stamp.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B5E340A429EE589C00DBA133 /* stamp.jpg */; };
 		C841D3CA0E2BCFCD2F24DB2D /* Pods_BleDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2B6CBC462DBE887235083E45 /* Pods_BleDemo.framework */; };
 /* End PBXBuildFile section */
 
@@ -106,6 +109,10 @@
 		2497E739292B81F600CBEDAB /* tspl.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = tspl.framework; sourceTree = "<group>"; };
 		2497E73A292B81F700CBEDAB /* father.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = father.framework; sourceTree = "<group>"; };
 		2497E73B292B81F700CBEDAB /* esc.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = esc.framework; sourceTree = "<group>"; };
+		249AFC3D2995EB4D009274A1 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
+		249AFC3F2995ED14009274A1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Main.strings"; sourceTree = "<group>"; };
+		249AFC402995ED14009274A1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		249AFC412995ED14009274A1 /* zh-Hans */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hans"; path = "zh-Hans.lproj/Localizable.strings"; sourceTree = "<group>"; };
 		24B83766292C5713007B0F52 /* UIDevice+PAddition.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "UIDevice+PAddition.h"; sourceTree = "<group>"; };
 		24B83767292C5713007B0F52 /* UIDevice+PAddition.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "UIDevice+PAddition.m"; sourceTree = "<group>"; };
 		24B83769292C7C50007B0F52 /* ESCVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ESCVC.h; sourceTree = "<group>"; };
@@ -127,6 +134,8 @@
 		7896798C4CE1968CBF74CAF7 /* Pods-BleDemo-BleDemoUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BleDemo-BleDemoUITests.release.xcconfig"; path = "Target Support Files/Pods-BleDemo-BleDemoUITests/Pods-BleDemo-BleDemoUITests.release.xcconfig"; sourceTree = "<group>"; };
 		7F5146F0F869FC67C4469CA6 /* Pods-BleDemo-BleDemoUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BleDemo-BleDemoUITests.debug.xcconfig"; path = "Target Support Files/Pods-BleDemo-BleDemoUITests/Pods-BleDemo-BleDemoUITests.debug.xcconfig"; sourceTree = "<group>"; };
 		9C95B9C22A66D9E3127AF965 /* Pods-BleDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BleDemo.release.xcconfig"; path = "Target Support Files/Pods-BleDemo/Pods-BleDemo.release.xcconfig"; sourceTree = "<group>"; };
+		B5E340A329EE589C00DBA133 /* unititled.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = unititled.jpg; sourceTree = "<group>"; };
+		B5E340A429EE589C00DBA133 /* stamp.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = stamp.jpg; sourceTree = "<group>"; };
 		C634E878E0B16E0F112B7A87 /* Pods_BleDemo_BleDemoUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BleDemo_BleDemoUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		FE38EA7560C456B328CF3204 /* Pods_BleDemoTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BleDemoTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
@@ -170,6 +179,7 @@
 		2497E6F0292B803C00CBEDAB = {
 			isa = PBXGroup;
 			children = (
+				249AFC3E2995EB4D009274A1 /* Localizable.strings */,
 				2497E6FB292B803C00CBEDAB /* BleDemo */,
 				2497E717292B803D00CBEDAB /* BleDemoTests */,
 				2497E721292B803D00CBEDAB /* BleDemoUITests */,
@@ -192,6 +202,7 @@
 		2497E6FB292B803C00CBEDAB /* BleDemo */ = {
 			isa = PBXGroup;
 			children = (
+				B5E340A229EE589C00DBA133 /* File */,
 				2497E6FC292B803C00CBEDAB /* AppDelegate.h */,
 				2497E6FD292B803C00CBEDAB /* AppDelegate.m */,
 				2497E6FF292B803C00CBEDAB /* SceneDelegate.h */,
@@ -265,6 +276,15 @@
 				59FF74E2534A798316B1A1A8 /* Pods-BleDemoTests.release.xcconfig */,
 			);
 			path = Pods;
+			sourceTree = "<group>";
+		};
+		B5E340A229EE589C00DBA133 /* File */ = {
+			isa = PBXGroup;
+			children = (
+				B5E340A329EE589C00DBA133 /* unititled.jpg */,
+				B5E340A429EE589C00DBA133 /* stamp.jpg */,
+			);
+			path = File;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -358,6 +378,7 @@
 			knownRegions = (
 				en,
 				Base,
+				"zh-Hans",
 			);
 			mainGroup = 2497E6F0292B803C00CBEDAB;
 			productRefGroup = 2497E6FA292B803C00CBEDAB /* Products */;
@@ -376,7 +397,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5E340A529EE589C00DBA133 /* unititled.jpg in Resources */,
+				B5E340A629EE589C00DBA133 /* stamp.jpg in Resources */,
 				2497E70C292B803D00CBEDAB /* LaunchScreen.storyboard in Resources */,
+				249AFC3C2995EB4D009274A1 /* Localizable.strings in Resources */,
 				2497E709292B803D00CBEDAB /* Assets.xcassets in Resources */,
 				2497E707292B803C00CBEDAB /* Main.storyboard in Resources */,
 			);
@@ -556,6 +580,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				2497E706292B803C00CBEDAB /* Base */,
+				249AFC3F2995ED14009274A1 /* zh-Hans */,
 			);
 			name = Main.storyboard;
 			sourceTree = "<group>";
@@ -564,8 +589,18 @@
 			isa = PBXVariantGroup;
 			children = (
 				2497E70B292B803D00CBEDAB /* Base */,
+				249AFC402995ED14009274A1 /* zh-Hans */,
 			);
 			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		249AFC3E2995EB4D009274A1 /* Localizable.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				249AFC3D2995EB4D009274A1 /* en */,
+				249AFC412995ED14009274A1 /* zh-Hans */,
+			);
+			name = Localizable.strings;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
@@ -575,6 +610,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -621,7 +657,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -633,6 +669,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
@@ -673,7 +710,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -689,18 +726,23 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3R57RN28A3;
+				DEVELOPMENT_TEAM = 76F7233WS7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BleDemo/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "The app may frequently use bluetooth to transfer data to peers.";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "The app uses bluetooth to transfer data to a neighbouring device.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -721,18 +763,23 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 3R57RN28A3;
+				DEVELOPMENT_TEAM = 76F7233WS7;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = BleDemo/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "The app may frequently use bluetooth to transfer data to peers.";
+				INFOPLIST_KEY_NSBluetoothPeripheralUsageDescription = "The app uses bluetooth to transfer data to a neighbouring device.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Light;
+				IPHONEOS_DEPLOYMENT_TARGET = 11.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

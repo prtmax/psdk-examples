@@ -7,6 +7,9 @@
 
 #import "BasicESCArg.h"
 
+/**
+ * 纸张类型
+ */
 typedef enum : NSUInteger {
     paperTypeOne = 0,    // 折叠黑标纸
     paperTypeTwo,        // 连续卷筒纸
@@ -15,7 +18,12 @@ typedef enum : NSUInteger {
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 设置纸张类型
+ */
 @interface EPaperType : BasicESCArg
+
+/// 纸张类型
 @property (nonatomic , readonly) EPaperType *(^type)(PaperType paperType);
 
 @end

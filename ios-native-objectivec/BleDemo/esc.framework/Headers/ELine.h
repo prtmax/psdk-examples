@@ -10,6 +10,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 线条
+ */
 @interface ELine : BasicESCArg<BasicLineArg>
 @property (nonatomic , readonly) ELine *(^x)(int lx);
 @property (nonatomic , readonly) ELine *(^y)(int ly);

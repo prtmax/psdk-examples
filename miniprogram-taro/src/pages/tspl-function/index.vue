@@ -9,8 +9,7 @@
 <script>
 import Taro, { getCurrentInstance } from '@tarojs/taro'
 import { Raw } from '@psdk/frame-father'
-import { TBarCode, TImage, TPage } from '@psdk/tspl'
-import { CodeType } from '@psdk/tspl/build/types/codetype'
+import { TImage, TPage, TText, TFont } from '@psdk/tspl'
 
 export default {
   name: 'tspl',
@@ -42,13 +41,35 @@ export default {
       .tspl()
       .cls()
       .page(new TPage({width: 75, height:130 }))
-      .barcoce(new TBarCode({
-        x: 100,
-        y: 100,
-        height: 120,
-        content: "12345678",
-        cellWidth: 2,
-        codeType: CodeType.CODE_128
+      .text(new TText({
+        x: 20,
+        y: 10,
+        content: "《题西林壁》",
+        font: TFont.TSS32
+      }))
+      .text(new TText({
+        x: 10,
+        y: 40,
+        content: "横看成岭侧成峰，",
+        font: TFont.TSS32
+      }))
+      .text(new TText({
+        x: 20,
+        y: 80,
+        content: "远近高低各不同。",
+        font: TFont.TSS32
+      }))
+      .text(new TText({
+        x: 20,
+        y: 120,
+        content: "不识庐山真面目，",
+        font: TFont.TSS32
+      }))
+      .text(new TText({
+        x: 20,
+        y: 160,
+        content: "只缘身在此山中。",
+        font: TFont.TSS32
       }))
       .print()
       .write()
@@ -56,17 +77,18 @@ export default {
     async printImage() {
       console.log("printImage...")
       // 把图片画到离屏 canvas 上
-      const canvas = Taro.createOffscreenCanvas({type: '2d', width: 20, height: 35});
+      const canvas = Taro.createOffscreenCanvas({type: '2d', width: 717, height: 1040});
       const ctx = canvas.getContext('2d');
       // 创建一个图片
       const image = canvas.createImage();
       // 等待图片加载
       await new Promise(resolve => {
         image.onload = resolve;
-        image.src = "../../assets/F.png"; // 要加载的图片 url, 可以是base64
+        image.src = "../../assets/waybill-usps.png"; // 要加载的图片 url, 可以是base64
       });
-      ctx.drawImage(image, 0, 0, 20, 35);
-      console.log("toDataURL - ", ctx.canvas.toDataURL()) // 输出的图片
+      ctx.drawImage(image, 0, 0, 717, 1040);
+      console.log("toDataURL - ", ctx.canvas.toDataURL())
+
       this.printer
       .tspl()
       .cls()

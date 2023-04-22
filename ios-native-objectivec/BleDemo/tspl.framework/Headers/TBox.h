@@ -9,31 +9,24 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 打印边框
+ */
 @interface TBox : BasicTSPLArg
-/**
-   * 起始x坐标
-   */
+
+/// 左上角起始点 x 坐标
 @property(nonatomic , readonly) TBox *(^startX)(int sx);
-/**
-   * 起始y坐标
-   */
+/// 左上角起始点 y 坐标
 @property(nonatomic , readonly) TBox *(^startY)(int sy);
-/**
-   * 结束x坐标
-   */
+/// 右下角结束点 x 坐标
 @property(nonatomic , readonly) TBox *(^endX)(int ex);
-/**
-   * 结束y坐标
-   */
+/// 右下角结束点 y 坐标
 @property(nonatomic , readonly) TBox *(^endY)(int ey);
-/**
-   * 线宽
-   */
+/// 线宽
 @property(nonatomic , readonly) TBox *(^width)(int lineWidth);
-/**
-   * 线高
-   */
+/// 圆角半径
 @property(nonatomic , readonly) TBox *(^radius)(int r);
+
 @end
 
 NS_ASSUME_NONNULL_END

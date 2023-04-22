@@ -16,7 +16,15 @@
 #import "TSPLVC.h"
 #import "CPCLVC.h"
 #import "MBProgressHUD.h"
-@interface ViewController ()<IbridgeBleApiInterfaceDelegate,UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate,applebleApiDelegate,FscBleApiInterfaceDelegate>
+
+typedef enum : NSUInteger {
+    ESC,
+    TSPL,
+    CPCL,
+} CommandType;
+
+@interface ViewController ()<ConnectedDeviceDelegate, IbridgeBleApiInterfaceDelegate,UITableViewDelegate,UITableViewDataSource,UITextFieldDelegate,FscBleApiInterfaceDelegate>
+
 @property (nonatomic , strong) UITableView *tableview;
 @property (nonatomic , strong) NSArray *dataSource;
 @property (nonatomic , strong) NSMutableArray *allDataSource;
@@ -26,58 +34,53 @@
 @property (nonatomic , strong) UIView *headerView;
 @property (nonatomic , strong) IbridgeBleApi *ibridgeBleDevice;
 @property (nonatomic , strong) FscBleApi *fscBleDevice;
-@property (nonatomic , strong) applebleApi *appleBleDevice;
+@property (nonatomic , strong) AppleBle *appleBleDevice;
 @property (nonatomic , strong) UIButton *footerView;
 @property (nonatomic , assign) BOOL isSearch;
 @property (nonatomic , strong) BasicESC *basicESC;
 @property (nonatomic , strong) Lifecycle *lifeCycle;
-@property (nonatomic , assign) NSInteger selectedType;// 1 ESC 2 CPCL 3 TSPL
+@property (nonatomic , assign) CommandType commandType;// 1 ESC 2 CPCL 3 TSPL
 @property (nonatomic , strong) CBPeripheral *currentPeripheral;
+
 @end
 
 @implementation ViewController
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.titleStr = @"BleDemo";
     [self setUI];
-    self.device = [FscBleApi sharedInstance];
+    self.device = [IbridgeBleApi sharedInstance];
+//    self.device = [AppleBle sharedInstance];
     self.device.delegate = self;
-    [self isNeedBackBtn:YES];
 }
 
--(BOOL)textFieldShouldReturn:(UITextField *)textField{
-    [self.view endEditing:YES];
-    return YES;
-}
--(void)endEditing{
-    [self.view endEditing:YES];
-}
 -(void)scanAction{
-    if([_footerView.titleLabel.text isEqualToString:@"停止扫描"]){
-        [_footerView setTitle:@"扫描" forState:UIControlStateNormal];
+    if([_footerView.titleLabel.text isEqualToString:NSLocalizedString(@"scan.stop", nil)]){
+        [_footerView setTitle:NSLocalizedString(@"scan.start", nil) forState:UIControlStateNormal];
         [self.device stopScanPrinters];
     }else{
-        [_footerView setTitle:@"停止扫描" forState:UIControlStateNormal];
+        [_footerView setTitle:NSLocalizedString(@"scan.stop", nil) forState:UIControlStateNormal];
         [self.device startScanPrinters];
     }
     
 }
 -(void)setUI{
-    [self.contentView addSubview:self.headerView];
+    self.title = @"打印机列表";
+    self.tableview.tableFooterView = [UIView new];
+    [self.view addSubview:self.headerView];
     [self.headerView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.top.left.right.mas_equalTo(self.contentView);
+        make.top.left.right.mas_equalTo(self.view);
         make.height.mas_equalTo(44);
     }];
-    [self.contentView addSubview:self.footerView];
+    [self.view addSubview:self.footerView];
     [self.footerView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.right.mas_equalTo(self.contentView);
+        make.left.right.mas_equalTo(self.view);
         make.bottom.mas_equalTo(-[UIDevice p_safeDistanceBottom]);
         make.height.mas_equalTo(44);
     }];
-    [self.contentView addSubview:self.tableview];
+    [self.view addSubview:self.tableview];
     [self.tableview mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.right.mas_equalTo(self.contentView);
+        make.left.right.mas_equalTo(self.view);
         make.top.mas_equalTo(self.headerView.mas_bottom);
         make.bottom.mas_equalTo(self.footerView.mas_top);
     }];
@@ -113,7 +116,7 @@
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_BACKGROUND, 0), ^{
                 usleep(3000);
                 dispatch_async(dispatch_get_main_queue(), ^{
-                    self->_searchTF.attributedPlaceholder = [[NSAttributedString alloc]initWithString:@"请输入蓝牙名称" attributes:@{NSForegroundColorAttributeName:[UIColor lightGrayColor]}];
+                    self->_searchTF.attributedPlaceholder = [[NSAttributedString alloc]initWithString:NSLocalizedString(@"name.bluetooth.enter", nil) attributes:@{NSForegroundColorAttributeName:[UIColor lightGrayColor]}];
                 });
             });
         }
@@ -132,60 +135,44 @@
     if(!_footerView){
         _footerView = [[UIButton alloc]init];
         _footerView.backgroundColor = UIColor.lightGrayColor;
-        [_footerView setTitle:@"扫描" forState:UIControlStateNormal];
+        [_footerView setTitle:NSLocalizedString(@"scan.start", nil) forState:UIControlStateNormal];
         [_footerView addTarget:self action:@selector(scanAction) forControlEvents:UIControlEventTouchUpInside];
-        
     }
     return _footerView;
 }
-- (void)bleDataReceived:(nullable NSData *)revData {
+- (void)bleDataReceived: (NSData *)revData {
   
 }
 
 - (void)bleDidConnectPeripheral:(nonnull CBPeripheral *)peripheral {
     [MBProgressHUD hideHUDForView:self.view animated:YES];
-    if(self.selectedType == 1){
-        [self.device start:@"FF00" on:peripheral];
-        ESCVC *vc = [[ESCVC alloc]init];
-        vc.modalPresentationStyle = UIModalPresentationFullScreen;
-        vc.device = self.device;
-        vc.peripheral = self.currentPeripheral;
-        __weak typeof (self) weakSelf = self;
-        vc.backClick = ^{
-            __strong typeof (weakSelf) strongSelf = weakSelf;
-            strongSelf.device = [IbridgeBleApi sharedInstance];
-            strongSelf.device.delegate = self;
-        };
-        [self presentViewController:vc animated:YES completion:nil];
+    BaseVC *vc = nil;
+    switch (self.commandType) {
+        case ESC: {
+            [self.device start:@"FF00" on:peripheral];
+            vc = [[ESCVC alloc] init];
+        }
+            break;
+        case CPCL: {
+            vc = [[CPCLVC alloc] init];
+        }
+            break;
+        case TSPL: {
+            vc = [[TSPLVC alloc] init];
+        }
+            break;
+            
+        default:
+            break;
     }
-    if(self.selectedType == 2){
-        CPCLVC *vc = [[CPCLVC alloc]init];
-        vc.modalPresentationStyle = UIModalPresentationFullScreen;
-        vc.device = self.device;
-        vc.peripheral = self.currentPeripheral;
-        __weak typeof (self) weakSelf = self;
-        vc.backClick = ^{
-            __strong typeof (weakSelf) strongSelf = weakSelf;
-            strongSelf.device = [FscBleApi sharedInstance];
-            strongSelf.device.delegate = self;
-        };
-        [self presentViewController:vc animated:YES completion:nil];
-    }
-    if(self.selectedType == 3){
-        TSPLVC *vc = [[TSPLVC alloc]init];
-        vc.modalPresentationStyle = UIModalPresentationFullScreen;
-        vc.device = self.device;
-        vc.peripheral = self.currentPeripheral;
-        __weak typeof (self) weakSelf = self;
-        vc.backClick = ^{
-            __strong typeof (weakSelf) strongSelf = weakSelf;
-            strongSelf.device = [applebleApi sharedInstance];
-            strongSelf.device.delegate = self;
-        };
-        [self presentViewController:vc animated:YES completion:nil];
-    }
-    
+    vc.device = self.device;
+    vc.peripheral = self.currentPeripheral;
+    vc.navBackCallBack = ^{
+        self.device.delegate = self;
+    };
+    [self.navigationController pushViewController:vc animated:YES];
 }
+
 -(ConnectedDevice *)getNewDeviceWithType:(NSInteger)type{
     if(type == 1){
         return  [IbridgeBleApi sharedInstance];
@@ -194,10 +181,11 @@
         return [FscBleApi sharedInstance];
     }
     if(type == 3){
-        return [applebleApi sharedInstance];
+        return [AppleBle sharedInstance];
     }
-    return [applebleApi sharedInstance];
+    return [AppleBle sharedInstance];
 }
+
 -(NSString *)getServiceUUIDString:(CBPeripheral *)peripheral{
     NSString *serviceUUIDString = @"";
     for (CBService *service in peripheral.services) {
@@ -288,6 +276,7 @@
         cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"cell"];
     }
     CBPeripheral *peripheral = self.dataSource[indexPath.row];
+    cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     cell.textLabel.text = peripheral.name;
     cell.textLabel.textColor = UIColor.redColor;
     cell.detailTextLabel.text = [NSString stringWithFormat:@"%@", peripheral.identifier];
@@ -301,42 +290,29 @@
     self.currentPeripheral = self.dataSource[indexPath.row];
     [self.device stopScanPrinters];
     [self.device disconnect];
-    [self selectArgType];
-//    [self.device connect:peripheral];
+    [self selectArgType:^{
+        [MBProgressHUD showHUDAddedTo:self.view animated:YES];
+        [self.device connect:self.currentPeripheral];
+    }];
 }
--(void)selectArgType{
-    UIAlertController *alertController =  [UIAlertController alertControllerWithTitle:@"请先选择指令类型" message:@"alertVCMessage" preferredStyle:UIAlertControllerStyleAlert];
+-(void)selectArgType:(void(^)(void))callBack {
+    UIAlertController *alertController =  [UIAlertController alertControllerWithTitle:NSLocalizedString(@"select.instruction.type", nil) message:@"alertVCMessage" preferredStyle:UIAlertControllerStyleAlert];
     UIAlertAction* actionDefault = [UIAlertAction actionWithTitle:@"CPCL" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        [self selectCPCL];
+        self.commandType = CPCL;
+        if(callBack) callBack();
     }];
     UIAlertAction* actionDestructive = [UIAlertAction actionWithTitle:@"TSPL" style:UIAlertActionStyleDestructive handler:^(UIAlertAction * _Nonnull action) {
-        [self selectTSPL];
+        self.commandType = TSPL;
+        if(callBack) callBack();
     }];
     UIAlertAction* actionCancel = [UIAlertAction actionWithTitle:@"ESC" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-        [self selectESC];
+        self.commandType = ESC;
+        if(callBack) callBack();
     }];
     [alertController addAction:actionDefault];
     [alertController addAction:actionDestructive];
     [alertController addAction:actionCancel];
     [self presentViewController:alertController animated:YES completion:nil];
-}
--(void)selectESC{
-    self.selectedType = 1;
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-    [self.device connect:self.currentPeripheral];
-}
--(void)selectCPCL{
-    self.selectedType = 2;
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-//    self.device = [self getNewDeviceWithType:self.selectedType];
-    [self.device connect:self.currentPeripheral];
-    
-}
--(void)selectTSPL{
-    self.selectedType = 3;
-    [MBProgressHUD showHUDAddedTo:self.view animated:YES];
-//    self.device = [self getNewDeviceWithType:self.selectedType];
-    [self.device connect:self.currentPeripheral];
 }
 
 -(NSString *)dataToHex:(NSData *)data{
@@ -363,50 +339,7 @@
         return @"";
     }
 }
-- (void)encodeWithCoder:(nonnull NSCoder *)coder {
-   
-}
 
-- (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection {
- 
-}
-
-- (void)preferredContentSizeDidChangeForChildContentContainer:(nonnull id<UIContentContainer>)container {
-   
-}
-
-- (CGSize)sizeForChildContentContainer:(nonnull id<UIContentContainer>)container withParentContainerSize:(CGSize)parentSize {
-    CGSize size = CGSizeMake(parentSize.width, parentSize.height);
-    return size;
-}
-
-- (void)systemLayoutFittingSizeDidChangeForChildContentContainer:(nonnull id<UIContentContainer>)container {
-    
-}
-
-- (void)viewWillTransitionToSize:(CGSize)size withTransitionCoordinator:(nonnull id<UIViewControllerTransitionCoordinator>)coordinator {
-    
-}
-
-- (void)willTransitionToTraitCollection:(nonnull UITraitCollection *)newCollection withTransitionCoordinator:(nonnull id<UIViewControllerTransitionCoordinator>)coordinator {
-   
-}
-
-- (void)didUpdateFocusInContext:(nonnull UIFocusUpdateContext *)context withAnimationCoordinator:(nonnull UIFocusAnimationCoordinator *)coordinator {
-            
-}
-
-- (void)setNeedsFocusUpdate {
-    
-}
-
-- (BOOL)shouldUpdateFocusInContext:(nonnull UIFocusUpdateContext *)context {
-    return YES;
-}
-
-- (void)updateFocusIfNeeded {
-    
-}
 -(NSMutableArray *)allDataSource{
     if(!_allDataSource){
         _allDataSource = [NSMutableArray new];

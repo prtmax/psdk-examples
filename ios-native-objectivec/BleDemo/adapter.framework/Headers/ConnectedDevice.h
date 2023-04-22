@@ -11,6 +11,7 @@
 #import <adapter/ReadOptions.h>
 #import <adapter/IPRTBlueToothBaseDef.h>
 #import <adapter/WroteReporter.h>
+
 NS_ASSUME_NONNULL_BEGIN
 typedef enum _printResult {
     printResultSuccessful,//打印成功
@@ -35,19 +36,20 @@ typedef enum _printStatus{
  * 若打印最后发送了【printerPosition】则打印成功后会收到OK，不成功收到RE
  * 若打印最后未发送【printerPosition】则发送成功后会收到0xAA，不成功无返回
  */
-- (void)bleDataReceived:(nullable NSData *)revData;
+- (void)bleDataReceived:(NSData *)revData;
 /**
  * 搜索到打印机设备
  * @param peripheral  CBCentralManager通过扫描、连接的外围设备
  * @param RSSI  设备信号强度
  */
-- (void)bleDidDiscoverDevies: (CBPeripheral *)peripheral  RSSI:(nullable NSNumber *)RSSI;
+- (void)bleDidDiscoverDevies:(CBPeripheral *)peripheral RSSI:(nullable NSNumber *)RSSI;
 
 /**
  * 打印机连接成功
  * @param peripheral  CBCentralManager通过扫描、连接的外围设备
  */
 - (void)bleDidConnectPeripheral:(CBPeripheral *)peripheral;
+
 @optional
 /**
  *打印结束回调
@@ -150,12 +152,31 @@ typedef enum _printStatus{
 - (void)didStart:(BOOL)result;
 
 @end
+
 @interface ConnectedDevice : NSObject
+
 @property (nonatomic,assign)_Nullable id<ConnectedDeviceDelegate> delegate;
+/**
+ * 获取设备名称
+ */
 -(NSString *)deviceName;
+/**
+ * 写入数据
+ * @param data 数据
+ */
 -(void)write:(NSData *)data;
+/**
+ * 读取数据
+ * @param options options
+ */
 -(void)read:(ReadOptions *)options ;
+/**
+ * 获取连接状态
+ */
 -(ConnectionState)connectionState;
+/**
+ * 获取实例
+ */
 + (ConnectedDevice *)sharedInstance;
 /**
  * 开始扫描打印机设备
@@ -167,19 +188,25 @@ typedef enum _printStatus{
 -(void)stopScanPrinters;
 /**
  * 连接设备
+ * @param peripheral 外设
  */
 - (void)connect:(CBPeripheral*)peripheral;
 /**
  * 断开连接
+ * @param peripheral 外设
  */
 - (void)disconnect:(CBPeripheral*)peripheral;
 - (void)disconnect;
 /**
  * 启动服务
+ * @param serviceUUIDString 服务 uuid
+ * @param peripheral 外设
  */
 - (BOOL)start:(NSString *)serviceUUIDString on:(CBPeripheral *)peripheral;
 -(NSString *)getNowTimeTimestamp;
+
 @end
+
 @interface NoneConnectedDevice : ConnectedDevice
 
 @end

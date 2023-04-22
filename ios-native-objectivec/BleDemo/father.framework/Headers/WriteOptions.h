@@ -8,10 +8,13 @@
 #import <Foundation/Foundation.h>
 #import "IDataWriteCallback.h"
 #import "CallbackData.h"
+
 typedef void (^callbackData)(CallbackData *datawrite);
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface WriteOptions : NSObject
+
 @property (nonatomic , readonly) WriteOptions * (^enableChunkWrite)(BOOL isEnableChunkWrite);
 @property (nonatomic , readonly) WriteOptions * (^chunkSize)(int chunkSize);
 @property (nonatomic , readonly) WriteOptions * (^callback)(IDataWriteCallback *cback);
@@ -19,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 -(BOOL)getEnableChunkWrite;
 -(int)getChunkSize;
 -(IDataWriteCallback *)getCallback;
+
 @end
 
 NS_ASSUME_NONNULL_END

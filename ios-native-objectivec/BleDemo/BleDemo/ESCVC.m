@@ -27,8 +27,7 @@
     [super viewDidLoad];
     _lifeCycle = [[Lifecycle alloc]init];
     _lifeCycle.connectedDevice(self.device);
-    self.titleStr = @"ESC";
-    _basicESC = [[BasicESC alloc]init];
+    _basicESC = [[BasicESC alloc] init];
     _basicESC.BasicESC(_lifeCycle, ESCPrinter_GENERIC);
     __weak typeof (self) weakSelf = self;
 //    _basicESC.read = ^(NSData * _Nonnull revData, NSError * _Nullable error) {
@@ -54,26 +53,26 @@
     _basicESC.bleDidConnectPeripheral = ^(CBPeripheral * _Nonnull peripheral) {
         __strong typeof (weakSelf) strongSelf = weakSelf;
         [strongSelf.device start:@"FF00" on:peripheral];
-        strongSelf.labStatus.text = [NSString stringWithFormat:@"连接状态：%@ 连接成功",peripheral.name];
+        strongSelf.labStatus.text = [NSString stringWithFormat:NSLocalizedString(@"connect.status.succeed:%@", nil),peripheral.name];
     };
     _basicESC.bleDidDisconnectPeripheral = ^(CBPeripheral * _Nonnull peripheral, NSError * _Nonnull error) {__strong typeof (weakSelf) strongSelf = weakSelf;
-        strongSelf.labStatus.text = [NSString stringWithFormat:@"连接状态：%@ 连接断开",peripheral.name];
+        strongSelf.labStatus.text = [NSString stringWithFormat:NSLocalizedString(@"connect.status.disconnected:%@", nil) ,peripheral.name];
     };
     _basicESC.bleDidFailToConnectPeripheral = ^(CBPeripheral * _Nonnull peripheral, NSError * _Nonnull error) {
         __strong typeof (weakSelf) strongSelf = weakSelf;
-            strongSelf.labStatus.text = [NSString stringWithFormat:@"连接状态：%@ 连接失败",peripheral.name];
+            strongSelf.labStatus.text = [NSString stringWithFormat:NSLocalizedString(@"connect.status.failed:%@", nil),peripheral.name];
     };
     _basicESC.didStart = ^(BOOL result) {
         __strong typeof (weakSelf) strongSelf = weakSelf;
         if(!result){
-            strongSelf.labStatus.text = [NSString stringWithFormat:@"连接状态：%@ 打印机开启失败",strongSelf.peripheral.name];
+            strongSelf.labStatus.text = [NSString stringWithFormat:NSLocalizedString(@"connect.status.turn_on:%@", nil),strongSelf.peripheral.name];
         }
     };
-    [self.contentView addSubview:self.tfNum];
+    [self.view addSubview:self.tfNum];
     _buttonView = [[ESCButtonView alloc]init];
-    [self.contentView addSubview:_buttonView];
+    [self.view addSubview:_buttonView];
     [_buttonView mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.right.mas_equalTo(self.contentView);
+        make.left.right.mas_equalTo(self.view);
         make.top.mas_equalTo(self.tfNum.mas_bottom).mas_offset(20);
         make.height.mas_equalTo(350);
     }];
@@ -144,21 +143,21 @@
     };
   
     _labResult = [[UILabel alloc]init];
-    _labResult.font = [UIFont systemFontOfSize:14];
+    _labResult.font = [UIFont systemFontOfSize:18];
     _labResult.backgroundColor = UIColor.grayColor;
-    _labResult.textColor = UIColor.orangeColor;
+    _labResult.textColor = UIColor.redColor;
     _labResult.numberOfLines = 0;
-    [self.contentView addSubview:_labResult];
+    [self.view addSubview:_labResult];
     [_labResult mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.right.mas_equalTo(self.contentView);
+        make.left.right.mas_equalTo(self.view);
         make.top.mas_equalTo(_buttonView.mas_bottom);
-        make.height.mas_equalTo(50);
+        make.height.mas_equalTo(60);
     }];
-    [self.contentView addSubview:self.labStatus];
-    self.labStatus.text = [NSString stringWithFormat:@"连接状态：%@ 连接成功",self.peripheral.name];
+    [self.view addSubview:self.labStatus];
+    self.labStatus.text = [NSString stringWithFormat:NSLocalizedString(@"connect.status.succeed:%@", nil),self.peripheral.name];
     [self.labStatus mas_makeConstraints:^(MASConstraintMaker *make) {
-        make.left.right.mas_equalTo(self.contentView);
-        make.bottom.mas_equalTo(self.contentView).mas_offset(-[UIDevice p_safeDistanceBottom]);
+        make.left.right.mas_equalTo(self.view);
+        make.bottom.mas_equalTo(self.view).mas_offset(-[UIDevice p_safeDistanceBottom]);
         make.height.mas_equalTo(44);
     }];
     UITapGestureRecognizer *taprg = [[UITapGestureRecognizer alloc]initWithTarget:self action:@selector(endEditingAction)];
@@ -169,19 +168,32 @@
     [self.view endEditing:YES];
 }
 -(void)readData:(NSData *)revData{
-    NSString *text = @"";
+    if(revData == nil) return;
+    NSString *text = [NSString string];
     Byte *revByte = (Byte *)[revData bytes];
-    if(_searchType == BTNAME){
-        text = [NSString stringWithFormat:@"蓝牙名称: %@",  [self hex2string:revData]];}
-    if(_searchType == PRINTSTATUS) {
-        text = [NSString stringWithFormat:@"打印机状态: %hhu",  revByte[0]];}
-    if(_searchType == BATTERYVOL) {
-        text = [NSString stringWithFormat:@"电池电量: %hhu ",  revByte[1]];}
-    if(_searchType == MAC) {text = [NSString stringWithFormat:@"蓝牙MAC地址: %@",  [self dataToHex:revData]];}
-    if(_searchType == BTVERSION) {text = [NSString stringWithFormat:@"蓝牙固件版本: %@",  [self hex2string:revData]];}
-    if(_searchType == PRINTERVERSION) {text = [NSString stringWithFormat:@"打印机固件版本: %@",  [self hex2string:revData]];}
-    if(_searchType == PRINTERSN) {text = [NSString stringWithFormat:@"打印机SN号: %@",  [self hex2string:revData]];}
-    if(_searchType == PRINTERMODEL) {text = [NSString stringWithFormat:@"打印机型号: %@",  [self hex2string:revData]];}
+    switch (_searchType) {
+        case BTNAME:
+            text = [NSString stringWithFormat:@"%@: %@",NSLocalizedString(@"name.bluetooth", nil) , [self hex2string:revData]];
+            break;
+        case PRINTSTATUS:
+            text = [NSString stringWithFormat:@"%@: %hhu", NSLocalizedString(@"status.printer", nil), revByte[0]];
+        case BATTERYVOL:
+            text = [NSString stringWithFormat:@"%@: %hhu ",NSLocalizedString(@"battery.level", nil) , revByte[1]];
+        case MAC:
+            text = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"MAC.address.bluetooth", nil), [self dataToHex:revData]];
+        case BTVERSION:
+            text = [NSString stringWithFormat:@"%@: %@", NSLocalizedString(@"version.bluetooth_firmware", nil), [self hex2string:revData]];
+        case PRINTERVERSION:
+            text = [NSString stringWithFormat:@"%@: %@",NSLocalizedString(@"version.printer_firmware", nil),  [self hex2string:revData]];
+        case PRINTERSN:
+            text = [NSString stringWithFormat:@"%@: %@",NSLocalizedString(@"SN.printer", nil) , [self hex2string:revData]];
+        case PRINTERMODEL:
+            text = [NSString stringWithFormat:@"%@: %@",NSLocalizedString(@"model.printer", nil) , [self hex2string:revData]];
+            
+        default:
+            break;
+    }
+    
     _labResult.text = text;
 }
 -(void)printAction{
@@ -282,11 +294,12 @@
     [_lock unlock];
 }
 -(void)printContinuousPaperPrintingAction{
-    
+   
     for (int i = 0; i<self.totalCount; i++) {
         [_lock lock];
-        EImage *arg = [[EImage alloc]init].image([UIImage imageNamed:@"logo2"]).width(0).height(0);
+        EImage *arg = [[EImage alloc]init].image([UIImage imageNamed:@"dkl"]).width(0).height(0).mode(NORMAL).reverse(false).compress(false);
         _basicESC.wakeup().lineDot(1).enable().image(arg).lineDot(1).write();
+        NSLog(@"-----:_---:%@",[[_basicESC command]hex]);
         _basicESC.stopJob().write();
         [_lock unlock];}
 }
@@ -340,7 +353,7 @@
         _tfNum.keyboardType = UIKeyboardTypeNumberPad;
         UIView *leftView =[[UIView alloc]initWithFrame:CGRectMake(0, 0, 90, 44)];
         UILabel *lab = [[UILabel alloc]initWithFrame:CGRectMake(0, 0, 70, 44)];
-        lab.text = @"样单数";
+        lab.text = NSLocalizedString(@"sample.number", nil);
         lab.textColor = UIColor.blackColor;
         lab.font = [UIFont systemFontOfSize:14];
         lab.textAlignment = NSTextAlignmentRight;

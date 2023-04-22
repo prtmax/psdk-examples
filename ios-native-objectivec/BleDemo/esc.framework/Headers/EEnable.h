@@ -9,6 +9,9 @@
 #import <father/BinaryCommand.h>
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 使能打印机
+ */
 @interface EEnable : OnlyBinaryHeaderArg
 
 @end

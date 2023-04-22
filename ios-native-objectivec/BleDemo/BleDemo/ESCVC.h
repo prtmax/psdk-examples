@@ -74,6 +74,7 @@ typedef enum {
     THICKNESS
 } SEARCHTYPE;
 @interface ESCVC : BaseVC
+
 @end
 
 NS_ASSUME_NONNULL_END

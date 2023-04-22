@@ -9,6 +9,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 获取版本
+ */
 @interface TVersion : OnlyTextHeaderArg
 
 @end

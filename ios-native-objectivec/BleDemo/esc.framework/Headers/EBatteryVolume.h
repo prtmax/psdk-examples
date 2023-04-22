@@ -10,6 +10,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 查询打印机电池电压  电压(返回百分比)
+ */
 @interface EBatteryVolume : OnlyBinaryHeaderArg
 
 @end
