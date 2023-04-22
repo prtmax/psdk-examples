@@ -7,6 +7,9 @@
 
 #import "BasicESCArg.h"
 
+/**
+ * 打印机浓度
+ */
 typedef enum : NSUInteger {
     thickness_L = 0,    // 0:低浓度
     thickness_M,        // 1:中浓度
@@ -15,9 +18,13 @@ typedef enum : NSUInteger {
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 设置打印机浓度(0-2)
+ */
 @interface EThickness : BasicESCArg
-@property (nonatomic , readonly) EThickness *(^thickness)(Thickness thick);
 
+/// 打印机浓度
+@property (nonatomic , readonly) EThickness *(^thickness)(Thickness thick);
 
 @end
 

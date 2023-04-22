@@ -9,6 +9,7 @@
 <script>
 import Taro, { getCurrentInstance } from '@tarojs/taro'
 import { Raw } from '@psdk/frame-father'
+import { EImage } from '@psdk/esc'
 
 definePageConfig({
   navigationBarTitleText: "打印机"
@@ -43,22 +44,45 @@ export default {
       console.log("this.printer.esc() ->", this.printer.esc())
     },
     async printImage() {
-      console.log("this.printer.esc() ->", this.printer.esc())
-      this.printer
+      console.log("printImage...")
+      // 把图片画到离屏 canvas 上
+      const canvas = Taro.createOffscreenCanvas({type: '2d', width: 717, height: 1040});
+      const ctx = canvas.getContext('2d');
+      // 创建一个图片
+      const image = canvas.createImage();
+      // 等待图片加载
+      await new Promise(resolve => {
+        image.onload = resolve;
+        image.src = "../../assets/waybill-usps.png"; // 要加载的图片 url, 可以是base64
+      });
+      ctx.drawImage(image, 0, 0, 717, 1040);
+      console.log("toDataURL - ", ctx.canvas.toDataURL()) // 输出的图片
+
+      var repo = await this.printer
       .esc()
-      .mac()
+      .enable()
+      .wakeup()
+      .image(
+        new EImage({
+          image: canvas,
+          compress: true
+        })
+      )
+      .lineDot({dot: 40})
+      .stopJob()
       .write()
 
-      const receive = await this.printer.esc().connectedDevice().read()
-      console.log("receive: ", receive)
+      console.log("repo: ", repo)
+      // const receive = await this.printer.esc().connectedDevice().read()
+      // console.log("receive: ", receive)
     }
   },
   created() {
     const deviceName = getCurrentInstance().router.params.deviceName
     Taro.setNavigationBarTitle({
       title: deviceName
-    }) 
-  }
+    })
+  },
 }
 </script>
 

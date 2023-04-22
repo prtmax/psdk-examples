@@ -8,8 +8,13 @@
 #import <tspl/BasicTSPLArg.h>
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 设置浓度
+ */
 @interface TDensity : BasicTSPLArg
-@property (nonatomic , readonly) TDensity *(^density)(int dens);//浓度
+
+/// 浓度值 （0~15）
+@property (nonatomic , readonly) TDensity *(^density)(int dens);
 
 @end
 

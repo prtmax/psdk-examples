@@ -9,6 +9,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 结束打印任务
+ */
 @interface EStopJob : OnlyBinaryHeaderArg
 
 @end

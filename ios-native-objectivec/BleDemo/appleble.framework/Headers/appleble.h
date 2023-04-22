@@ -1,18 +1,25 @@
 //
-//  appleble.h
+//  AppleBle.h
 //  appleble
 //
-//  Created by IPRT on 2022/11/28.
+//  Created by aiyin on 2023/4/17.
 //
 
-#import <Foundation/Foundation.h>
-#import <appleble/applebleApi.h>
-//! Project version number for appleble.
-FOUNDATION_EXPORT double applebleVersionNumber;
+#import <adapter/adapter.h>
 
-//! Project version string for appleble.
-FOUNDATION_EXPORT const unsigned char applebleVersionString[];
+@protocol AppleBleDelegate <NSObject>
 
-// In this header, you should import all the public headers of your framework using statements like #import <appleble/PublicHeader.h>
+@optional
 
 
+@end
+
+NS_ASSUME_NONNULL_BEGIN
+
+@interface AppleBle : ConnectedDevice
+
+//@property (nonatomic, weak, nullable) id <AppleBleDelegate> delegate;
+
+@end
+
+NS_ASSUME_NONNULL_END

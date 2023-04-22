@@ -9,6 +9,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 查询蓝牙固件版本
+ */
 @interface EVersion : OnlyBinaryHeaderArg
 
 @end

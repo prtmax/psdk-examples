@@ -17,7 +17,7 @@ typedef enum {
 @interface CommandClause : NSObject
 
 @property (nonatomic, assign) Type type;
-@property (nonatomic, assign) NSData *binary;
+@property (nonatomic, strong) NSData *binary;
 @property (nonatomic, strong) NSString *text;
 @property (nonatomic, assign) CFStringEncodings charset;
 //public

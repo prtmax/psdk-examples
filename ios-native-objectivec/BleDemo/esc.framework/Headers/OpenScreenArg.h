@@ -9,8 +9,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 开启／关闭屏幕
+ */
 @interface OpenScreenArg : OnlyBinaryHeaderArg
 
+/// isOpen YES:开启屏幕 NO:关闭屏幕
 @property (nonatomic, assign) BOOL isOpen;
 
 @end

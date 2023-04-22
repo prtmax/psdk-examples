@@ -9,6 +9,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 查询打印机状态
+ */
 @interface EState : OnlyBinaryHeaderArg
 
 @end

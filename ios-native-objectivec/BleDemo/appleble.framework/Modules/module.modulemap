@@ -1,5 +1,5 @@
 framework module appleble {
-  umbrella header "appleble.h"
+  umbrella header "AppleBle.h"
 
   export *
   module * { export * }

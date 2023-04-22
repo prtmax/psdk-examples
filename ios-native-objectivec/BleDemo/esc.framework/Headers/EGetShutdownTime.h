@@ -9,6 +9,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 获取关机时间
+ */
 @interface EGetShutdownTime : OnlyBinaryHeaderArg
 
 @end

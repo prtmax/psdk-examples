@@ -8,5 +8,5 @@
 #import <Foundation/Foundation.h>
 typedef NS_ENUM (NSUInteger , WriteControl){
     CONTINUE,
-     STOP
+    STOP
 };

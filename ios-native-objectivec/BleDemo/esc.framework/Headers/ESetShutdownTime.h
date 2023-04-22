@@ -9,7 +9,12 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 设置关机时间(单位：分钟，不接受小数)
+ */
 @interface ESetShutdownTime : BasicESCArg
+
+/// 关机时间
 @property (nonatomic , readonly) ESetShutdownTime *(^time)(int shuttime);
 
 @end

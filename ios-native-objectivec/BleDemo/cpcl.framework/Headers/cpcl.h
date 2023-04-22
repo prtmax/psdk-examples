@@ -13,7 +13,6 @@
 #import <cpcl/CFeed.h>
 #import <cpcl/CForm.h>
 #import <cpcl/CImage.h>
-#import <cpcl/CImagezg.h>
 #import <cpcl/CInverse.h>
 #import <cpcl/CLine.h>
 #import <cpcl/CMag.h>

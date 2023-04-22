@@ -9,7 +9,12 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @interface TCleanBmpFlash : BasicTSPLArg
+
+/**
+ * 索引
+ */
 @property (nonatomic , readonly) TCleanBmpFlash *(^index)(int ind);
+
 @end
 
 NS_ASSUME_NONNULL_END

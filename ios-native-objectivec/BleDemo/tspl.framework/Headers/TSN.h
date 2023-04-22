@@ -9,6 +9,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 打印机 SN 号
+ */
 @interface TSN : OnlyTextHeaderArg
 
 @end

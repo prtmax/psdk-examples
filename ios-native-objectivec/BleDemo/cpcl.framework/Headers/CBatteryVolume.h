@@ -9,6 +9,9 @@
 #import<Father/OnlyTextHeaderArg.h>
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 查询电量
+ */
 @interface CBatteryVolume : OnlyTextHeaderArg
 
 @end

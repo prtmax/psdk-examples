@@ -9,6 +9,9 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 状态
+ */
 @interface CStatus : OnlyBinaryHeaderArg
 
 @end

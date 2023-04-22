@@ -12,14 +12,18 @@
 #import <father/PsdkConst.h>
 #import <father/WriteOptions.h>
 #import <father/Raw.h>
+
 NS_ASSUME_NONNULL_BEGIN
+
 typedef void (^DiscoverBle)(CBPeripheral* peripheral, NSNumber *RSSI);
 typedef void (^DidConnectPeripheral)(CBPeripheral* peripheral);
 typedef void (^DidConnectPeripheral)(CBPeripheral* peripheral);
 typedef void (^DidFailToConnectPeripheral)(CBPeripheral* peripheral,NSError *error);
 typedef void (^DidDisconnectPeripheral)(CBPeripheral* peripheral,NSError *error);
 typedef void (^DidStart)(BOOL result);
+
 @interface PSDK : NSObject
+
 -(ConnectedDevice *)connectedDevice;
 -(NSString *)sversion;
 -(NSArray *)authors;
@@ -50,6 +54,7 @@ typedef void (^DidStart)(BOOL result);
 -(void)read:(ReadOptions *)options;
 //@property(nonatomic , readonly)PSDK *(^line)(LineArg *arg);
 //@property(nonatomic , readonly)PSDK *(^batteryVolume)(BatteryArg * arg);
+
 @end
 
 NS_ASSUME_NONNULL_END

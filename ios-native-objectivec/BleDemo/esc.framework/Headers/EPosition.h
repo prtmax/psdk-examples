@@ -9,6 +9,9 @@
 #import <father/BinaryCommand.h>
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 打印定位
+ */
 @interface EPosition : OnlyBinaryHeaderArg
 
 @end

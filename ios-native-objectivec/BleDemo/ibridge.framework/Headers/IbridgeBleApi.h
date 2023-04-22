@@ -8,11 +8,12 @@
 #import <Foundation/Foundation.h>
 #import <adapter/ConnectedDevice.h>
 
-
 NS_ASSUME_NONNULL_BEGIN
+
 @protocol IbridgeBleApiInterfaceDelegate <ConnectedDeviceDelegate>
 
 @end
+
 @interface IbridgeBleApi : ConnectedDevice
 
 @property (nonatomic,assign)_Nullable id<IbridgeBleApiInterfaceDelegate> delegate;

@@ -9,6 +9,9 @@
 #import <father/BinaryCommand.h>
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * 查询蓝牙名称
+ */
 @interface EName : OnlyBinaryHeaderArg
 
 @end

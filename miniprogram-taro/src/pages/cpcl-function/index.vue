@@ -83,24 +83,24 @@ export default {
     async printImage() {
       console.log("printImage...", this.printer.cpcl())
       // 把图片画到离屏 canvas 上
-      const canvas = Taro.createOffscreenCanvas({type: '2d', width: 20, height: 35});
+      const canvas = Taro.createOffscreenCanvas({type: '2d', width: 717, height: 1040});
       const ctx = canvas.getContext('2d');
       // 创建一个图片
       const image = canvas.createImage();
       // 等待图片加载
       await new Promise(resolve => {
         image.onload = resolve;
-        image.src = "../../assets/F.png"; // 要加载的图片 url, 可以是base64
+        image.src = "../../assets/waybill-usps.png"; // 要加载的图片 url, 可以是base64
       });
-      ctx.drawImage(image, 0, 0, 20, 35);
+      ctx.drawImage(image, 0, 0, 717, 1040);
       console.log("toDataURL - ", ctx.canvas.toDataURL()) // 输出的图片
       this.printer
       .cpcl()
-      .page(new CPage({width: 75, height:130 }))
+      .page(new CPage({width: 608, height: 1040 }))
       .image(
         new CImage({
-          x: 80,
-          y: 20,
+          x: 0,
+          y: 0,
           compress: true,
           image: canvas
         })

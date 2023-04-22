@@ -1,14 +1,14 @@
 <template>
   <view class="container">
-    <nut-button type="info"  
-                class="searchBtn" 
+    <nut-button type="info"
+                class="searchBtn"
                 @click="discoveryDevices">
       搜索
     </nut-button>
 
     <nut-cell-group title="打印机列表">
-      <nut-cell v-for="device in source.devices" 
-                :key="device.deviceId"         
+      <nut-cell v-for="device in source.devices"
+                :key="device.deviceId"
                 :title="device.name"
                 @click="connectDevice(device)">
         <template v-slot:link>
@@ -17,13 +17,13 @@
       </nut-cell>
     </nut-cell-group>
 
-    <nut-popup position="bottom" 
-              closeable round 
-              :style="{ height: '30%' }" 
+    <nut-popup position="bottom"
+              closeable round
+              :style="{ height: '30%' }"
               v-model:visible="showRound">
       <div>
         <h2 class="popup-title">请选择打印机指令</h2>
-        <button v-for="(item, index) in cmds" 
+        <button v-for="(item, index) in cmds"
                 :key="index"
                 @click="cmdBtnClick(item)">
           {{ item }}
@@ -86,7 +86,7 @@ export default {
         case "esc":
           Taro.navigateTo({ url: `/pages/esc-function/index?deviceName=${deviceName}` })
           break;
-      
+
         default:
           break;
       }
@@ -105,6 +105,7 @@ export default {
       }
     },
     async connectDevice(device) {
+      await this.bluetooth.stopDiscovery()
       if(this.connectDevice != null) {
         await this.bluetooth.connectedDevice.disconnect()
       }
@@ -120,7 +121,7 @@ export default {
             icon: "error",
           })
         }
-      
+
         Taro.showToast({
           title: '连接成功!'
         })
@@ -128,11 +129,11 @@ export default {
         this.connectDevice = connectDevice
         console.log("连接设备: ", this.bluetooth.connectedDevice)
 
-      } catch (error) { 
+      } catch (error) {
         console.log("connect error: ", error)
       }
     }
-  }, 
+  },
   computed: {
     deviceName() {
       return '未连接打印机';
