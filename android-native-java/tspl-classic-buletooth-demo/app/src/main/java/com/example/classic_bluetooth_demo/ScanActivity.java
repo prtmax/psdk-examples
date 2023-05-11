@@ -7,7 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Process;
-import android.provider.Settings;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -17,14 +16,13 @@ import android.view.ViewGroup;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import com.printer.psdk.device.bluetooth.classic.BluetoothStateListen;
-import com.printer.psdk.device.bluetooth.classic.ClassicBluetooth;
-import com.printer.psdk.device.bluetooth.classic.DiscoveryListen;
+import com.printer.psdk.device.bluetooth.Bluetooth;
+import com.printer.psdk.device.bluetooth.BluetoothStateListen;
+import com.printer.psdk.device.bluetooth.DiscoveryListen;
 
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 
 public class ScanActivity extends AppCompatActivity {
@@ -36,39 +34,7 @@ public class ScanActivity extends AppCompatActivity {
     private final List<Device> devList = new ArrayList<>();
     private final List<Device> searchList = new ArrayList<>();
 
-    public static class Device {
-        BluetoothDevice device;
-        int rssi;
-        String name;
 
-        Device(BluetoothDevice device, int rssi) {
-            this.device = device;
-            this.rssi = rssi;
-            name = device.getName();
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) return true;
-            if (!(o instanceof Device)) return false;
-            Device device1 = (Device) o;
-            return device.equals(device1.device);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(device);
-        }
-
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -77,9 +43,9 @@ public class ScanActivity extends AppCompatActivity {
         initViews();
 
 
-        ClassicBluetooth.getInstance().initialize(getApplication());
-        ClassicBluetooth.getInstance().setDiscoveryListener(discoveryListener);
-        ClassicBluetooth.getInstance().setBluetoothStateListener(bluetoothStateListen);
+        Bluetooth.getInstance().initialize(getApplication());
+        Bluetooth.getInstance().setDiscoveryListener(discoveryListener);
+        Bluetooth.getInstance().setBluetoothStateListener(bluetoothStateListen);
     }
 
     private void initViews() {
@@ -98,12 +64,12 @@ public class ScanActivity extends AppCompatActivity {
         tvScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ClassicBluetooth.getInstance().isInitialized()) {
+                if (Bluetooth.getInstance().isInitialized()) {
                     if (tvScan.getText().toString().equals("扫描")) {
                         doStartDiscovery();
 
                     } else {
-                        ClassicBluetooth.getInstance().stopDiscovery();
+                        Bluetooth.getInstance().stopDiscovery();
                         tvScan.setText("扫描");
                     }
                 }
@@ -200,8 +166,8 @@ public class ScanActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (ClassicBluetooth.getInstance().isInitialized()) {
-            if (ClassicBluetooth.getInstance().isEnabledBluetooth()) {
+        if (Bluetooth.getInstance().isInitialized()) {
+            if (Bluetooth.getInstance().isEnabledBluetooth()) {
                 doStartDiscovery();
             } else {
                 startActivity(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
@@ -212,8 +178,8 @@ public class ScanActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (ClassicBluetooth.getInstance().isInitialized()) {
-            ClassicBluetooth.getInstance().stopDiscovery();
+        if (Bluetooth.getInstance().isInitialized()) {
+            Bluetooth.getInstance().stopDiscovery();
         }
     }
 
@@ -222,7 +188,7 @@ public class ScanActivity extends AppCompatActivity {
         devList.clear();
         listAdapter.notifyDataSetChanged();
         tvEmpty.setVisibility(View.VISIBLE);
-        ClassicBluetooth.getInstance().startDiscovery();
+        Bluetooth.getInstance().startDiscovery();
         tvScan.setText("停止扫描");
     }
 

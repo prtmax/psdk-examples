@@ -19,8 +19,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import androidx.core.app.ActivityCompat;
-import com.printer.psdk.device.bluetooth.classic.ClassicBluetooth;
-import com.printer.psdk.device.bluetooth.classic.DiscoveryListen;
+import com.printer.psdk.device.bluetooth.Bluetooth;
+import com.printer.psdk.device.bluetooth.DiscoveryListen;
 
 
 import java.util.ArrayList;
@@ -44,8 +44,8 @@ public class ScanActivity extends Activity {
         setContentView(R.layout.activity_scan);
         initViews();
 
-        ClassicBluetooth.getInstance().setDiscoveryListener(discoveryListener);
-        ClassicBluetooth.getInstance().initialize(getApplication());
+        Bluetooth.getInstance().setDiscoveryListener(discoveryListener);
+        Bluetooth.getInstance().initialize(getApplication());
         checkPermissions();
     }
 
@@ -132,12 +132,12 @@ public class ScanActivity extends Activity {
         tvScan.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (ClassicBluetooth.getInstance().isInitialized()) {
+                if (Bluetooth.getInstance().isInitialized()) {
                     if (tvScan.getText().toString().equals("扫描")) {
                         doStartDiscovery();
 
                     } else {
-                        ClassicBluetooth.getInstance().stopDiscovery();
+                        Bluetooth.getInstance().stopDiscovery();
                         tvScan.setText("扫描");
                     }
                 }
@@ -228,8 +228,8 @@ public class ScanActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (ClassicBluetooth.getInstance().isInitialized()) {
-            if (ClassicBluetooth.getInstance().isEnabledBluetooth()) {
+        if (Bluetooth.getInstance().isInitialized()) {
+            if (Bluetooth.getInstance().isEnabledBluetooth()) {
                 doStartDiscovery();
             } else {
                 startActivity(new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE));
@@ -240,8 +240,8 @@ public class ScanActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (ClassicBluetooth.getInstance().isInitialized()) {
-            ClassicBluetooth.getInstance().stopDiscovery();
+        if (Bluetooth.getInstance().isInitialized()) {
+            Bluetooth.getInstance().stopDiscovery();
         }
     }
 
@@ -250,7 +250,7 @@ public class ScanActivity extends Activity {
         devList.clear();
         listAdapter.notifyDataSetChanged();
         tvEmpty.setVisibility(View.VISIBLE);
-        ClassicBluetooth.getInstance().startDiscovery();
+        Bluetooth.getInstance().startDiscovery();
         tvScan.setText("停止扫描");
     }
 

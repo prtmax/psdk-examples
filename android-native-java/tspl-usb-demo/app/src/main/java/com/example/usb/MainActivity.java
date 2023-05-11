@@ -2,7 +2,6 @@ package com.example.usb;
 
 
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
 import android.os.Message;
@@ -10,23 +9,18 @@ import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 
 
-import com.printer.psdk.device.adapter.ConnectedDevice;
 import com.printer.psdk.device.adapter.ReadOptions;
 import com.printer.psdk.device.adapter.types.WroteReporter;
 
 import com.printer.psdk.device.usb.USB;
 import com.printer.psdk.device.usb.USBConnectedDevice;
 import com.printer.psdk.frame.father.PSDK;
-import com.printer.psdk.frame.father.listener.DataListener;
-import com.printer.psdk.frame.father.listener.ListenAction;
 import com.printer.psdk.tspl.GenericTSPL;
 import com.printer.psdk.tspl.TSPL;
 import com.printer.psdk.tspl.args.*;
-import com.printer.psdk.tspl.mark.*;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -34,230 +28,225 @@ import java.io.InputStream;
 
 
 public class MainActivity extends AppCompatActivity {
-    private GenericTSPL tspl;
-    private USB usb;
-    private Button switch_Usb;
-    private Button print1;
-    private Button print2;
-    private Button print3;
-    private Button print4;
-    private Button print5;
-    private Button status_btn;
-    private Handler myHandler = new MyHandler();
-    private boolean isOpen = false;
+  private GenericTSPL tspl;
+  private USB usb;
+  private Button switch_Usb;
+  private Button print1;
+  private Button print2;
+  private Button print3;
+  private Button print4;
+  private Button print5;
+  private Button status_btn;
+  private CheckBox cb_compress;
+  private CheckBox cb_cut;
+  private CheckBox cb_position;
+  private Handler myHandler = new MyHandler();
+  private boolean isOpen = false;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        switch_Usb = (Button) findViewById(R.id.switch_usb);
-        print1 = (Button) findViewById(R.id.print1);
-        print2 = (Button) findViewById(R.id.print2);
-        print3 = (Button) findViewById(R.id.print3);
-        print4 = (Button) findViewById(R.id.print4);
-        print5 = (Button) findViewById(R.id.print5);
-        status_btn = (Button) findViewById(R.id.status);
-        BluetoothDevice device = getIntent().getParcelableExtra("device");
-        usb = new USB(this, myHandler);
-        usb.register_USB();
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_main);
+    switch_Usb = (Button) findViewById(R.id.switch_usb);
+    print1 = (Button) findViewById(R.id.print1);
+    print2 = (Button) findViewById(R.id.print2);
+    print3 = (Button) findViewById(R.id.print3);
+    print4 = (Button) findViewById(R.id.print4);
+    print5 = (Button) findViewById(R.id.print5);
+    status_btn = (Button) findViewById(R.id.status);
+    cb_compress = (CheckBox) findViewById(R.id.cb_compress);
+    cb_cut = (CheckBox) findViewById(R.id.cb_cut);
+    cb_position = (CheckBox) findViewById(R.id.cb_position);
+    usb = new USB(this, myHandler);
+    usb.register_USB();
 
 
-        switch_Usb.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isOpen) {
-                    usb.closeUsb();
-                    switch_Usb.setText("打开USB");
-                    isOpen = false;
-                } else {
-                    USBConnectedDevice usbConnectedDevice = usb.openUsb();
-                    if (usbConnectedDevice != null) {
-                        tspl = TSPL.generic(usbConnectedDevice);
-                        switch_Usb.setText("关闭USB");
-                        isOpen = true;
-                    } else {
-                        showMessage("打开失败，检查是否有可用的USB端口");
-                    }
+    switch_Usb.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (isOpen) {
+          usb.closeUsb();
+          switch_Usb.setText("打开USB");
+          isOpen = false;
+        } else {
+          USBConnectedDevice usbConnectedDevice = usb.openUsb();
+          if (usbConnectedDevice != null) {
+            tspl = TSPL.generic(usbConnectedDevice);
+            switch_Usb.setText("关闭USB");
+            isOpen = true;
+          } else {
+            showMessage("打开失败，检查是否有可用的USB端口");
+          }
 
-                }
-            }
+        }
+      }
 
-        });
-        print1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isOpen) {
-                    showMessage("未打开USB端口");
-                    return;
-                }
-                InputStream is = MainActivity.this.getResources().openRawResource(getImageID("p" + 1));
-                BitmapDrawable bmpDraw = new BitmapDrawable(is);
-                Bitmap rawBitmap = bmpDraw.getBitmap();
-                rawBitmap = Bitmap.createScaledBitmap(rawBitmap, 800, 1200, true);
-                GenericTSPL _gtspl = tspl.clear().page(TPage.builder().width(100).height(150).build())
-                        .direction(
-                                TDirection.builder()
-                                        .direction(TDirection.Direction.UP_OUT)
-                                        .mirror(TDirection.Mirror.NO_MIRROR)
-                                        .build()
-                        )
-                        .gap(true)
-                        .cut(true)
-                        .cls()
-                        .image(
-                                TImage.builder()
-                                        .x(0)
-                                        .y(0)
-                                        .width(rawBitmap.getWidth())
-                                        .height(rawBitmap.getHeight())
-                                        .image(bitmap2Bytes(rawBitmap))
-                                        .compress(true)
-                                        .build()
-                        )
-                        .print(1);
-                safeWrite(_gtspl);
-            }
-        });
-        print2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isOpen) {
-                    showMessage("未打开USB端口");
-                    return;
-                }
-                InputStream is = MainActivity.this.getResources().openRawResource(getImageID("p" + 2));
-                BitmapDrawable bmpDraw = new BitmapDrawable(is);
-                Bitmap rawBitmap = bmpDraw.getBitmap();
-                rawBitmap = Bitmap.createScaledBitmap(rawBitmap, 800, 1200, true);
-                GenericTSPL _gtspl = tspl.clear().page(TPage.builder().width(100).height(150).build())
-                        .direction(
-                                TDirection.builder()
-                                        .direction(TDirection.Direction.UP_OUT)
-                                        .mirror(TDirection.Mirror.NO_MIRROR)
-                                        .build()
-                        )
-                        .gap(true)
-                        .cut(true)
-                        .cls()
-                        .image(
-                                TImage.builder()
-                                        .x(0)
-                                        .y(0)
-                                        .width(rawBitmap.getWidth())
-                                        .height(rawBitmap.getHeight())
-                                        .image(bitmap2Bytes(rawBitmap))
-                                        .compress(true)
-                                        .build()
-                        )
-                        .print(1);
-                safeWrite(_gtspl);
-            }
-        });
-        print3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isOpen) {
-                    showMessage("未打开USB端口");
-                    return;
-                }
-                InputStream is = MainActivity.this.getResources().openRawResource(getImageID("p" + 3));
-                BitmapDrawable bmpDraw = new BitmapDrawable(is);
-                Bitmap rawBitmap = bmpDraw.getBitmap();
-                rawBitmap = Bitmap.createScaledBitmap(rawBitmap, 800, 1200, true);
-                GenericTSPL _gtspl = tspl.clear().page(TPage.builder().width(100).height(150).build())
-                        .direction(
-                                TDirection.builder()
-                                        .direction(TDirection.Direction.UP_OUT)
-                                        .mirror(TDirection.Mirror.NO_MIRROR)
-                                        .build()
-                        )
-                        .gap(true)
-                        .cut(true)
-                        .cls()
-                        .image(
-                                TImage.builder()
-                                        .x(0)
-                                        .y(0)
-                                        .width(rawBitmap.getWidth())
-                                        .height(rawBitmap.getHeight())
-                                        .image(bitmap2Bytes(rawBitmap))
-                                        .compress(true)
-                                        .build()
-                        )
-                        .print(1);
-                safeWrite(_gtspl);
-            }
-        });
-        print4.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isOpen) {
-                    showMessage("未打开USB端口");
-                    return;
-                }
-                InputStream is = MainActivity.this.getResources().openRawResource(getImageID("p" + 4));
-                BitmapDrawable bmpDraw = new BitmapDrawable(is);
-                Bitmap rawBitmap = bmpDraw.getBitmap();
-                rawBitmap = Bitmap.createScaledBitmap(rawBitmap, 800, 1200, true);
-                GenericTSPL _gtspl = tspl.clear().page(TPage.builder().width(100).height(150).build())
-                        .direction(
-                                TDirection.builder()
-                                        .direction(TDirection.Direction.UP_OUT)
-                                        .mirror(TDirection.Mirror.NO_MIRROR)
-                                        .build()
-                        )
-                        .gap(true)
-                        .cut(true)
-                        .cls()
-                        .image(
-                                TImage.builder()
-                                        .x(0)
-                                        .y(0)
-                                        .width(rawBitmap.getWidth())
-                                        .height(rawBitmap.getHeight())
-                                        .image(bitmap2Bytes(rawBitmap))
-                                        .compress(true)
-                                        .build()
-                        )
-                        .print(1);
-                safeWrite(_gtspl);
-            }
-        });
-        print5.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isOpen) {
-                    showMessage("未打开USB端口");
-                    return;
-                }
-                InputStream is = MainActivity.this.getResources().openRawResource(getImageID("p" + 5));
-                BitmapDrawable bmpDraw = new BitmapDrawable(is);
-                Bitmap rawBitmap = bmpDraw.getBitmap();
-                rawBitmap = Bitmap.createScaledBitmap(rawBitmap, 800, 1200, true);
-                GenericTSPL _gtspl = tspl.clear().page(TPage.builder().width(100).height(150).build())
-                        .direction(
-                                TDirection.builder()
-                                        .direction(TDirection.Direction.UP_OUT)
-                                        .mirror(TDirection.Mirror.NO_MIRROR)
-                                        .build()
-                        )
-                        .gap(true)
-                        .cut(true)
-                        .cls()
-                        .image(
-                                TImage.builder()
-                                        .x(0)
-                                        .y(0)
-                                        .width(rawBitmap.getWidth())
-                                        .height(rawBitmap.getHeight())
-                                        .image(bitmap2Bytes(rawBitmap))
-                                        .compress(true)
-                                        .build()
-                        )
-                        .print(1);
-                safeWrite(_gtspl);
-            }
-        });
+    });
+    print1.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (!isOpen) {
+          showMessage("未打开USB端口");
+          return;
+        }
+        InputStream is = MainActivity.this.getResources().openRawResource(getImageID("p" + 1));
+        BitmapDrawable bmpDraw = new BitmapDrawable(is);
+        Bitmap rawBitmap = bmpDraw.getBitmap();
+        rawBitmap = Bitmap.createScaledBitmap(rawBitmap, 800, 1200, true);
+        GenericTSPL _gtspl = tspl.clear().page(TPage.builder().width(100).height(150).build())
+          .direction(
+            TDirection.builder()
+              .direction(TDirection.Direction.UP_OUT)
+              .mirror(TDirection.Mirror.NO_MIRROR)
+              .build()
+          )
+          .gap(cb_position.isChecked())
+          .cut(cb_cut.isChecked())
+          .cls()
+          .image(
+            TImage.builder()
+              .x(0)
+              .y(0)
+              .image(bitmap2Bytes(rawBitmap))
+              .compress(cb_compress.isChecked())
+              .build()
+          )
+          .print(1);
+        safeWrite(_gtspl);
+      }
+    });
+    print2.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (!isOpen) {
+          showMessage("未打开USB端口");
+          return;
+        }
+        InputStream is = MainActivity.this.getResources().openRawResource(getImageID("p" + 2));
+        BitmapDrawable bmpDraw = new BitmapDrawable(is);
+        Bitmap rawBitmap = bmpDraw.getBitmap();
+        rawBitmap = Bitmap.createScaledBitmap(rawBitmap, 800, 1200, true);
+        GenericTSPL _gtspl = tspl.clear().page(TPage.builder().width(100).height(150).build())
+          .direction(
+            TDirection.builder()
+              .direction(TDirection.Direction.UP_OUT)
+              .mirror(TDirection.Mirror.NO_MIRROR)
+              .build()
+          )
+          .gap(cb_position.isChecked())
+          .cut(cb_cut.isChecked())
+          .cls()
+          .image(
+            TImage.builder()
+              .x(0)
+              .y(0)
+              .image(bitmap2Bytes(rawBitmap))
+              .compress(cb_compress.isChecked())
+              .build()
+          )
+          .print(1);
+        safeWrite(_gtspl);
+      }
+    });
+    print3.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (!isOpen) {
+          showMessage("未打开USB端口");
+          return;
+        }
+        InputStream is = MainActivity.this.getResources().openRawResource(getImageID("p" + 3));
+        BitmapDrawable bmpDraw = new BitmapDrawable(is);
+        Bitmap rawBitmap = bmpDraw.getBitmap();
+        rawBitmap = Bitmap.createScaledBitmap(rawBitmap, 800, 1200, true);
+        GenericTSPL _gtspl = tspl.clear().page(TPage.builder().width(100).height(150).build())
+          .direction(
+            TDirection.builder()
+              .direction(TDirection.Direction.UP_OUT)
+              .mirror(TDirection.Mirror.NO_MIRROR)
+              .build()
+          )
+          .gap(cb_position.isChecked())
+          .cut(cb_cut.isChecked())
+          .cls()
+          .image(
+            TImage.builder()
+              .x(0)
+              .y(0)
+              .image(bitmap2Bytes(rawBitmap))
+              .compress(cb_compress.isChecked())
+              .build()
+          )
+          .print(1);
+        safeWrite(_gtspl);
+      }
+    });
+    print4.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (!isOpen) {
+          showMessage("未打开USB端口");
+          return;
+        }
+        InputStream is = MainActivity.this.getResources().openRawResource(getImageID("p" + 4));
+        BitmapDrawable bmpDraw = new BitmapDrawable(is);
+        Bitmap rawBitmap = bmpDraw.getBitmap();
+        rawBitmap = Bitmap.createScaledBitmap(rawBitmap, 800, 1200, true);
+        GenericTSPL _gtspl = tspl.clear().page(TPage.builder().width(100).height(150).build())
+          .direction(
+            TDirection.builder()
+              .direction(TDirection.Direction.UP_OUT)
+              .mirror(TDirection.Mirror.NO_MIRROR)
+              .build()
+          )
+          .gap(cb_position.isChecked())
+          .cut(cb_cut.isChecked())
+          .cls()
+          .image(
+            TImage.builder()
+              .x(0)
+              .y(0)
+              .image(bitmap2Bytes(rawBitmap))
+              .compress(cb_compress.isChecked())
+              .build()
+          )
+          .print(1);
+        safeWrite(_gtspl);
+      }
+    });
+    print5.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (!isOpen) {
+          showMessage("未打开USB端口");
+          return;
+        }
+        InputStream is = MainActivity.this.getResources().openRawResource(getImageID("p" + 5));
+        BitmapDrawable bmpDraw = new BitmapDrawable(is);
+        Bitmap rawBitmap = bmpDraw.getBitmap();
+        rawBitmap = Bitmap.createScaledBitmap(rawBitmap, 800, 1200, true);
+        GenericTSPL _gtspl = tspl.clear().page(TPage.builder().width(100).height(150).build())
+          .direction(
+            TDirection.builder()
+              .direction(TDirection.Direction.UP_OUT)
+              .mirror(TDirection.Mirror.NO_MIRROR)
+              .build()
+          )
+          .gap(cb_position.isChecked())
+          .cut(cb_cut.isChecked())
+          .cls()
+          .image(
+            TImage.builder()
+              .x(0)
+              .y(0)
+              .image(bitmap2Bytes(rawBitmap))
+              .compress(cb_compress.isChecked())
+              .build()
+          )
+          .print(1);
+        safeWrite(_gtspl);
+      }
+    });
 //        print.setOnClickListener(new View.OnClickListener() {
 //            @Override
 //            public void onClick(View v) {
@@ -290,18 +279,18 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-        status_btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!isOpen) {
-                    showMessage("未打开USB端口");
-                    return;
-                }
-                GenericTSPL _gtspl = tspl.state();
-                String result = safeWriteAndRead(_gtspl);
-                showMessage(result);
-            }
-        });
+    status_btn.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (!isOpen) {
+          showMessage("未打开USB端口");
+          return;
+        }
+        GenericTSPL _gtspl = tspl.state();
+        String result = safeWriteAndRead(_gtspl);
+        showMessage(result);
+      }
+    });
 
 //        print.setOnClickListener(new View.OnClickListener() {
 //            @Override
@@ -343,39 +332,39 @@ public class MainActivity extends AppCompatActivity {
 //                safeWrite(_gtspl);
 //            }
 //        });
+  }
+
+  //第一个参数文件名称（不加后缀）， 第二个参数文件夹名称，第三个参数包名
+  public int getImageID(String name) {
+    return getResources().getIdentifier(name, "raw",
+      getPackageName());
+  }
+
+  private class MyHandler extends Handler {
+    @Override
+    public void handleMessage(Message msg) {
+      switch (msg.what) {
+        case USB.OPEN:
+          showMessage("USB已打开！");
+          switch_Usb.setText("关闭USB");
+          isOpen = true;
+          break;
+        case USB.ATTACHED:
+          showMessage("监测到设备！");
+          usb.openUsb();
+          break;
+        case USB.DETACHED:
+          showMessage("设备已移除！");
+          switch_Usb.setText("打开USB");
+          isOpen = false;
+          break;
+
+      }
     }
 
-    //第一个参数文件名称（不加后缀）， 第二个参数文件夹名称，第三个参数包名
-    public int getImageID(String name) {
-        return getResources().getIdentifier(name, "raw",
-                getPackageName());
-    }
+  }
 
-    private class MyHandler extends Handler {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case USB.OPEN:
-                    showMessage("USB已打开！");
-                    switch_Usb.setText("关闭USB");
-                    isOpen = true;
-                    break;
-                case USB.ATTACHED:
-                    showMessage("监测到设备！");
-                    usb.openUsb();
-                    break;
-                case USB.DETACHED:
-                    showMessage("设备已移除！");
-                    switch_Usb.setText("打开USB");
-                    isOpen = false;
-                    break;
-
-            }
-        }
-
-    }
-
-    //    private void dataListen(ConnectedDevice connectedDevice) {
+  //    private void dataListen(ConnectedDevice connectedDevice) {
 //        DataListener.with(connectedDevice).listen(new ListenAction() {
 //            @Override
 //            public void action(byte[] bytes) {
@@ -383,47 +372,47 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        }).start();
 //    }
-    private byte[] bitmap2Bytes(Bitmap bm) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
-        return baos.toByteArray();
-    }
+  private byte[] bitmap2Bytes(Bitmap bm) {
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+    bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
+    return baos.toByteArray();
+  }
 
-    private String safeWriteAndRead(PSDK psdk) {
-        try {
-            WroteReporter reporter = psdk.write();
-            if (!reporter.isOk()) {
-                throw new IOException("写入数据失败", reporter.getException());
-            }
-            Thread.sleep(200);
-            byte[] bytes = psdk.read(ReadOptions.builder().timeout(2000).build());
-            return new String(bytes);
-        } catch (Exception e) {
-            return null;
-        }
+  private String safeWriteAndRead(PSDK psdk) {
+    try {
+      WroteReporter reporter = psdk.write();
+      if (!reporter.isOk()) {
+        throw new IOException("写入数据失败", reporter.getException());
+      }
+      Thread.sleep(200);
+      byte[] bytes = psdk.read(ReadOptions.builder().timeout(2000).build());
+      return new String(bytes);
+    } catch (Exception e) {
+      return null;
     }
+  }
 
-    private void safeWrite(PSDK psdk) {
-        try {
-            WroteReporter reporter = psdk.write();
-            if (!reporter.isOk()) {
-                throw new IOException("写入数据失败", reporter.getException());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+  private void safeWrite(PSDK psdk) {
+    try {
+      WroteReporter reporter = psdk.write();
+      if (!reporter.isOk()) {
+        throw new IOException("写入数据失败", reporter.getException());
+      }
+    } catch (Exception e) {
+      e.printStackTrace();
     }
+  }
 
-    private void showMessage(String s) {
-        Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
-    }
+  private void showMessage(String s) {
+    Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
+  }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        if (usb != null) {
-            usb.unregister_USB();
-        }
+  @Override
+  protected void onDestroy() {
+    super.onDestroy();
+    if (usb != null) {
+      usb.unregister_USB();
     }
+  }
 
 }
