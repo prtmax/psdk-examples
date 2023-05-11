@@ -16,9 +16,9 @@ import com.printer.psdk.cpcl.mark.*;
 import com.printer.psdk.device.adapter.ConnectedDevice;
 import com.printer.psdk.device.adapter.ReadOptions;
 import com.printer.psdk.device.adapter.types.WroteReporter;
-import com.printer.psdk.device.bluetooth.classic.ClassicBluetooth;
-import com.printer.psdk.device.bluetooth.classic.ConnectListener;
-import com.printer.psdk.device.bluetooth.classic.Connection;
+import com.printer.psdk.device.bluetooth.Bluetooth;
+import com.printer.psdk.device.bluetooth.ConnectListener;
+import com.printer.psdk.device.bluetooth.Connection;
 import com.printer.psdk.frame.father.PSDK;
 import com.printer.psdk.frame.logger.PLog;
 
@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         sampleEdit.setText("1");
         BluetoothDevice device = getIntent().getParcelableExtra("device");
 
-        connection = ClassicBluetooth.getInstance().createConnection(device, new ConnectListener() {
+        connection = Bluetooth.getInstance().createConnectionClassic(device, new ConnectListener() {
             @Override
             public void onConnectSuccess(ConnectedDevice connectedDevice) {
                 cpcl = CPCL.generic(connection);

@@ -4,6 +4,7 @@ package com.example.classic_bluetooth_demo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import android.util.Log;
 import android.view.View;
 import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
@@ -164,6 +165,7 @@ public class MainActivity extends AppCompatActivity {
                                         .build()
                         )
                         .print(1);
+              Log.e("jcz",_gtspl.command().string());
                 String result = safeWriteAndRead(_gtspl);
                 show(result);
             }
