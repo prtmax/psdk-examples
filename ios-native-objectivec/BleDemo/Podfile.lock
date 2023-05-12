@@ -1,24 +1,16 @@
 PODS:
-  - Masonry (1.1.0)
-  - MBProgressHUD (1.0.0)
-  - "MBProgressHUD+Add (0.0.2)":
-    - MBProgressHUD (~> 1.0.0)
+  - IQKeyboardManager (6.5.11)
 
 DEPENDENCIES:
-  - Masonry
-  - "MBProgressHUD+Add"
+  - IQKeyboardManager
 
 SPEC REPOS:
   trunk:
-    - Masonry
-    - MBProgressHUD
-    - "MBProgressHUD+Add"
+    - IQKeyboardManager
 
 SPEC CHECKSUMS:
-  Masonry: 678fab65091a9290e40e2832a55e7ab731aad201
-  MBProgressHUD: 4890f671c94e8a0f3cf959aa731e9de2f036d71a
-  "MBProgressHUD+Add": 65c4d170c083a2a800ad4470d424ad5978f324c3
+  IQKeyboardManager: ef43ce1ba1e5aaf4adf222c0a46f39761f246879
 
-PODFILE CHECKSUM: a156bc96474922b499c844c9676f747844424fe7
+PODFILE CHECKSUM: 6597fe5146b10794d17cad2b97d1119c3b0fc5be
 
 COCOAPODS: 1.11.3

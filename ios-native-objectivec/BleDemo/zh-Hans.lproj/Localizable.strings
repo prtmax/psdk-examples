@@ -7,6 +7,7 @@
 */
 "scan.stop" = "停止扫描";
 "scan.start" = "扫描";
+"cancle" = "取消";
 "name.bluetooth.enter" = "请输入蓝牙名称";
 "select.instruction.type" = "请先选择指令类型";
 "paper.type.continuous" = "连续纸打印";

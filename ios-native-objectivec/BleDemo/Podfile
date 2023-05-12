@@ -16,8 +16,7 @@ target 'BleDemo' do
   use_frameworks!
 
   # Pods for BleDemo
-    pod 'Masonry'
-    pod 'MBProgressHUD+Add'
+    pod 'IQKeyboardManager'
   target 'BleDemoTests' do
     inherit! :search_paths
     # Pods for testing
