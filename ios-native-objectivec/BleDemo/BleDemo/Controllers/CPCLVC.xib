@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="CPCLVC">
+            <connections>
+                <outlet property="countTitleLab" destination="O3d-Id-yji" id="u4k-td-2eV"/>
+                <outlet property="countTxf" destination="exJ-Mg-6W9" id="t7B-bz-gTg"/>
+                <outlet property="stateLab" destination="GqO-sl-rd9" id="bNj-8w-VGZ"/>
+                <outlet property="view" destination="2U1-Uj-wZs" id="sgT-Fe-rlM"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="2U1-Uj-wZs">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sFy-sg-mwq">
+                    <rect key="frame" x="10" y="79" width="373" height="35"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="样单222数:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="O3d-Id-yji">
+                            <rect key="frame" x="0.0" y="0.0" width="86.333333333333329" height="35"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="1" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="exJ-Mg-6W9">
+                            <rect key="frame" x="86.333333333333343" y="0.0" width="286.66666666666663" height="35"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                        </textField>
+                    </subviews>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="35" id="G3F-CX-vhT"/>
+                    </constraints>
+                </stackView>
+                <stackView opaque="NO" contentMode="scaleToFill" distribution="fillProportionally" spacing="30" translatesAutoresizingMaskIntoConstraints="NO" id="cAT-mg-uHa">
+                    <rect key="frame" x="10" y="134" width="373" height="45"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="249" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Fbr-US-pXF">
+                            <rect key="frame" x="0.0" y="0.0" width="171.66666666666666" height="45"/>
+                            <color key="backgroundColor" name="AccentColor"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="打印图片">
+                                <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </buttonConfiguration>
+                            <connections>
+                                <action selector="printImage" destination="-1" eventType="touchUpInside" id="P2f-EM-7fY"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="y8h-Io-60Q">
+                            <rect key="frame" x="201.66666666666663" y="0.0" width="171.33333333333337" height="45"/>
+                            <color key="backgroundColor" name="AccentColor"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="打印二维码">
+                                <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </buttonConfiguration>
+                            <connections>
+                                <action selector="printQRCode" destination="-1" eventType="touchUpInside" id="P8h-Iq-wuZ"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="y8h-Io-60Q" firstAttribute="width" secondItem="Fbr-US-pXF" secondAttribute="width" id="2Jy-Ok-dFb"/>
+                        <constraint firstAttribute="height" constant="45" id="Uhp-Xd-7AR"/>
+                    </constraints>
+                </stackView>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="KtF-MU-odG">
+                    <rect key="frame" x="10" y="199" width="373" height="110"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JT6-4y-Xs4">
+                            <rect key="frame" x="0.0" y="0.0" width="373" height="45"/>
+                            <color key="backgroundColor" name="AccentColor"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="45" id="43h-uj-SbO"/>
+                            </constraints>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="打印模板 76*130">
+                                <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </buttonConfiguration>
+                            <connections>
+                                <action selector="printTemplate" destination="-1" eventType="touchUpInside" id="TxQ-Ur-7Vc"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Uqa-8J-Irg">
+                            <rect key="frame" x="0.0" y="65" width="373" height="45"/>
+                            <color key="backgroundColor" name="AccentColor"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="45" id="Ag6-ar-ew6"/>
+                            </constraints>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="打印自测页">
+                                <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </buttonConfiguration>
+                            <connections>
+                                <action selector="selfTest" destination="-1" eventType="touchUpInside" id="jhM-Va-dye"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                </stackView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="GqO-sl-rd9">
+                    <rect key="frame" x="0.0" y="778" width="393" height="40"/>
+                    <color key="backgroundColor" systemColor="systemRedColor"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="40" id="53P-te-Dgm"/>
+                    </constraints>
+                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
+                    <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="HVu-mN-zLL"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="sFy-sg-mwq" firstAttribute="top" secondItem="HVu-mN-zLL" secondAttribute="top" constant="20" id="0kb-tB-GiO"/>
+                <constraint firstItem="GqO-sl-rd9" firstAttribute="trailing" secondItem="HVu-mN-zLL" secondAttribute="trailing" id="6Jn-mh-RzA"/>
+                <constraint firstItem="cAT-mg-uHa" firstAttribute="top" secondItem="sFy-sg-mwq" secondAttribute="bottom" constant="20" id="9ms-4H-4Qv"/>
+                <constraint firstItem="GqO-sl-rd9" firstAttribute="bottom" secondItem="HVu-mN-zLL" secondAttribute="bottom" id="AKa-Kh-otV"/>
+                <constraint firstItem="KtF-MU-odG" firstAttribute="top" secondItem="cAT-mg-uHa" secondAttribute="bottom" constant="20" id="Dlg-cG-xS7"/>
+                <constraint firstItem="HVu-mN-zLL" firstAttribute="trailing" secondItem="KtF-MU-odG" secondAttribute="trailing" constant="10" id="QKN-hu-xWA"/>
+                <constraint firstItem="GqO-sl-rd9" firstAttribute="leading" secondItem="HVu-mN-zLL" secondAttribute="leading" id="XrM-Se-CCC"/>
+                <constraint firstItem="HVu-mN-zLL" firstAttribute="trailing" secondItem="cAT-mg-uHa" secondAttribute="trailing" constant="10" id="f9u-b8-v36"/>
+                <constraint firstItem="KtF-MU-odG" firstAttribute="leading" secondItem="HVu-mN-zLL" secondAttribute="leading" constant="10" id="iEk-Pe-T9g"/>
+                <constraint firstItem="HVu-mN-zLL" firstAttribute="trailing" secondItem="sFy-sg-mwq" secondAttribute="trailing" constant="10" id="j8u-7s-AmU"/>
+                <constraint firstItem="cAT-mg-uHa" firstAttribute="leading" secondItem="HVu-mN-zLL" secondAttribute="leading" constant="10" id="sTK-rw-Xh4"/>
+                <constraint firstItem="sFy-sg-mwq" firstAttribute="leading" secondItem="HVu-mN-zLL" secondAttribute="leading" constant="10" id="sju-6u-ZDi"/>
+            </constraints>
+            <point key="canvasLocation" x="287.78625954198475" y="-206.33802816901411"/>
+        </view>
+    </objects>
+    <resources>
+        <namedColor name="AccentColor">
+            <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemRedColor">
+            <color red="1" green="0.23137254901960785" blue="0.18823529411764706" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </systemColor>
+    </resources>
+</document>

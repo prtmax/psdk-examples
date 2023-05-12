@@ -7,6 +7,7 @@
 */
 "scan.stop" = "Stop scanning";
 "scan.start" = "Scan";
+"cancle" = "Cancle";
 "name.bluetooth.enter" = "Please enter Bluetooth name";
 "select.instruction.type" = "Please select the instruction type first";
 "paper.type.continuous" = "Continuous paper printing";
@@ -30,7 +31,7 @@
 "write.success" = "Possible write success";
 "write.fail" = "Write may fail";
 "write.failed" = "Write failed";
-"sample.number" = "Sample number";
+"sample.number" = "Sample number: ";
 "back" = "back";
 
 
