@@ -45,7 +45,7 @@ public class ScanActivity extends Activity {
         initViews();
 
         Bluetooth.getInstance().setDiscoveryListener(discoveryListener);
-        Bluetooth.getInstance().initialize(getApplication());
+        Bluetooth.getInstance().initialize(this);
         checkPermissions();
     }
 
@@ -88,7 +88,7 @@ public class ScanActivity extends Activity {
     }
 
     public void showList(int position) {
-        final String[] items = {"CPCL", "TSPL", "ESC"};
+        final String[] items = {"TSPL", "ESC"};
         AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
         alertBuilder.setTitle("请先选择指令类型");
         alertBuilder.setItems(items, new DialogInterface.OnClickListener() {
@@ -96,16 +96,11 @@ public class ScanActivity extends Activity {
             public void onClick(DialogInterface dialogInterface, int i) {
                 switch (i) {
                     case 0:
-                        Intent intent0 = new Intent(ScanActivity.this, CPCLActivity.class);
-                        intent0.putExtra("device", listAdapter.mList.get(position).device);
-                        startActivity(intent0);
-                        break;
-                    case 1:
                         Intent intent1 = new Intent(ScanActivity.this, TSPLActivity.class);
                         intent1.putExtra("device", listAdapter.mList.get(position).device);
                         startActivity(intent1);
                         break;
-                    case 2:
+                    case 1:
                         Intent intent2 = new Intent(ScanActivity.this, ESCActivity.class);
                         intent2.putExtra("device", listAdapter.mList.get(position).device);
                         startActivity(intent2);

@@ -327,6 +327,9 @@ public class CPCLActivity extends Activity {
     }
 
     private void show(String message) {
+      if(message==null) {
+        return;
+      }
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 

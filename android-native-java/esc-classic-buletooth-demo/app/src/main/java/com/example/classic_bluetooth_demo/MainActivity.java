@@ -144,7 +144,6 @@ public class MainActivity extends Activity {
                                                 .build())
                                         .lineDot(30)
                                         .stopJob();
-                                Log.e("jcz",_gesc.command().hex());
                                 safeWriteAndRead(_gesc);
                             }
                         }

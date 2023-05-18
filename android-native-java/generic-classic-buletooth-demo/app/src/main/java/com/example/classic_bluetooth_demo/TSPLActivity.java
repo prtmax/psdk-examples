@@ -154,7 +154,7 @@ public class TSPLActivity extends Activity {
                         .image(
                                 TImage.builder()
                                         .image(bitmap2Bytes(bitmap))
-                                        .compress(true)
+                                        .compress(false)
                                         .build()
                         )
                         .print(1);
@@ -239,7 +239,7 @@ public class TSPLActivity extends Activity {
                         .direction(TDirection.builder().direction(TDirection.Direction.UP_OUT).mirror(TDirection.Mirror.NO_MIRROR).build())
                         .gap(true)
                         .cut(true)
-                        .speed(6)
+                        .speed(8)
                         .density(6)
                         .cls()
                         .bar(TBar.builder().x(300).y(10).width(4).height(90).build())
@@ -292,6 +292,9 @@ public class TSPLActivity extends Activity {
     }
 
     private void show(String message) {
+      if(message==null) {
+        return;
+      }
         Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
