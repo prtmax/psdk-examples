@@ -4,6 +4,9 @@ package com.example.classic_bluetooth_demo;
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -147,12 +150,12 @@ public class MainActivity extends Activity {
                 isSending = true;
                 if (xxy.isConnected()) {
                   //打印图片指令
-                  InputStream is = getResources().openRawResource(R.raw.test);
+                  InputStream is = getResources().openRawResource(R.raw.logo);
                   BitmapDrawable bmpDraw = new BitmapDrawable(is);
                   Bitmap bitmap = bmpDraw.getBitmap();
                   GenericESC _gesc = esc.enable()
                     .wakeup()
-                    .location(ELocation.builder().location(Location.LEFT).build())
+                    .location(ELocation.builder().location(Location.CENTER).build())
                     .lineDot(1)
                     .image(EImage.builder()
                       .image(bitmap2Bytes(bitmap))
@@ -197,7 +200,7 @@ public class MainActivity extends Activity {
                   Bitmap bitmap = bmpDraw.getBitmap();
                   GenericESC _gesc = esc.enable()
                     .wakeup()
-                    .location(ELocation.builder().location(Location.LEFT).build())
+                    .location(ELocation.builder().location(Location.CENTER).build())
                     .image(EImage.builder()
                       .image(bitmap2Bytes(bitmap))
                       .build())
@@ -558,6 +561,7 @@ public class MainActivity extends Activity {
   }
 
   private byte[] bitmap2Bytes(Bitmap bm) {
+    bm=bitmapRotation(bm,90);
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
     return baos.toByteArray();
@@ -578,7 +582,28 @@ public class MainActivity extends Activity {
     if (message == null) return;
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
   }
-
+  private Bitmap bitmapRotation(Bitmap bm, final int orientationDegree) {
+    Matrix m = new Matrix();
+    m.setRotate(orientationDegree, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
+    float targetX, targetY;
+    if (orientationDegree == 90) {
+      targetX = bm.getHeight();
+      targetY = 0;
+    } else {
+      targetX = bm.getHeight();
+      targetY = bm.getWidth();
+    }
+    final float[] values = new float[9];
+    m.getValues(values);
+    float x1 = values[Matrix.MTRANS_X];
+    float y1 = values[Matrix.MTRANS_Y];
+    m.postTranslate(targetX - x1, targetY - y1);
+    Bitmap bm1 = Bitmap.createBitmap(bm.getHeight(), bm.getWidth(), Bitmap.Config.ARGB_8888);
+    Paint paint = new Paint();
+    Canvas canvas = new Canvas(bm1);
+    canvas.drawBitmap(bm, m, paint);
+    return bm1;
+  }
   @Override
   protected void onDestroy() {
     super.onDestroy();
