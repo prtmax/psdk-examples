@@ -1,0 +1,6 @@
+framework module ibridge {
+  umbrella header "ibridge.h"
+
+  export *
+  module * { export * }
+}

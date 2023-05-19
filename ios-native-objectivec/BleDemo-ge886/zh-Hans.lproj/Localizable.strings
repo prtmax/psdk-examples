@@ -1,0 +1,35 @@
+/* 
+  Localizable.strings
+  BleDemo
+
+  Created by IPRT on 2023/2/10.
+  
+*/
+"scan.stop" = "停止扫描";
+"scan.start" = "扫描";
+"cancle" = "取消";
+"name.bluetooth.enter" = "请输入蓝牙名称";
+"select.instruction.type" = "请先选择指令类型";
+"paper.type.continuous" = "连续纸打印";
+"battery.level" = "电池电量";
+"name.bluetooth" = "蓝牙名称";
+"version.bluetooth_firmware" = "蓝牙固件版本";
+"SN.printer" = "打印机SN号";
+"paper.type.label" = "标签纸打印";
+"status.printer" = "打印机状态";
+"MAC.address.bluetooth" = "蓝牙MAC地址";
+"version.printer_firmware" = "打印机固件版本";
+"model.printer" = "打印机型号";
+"connect.status.succeed:%@" = "连接状态：%@ 连接成功";
+"connect.status.disconnected:%@" = "连接状态：%@ 连接断开";
+"connect.status.failed:%@" = "连接状态：%@ 连接失败";
+"connect.status.turn_on:%@" = "连接状态：%@ 打印机开启失败";
+"print.pictures" = "打印图片";
+"print.QR_code" = "打印二维码";
+"print.template_76*130" = "打印模版 76*130";
+"print.test" = "打印测试";
+"write.success" = "可能写入成功";
+"write.fail" = "写入可能失败";
+"write.failed" = "写入失败";
+"sample.number" = "样单数";
+"back" = "返回";

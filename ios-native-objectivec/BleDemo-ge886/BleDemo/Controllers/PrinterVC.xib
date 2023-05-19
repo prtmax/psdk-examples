@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21678"/>
+        <capability name="Named colors" minToolsVersion="9.0"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="PrinterVC">
+            <connections>
+                <outlet property="searchBtn" destination="Xo3-F3-Vhr" id="f52-xa-HAK"/>
+                <outlet property="searchTxf" destination="rWu-5S-f3g" id="Yum-El-WDc"/>
+                <outlet property="tableview" destination="qp9-DP-gj0" id="Iyh-Yg-b2R"/>
+                <outlet property="view" destination="iN0-l3-epB" id="fHa-mF-T51"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view contentMode="scaleToFill" id="iN0-l3-epB">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="rWu-5S-f3g">
+                    <rect key="frame" x="10" y="65" width="373" height="34"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                    <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                    <connections>
+                        <outlet property="delegate" destination="-1" id="bOT-Ka-4ZW"/>
+                    </connections>
+                </textField>
+                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Xo3-F3-Vhr">
+                    <rect key="frame" x="0.0" y="774" width="393" height="44"/>
+                    <color key="backgroundColor" name="AccentColor"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="44" id="9c4-bM-2xM"/>
+                    </constraints>
+                    <state key="normal" title="Button"/>
+                    <buttonConfiguration key="configuration" style="plain" title="Button">
+                        <color key="baseForegroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                    </buttonConfiguration>
+                    <connections>
+                        <action selector="scanClick:" destination="-1" eventType="touchUpInside" id="Vqz-Wy-ge6"/>
+                    </connections>
+                </button>
+                <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="-1" estimatedSectionHeaderHeight="-1" sectionFooterHeight="-1" estimatedSectionFooterHeight="-1" translatesAutoresizingMaskIntoConstraints="NO" id="qp9-DP-gj0">
+                    <rect key="frame" x="0.0" y="99" width="393" height="675"/>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <connections>
+                        <outlet property="dataSource" destination="-1" id="diu-u2-erl"/>
+                        <outlet property="delegate" destination="-1" id="0h0-uy-nsE"/>
+                    </connections>
+                </tableView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="vUN-kp-3ea"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="qp9-DP-gj0" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="2hz-2H-mqh"/>
+                <constraint firstItem="qp9-DP-gj0" firstAttribute="top" secondItem="rWu-5S-f3g" secondAttribute="bottom" id="3iR-ds-a9D"/>
+                <constraint firstItem="rWu-5S-f3g" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="10" id="4Ic-h8-TcU"/>
+                <constraint firstItem="rWu-5S-f3g" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="6" id="9Dq-wY-gcB"/>
+                <constraint firstItem="Xo3-F3-Vhr" firstAttribute="top" secondItem="qp9-DP-gj0" secondAttribute="bottom" id="GrJ-v6-omD"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="qp9-DP-gj0" secondAttribute="trailing" id="If1-Cj-xAW"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="Xo3-F3-Vhr" secondAttribute="trailing" id="azd-bk-RXc"/>
+                <constraint firstItem="Xo3-F3-Vhr" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" id="hIl-UM-tHz"/>
+                <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="rWu-5S-f3g" secondAttribute="trailing" constant="10" id="mBS-Pk-1EV"/>
+                <constraint firstItem="Xo3-F3-Vhr" firstAttribute="bottom" secondItem="vUN-kp-3ea" secondAttribute="bottom" id="yQU-T4-xE3"/>
+            </constraints>
+            <point key="canvasLocation" x="129" y="-161"/>
+        </view>
+    </objects>
+    <resources>
+        <namedColor name="AccentColor">
+            <color red="0.0" green="0.46000000000000002" blue="0.89000000000000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+        </namedColor>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
