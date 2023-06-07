@@ -1,4 +1,5 @@
 package com.example.usb;
+
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Handler;
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity {
                                                 .image(bitmap2Bytes(rawBitmap))
                                                 .build());
                                 safeWrite(_gesc);
-                            }else{
+                            } else {
                                 showMessage("请先打开串口！");
                             }
                         }
@@ -151,6 +152,7 @@ public class MainActivity extends AppCompatActivity {
         bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
         return baos.toByteArray();
     }
+
     private String Byte2Hex(Byte inByte) {
         return String.format("%02x", inByte).toUpperCase();
     }
@@ -164,6 +166,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return strBuilder.toString();
     }
+
     private byte[] safeWriteAndRead(PSDK psdk) {
         try {
             WroteReporter reporter = psdk.write();

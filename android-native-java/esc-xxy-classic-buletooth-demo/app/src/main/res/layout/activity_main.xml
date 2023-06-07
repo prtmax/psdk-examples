@@ -189,6 +189,35 @@
 
 
       </LinearLayout>
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+          android:id="@+id/bottom_stock"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:gravity="center"
+          android:text="设卷纸"
+          android:textSize="25sp"/>
+        <Button
+          android:id="@+id/bottom_label"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:gravity="center"
+          android:text="设黑标"
+          android:textSize="25sp"/>
+        <Button
+          android:id="@+id/bottom_adhesive"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:gravity="center"
+          android:text="设缝隙纸"
+          android:textSize="25sp"/>
+      </LinearLayout>
     </LinearLayout>
 
 

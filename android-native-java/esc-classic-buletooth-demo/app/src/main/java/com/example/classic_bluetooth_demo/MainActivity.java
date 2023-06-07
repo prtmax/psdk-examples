@@ -175,8 +175,8 @@ public class MainActivity extends Activity {
                                                 .image(bitmap2Bytes(bitmap))
                                                 .build())
                                         .lineDot(1)
-                                        .stopJob()
-                                        .position();//标签纸打印就是打印结束后多执行了这个指令
+                                        .position()//标签纸打印就是打印结束后多执行了这个指令
+                                        .stopJob();
                                 safeWriteAndRead(_gesc);
                             }
                         }
