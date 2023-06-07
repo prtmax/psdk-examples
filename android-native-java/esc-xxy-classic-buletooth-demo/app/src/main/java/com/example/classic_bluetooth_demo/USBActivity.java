@@ -1,12 +1,7 @@
 package com.example.classic_bluetooth_demo;
 
-
 import android.app.Activity;
-import android.bluetooth.BluetoothDevice;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,13 +10,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
-import com.printer.psdk.compatible.external.xxy.CompatibleXxy;
 import com.printer.psdk.device.adapter.ConnectedDevice;
 import com.printer.psdk.device.adapter.types.WroteReporter;
-import com.printer.psdk.device.bluetooth.ConnectListener;
-import com.printer.psdk.device.bluetooth.Connection;
+import com.printer.psdk.device.usb.USB;
+import com.printer.psdk.device.usb.USBConnectedDevice;
 import com.printer.psdk.esc.ESC;
 import com.printer.psdk.esc.GenericESC;
 import com.printer.psdk.esc.args.EImage;
@@ -38,10 +31,12 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
-public class MainActivity extends Activity {
-  private static final String TAG = "MainActivity";
-  private TextView tv_connect_status;
+
+public class USBActivity extends Activity {
+  private static final String TAG = "USBActivity";
   private GenericESC esc;
+  private USB usb;
+  private Button switch_Usb;
   private Button continueButton;
   private Button labelButton;
   private Button statusButton;
@@ -55,7 +50,6 @@ public class MainActivity extends Activity {
   private Button printer_info;
   private EditText sampleEdit;
   private int sampleNumber;
-  private CompatibleXxy xxy;
   private final int ReceiveFLAG = 0x10;
   private final int StatusFLAG = 0x11;
   private final int PaperErrorFLAG = 0x12;
@@ -63,12 +57,14 @@ public class MainActivity extends Activity {
   private ReadMark readMark = ReadMark.NONE;
   private boolean isSending = false;
   private Button bottom_stock, bottom_label, bottom_adhesive;
+  private Handler usbHandler = new USBHandler();
+  private boolean isOpen = false;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_main);
-    tv_connect_status = findViewById(R.id.tv_connect_status);
+    setContentView(R.layout.activity_usb);
+    switch_Usb = (Button) findViewById(R.id.switch_usb);
     sampleEdit = (EditText) findViewById(R.id.sampleEdit);
     sampleEdit.setText("1");
     continueButton = (Button) findViewById(R.id.print_continue);
@@ -85,72 +81,32 @@ public class MainActivity extends Activity {
     bottom_stock = (Button) findViewById(R.id.bottom_stock);
     bottom_label = (Button) findViewById(R.id.bottom_label);
     bottom_adhesive = (Button) findViewById(R.id.bottom_adhesive);
-    BluetoothDevice device = getIntent().getParcelableExtra("device");
-    xxy = new CompatibleXxy(this);
+    usb = new USB(this, usbHandler);
+    usb.register_USB();
 
-    new Thread(new Runnable() {
+    switch_Usb.setOnClickListener(new View.OnClickListener() {
       @Override
-      public void run() {
-        xxy.connect(device.getAddress(), new ConnectListener() {
-          @Override
-          public void onConnectSuccess(ConnectedDevice connectedDevice) {
-            esc = ESC.generic(connectedDevice);
-            dataListen(connectedDevice);
-            runOnUiThread(new Runnable() {
-              @Override
-              public void run() {
-                tv_connect_status.setText(device.getName() + "连接成功");
-              }
-            });
+      public void onClick(View v) {
+        if (isOpen) {
+          usb.closeUsb();
+          switch_Usb.setText("打开USB");
+          isOpen = false;
+        } else {
+          USBConnectedDevice usbConnectedDevice = usb.openUsb();
+          if (usbConnectedDevice != null) {
+            esc = ESC.generic(usbConnectedDevice);
+            dataListen(usbConnectedDevice);
+            switch_Usb.setText("关闭USB");
+            isOpen = true;
+          } else {
+            show("打开失败，检查是否有可用的USB端口");
           }
 
-          @Override
-          public void onConnectFail(String errMsg, Throwable e) {
-            runOnUiThread(new Runnable() {
-              @Override
-              public void run() {
-                tv_connect_status.setText(device.getName() + "连接失败");
-              }
-            });
-          }
-
-          @Override
-          public void onConnectionStateChanged(BluetoothDevice device, int state) {
-            String msg;
-            switch (state) {
-              case Connection.STATE_CONNECTING:
-                msg = "连接中";
-                break;
-              case Connection.STATE_PAIRING:
-                msg = "配对中...";
-                break;
-              case Connection.STATE_PAIRED:
-                msg = "配对成功";
-                break;
-              case Connection.STATE_CONNECTED:
-                msg = "连接成功";
-                break;
-              case Connection.STATE_DISCONNECTED:
-                msg = "连接断开";
-                break;
-              case Connection.STATE_RELEASED:
-                msg = "连接已销毁";
-                break;
-              default:
-                msg = "";
-            }
-            if (!msg.isEmpty()) {
-              runOnUiThread(new Runnable() {
-                @Override
-                public void run() {
-                  tv_connect_status.setText(device.getName() + msg);
-                }
-              });
-            }
-          }
-        });
+        }
       }
-    }).start();
+
+    });
+
     continueButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -165,7 +121,7 @@ public class MainActivity extends Activity {
             public void run() {
               for (int i = 0; i < sampleNumber; i++) {
                 isSending = true;
-                if (xxy.isConnected()) {
+                if (isOpen) {
                   //打印图片指令
                   InputStream is = getResources().openRawResource(R.raw.logo);
                   BitmapDrawable bmpDraw = new BitmapDrawable(is);
@@ -210,7 +166,7 @@ public class MainActivity extends Activity {
             public void run() {
               for (int i = 0; i < sampleNumber; i++) {
                 isSending = true;
-                if (xxy.isConnected()) {
+                if (isOpen) {
                   //打印图片指令
                   InputStream is = getResources().openRawResource(R.raw.p3);
                   BitmapDrawable bmpDraw = new BitmapDrawable(is);
@@ -241,6 +197,8 @@ public class MainActivity extends Activity {
         }
       }
     });
+
+    //其他功能可以参考蓝牙的
     statusButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -580,6 +538,30 @@ public class MainActivity extends Activity {
 
   }
 
+  private class USBHandler extends Handler {
+    @Override
+    public void handleMessage(Message msg) {
+      switch (msg.what) {
+        case USB.OPEN:
+          show("USB已打开！");
+          switch_Usb.setText("关闭USB");
+          isOpen = true;
+          break;
+        case USB.ATTACHED:
+          show("监测到设备！");
+          break;
+        case USB.DETACHED:
+          show("设备已移除！");
+          switch_Usb.setText("打开USB");
+          isOpen = false;
+          break;
+
+      }
+    }
+
+  }
+
+
   private String Byte2Hex(Byte inByte) {
     return String.format("%02x", inByte).toUpperCase();
   }
@@ -594,11 +576,11 @@ public class MainActivity extends Activity {
   }
 
   private byte[] bitmap2Bytes(Bitmap bm) {
-    bm=bitmapRotation(bm,90);
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
     return baos.toByteArray();
   }
+
 
   private void safeWrite(PSDK psdk) {
     try {
@@ -611,36 +593,16 @@ public class MainActivity extends Activity {
     }
   }
 
-  private void show(String message) {
-    if (message == null) return;
-    Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+  private void show(String s) {
+    Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
   }
-  private Bitmap bitmapRotation(Bitmap bm, final int orientationDegree) {
-    Matrix m = new Matrix();
-    m.setRotate(orientationDegree, (float) bm.getWidth() / 2, (float) bm.getHeight() / 2);
-    float targetX, targetY;
-    if (orientationDegree == 90) {
-      targetX = bm.getHeight();
-      targetY = 0;
-    } else {
-      targetX = bm.getHeight();
-      targetY = bm.getWidth();
-    }
-    final float[] values = new float[9];
-    m.getValues(values);
-    float x1 = values[Matrix.MTRANS_X];
-    float y1 = values[Matrix.MTRANS_Y];
-    m.postTranslate(targetX - x1, targetY - y1);
-    Bitmap bm1 = Bitmap.createBitmap(bm.getHeight(), bm.getWidth(), Bitmap.Config.ARGB_8888);
-    Paint paint = new Paint();
-    Canvas canvas = new Canvas(bm1);
-    canvas.drawBitmap(bm, m, paint);
-    return bm1;
-  }
+
   @Override
   protected void onDestroy() {
     super.onDestroy();
-    xxy.disconnect();
+    if (usb != null) {
+      usb.unregister_USB();
+    }
   }
 
 }

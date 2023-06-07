@@ -16,7 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import androidx.core.app.ActivityCompat;
-import com.print.psdk.compatible.external.xxy.CompatibleXxy;
+import com.printer.psdk.compatible.external.xxy.CompatibleXxy;
 import com.printer.psdk.device.bluetooth.Bluetooth;
 import com.printer.psdk.device.bluetooth.BluetoothStateListen;
 import com.printer.psdk.device.bluetooth.DiscoveryListen;
@@ -31,6 +31,7 @@ public class ScanActivity extends Activity {
   private myAdapter listAdapter;
   private TextView tvEmpty;
   private Button tvScan;
+  private Button button_usb;
   private EditText edit_name;
   private final List<Device> devList = new ArrayList<>();
   private final List<Device> searchList = new ArrayList<>();
@@ -51,6 +52,7 @@ public class ScanActivity extends Activity {
     ListView lv = findViewById(R.id.lv);
     tvEmpty = findViewById(R.id.tvEmpty);
     tvScan = findViewById(R.id.tvScan);
+    button_usb = findViewById(R.id.button_usb);
     edit_name = findViewById(R.id.edit_name);
     listAdapter = new myAdapter(this, devList);
     lv.setAdapter(listAdapter);
@@ -58,6 +60,13 @@ public class ScanActivity extends Activity {
       Intent intent = new Intent(ScanActivity.this, MainActivity.class);
       intent.putExtra("device", devList.get(position).device);
       startActivity(intent);
+    });
+    button_usb.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        Intent intent = new Intent(ScanActivity.this, USBActivity.class);
+        startActivity(intent);
+      }
     });
     tvScan.setOnClickListener(new View.OnClickListener() {
       @Override
