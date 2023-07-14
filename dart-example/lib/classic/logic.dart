@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:psdk_bluetooth_classic/psdk_bluetooth_classic.dart';
 import '../toolkit/printer.dart';
@@ -22,7 +23,7 @@ class ClassicLogic extends GetxController {
       return;
     }
     var discovered = await ClassicBluetooth().isDiscovery();
-    if(discovered){
+    if (discovered) {
       await ClassicBluetooth().stopDiscovery();
     }
     var connected = await ClassicBluetooth().isConnected();
@@ -35,20 +36,27 @@ class ClassicLogic extends GetxController {
     }
 
     state.streamBluetoothState =
-        ClassicBluetooth().listenBluetoothState().listen((_state) {
+        ClassicBluetooth().listenBluetoothState.stream.listen((_state) {
       state.bluetoothState = _state;
       super.update();
     });
     state.streamClassicDiscovered?.cancel();
-    state.streamClassicDiscovered = ClassicBluetooth().discovered().listen((event) {
-      state.results.addAll(event);
-
-      super.update();
+    state.streamClassicDiscovered =
+        ClassicBluetooth().discovered().listen((event) {
+      for (var device in event) {
+        if (device.name == null) continue;
+        if (device.name == '') continue;
+        if (device.name!.toUpperCase().endsWith('_BLE') ||
+            device.name!.toUpperCase().endsWith('-LE') ||
+            device.name!.toUpperCase().endsWith('-BLE')) {
+          continue;
+        }
+        state.results.add(device);
+        super.update();
+      }
     });
-    state.location.serviceEnabled().then((value) {
-      state.isEnabledLocation = value;
-      super.update();
-    });
+    state.isEnabledLocation = await Geolocator.isLocationServiceEnabled();
+    super.update();
 
     // _setAutoTryPin();
   }
@@ -123,7 +131,7 @@ class ClassicLogic extends GetxController {
   }
 
   Future<void> checkLocationService() async {
-    bool isEnabled = await state.location.serviceEnabled();
+    bool isEnabled = await Geolocator.isLocationServiceEnabled();
     if (!isEnabled) {
       return;
     }
@@ -132,12 +140,11 @@ class ClassicLogic extends GetxController {
   }
 
   /// set auto try pin
-  // void _setAutoTryPin() {
-  //   if (!state.autoAcceptPairingRequests) {
-  //     ClassicBluetooth().setPin(null);
-  //     return;
-  //   }
-  //   ClassicBluetooth().setPin(state.pinValue);
-  // }
-
+// void _setAutoTryPin() {
+//   if (!state.autoAcceptPairingRequests) {
+//     ClassicBluetooth().setPin(null);
+//     return;
+//   }
+//   ClassicBluetooth().setPin(state.pinValue);
+// }
 }

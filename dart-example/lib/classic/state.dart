@@ -1,9 +1,7 @@
 import 'dart:async';
 
-import 'package:location/location.dart';
 
 class ClassicState {
-  final Location location = Location();
 
   /// bluetooth state
   late bool bluetoothState;

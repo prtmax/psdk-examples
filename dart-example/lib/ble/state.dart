@@ -1,9 +1,7 @@
 import 'dart:async';
 
-import 'package:location/location.dart';
 class BleState {
 
-  final Location location = Location();
   late bool isConnected;
 
   /// bluetooth state
