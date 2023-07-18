@@ -54,6 +54,7 @@ dependencies:
   psdk_frame_father: ^0.0.14
   hazardous_waste: ^0.0.14
   qr_code_scanner: ^1.0.1
+  screenshot: ^2.1.0
 dependency_overrides:
   psdk_fruit_tspl:
     git:
@@ -101,7 +102,7 @@ dependency_overrides:
     git:
       url: https://gitlab.com/prtmax/psdk.git
       path: dart/algorithms/imageb
-      ref: third-part
+      ref: dart-jcz
   hazardous_waste:
     git:
       url: https://gitlab.com/prtmax/psdk.git

@@ -1,4 +1,3 @@
-
 import 'package:flutter/foundation.dart';
 import 'package:image/image.dart' as img;
 
@@ -18,13 +17,12 @@ class ImageUtil {
     if (image == null) {
       return null;
     }
-    img.Image rotateImage = img.copyRotate(image, arg.angle);
+    img.Image rotateImage = img.copyRotate(image, angle: arg.angle);
     var rotatedBytes = Uint8List.fromList(img.encodePng(rotateImage));
     return rotatedBytes;
   }
 
   static Future<Uint8List?> dealPic(Uint8List image) async {
-
     Uint8List printImageData = image;
     img.Image croppedImage = img.decodeImage(printImageData)!;
     int imgWidth = croppedImage.width;
@@ -69,14 +67,14 @@ class ImageUtil {
       );
       printImageData = Uint8List.fromList(img.encodePng(output));
     }
-    var rotateImg = await compute(
-      rotateImage,
-      CopyRotateArg(
-        src: printImageData,
-        angle: 90,
-      ),
-    );
-    return rotateImg;
+    // var rotateImg = await compute(
+    //   rotateImage,
+    //   CopyRotateArg(
+    //     src: printImageData,
+    //     angle: 90,
+    //   ),
+    // );
+    return printImageData;
   }
 }
 
@@ -93,6 +91,7 @@ class CopyResizeArg {
     this.interpolation = img.Interpolation.average,
   });
 }
+
 class CopyRotateArg {
   final Uint8List src;
   final num angle;

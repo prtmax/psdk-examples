@@ -1,5 +1,4 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -18,6 +17,7 @@ import 'package:psdk_frame_father/father/types/write.dart';
 import 'package:image_picker/image_picker.dart' as picker;
 import 'package:psdk_fruit_esc/psdk_fruit_esc.dart';
 import 'package:scan/scan.dart';
+import 'package:screenshot/screenshot.dart';
 import 'ble/view.dart';
 import 'classic/view.dart';
 
@@ -73,6 +73,8 @@ class _MyHomePageState extends State<MyHomePage> {
   ConnectedDevice? connectedDevice;
   List<Uint8List> imageBytes = [];
   PrefabData? date;
+  ScreenshotController screenshotController = ScreenshotController();
+  Uint8List? printImage;
 
   @override
   void initState() {
@@ -88,6 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> _initState() async {
     await Permission.bluetoothScan.request();
     await Permission.bluetoothConnect.request();
+    await Permission.location.request();
   }
 
   @override
@@ -104,16 +107,19 @@ class _MyHomePageState extends State<MyHomePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             if (imageBytes.isNotEmpty)
-              RotatedBox(
-                quarterTurns: 0,
-                child: Stack(
-                  children: [
-                    Center(
-                        child: Image.memory(
-                      imageBytes[0],
-                      fit: BoxFit.fill,
-                    )),
-                  ],
+              Screenshot(
+                controller: screenshotController,
+                child: RotatedBox(
+                  quarterTurns: 1,
+                  child: Stack(
+                    children: [
+                      Center(
+                          child: Image.memory(
+                        imageBytes[0],
+                        fit: BoxFit.fill,
+                      )),
+                    ],
+                  ),
                 ),
               ),
             Row(
@@ -130,7 +136,6 @@ class _MyHomePageState extends State<MyHomePage> {
                   size: const Size(145, 50),
                   child: ElevatedButton(
                     onPressed: () => toScan(),
-
                     child: const Text('扫描危废二维码'),
                   ),
                 )
@@ -140,7 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
             SizedBox.fromSize(
                 size: const Size(145, 50),
                 child: ElevatedButton(
-                  onPressed: () => doPrintPic(imageBytes[0]),
+                  onPressed: () => doPrintPic(),
                   child: const Text('打印危废标签'),
                 )),
           ],
@@ -148,12 +153,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
   }
+
   Future<void> toScan() async {
-    Navigator.of(context).pushNamed<dynamic>("ScanPage").then(
-            (result) => result == null
-            ? SmartDialog.showToast('未找到二维码')
-            : scanned(result));
+    Navigator.of(context).pushNamed<dynamic>("ScanPage").then((result) =>
+        result == null ? SmartDialog.showToast('未找到二维码') : scanned(result));
   }
+
   Future<void> scanByChooseImage() async {
     picker.XFile? xFile = await picker.ImagePicker()
         .pickImage(source: picker.ImageSource.gallery);
@@ -167,6 +172,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> scanned(String result) async {
+    SmartDialog.showLoading(msg: '正在处理');
     date =
         await HazardousWaste(origin: DataOrigin.ZhejiangJinhua, qrlink: result)
             .handle();
@@ -175,16 +181,32 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       imageBytes.insert(0, date!.image!);
     });
+    await Future.delayed(const Duration(seconds: 1));
+    printImage = await screenshotController.capture(pixelRatio: 7);
+    if (printImage == null) {
+      SmartDialog.showToast('暂无数据');
+      return;
+    }
+    printImage = await ImageUtil.dealPic(printImage!);
+    if (printImage == null) {
+      SmartDialog.showToast('暂无数据');
+      return;
+    }
+    SmartDialog.dismiss();
     // doPrintPic(date.image!);
   }
 
-  Future<void> doPrintPic(Uint8List imageBytes) async {
+  Future<void> doPrintPic() async {
     if (connectedDevice == null) {
       if (Platform.isAndroid) {
         Navigator.of(context).pushNamed("ClassicPage");
       } else {
         Navigator.of(context).pushNamed("BlePage");
       }
+      return;
+    }
+    if (printImage == null) {
+      SmartDialog.showToast('暂无数据');
       return;
     }
     SmartDialog.showLoading(msg: '正在打印');
@@ -197,10 +219,7 @@ class _MyHomePageState extends State<MyHomePage> {
             .enable()
             .wakeup()
             .location(location: 1)
-            .image(
-                arg: EImage(
-                    compress: true,
-                    image: await ImageUtil.dealPic(imageBytes) ?? imageBytes))
+            .image(arg: EImage(compress: true, image: printImage!))
             .position()
             .stopJob();
         await psdk.write(options: WriteOptions());
