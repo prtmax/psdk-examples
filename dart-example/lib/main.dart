@@ -181,13 +181,13 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       imageBytes.insert(0, date!.image!);
     });
-    await Future.delayed(const Duration(seconds: 1));
-    printImage = await screenshotController.capture(pixelRatio: 7);
+    await Future.delayed(const Duration(seconds: 2));
+    printImage = await screenshotController.capture(pixelRatio: 6.11);
     if (printImage == null) {
       SmartDialog.showToast('暂无数据');
       return;
     }
-    printImage = await ImageUtil.dealPic(printImage!);
+    // printImage = await ImageUtil.dealPic(printImage!);
     if (printImage == null) {
       SmartDialog.showToast('暂无数据');
       return;
@@ -212,6 +212,7 @@ class _MyHomePageState extends State<MyHomePage> {
     SmartDialog.showLoading(msg: '正在打印');
     try {
       int copies = date?.copies ?? 1;
+      if(copies==0)copies=1;
       for (int i = 0; i < copies; i++) {
         PSDK psdk = Printer()
             .esc()
