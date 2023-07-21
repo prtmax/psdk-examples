@@ -68,7 +68,7 @@ typedef enum _printStatus{
  * @param RSSI  设备信号强度
  */
 
-- (void)bleDidDiscoverDevies: (CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(nullable NSNumber *)RSSI;
+- (void)bleDidDiscoverDevies: (CBPeripheral *)peripheral advertisementData:(id)advertisementData RSSI:(nullable NSNumber *)RSSI;
 /**
  * 打印机连接失败
  * @param peripheral  CBCentralManager通过扫描、连接的外围设备

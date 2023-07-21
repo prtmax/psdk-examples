@@ -45,9 +45,9 @@ typedef enum : NSUInteger {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-//    self.device = [IbridgeBleApi sharedInstance]; // esc 指令
+    self.device = [IbridgeBleApi sharedInstance]; // esc 指令
 //    self.device = [FscBleApi sharedInstance]; // cpcl 指令
-    self.device = [AppleBle sharedInstance]; // tspl 指令
+//    self.device = [AppleBle sharedInstance]; // tspl 指令
     self.device.delegate = self;
     
     [self setUp];

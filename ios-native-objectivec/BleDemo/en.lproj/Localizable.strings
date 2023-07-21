@@ -28,6 +28,7 @@
 "print.QR_code" = "Print QR code";
 "print.template_76*130" = "Print template 76 * 130";
 "print.test" = "Print test";
+"print.info" = "Printer info";
 "write.success" = "Possible write success";
 "write.fail" = "Write may fail";
 "write.failed" = "Write failed";

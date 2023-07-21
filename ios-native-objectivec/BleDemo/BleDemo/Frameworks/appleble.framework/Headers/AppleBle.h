@@ -7,7 +7,7 @@
 
 #import <adapter/adapter.h>
 
-@protocol AppleBleDelegate <NSObject>
+@protocol AppleBleDelegate <ConnectedDeviceDelegate>
 
 @optional
 
@@ -18,7 +18,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface AppleBle : ConnectedDevice
 
-//@property (nonatomic, weak, nullable) id <AppleBleDelegate> delegate;
+@property (nonatomic, weak, nullable) id <AppleBleDelegate> delegate;
 
 @end
 

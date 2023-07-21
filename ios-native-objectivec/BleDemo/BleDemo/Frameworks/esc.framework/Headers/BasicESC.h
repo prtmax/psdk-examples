@@ -105,8 +105,8 @@ NS_ASSUME_NONNULL_BEGIN
 /**
    * 纸张类型
    */
-@property(nonatomic , readonly)BasicESC *(^paperType)(EPaperType *arg);
--(T)paperType:(EPaperType *)arg;
+@property(nonatomic , readonly)BasicESC *(^paperType)(PaperType type);
+-(T)paperType:(PaperType)type;
 /**
    * 打印定位
    */
@@ -157,6 +157,32 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property(nonatomic , readonly)BasicESC *(^wakeup)(void);
 -(T)printerWakeup;
+
+/**
+ * 获取标签纸张信息
+ */
+@property(nonatomic , readonly)BasicESC *(^nfcPaper)(void);
+-(T)getNfcPaper;
+
+/**
+ * 获取标签UID
+ */
+@property(nonatomic , readonly)BasicESC *(^nfcUID)(void);
+-(T)getNfcUID;
+
+/**
+ * 获取标签使用长度
+ */
+@property(nonatomic , readonly)BasicESC *(^nfcUsedLength)(void);
+-(T)getNfcUsedLength;
+
+/**
+ * 获取标签剩余长度
+ */
+@property(nonatomic , readonly)BasicESC *(^nfcRestLength)(void);
+-(T)getNfcRestLength;
+
+
 @end
 
 NS_ASSUME_NONNULL_END

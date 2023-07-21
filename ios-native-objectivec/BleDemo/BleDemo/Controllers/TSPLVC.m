@@ -16,6 +16,7 @@
 @property (nonatomic) NSThread* myThread;
 @property (nonatomic, strong) BasicTSPL *basicTspl;
 @property (nonatomic, strong) Lifecycle *lifeCycle;
+@property (strong, nonatomic) ReadOptions *options;
 
 @end
 
@@ -37,6 +38,8 @@
     };
     _basicTspl.bleDidDisconnectPeripheral = ^(CBPeripheral * _Nonnull peripheral, NSError * _Nonnull error) {__strong typeof (weakSelf) strongSelf = weakSelf;
         strongSelf.stateLab.text = [NSString stringWithFormat:NSLocalizedString(@"connect.status.disconnected:%@", nil),peripheral.name];
+        NSLog(@"⚠️⚠️⚠️ device: %@ did disconnect ⚠️⚠️⚠️", peripheral.name);
+        [strongSelf.navigationController popViewControllerAnimated:YES];
     };
     _basicTspl.bleDidFailToConnectPeripheral = ^(CBPeripheral * _Nonnull peripheral, NSError * _Nonnull error) {
         __strong typeof (weakSelf) strongSelf = weakSelf;
@@ -76,6 +79,7 @@
     .print();
 
     _basicTspl.write();
+    [self read];
     
     [_lock unlock];
 }
@@ -127,6 +131,23 @@
     NSLog(@"打印的指令String：%@\n-----str:%@",[command string],str);
     
     _basicTspl.write();
+    [self read];
+}
+
+- (void)read {
+    self.options.callBack = ^(NSData * _Nonnull revData, NSError * _Nullable error) {
+        if(error || !revData) return;
+        NSLog(@"tspl revData: %@", revData);
+    };
+    [self.basicTspl read:self.options];
+}
+
+#pragma mark - lazy
+- (ReadOptions *)options {
+    if(!_options) {
+        _options = [ReadOptions new].timeout(1000);
+    }
+    return _options;
 }
 
 @end

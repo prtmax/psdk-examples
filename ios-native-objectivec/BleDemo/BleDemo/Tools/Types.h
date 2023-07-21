@@ -23,6 +23,14 @@ typedef enum {
     PRINTERINFOR,       // 查询打印机信息
     LABELHEIGHT,        // 查询标签高度
     PRINTSTATUS,        // 查询打印状态
+    SETTHICKNESS,       // 设置浓度
+    SETSHUTOFFTIME,     // 设置关机时间
     RECOGNITIONHEIGHT,  // 自动识别高度
+    GETSHUTTIME,        // 获取关机时间的标志
+    SETPAPERTYPE,       // 设置纸张类型
+    NfcPaper,           // 查询纸张信息
+    NfcUID,             // 获取标签UID
+    NfcUsedLength,      // 获取标签使用长度
+    NfcRestLength,      // 获取标签剩余长度
     NONE_NONE,          // none
 } SEARCHTYPE;

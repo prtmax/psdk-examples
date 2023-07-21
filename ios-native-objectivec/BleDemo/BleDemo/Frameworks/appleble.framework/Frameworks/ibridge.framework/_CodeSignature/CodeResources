@@ -4,13 +4,44 @@
 <dict>
 	<key>files</key>
 	<dict>
-		<key>Info.plist</key>
+		<key>Frameworks/adapter.framework/Info.plist</key>
 		<data>
 		TAVyv2vEIAmPJAQ/p+c45neerAc=
 		</data>
+		<key>Frameworks/adapter.framework/adapter</key>
+		<data>
+		2wsO88ZrUnjkzXRwVJdPPwWqfsg=
+		</data>
+		<key>Info.plist</key>
+		<data>
+		J978kOQN+WEug/MbC2Hc4qEA1kA=
+		</data>
 	</dict>
 	<key>files2</key>
-	<dict/>
+	<dict>
+		<key>Frameworks/adapter.framework/Info.plist</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			TAVyv2vEIAmPJAQ/p+c45neerAc=
+			</data>
+			<key>hash2</key>
+			<data>
+			Dp9MMPFFeJOwX+WygDSDhacyGw9DQOn6iz+5Ol7iKaE=
+			</data>
+		</dict>
+		<key>Frameworks/adapter.framework/adapter</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			2wsO88ZrUnjkzXRwVJdPPwWqfsg=
+			</data>
+			<key>hash2</key>
+			<data>
+			It6az7YBxsgeliyKZN7KwadhLeeTUeBNKwqefzR0iAk=
+			</data>
+		</dict>
+	</dict>
 	<key>rules</key>
 	<dict>
 		<key>^.*</key>

@@ -28,6 +28,7 @@
 "print.QR_code" = "打印二维码";
 "print.template_76*130" = "打印模版 76*130";
 "print.test" = "打印测试";
+"print.info" = "打印机信息";
 "write.success" = "可能写入成功";
 "write.fail" = "写入可能失败";
 "write.failed" = "写入失败";

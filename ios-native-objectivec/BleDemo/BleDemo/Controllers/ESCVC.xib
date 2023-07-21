@@ -46,7 +46,7 @@
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="tLL-kY-Fv3">
                     <rect key="frame" x="204" y="134" width="179" height="231.66666666666663"/>
                     <subviews>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TLy-3n-LKU">
+                        <button opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="251" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TLy-3n-LKU">
                             <rect key="frame" x="0.0" y="0.0" width="179" height="34.333333333333336"/>
                             <color key="backgroundColor" name="AccentColor"/>
                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
@@ -99,7 +99,7 @@
                     </subviews>
                 </stackView>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="15" translatesAutoresizingMaskIntoConstraints="NO" id="Tqd-Vd-KCE">
-                    <rect key="frame" x="10" y="134" width="179" height="231.66666666666663"/>
+                    <rect key="frame" x="10" y="134" width="179" height="281"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="MJc-I7-YhD">
                             <rect key="frame" x="0.0" y="0.0" width="179" height="34.333333333333336"/>
@@ -116,7 +116,7 @@
                             <color key="backgroundColor" name="AccentColor"/>
                             <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                             <state key="normal" title="Button"/>
-                            <buttonConfiguration key="configuration" style="plain" title="电池电量"/>
+                            <buttonConfiguration key="configuration" style="plain" title="电量查询"/>
                             <connections>
                                 <action selector="batteryLevel" destination="-1" eventType="touchUpInside" id="oec-Nc-Lir"/>
                             </connections>
@@ -151,10 +151,20 @@
                                 <action selector="snNum" destination="-1" eventType="touchUpInside" id="BKy-4X-ArG"/>
                             </connections>
                         </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="OWH-oM-Kfk">
+                            <rect key="frame" x="0.0" y="246.66666666666671" width="179" height="34.333333333333343"/>
+                            <color key="backgroundColor" name="AccentColor"/>
+                            <color key="tintColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="NFC"/>
+                            <connections>
+                                <action selector="nfcClick" destination="-1" eventType="touchUpInside" id="AQJ-jl-Xkg"/>
+                            </connections>
+                        </button>
                     </subviews>
                 </stackView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="jui-kf-BI6">
-                    <rect key="frame" x="10" y="385.66666666666669" width="373" height="0.0"/>
+                    <rect key="frame" x="10" y="435" width="373" height="0.0"/>
                     <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                     <color key="textColor" systemColor="systemOrangeColor"/>
                     <nil key="highlightedColor"/>
@@ -182,7 +192,6 @@
                 <constraint firstItem="o3r-x9-hmh" firstAttribute="trailing" secondItem="vUN-kp-3ea" secondAttribute="trailing" id="LS9-VF-bGd"/>
                 <constraint firstItem="Tqd-Vd-KCE" firstAttribute="width" secondItem="tLL-kY-Fv3" secondAttribute="width" id="QJ7-wg-4nR"/>
                 <constraint firstItem="o3r-x9-hmh" firstAttribute="bottom" secondItem="vUN-kp-3ea" secondAttribute="bottom" id="RdF-hQ-gnC"/>
-                <constraint firstItem="Tqd-Vd-KCE" firstAttribute="bottom" secondItem="tLL-kY-Fv3" secondAttribute="bottom" id="ZvE-rW-VCf"/>
                 <constraint firstItem="tLL-kY-Fv3" firstAttribute="leading" secondItem="Tqd-Vd-KCE" secondAttribute="trailing" constant="15" id="avc-ES-WTW"/>
                 <constraint firstItem="vUN-kp-3ea" firstAttribute="trailing" secondItem="KhK-tZ-i2f" secondAttribute="trailing" constant="10" id="g7q-zo-PgP"/>
                 <constraint firstItem="Tqd-Vd-KCE" firstAttribute="top" secondItem="KhK-tZ-i2f" secondAttribute="bottom" constant="20" id="hfw-3z-Jvz"/>
@@ -190,7 +199,7 @@
                 <constraint firstItem="KhK-tZ-i2f" firstAttribute="top" secondItem="vUN-kp-3ea" secondAttribute="top" constant="20" id="rpS-p0-JcU"/>
                 <constraint firstItem="KhK-tZ-i2f" firstAttribute="leading" secondItem="vUN-kp-3ea" secondAttribute="leading" constant="10" id="vq2-8I-QPU"/>
             </constraints>
-            <point key="canvasLocation" x="474" y="-213"/>
+            <point key="canvasLocation" x="-100" y="-258"/>
         </view>
     </objects>
     <resources>
