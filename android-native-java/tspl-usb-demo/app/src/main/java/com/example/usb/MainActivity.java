@@ -226,6 +226,14 @@ public class MainActivity extends AppCompatActivity {
         Bitmap rawBitmap = bmpDraw.getBitmap();
         rawBitmap = Bitmap.createScaledBitmap(rawBitmap, 800, 1200, true);
         GenericTSPL _gtspl = tspl.clear().page(TPage.builder().width(100).height(150).build())
+          //注释的为热敏机器指令
+//                        .label()//标签纸打印 三种纸调用的时候根据打印机实际纸张选一种就可以了
+//                        .bline()//黑标纸打印
+//                        .continuous()//连续纸打印
+//                        .offset(0)//进纸
+//                        .ribbon(false)//热敏模式
+//                        .shift(0)//垂直偏移
+//                        .reference(0,0)//相对偏移
           .direction(
             TDirection.builder()
               .direction(TDirection.Direction.UP_OUT)
