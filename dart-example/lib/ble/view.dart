@@ -21,7 +21,7 @@ class BlePage extends StatelessWidget {
       return Scaffold(
         appBar: AppBar(title: const Text('打印机')),
         body: StreamBuilder<bool>(
-          stream: BLEBluetooth().listenBluetoothState(),
+          stream: BLEBluetooth().listenBluetoothState.stream,
           initialData: false,
           builder: (c, snapshot) {
             final bluetooth_state = snapshot.data;

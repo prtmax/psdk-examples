@@ -16,9 +16,9 @@ import android.os.Bundle;
 import com.printer.psdk.device.adapter.ConnectedDevice;
 import com.printer.psdk.device.adapter.ReadOptions;
 import com.printer.psdk.device.adapter.types.WroteReporter;
-import com.printer.psdk.device.bluetooth.classic.ClassicBluetooth;
-import com.printer.psdk.device.bluetooth.classic.ConnectListener;
-import com.printer.psdk.device.bluetooth.classic.Connection;
+import com.printer.psdk.device.bluetooth.Bluetooth;
+import com.printer.psdk.device.bluetooth.ConnectListener;
+import com.printer.psdk.device.bluetooth.Connection;
 import com.printer.psdk.frame.father.PSDK;
 import com.printer.psdk.frame.father.listener.DataListener;
 import com.printer.psdk.frame.father.listener.ListenAction;
@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         btnModel = findViewById(R.id.btnModel);
         BluetoothDevice device = getIntent().getParcelableExtra("device");
 
-        connection = ClassicBluetooth.getInstance().createConnection(device, new ConnectListener() {
+        connection = Bluetooth.getInstance().createConnectionClassic(device, new ConnectListener() {
             @Override
             public void onConnectSuccess(ConnectedDevice connectedDevice) {
                 tspl = TSPL.generic(connectedDevice);

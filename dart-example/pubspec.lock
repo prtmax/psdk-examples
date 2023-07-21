@@ -5,140 +5,157 @@ packages:
     dependency: "direct main"
     description:
       name: adaptive_dialog
-      url: "https://pub.dartlang.org"
+      sha256: f8120e4bc68011f2d50f653c9be467928c7d626cb12084e7da627790601a10d0
+      url: "https://pub.dev"
     source: hosted
     version: "1.8.0+1"
   animations:
     dependency: transitive
     description:
       name: animations
-      url: "https://pub.dartlang.org"
+      sha256: fe8a6bdca435f718bb1dc8a11661b2c22504c6da40ef934cee8327ed77934164
+      url: "https://pub.dev"
     source: hosted
     version: "2.0.7"
   archive:
     dependency: transitive
     description:
       name: archive
-      url: "https://pub.dartlang.org"
+      sha256: ed7cc591a948744994714375caf9a2ce89e1d82e8243997c8a2994d57181c212
+      url: "https://pub.dev"
     source: hosted
     version: "3.3.5"
   async:
     dependency: transitive
     description:
       name: async
-      url: "https://pub.dartlang.org"
+      sha256: "947bfcf187f74dbc5e146c9eb9c0f10c9f8b30743e341481c1e2ed3ecc18c20c"
+      url: "https://pub.dev"
     source: hosted
-    version: "2.9.0"
+    version: "2.11.0"
   boolean_selector:
     dependency: transitive
     description:
       name: boolean_selector
-      url: "https://pub.dartlang.org"
+      sha256: "6cfb5af12253eaf2b368f07bacc5a80d1301a071c73360d746b7f2e32d762c66"
+      url: "https://pub.dev"
     source: hosted
-    version: "2.1.0"
+    version: "2.1.1"
   characters:
     dependency: transitive
     description:
       name: characters
-      url: "https://pub.dartlang.org"
+      sha256: "04a925763edad70e8443c99234dc3328f442e811f1d8fd1a72f1c8ad0f69a605"
+      url: "https://pub.dev"
     source: hosted
-    version: "1.2.1"
+    version: "1.3.0"
   clock:
     dependency: transitive
     description:
       name: clock
-      url: "https://pub.dartlang.org"
+      sha256: cb6d7f03e1de671e34607e909a7213e31d7752be4fb66a86d29fe1eb14bfb5cf
+      url: "https://pub.dev"
     source: hosted
     version: "1.1.1"
   collection:
     dependency: transitive
     description:
       name: collection
-      url: "https://pub.dartlang.org"
+      sha256: "4a07be6cb69c84d677a6c3096fcf960cc3285a8330b4603e0d463d15d9bd934c"
+      url: "https://pub.dev"
     source: hosted
-    version: "1.16.0"
+    version: "1.17.1"
   convert:
     dependency: transitive
     description:
       name: convert
-      url: "https://pub.dartlang.org"
+      sha256: "0f08b14755d163f6e2134cb58222dd25ea2a2ee8a195e53983d57c075324d592"
+      url: "https://pub.dev"
     source: hosted
     version: "3.1.1"
   crypto:
     dependency: transitive
     description:
       name: crypto
-      url: "https://pub.dartlang.org"
+      sha256: aa274aa7774f8964e4f4f38cc994db7b6158dd36e9187aaceaddc994b35c6c67
+      url: "https://pub.dev"
     source: hosted
     version: "3.0.2"
   cupertino_icons:
     dependency: "direct main"
     description:
       name: cupertino_icons
-      url: "https://pub.dartlang.org"
+      sha256: e35129dc44c9118cee2a5603506d823bab99c68393879edb440e0090d07586be
+      url: "https://pub.dev"
     source: hosted
     version: "1.0.5"
   dynamic_color:
     dependency: transitive
     description:
       name: dynamic_color
-      url: "https://pub.dartlang.org"
+      sha256: "37a15576f5a0bfd5555b613cf20ea3bd379607cf88d457374a16032f4e942174"
+      url: "https://pub.dev"
     source: hosted
     version: "1.5.4"
   enough_convert:
     dependency: transitive
     description:
       name: enough_convert
-      url: "https://pub.dartlang.org"
+      sha256: c67d85ca21aaa0648f155907362430701db41f7ec8e6501a58ad9cd9d8569d01
+      url: "https://pub.dev"
     source: hosted
     version: "1.6.0"
   fake_async:
     dependency: transitive
     description:
       name: fake_async
-      url: "https://pub.dartlang.org"
+      sha256: "511392330127add0b769b75a987850d136345d9227c6b94c96a04cf4a391bf78"
+      url: "https://pub.dev"
     source: hosted
     version: "1.3.1"
   fixnum:
     dependency: transitive
     description:
       name: fixnum
-      url: "https://pub.dartlang.org"
+      sha256: "25517a4deb0c03aa0f32fd12db525856438902d9c16536311e76cdc57b31d7d1"
+      url: "https://pub.dev"
     source: hosted
-    version: "1.0.1"
+    version: "1.1.0"
   flutter:
     dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_blue:
+  flutter_blue_plus:
     dependency: transitive
     description:
-      path: "."
-      ref: master
-      resolved-ref: "67b74511dfd3cf10f200a163b95a0be0cc683f3f"
-      url: "https://gitlab.com/repotea-open/flutter_blue"
-    source: git
-    version: "0.8.0"
+      name: flutter_blue_plus
+      sha256: a977e90b7f9dcece90a95a287f8843e3b9028a61199c41bc279832c096d31d43
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.5.2"
   flutter_bluetooth_serial:
     dependency: transitive
     description:
       name: flutter_bluetooth_serial
-      url: "https://pub.dartlang.org"
+      sha256: "85ae82c4099b2b1facdc54e75e1bcfa88dc7f719e55dc886bb0b648cb16636b1"
+      url: "https://pub.dev"
     source: hosted
     version: "0.4.0"
   flutter_lints:
     dependency: "direct dev"
     description:
       name: flutter_lints
-      url: "https://pub.dartlang.org"
+      sha256: aeb0b80a8b3709709c9cc496cdc027c5b3216796bc0af0ce1007eaf24464fd4c
+      url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
   flutter_smart_dialog:
     dependency: "direct main"
     description:
       name: flutter_smart_dialog
-      url: "https://pub.dartlang.org"
+      sha256: bbb66421b1ae249b0182da10d4e6457dc2acb0fe184b3af5a850212b43f500bf
+      url: "https://pub.dev"
     source: hosted
     version: "4.7.1"
   flutter_test:
@@ -155,221 +172,299 @@ packages:
     dependency: "direct main"
     description:
       name: fluttertoast
-      url: "https://pub.dartlang.org"
+      sha256: "7cc92eabe01e3f1babe1571c5560b135dfc762a34e41e9056881e2196b178ec1"
+      url: "https://pub.dev"
     source: hosted
     version: "8.1.2"
+  geolocator:
+    dependency: "direct main"
+    description:
+      name: geolocator
+      sha256: "5c23f3613f50586c0bbb2b8f970240ae66b3bd992088cf60dd5ee2e6f7dde3a8"
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.0.2"
+  geolocator_android:
+    dependency: transitive
+    description:
+      name: geolocator_android
+      sha256: b06c72853c993ae533f482d81a12805d7a441f5231d9668718bc7131d7464082
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.2.0"
+  geolocator_apple:
+    dependency: transitive
+    description:
+      name: geolocator_apple
+      sha256: "36527c555f4c425f7d8fa8c7c07d67b78e3ff7590d40448051959e1860c1cfb4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.2.7"
+  geolocator_platform_interface:
+    dependency: transitive
+    description:
+      name: geolocator_platform_interface
+      sha256: af4d69231452f9620718588f41acc4cb58312368716bfff2e92e770b46ce6386
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.0.7"
+  geolocator_web:
+    dependency: transitive
+    description:
+      name: geolocator_web
+      sha256: f68a122da48fcfff68bbc9846bb0b74ef651afe84a1b1f6ec20939de4d6860e1
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.6"
+  geolocator_windows:
+    dependency: transitive
+    description:
+      name: geolocator_windows
+      sha256: f5911c88e23f48b598dd506c7c19eff0e001645bdc03bb6fecb9f4549208354d
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.1"
   get:
     dependency: "direct main"
     description:
       name: get
-      url: "https://pub.dartlang.org"
+      sha256: "2ba20a47c8f1f233bed775ba2dd0d3ac97b4cf32fc17731b3dfc672b06b0e92a"
+      url: "https://pub.dev"
     source: hosted
     version: "4.6.5"
   hex:
     dependency: transitive
     description:
       name: hex
-      url: "https://pub.dartlang.org"
+      sha256: "4e7cd54e4b59ba026432a6be2dd9d96e4c5205725194997193bf871703b82c4a"
+      url: "https://pub.dev"
     source: hosted
     version: "0.2.0"
-  http_parser:
-    dependency: transitive
-    description:
-      name: http_parser
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.0.2"
   image:
     dependency: transitive
     description:
       name: image
-      url: "https://pub.dartlang.org"
+      sha256: a72242c9a0ffb65d03de1b7113bc4e189686fc07c7147b8b41811d0dd0e0d9bf
+      url: "https://pub.dev"
     source: hosted
-    version: "3.2.2"
+    version: "4.0.17"
   intersperse:
     dependency: transitive
     description:
       name: intersperse
-      url: "https://pub.dartlang.org"
+      sha256: "2f8a905c96f6cbba978644a3d5b31b8d86ddc44917662df7d27a61f3df66a576"
+      url: "https://pub.dev"
     source: hosted
     version: "2.0.0"
   js:
     dependency: transitive
     description:
       name: js
-      url: "https://pub.dartlang.org"
+      sha256: f2c445dce49627136094980615a031419f7f3eb393237e4ecd97ac15dea343f3
+      url: "https://pub.dev"
     source: hosted
-    version: "0.6.4"
+    version: "0.6.7"
   lints:
     dependency: transitive
     description:
       name: lints
-      url: "https://pub.dartlang.org"
+      sha256: "5e4a9cd06d447758280a8ac2405101e0e2094d2a1dbdd3756aec3fe7775ba593"
+      url: "https://pub.dev"
     source: hosted
     version: "2.0.1"
-  location:
-    dependency: "direct main"
-    description:
-      name: location
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "4.4.0"
-  location_platform_interface:
-    dependency: transitive
-    description:
-      name: location_platform_interface
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.3.0"
-  location_web:
-    dependency: transitive
-    description:
-      name: location_web
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "3.1.1"
   macos_ui:
+    dependency: "direct overridden"
+    description:
+      path: "."
+      ref: dev
+      resolved-ref: ef51bfe6dabce1277e21aaf6cb4c7ff61d2040a7
+      url: "https://github.com/Mayb3Nots/macos_ui.git"
+    source: git
+    version: "2.1.0-beta.1"
+  macos_window_utils:
     dependency: transitive
     description:
-      name: macos_ui
-      url: "https://pub.dartlang.org"
+      name: macos_window_utils
+      sha256: b78a210aa70ca7ccad6e7b7b810fb4689c507f4a46e299214900b2a1eb70ea23
+      url: "https://pub.dev"
     source: hosted
-    version: "1.7.5"
+    version: "1.1.3"
   matcher:
     dependency: transitive
     description:
       name: matcher
-      url: "https://pub.dartlang.org"
+      sha256: "6501fbd55da300384b768785b83e5ce66991266cec21af89ab9ae7f5ce1c4cbb"
+      url: "https://pub.dev"
     source: hosted
-    version: "0.12.12"
+    version: "0.12.15"
   material_color_utilities:
     dependency: transitive
     description:
       name: material_color_utilities
-      url: "https://pub.dartlang.org"
+      sha256: d92141dc6fe1dad30722f9aa826c7fbc896d021d792f80678280601aff8cf724
+      url: "https://pub.dev"
     source: hosted
-    version: "0.1.5"
+    version: "0.2.0"
   meta:
     dependency: transitive
     description:
       name: meta
-      url: "https://pub.dartlang.org"
+      sha256: "3c74dbf8763d36539f114c799d8a2d87343b5067e9d796ca22b5eb8437090ee3"
+      url: "https://pub.dev"
     source: hosted
-    version: "1.8.0"
+    version: "1.9.1"
   path:
     dependency: transitive
     description:
       name: path
-      url: "https://pub.dartlang.org"
+      sha256: "8829d8a55c13fc0e37127c29fedf290c102f4e40ae94ada574091fe0ff96c917"
+      url: "https://pub.dev"
     source: hosted
-    version: "1.8.2"
+    version: "1.8.3"
+  permission_handler:
+    dependency: "direct main"
+    description:
+      name: permission_handler
+      sha256: "63e5216aae014a72fe9579ccd027323395ce7a98271d9defa9d57320d001af81"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.4.3"
+  permission_handler_android:
+    dependency: transitive
+    description:
+      name: permission_handler_android
+      sha256: "2ffaf52a21f64ac9b35fe7369bb9533edbd4f698e5604db8645b1064ff4cf221"
+      url: "https://pub.dev"
+    source: hosted
+    version: "10.3.3"
+  permission_handler_apple:
+    dependency: transitive
+    description:
+      name: permission_handler_apple
+      sha256: "99e220bce3f8877c78e4ace901082fb29fa1b4ebde529ad0932d8d664b34f3f5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "9.1.4"
+  permission_handler_platform_interface:
+    dependency: transitive
+    description:
+      name: permission_handler_platform_interface
+      sha256: "7c6b1500385dd1d2ca61bb89e2488ca178e274a69144d26bbd65e33eae7c02a9"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.11.3"
+  permission_handler_windows:
+    dependency: transitive
+    description:
+      name: permission_handler_windows
+      sha256: cc074aace208760f1eee6aa4fae766b45d947df85bc831cde77009cdb4720098
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.3"
   petitparser:
     dependency: transitive
     description:
       name: petitparser
-      url: "https://pub.dartlang.org"
+      sha256: "49392a45ced973e8d94a85fdb21293fbb40ba805fc49f2965101ae748a3683b4"
+      url: "https://pub.dev"
     source: hosted
     version: "5.1.0"
   plugin_platform_interface:
     dependency: transitive
     description:
       name: plugin_platform_interface
-      url: "https://pub.dartlang.org"
+      sha256: dbf0f707c78beedc9200146ad3cb0ab4d5da13c246336987be6940f026500d3a
+      url: "https://pub.dev"
     source: hosted
     version: "2.1.3"
   pointycastle:
     dependency: transitive
     description:
       name: pointycastle
-      url: "https://pub.dartlang.org"
+      sha256: db7306cf0249f838d1a24af52b5a5887c5bf7f31d8bb4e827d071dc0939ad346
+      url: "https://pub.dev"
     source: hosted
     version: "3.6.2"
   protobuf:
     dependency: transitive
     description:
       name: protobuf
-      url: "https://pub.dartlang.org"
+      sha256: "01dd9bd0fa02548bf2ceee13545d4a0ec6046459d847b6b061d8a27237108a08"
+      url: "https://pub.dev"
     source: hosted
     version: "2.1.0"
   psdk_bluetooth_ble:
     dependency: "direct main"
     description:
-      path: "dart/devices/bluetooth_ble"
-      ref: try-utf8
-      resolved-ref: "07e08bb42db793612503c3ca35819d64d84cf134"
-      url: "https://gitlab.com/prtmax/psdk.git"
-    source: git
-    version: "0.0.13"
+      name: psdk_bluetooth_ble
+      sha256: "9c0126ded3a00b665a0028054ea8faa076b750e45ddc32496a30d81a65ed45b7"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.19"
   psdk_bluetooth_classic:
     dependency: "direct main"
     description:
-      path: "dart/devices/bluetooth_classic"
-      ref: try-utf8
-      resolved-ref: "07e08bb42db793612503c3ca35819d64d84cf134"
-      url: "https://gitlab.com/prtmax/psdk.git"
-    source: git
-    version: "0.0.13"
+      name: psdk_bluetooth_classic
+      sha256: d57e44847efea39fb563f8578fc8b082757a127874ec3a5f801a7417bf3f05ea
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.19"
   psdk_bluetooth_traits:
     dependency: "direct main"
     description:
-      path: "dart/devices/bluetooth_traits"
-      ref: try-utf8
-      resolved-ref: "07e08bb42db793612503c3ca35819d64d84cf134"
-      url: "https://gitlab.com/prtmax/psdk.git"
-    source: git
-    version: "0.0.13"
+      name: psdk_bluetooth_traits
+      sha256: "32acafc50edd62836ea40becf9570a455ea879cb92e00371e0517bd3c28ddd4a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.19"
   psdk_device_adapter:
     dependency: "direct main"
     description:
-      path: "dart/packages/device_adapter"
-      ref: try-utf8
-      resolved-ref: "07e08bb42db793612503c3ca35819d64d84cf134"
-      url: "https://gitlab.com/prtmax/psdk.git"
-    source: git
-    version: "0.0.13"
+      name: psdk_device_adapter
+      sha256: baa3f733b6db963e3de95f66c9c1e5dc872cd05d68095277f66b384ac764cc3c
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.19"
   psdk_frame_father:
     dependency: "direct main"
     description:
-      path: "dart/packages/frame_father"
-      ref: try-utf8
-      resolved-ref: "07e08bb42db793612503c3ca35819d64d84cf134"
-      url: "https://gitlab.com/prtmax/psdk.git"
-    source: git
-    version: "0.0.13"
+      name: psdk_frame_father
+      sha256: c883bf2829c3ddb8d584802cd2d8200881b4bb71feb449151e30b4d5579e0563
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.19"
   psdk_fruit_cpcl:
     dependency: "direct main"
     description:
-      path: "dart/fruits/cpcl"
-      ref: try-utf8
-      resolved-ref: "07e08bb42db793612503c3ca35819d64d84cf134"
-      url: "https://gitlab.com/prtmax/psdk.git"
-    source: git
-    version: "0.0.13"
+      name: psdk_fruit_cpcl
+      sha256: b5c023af6e8bef88a0a9a36b7af58ae10999ad49f970ab00ce88ee5508292d69
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.19"
   psdk_fruit_esc:
     dependency: "direct main"
     description:
-      path: "dart/fruits/esc"
-      ref: try-utf8
-      resolved-ref: "07e08bb42db793612503c3ca35819d64d84cf134"
-      url: "https://gitlab.com/prtmax/psdk.git"
-    source: git
-    version: "0.0.13"
+      name: psdk_fruit_esc
+      sha256: "8824f5b431988f10bd1143a24157877a41afc4e671cbbb1a0a317a65338851b3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.19"
   psdk_fruit_tspl:
     dependency: "direct main"
     description:
-      path: "dart/fruits/tspl"
-      ref: try-utf8
-      resolved-ref: "07e08bb42db793612503c3ca35819d64d84cf134"
-      url: "https://gitlab.com/prtmax/psdk.git"
-    source: git
-    version: "0.0.13"
-  rxdart:
+      name: psdk_fruit_tspl
+      sha256: "2546841d6fc1ef9b6ff8a8fb47f11da310f6067d73060a97ce1efd33e9d1cba0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.19"
+  psdk_imageb:
     dependency: transitive
     description:
-      name: rxdart
-      url: "https://pub.dartlang.org"
+      name: psdk_imageb
+      sha256: b92e8568a21bccf5f5574de7d9c19a500ff55aa24369de642629b353aceba3fc
+      url: "https://pub.dev"
     source: hosted
-    version: "0.26.0"
+    version: "0.0.19"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -379,65 +474,82 @@ packages:
     dependency: transitive
     description:
       name: source_span
-      url: "https://pub.dartlang.org"
+      sha256: dd904f795d4b4f3b870833847c461801f6750a9fa8e61ea5ac53f9422b31f250
+      url: "https://pub.dev"
     source: hosted
-    version: "1.9.0"
+    version: "1.9.1"
   stack_trace:
     dependency: transitive
     description:
       name: stack_trace
-      url: "https://pub.dartlang.org"
+      sha256: c3c7d8edb15bee7f0f74debd4b9c5f3c2ea86766fe4178eb2a18eb30a0bdaed5
+      url: "https://pub.dev"
     source: hosted
-    version: "1.10.0"
+    version: "1.11.0"
   stream_channel:
     dependency: transitive
     description:
       name: stream_channel
-      url: "https://pub.dartlang.org"
+      sha256: "83615bee9045c1d322bbbd1ba209b7a749c2cbcdcb3fdd1df8eb488b3279c1c8"
+      url: "https://pub.dev"
     source: hosted
-    version: "2.1.0"
+    version: "2.1.1"
   string_scanner:
     dependency: transitive
     description:
       name: string_scanner
-      url: "https://pub.dartlang.org"
+      sha256: "556692adab6cfa87322a115640c11f13cb77b3f076ddcc5d6ae3c20242bedcde"
+      url: "https://pub.dev"
     source: hosted
-    version: "1.1.1"
+    version: "1.2.0"
   term_glyph:
     dependency: transitive
     description:
       name: term_glyph
-      url: "https://pub.dartlang.org"
+      sha256: a29248a84fbb7c79282b40b8c72a1209db169a2e0542bce341da992fe1bc7e84
+      url: "https://pub.dev"
     source: hosted
     version: "1.2.1"
   test_api:
     dependency: transitive
     description:
       name: test_api
-      url: "https://pub.dartlang.org"
+      sha256: eb6ac1540b26de412b3403a163d919ba86f6a973fe6cc50ae3541b80092fdcfb
+      url: "https://pub.dev"
     source: hosted
-    version: "0.4.12"
+    version: "0.5.1"
   typed_data:
     dependency: transitive
     description:
       name: typed_data
-      url: "https://pub.dartlang.org"
+      sha256: "26f87ade979c47a150c9eaab93ccd2bebe70a27dc0b4b29517f2904f04eb11a5"
+      url: "https://pub.dev"
     source: hosted
     version: "1.3.1"
+  uuid:
+    dependency: transitive
+    description:
+      name: uuid
+      sha256: "648e103079f7c64a36dc7d39369cabb358d377078a051d6ae2ad3aa539519313"
+      url: "https://pub.dev"
+    source: hosted
+    version: "3.0.7"
   vector_math:
     dependency: transitive
     description:
       name: vector_math
-      url: "https://pub.dartlang.org"
+      sha256: "80b3257d1492ce4d091729e3a67a60407d227c27241d6927be0130c98e741803"
+      url: "https://pub.dev"
     source: hosted
-    version: "2.1.2"
+    version: "2.1.4"
   xml:
     dependency: transitive
     description:
       name: xml
-      url: "https://pub.dartlang.org"
+      sha256: ac0e3f4bf00ba2708c33fbabbbe766300e509f8c82dbd4ab6525039813f7e2fb
+      url: "https://pub.dev"
     source: hosted
     version: "6.1.0"
 sdks:
-  dart: ">=2.18.0 <3.0.0"
-  flutter: ">=3.3.0"
+  dart: ">=3.0.0-0 <4.0.0"
+  flutter: ">=3.7.0"

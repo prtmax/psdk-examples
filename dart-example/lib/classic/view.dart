@@ -154,7 +154,7 @@ class ClassicPage extends StatelessWidget {
 
   Widget _refreshView(BuildContext context) {
     return StreamBuilder<bool>(
-      stream: ClassicBluetooth().listenDiscovery(),
+      stream: ClassicBluetooth().listenDiscovery.stream,
       initialData: false,
       builder: (c, snapshot) {
         var isScanning = snapshot.data ?? false;

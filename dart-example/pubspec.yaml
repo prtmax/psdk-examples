@@ -20,7 +20,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=2.18.0 <3.0.0'
+  sdk: '>=2.18.0 <4.0.0'
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -38,60 +38,24 @@ dependencies:
   cupertino_icons: ^1.0.2
   get: ^4.6.5
   adaptive_dialog: ^1.8.0
-  location: ^4.4.0
+  geolocator: ^9.0.2
+  permission_handler: ^10.3.0
   fluttertoast: ^8.0.9
   flutter_smart_dialog: ^4.5.4+2
-  psdk_fruit_tspl: ^0.0.14
-  psdk_fruit_esc: ^0.0.14
-  psdk_fruit_cpcl: ^0.0.14
-  psdk_bluetooth_classic: ^0.0.14
-  psdk_bluetooth_ble: ^0.0.14
-  psdk_bluetooth_traits: ^0.0.14
-  psdk_device_adapter: ^0.0.14
-  psdk_frame_father: ^0.0.14
+  psdk_fruit_tspl: ^0.0.19
+  psdk_fruit_esc: ^0.0.19
+  psdk_fruit_cpcl: ^0.0.19
+  psdk_bluetooth_classic: ^0.0.19
+  psdk_bluetooth_ble: ^0.0.19
+  psdk_bluetooth_traits: ^0.0.19
+  psdk_device_adapter: ^0.0.19
+  psdk_frame_father: ^0.0.19
 dependency_overrides:
-  psdk_fruit_tspl:
+  macos_ui:
     git:
-      url: https://gitlab.com/prtmax/psdk.git
-      path: dart/fruits/tspl
-      ref: try-utf8
-  psdk_fruit_esc:
-    git:
-      url: https://gitlab.com/prtmax/psdk.git
-      path: dart/fruits/esc
-      ref: try-utf8
-  psdk_fruit_cpcl:
-    git:
-      url: https://gitlab.com/prtmax/psdk.git
-      path: dart/fruits/cpcl
-      ref: try-utf8
-  psdk_bluetooth_classic:
-    git:
-      url: https://gitlab.com/prtmax/psdk.git
-      path: dart/devices/bluetooth_classic
-      ref: try-utf8
+      url: https://github.com/Mayb3Nots/macos_ui.git
+      ref: dev
 
-  psdk_bluetooth_ble:
-    git:
-      url: https://gitlab.com/prtmax/psdk.git
-      path: dart/devices/bluetooth_ble
-      ref: try-utf8
-
-  psdk_bluetooth_traits:
-    git:
-      url: https://gitlab.com/prtmax/psdk.git
-      path: dart/devices/bluetooth_traits
-      ref: try-utf8
-  psdk_device_adapter:
-    git:
-      url: https://gitlab.com/prtmax/psdk.git
-      path: dart/packages/device_adapter
-      ref: try-utf8
-  psdk_frame_father:
-    git:
-      url: https://gitlab.com/prtmax/psdk.git
-      path: dart/packages/frame_father
-      ref: try-utf8
 dev_dependencies:
   flutter_test:
     sdk: flutter
