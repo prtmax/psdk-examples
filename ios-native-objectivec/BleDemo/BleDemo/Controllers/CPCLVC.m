@@ -138,8 +138,10 @@
     .text([[CText  alloc]init].textX(12+8).textY(696+80+136+22-5).font(TSS24).content(@"物品：几个快递 12kg") )
     .box([[CBox alloc]init].topLeftX(598-56-16-120).topLeftY(696+80+136+11).bottomRightX(598-56-16-16).bottomRightY(968-11).width(2) )
     .text([[CText alloc]init].textX(598-56-16-120+17).textY(696+80+136+11+6).font(TSS24).content(@"已验视") )
-    .print([[CPrint alloc]init] ).feed();
-    
+#warning 切换纸张类型
+//    .print([[CPrint alloc]init] ).feed(); // 标签纸
+    .print([[CPrint alloc] init] ); // 连续纸
+     
    NSString *str = [self safeWriteAndRead:_basicCPCL];
     NSLog(@"----:%@",str);
     [_lock unlock];

@@ -17,6 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 @interface IbridgeBleApi : ConnectedDevice
 
 @property (nonatomic,assign)_Nullable id<IbridgeBleApiInterfaceDelegate> delegate;
++ (IbridgeBleApi *)sharedInstance;
+#pragma mark 获取centralManager
+- (CBCentralManager *)centralManager;
 
 @end
 

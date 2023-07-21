@@ -36,6 +36,11 @@
 #import <esc/PrintLinedotsArg.h>
 #import <esc/SetBTTypeArg.h>
 #import <esc/WakePrinterArg.h>
+#import <esc/ENfcPaper.h>
+#import <esc/ENfcUID.h>
+#import <esc/ENfcUsedLength.h>
+#import <esc/ENfcRestLength.h>
+
 //! Project version number for esc.
 FOUNDATION_EXPORT double escVersionNumber;
 

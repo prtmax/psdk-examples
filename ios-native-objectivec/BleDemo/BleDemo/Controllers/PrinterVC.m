@@ -7,6 +7,7 @@
 
 #import "PrinterVC.h"
 #import <ibridge/IbridgeBleApi.h>
+#import <ibridge/BLEAdvertisementData.h>
 #import <esc/BasicESC.h>
 #import <adapter/ConnectedDevice.h>
 #import <fsc/FscBleApi.h>
@@ -45,10 +46,12 @@ typedef enum : NSUInteger {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.device = [IbridgeBleApi sharedInstance]; // esc 指令
+//    self.device = [IbridgeBleApi sharedInstance]; // esc 指令
 //    self.device = [FscBleApi sharedInstance]; // cpcl 指令
 //    self.device = [AppleBle sharedInstance]; // tspl 指令
-    self.device.delegate = self;
+    [IbridgeBleApi sharedInstance].delegate = self;
+    [AppleBle sharedInstance].delegate = self;
+    NSLog(@"viewDidLoad appleBle: %@",  [AppleBle sharedInstance]);
     
     [self setUp];
 }
@@ -71,7 +74,8 @@ typedef enum : NSUInteger {
         [self.device stopScanPrinters];
     }else{
         [btn setTitle:NSLocalizedString(@"scan.stop", nil) forState:UIControlStateNormal];
-        [self.device startScanPrinters];
+        [[AppleBle sharedInstance] startScanPrinters];
+        [[IbridgeBleApi sharedInstance] startScanPrinters];
     }
 }
 
@@ -80,14 +84,17 @@ typedef enum : NSUInteger {
     
     UIAlertAction *CPCLAction = [UIAlertAction actionWithTitle:@"CPCL" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         self.commandType = CPCL;
+        self.device = [AppleBle sharedInstance];
         if(callBack) callBack();
     }];
     UIAlertAction *TSPLAction = [UIAlertAction actionWithTitle:@"TSPL" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         self.commandType = TSPL;
+        self.device = [AppleBle sharedInstance];
         if(callBack) callBack();
     }];
     UIAlertAction *ESCAction = [UIAlertAction actionWithTitle:@"ESC" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         self.commandType = ESC;
+        self.device = [IbridgeBleApi sharedInstance];
         if(callBack) callBack();
     }];
     UIAlertAction *cancel = [UIAlertAction actionWithTitle:NSLocalizedString(@"cancle", nil) style:UIAlertActionStyleCancel handler:nil];
@@ -128,8 +135,11 @@ typedef enum : NSUInteger {
 
 -(void)bleDidFailToConnectPeripheral:(CBPeripheral *)peripheral error:(NSError *)error { }
 
--(void)bleDidDiscoverDevies:(CBPeripheral *)peripheral advertisementData:(NSDictionary *)advertisementData RSSI:(NSNumber *)RSSI{
+-(void)bleDidDiscoverDevies:(CBPeripheral *)peripheral advertisementData:(BLEAdvertisementData *)advertisementData RSSI:(NSNumber *)RSSI{
     if(peripheral.name){
+        
+        NSLog(@"peripheral.name: %@  ---- advertisementData: %@", peripheral.name, advertisementData.manufacturerData);
+        
         BOOL isContain = NO;
         for (CBPeripheral *currentPeripheral in self.allDataSource) {
             if([currentPeripheral.identifier isEqual:peripheral.identifier]){
@@ -210,11 +220,16 @@ typedef enum : NSUInteger {
     [tableView deselectRowAtIndexPath:indexPath animated:NO];
     [self.view endEditing:YES];
     self.currentPeripheral = self.dataSource[indexPath.row];
-    [self.device stopScanPrinters];
-    [self.device disconnect];
+    
     [self selectArgType:^{
+        NSLog(@"selectArgType: %@, %@", self.device, self.currentPeripheral);
         [self.device connect:self.currentPeripheral];
     }];
+    
+    [[AppleBle sharedInstance] stopScanPrinters];
+    [[IbridgeBleApi sharedInstance] stopScanPrinters];
+    [[AppleBle sharedInstance] disconnect];
+    [[IbridgeBleApi sharedInstance] disconnect];
 }
 
 #pragma mark - lazy

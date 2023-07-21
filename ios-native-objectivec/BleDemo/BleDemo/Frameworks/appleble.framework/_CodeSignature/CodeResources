@@ -6,23 +6,43 @@
 	<dict>
 		<key>Frameworks/adapter.framework/Info.plist</key>
 		<data>
-		3inJagK+7n3FUB0Nc/7nv30kJ0s=
+		TAVyv2vEIAmPJAQ/p+c45neerAc=
 		</data>
 		<key>Frameworks/adapter.framework/_CodeSignature/CodeResources</key>
 		<data>
-		aZ3R3M3tziH+a2gygAN1JM5Cz3A=
+		pB7MCLq5cEU74+sHPXSEVV2hGSI=
 		</data>
 		<key>Frameworks/adapter.framework/adapter</key>
 		<data>
-		BuOTqA0z3hz8+KqndWEbEGfjyhk=
+		U/BvDO6M+Mue+4deE9X9FHUniB8=
+		</data>
+		<key>Frameworks/ibridge.framework/Frameworks/adapter.framework/Info.plist</key>
+		<data>
+		TAVyv2vEIAmPJAQ/p+c45neerAc=
+		</data>
+		<key>Frameworks/ibridge.framework/Frameworks/adapter.framework/adapter</key>
+		<data>
+		2wsO88ZrUnjkzXRwVJdPPwWqfsg=
+		</data>
+		<key>Frameworks/ibridge.framework/Info.plist</key>
+		<data>
+		J978kOQN+WEug/MbC2Hc4qEA1kA=
+		</data>
+		<key>Frameworks/ibridge.framework/_CodeSignature/CodeResources</key>
+		<data>
+		av9NYlZiWfVdCA4N3TxSed8zy7U=
+		</data>
+		<key>Frameworks/ibridge.framework/ibridge</key>
+		<data>
+		lDD1x3jbg1obfZtNlF8pQUSgPWI=
 		</data>
 		<key>Headers/AppleBle.h</key>
 		<data>
-		4j/SOZqBY3gGzjl3vifVo1mVoBY=
+		HThukwz4B8ekZXcSEY1zsLuTj8I=
 		</data>
 		<key>Info.plist</key>
 		<data>
-		Zi7AKWW5cgyGkmmJDbVOOy9zpFM=
+		zW65BokJG1glz0avJstT/tBii/w=
 		</data>
 		<key>Modules/module.modulemap</key>
 		<data>
@@ -33,34 +53,109 @@
 	<dict>
 		<key>Frameworks/adapter.framework/Info.plist</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			TAVyv2vEIAmPJAQ/p+c45neerAc=
+			</data>
 			<key>hash2</key>
 			<data>
-			9KK5ir6bKDn9QSd5tK5aQIOKwPAxpYZWxIFgzrA01JA=
+			Dp9MMPFFeJOwX+WygDSDhacyGw9DQOn6iz+5Ol7iKaE=
 			</data>
 		</dict>
 		<key>Frameworks/adapter.framework/_CodeSignature/CodeResources</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			pB7MCLq5cEU74+sHPXSEVV2hGSI=
+			</data>
 			<key>hash2</key>
 			<data>
-			jsihDcSzTEZNtF3PEhc1BUOjFwKnN280zM+H7AUZF1M=
+			EmnIrb2JwUThVHLuIm9bsoZqgNGbjBKLXyfgk+qO2Fk=
 			</data>
 		</dict>
 		<key>Frameworks/adapter.framework/adapter</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			U/BvDO6M+Mue+4deE9X9FHUniB8=
+			</data>
 			<key>hash2</key>
 			<data>
-			Dtz4xOkuXB8XKve4zDyKsgb/mtc6tirp25LuamfSVpY=
+			HFuigMN2xFZfLijA096a8PAF4DtZH9mudYVtiTQNO80=
+			</data>
+		</dict>
+		<key>Frameworks/ibridge.framework/Frameworks/adapter.framework/Info.plist</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			TAVyv2vEIAmPJAQ/p+c45neerAc=
+			</data>
+			<key>hash2</key>
+			<data>
+			Dp9MMPFFeJOwX+WygDSDhacyGw9DQOn6iz+5Ol7iKaE=
+			</data>
+		</dict>
+		<key>Frameworks/ibridge.framework/Frameworks/adapter.framework/adapter</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			2wsO88ZrUnjkzXRwVJdPPwWqfsg=
+			</data>
+			<key>hash2</key>
+			<data>
+			It6az7YBxsgeliyKZN7KwadhLeeTUeBNKwqefzR0iAk=
+			</data>
+		</dict>
+		<key>Frameworks/ibridge.framework/Info.plist</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			J978kOQN+WEug/MbC2Hc4qEA1kA=
+			</data>
+			<key>hash2</key>
+			<data>
+			gJHSG70YmSlaFMew11I76xL6TOiHMqf2g2BQbqVVjEw=
+			</data>
+		</dict>
+		<key>Frameworks/ibridge.framework/_CodeSignature/CodeResources</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			av9NYlZiWfVdCA4N3TxSed8zy7U=
+			</data>
+			<key>hash2</key>
+			<data>
+			W1eWbsrfn0DDD7tlFLkQBewOce1HVqRBMQZ7GCGzt0k=
+			</data>
+		</dict>
+		<key>Frameworks/ibridge.framework/ibridge</key>
+		<dict>
+			<key>hash</key>
+			<data>
+			lDD1x3jbg1obfZtNlF8pQUSgPWI=
+			</data>
+			<key>hash2</key>
+			<data>
+			wEmh7n1APm5u+HvBI7a27jl2LAZmqXia4HysGQki4/Y=
 			</data>
 		</dict>
 		<key>Headers/AppleBle.h</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			HThukwz4B8ekZXcSEY1zsLuTj8I=
+			</data>
 			<key>hash2</key>
 			<data>
-			SXpYChquZcgwRokSTpd8meAi2mjpWDA5EJeB6t/xtoc=
+			ntGcKQHKaQYliAGdjJBGchGuWwAi55gWWJdEXQi4HZY=
 			</data>
 		</dict>
 		<key>Modules/module.modulemap</key>
 		<dict>
+			<key>hash</key>
+			<data>
+			TJ5I42zOp8QpPE0Jo4O4E/BtXJI=
+			</data>
 			<key>hash2</key>
 			<data>
 			bP4sHd2I4w2q3qiFh4y4oB12cuaPuY+WbH4nm8q4Xbs=
