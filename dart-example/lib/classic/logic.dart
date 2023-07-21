@@ -2,7 +2,9 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:psdk_bluetooth_classic/psdk_bluetooth_classic.dart';
 import '../toolkit/printer.dart';
 import 'state.dart';
@@ -21,6 +23,9 @@ class ClassicLogic extends GetxController {
     if (!Platform.isAndroid) {
       return;
     }
+    await Permission.bluetoothScan.request();
+    await Permission.bluetoothConnect.request();
+    await Permission.location.request();
     var discovered = await ClassicBluetooth().isDiscovery();
     if(discovered){
       await ClassicBluetooth().stopDiscovery();
@@ -35,7 +40,7 @@ class ClassicLogic extends GetxController {
     }
 
     state.streamBluetoothState =
-        ClassicBluetooth().listenBluetoothState().listen((_state) {
+        ClassicBluetooth().listenBluetoothState.stream.listen((_state) {
       state.bluetoothState = _state;
       super.update();
     });
@@ -45,10 +50,8 @@ class ClassicLogic extends GetxController {
 
       super.update();
     });
-    state.location.serviceEnabled().then((value) {
-      state.isEnabledLocation = value;
-      super.update();
-    });
+    state.isEnabledLocation =await Geolocator.isLocationServiceEnabled();
+    super.update();
 
     // _setAutoTryPin();
   }
@@ -101,7 +104,6 @@ class ClassicLogic extends GetxController {
 
   /// connect device
   Future<void> connectDevice(var result) async {
-    final device = result.origin;
     try {
       SmartDialog.showLoading(msg: '正在连接');
       var connectedDevice = await ClassicBluetooth().connect(result);
@@ -123,7 +125,7 @@ class ClassicLogic extends GetxController {
   }
 
   Future<void> checkLocationService() async {
-    bool isEnabled = await state.location.serviceEnabled();
+    bool isEnabled = await Geolocator.isLocationServiceEnabled();
     if (!isEnabled) {
       return;
     }

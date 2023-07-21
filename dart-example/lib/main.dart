@@ -1,11 +1,9 @@
 import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
-import 'package:image/image.dart' as img;
 import 'package:printer_demo/toolkit/custom_loading_widget.dart';
 import 'package:printer_demo/toolkit/custom_toast_widget.dart';
 import 'package:printer_demo/toolkit/printer.dart';
@@ -13,6 +11,8 @@ import 'package:psdk_device_adapter/psdk_device_adapter.dart';
 import 'package:psdk_frame_father/father/psdk.dart';
 import 'package:psdk_frame_father/father/types/write.dart';
 import 'package:psdk_fruit_cpcl/psdk_fruit_cpcl.dart';
+import 'package:psdk_fruit_esc/psdk_fruit_esc.dart';
+import 'package:psdk_fruit_tspl/psdk_fruit_tspl.dart';
 
 import 'ble/view.dart';
 import 'classic/view.dart';
@@ -66,6 +66,13 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   ConnectedDevice? connectedDevice;
+  int? _value = 0;
+
+  final List<Map<String, dynamic>> _tagList = [
+    {"tag": "tspl", "index": 0},
+    {"tag": "cpcl", "index": 1},
+    {"tag": "esc", "index": 2},
+  ];
 
   @override
   void initState() {
@@ -90,6 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            buildChoiceClip(),
             SizedBox.fromSize(
                 size: const Size(145, 50),
                 child: ElevatedButton(
@@ -109,10 +117,40 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  Widget buildChoiceClip() {
+    return Wrap(
+      children: _tagList
+          .map((e) => Padding(
+                padding: const EdgeInsets.only(left: 5, right: 5),
+                child: buildItem(e),
+              ))
+          .toList(),
+    );
+  }
+
+  ChoiceChip buildItem(Map<String, dynamic> map) {
+    String tag = map["tag"];
+    int index = map["index"];
+    return ChoiceChip(
+      label: Text(tag),
+      selected: _value == index,
+      onSelected: (bool selected) {
+        setState(() {
+          _value = selected ? index : null;
+        });
+      },
+      labelStyle: TextStyle(
+        color: _value == index ? Colors.white : Colors.black,
+      ),
+      selectedColor: Colors.red,
+      surfaceTintColor: Colors.white,
+    );
+  }
+
   Future<void> doPrintPic() async {
     if (Printer().connectedDevice() == null) {
       if (Platform.isAndroid) {
-        Navigator.of(context).pushNamed("BlePage");
+        Navigator.of(context).pushNamed("ClassicPage");
       } else {
         Navigator.of(context).pushNamed("BlePage");
       }
@@ -128,22 +166,35 @@ class _MyHomePageState extends State<MyHomePage> {
       ByteData bytes = await rootBundle.load(imageAsset);
       Uint8List imageBytes =
           bytes.buffer.asUint8List(bytes.offsetInBytes, bytes.lengthInBytes);
-      img.Image croppedImage = img.decodeImage(imageBytes)!;
-      int imgWidth = croppedImage.width;
-      int imgHeight = croppedImage.height;
-      PSDK psdk = Printer()
-          .cpcl()
-          .clear()
-          .page(arg: CPage(width: 608, height: 1000))
-          .image(
-              arg: CImage(
-                  startX: 0,
-                  startY: 0,
-                  image: imageBytes,
-                  width: imgWidth,
-                  height: imgHeight))
-          .print();
-      psdk.write(options: WriteOptions());
+      switch (_value) {
+        case 0:
+          PSDK psdk = Printer()
+              .tspl()
+              .clear()
+              .page(arg: TPage(width: 76, height: 130))
+              .image(arg: TImage(x: 0, y: 0, image: imageBytes))
+              .print();
+          psdk.write(options: WriteOptions());
+          break;
+        case 1:
+          PSDK psdk = Printer()
+              .cpcl()
+              .clear()
+              .page(arg: CPage(width: 608, height: 1000))
+              .image(arg: CImage(startX: 0, startY: 0, image: imageBytes))
+              .print();
+          psdk.write(options: WriteOptions());
+          break;
+        case 2:
+          PSDK psdk = Printer()
+              .esc()
+              .enable()
+              .wakeup()
+              .image(arg: EImage(image: imageBytes))
+              .stopJob();
+          psdk.write(options: WriteOptions());
+          break;
+      }
       SmartDialog.showToast('g.success'.tr);
     } catch (e) {
       SmartDialog.showToast('打印失败${e.toString()}');
@@ -153,7 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> doPrintModel() async {
-    if (Printer().connectedDevice() == null) {
+    if (connectedDevice == null) {
       if (Platform.isAndroid) {
         Navigator.of(context).pushNamed("ClassicPage");
       } else {
@@ -161,223 +212,491 @@ class _MyHomePageState extends State<MyHomePage> {
       }
       return;
     }
+    switch (_value) {
+      case 0:
+        doTSPLModel();
+        break;
+      case 1:
+        doCPCLModel();
+        break;
+      case 2:
+        print("esc");
+        break;
+    }
     SmartDialog.showLoading(msg: '正在打印');
     try {
-      if (Printer().connectedDevice() == null) {
-        SmartDialog.showToast('未连接打印机');
-        return;
-      }
-      PSDK psdk = Printer()
-          .cpcl()
-          .clear()
-          .page(arg: CPage(height: 1040, width: 608))
-          .box(
-              arg: CBox(
-                  lineWidth: 2,
-                  topLeftX: 0,
-                  topLeftY: 1,
-                  bottomRightX: 598,
-                  bottomRightY: 664))
-          .line(
-              arg: CLine(
-                  lineWidth: 2, startX: 0, startY: 88, endX: 598, endY: 88))
-          .line(
-              arg: CLine(
-                  lineWidth: 2,
-                  startX: 0,
-                  startY: 88 + 128,
-                  endX: 598,
-                  endY: 88 + 128))
-          .line(
-              arg: CLine(
-                  lineWidth: 2,
-                  startX: 0,
-                  startY: 88 + 128 + 80,
-                  endX: 598,
-                  endY: 88 + 128 + 80))
-          .line(
-              arg: CLine(
-                  lineWidth: 2,
-                  startX: 0,
-                  startY: 88 + 128 + 80 + 144,
-                  endX: 598 - 56 - 16,
-                  endY: 88 + 128 + 80 + 144))
-          .line(
-              arg: CLine(
-                  lineWidth: 2,
-                  startX: 52,
-                  startY: 88 + 128 + 80,
-                  endX: 52,
-                  endY: 88 + 128 + 80 + 144 + 128))
-          .line(
-              arg: CLine(
-                  lineWidth: 2,
-                  startX: 598 - 56 - 16,
-                  startY: 88 + 128 + 80,
-                  endX: 598 - 56 - 16,
-                  endY: 664))
-          .bar(
-              arg: CBar(
-                  x: 120,
-                  y: 88 + 12,
-                  content: '1234567890',
-                  lineWidth: 1,
-                  height: 80))
-          .text(
-              arg: CText(
-                  textX: 120 + 12,
-                  textY: 88 + 20 + 76,
-                  content: '1234567890',
-                  font: Font.tss24))
-          .text(
-              arg: CText(
-                  textX: 12,
-                  textY: 88 + 128 + 80 + 32,
-                  content: '收',
-                  font: Font.tss24))
-          .text(
-              arg: CText(
-                  textX: 12,
-                  textY: 88 + 128 + 80 + 96,
-                  content: '件',
-                  font: Font.tss24))
-          .text(
-              arg: CText(
-                  textX: 12,
-                  textY: 88 + 128 + 80 + 144 + 32,
-                  content: '发',
-                  font: Font.tss24))
-          .text(
-              arg: CText(
-                  textX: 12,
-                  textY: 88 + 128 + 80 + 144 + 80,
-                  content: '件',
-                  font: Font.tss24))
-          .text(
-              arg: CText(
-                  textX: 52 + 20,
-                  textY: 88 + 128 + 80 + 144 + 128 + 16,
-                  content: "签收人/签收时间",
-                  font: Font.tss24))
-          .text(
-              arg: CText(
-                  textX: 430,
-                  textY: 88 + 128 + 80 + 144 + 128 + 36,
-                  content: "月",
-                  font: Font.tss24))
-          .text(
-              arg: CText(
-                  textX: 490,
-                  textY: 88 + 128 + 80 + 144 + 128 + 36,
-                  content: "日",
-                  font: Font.tss24))
-          .text(
-              arg: CText(
-                  textX: 52 + 20,
-                  textY: 88 + 128 + 80 + 24,
-                  content: "收姓名13777777777",
-                  font: Font.tss24))
-          .text(
-              arg: CText(
-                  textX: 52 + 20,
-                  textY: 88 + 128 + 80 + 24 + 32,
-                  content: "南京市浦口区威尼斯水城七街区七街区",
-                  font: Font.tss24))
-          .text(
-              arg: CText(
-                  textX: 52 + 20,
-                  textY: 88 + 128 + 80 + 144 + 24,
-                  content: "名字13777777777",
-                  font: Font.tss24))
-          .text(
-              arg: CText(
-                  textX: 52 + 20,
-                  textY: 88 + 128 + 80 + 144 + 24 + 32,
-                  content: "南京市浦口区威尼斯水城七街区七街区",
-                  font: Font.tss24))
-          .text(
-              arg: CText(
-                  textX: 598 - 56 - 5,
-                  textY: 88 + 128 + 80 + 104,
-                  content: "派",
-                  font: Font.tss24))
-          .text(
-              arg: CText(
-                  textX: 598 - 56 - 5,
-                  textY: 88 + 128 + 80 + 160,
-                  content: "件",
-                  font: Font.tss24))
-          .text(
-              arg: CText(
-                  textX: 598 - 56 - 5,
-                  textY: 88 + 128 + 80 + 208,
-                  content: "联",
-                  font: Font.tss24))
-          .box(
-              arg: CBox(
-                  lineWidth: 2,
-                  topLeftX: 0,
-                  topLeftY: 1,
-                  bottomRightX: 598,
-                  bottomRightY: 968))
-          .line(
-              arg: CLine(
-                  lineWidth: 2,
-                  startX: 0,
-                  startY: 696 + 80,
-                  endX: 598,
-                  endY: 696 + 80))
-          .line(
-              arg: CLine(
-                  lineWidth: 2,
-                  startX: 0,
-                  startY: 696 + 80 + 136,
-                  endX: 598 - 56 - 16,
-                  endY: 696 + 80 + 136))
-          .line(
-              arg: CLine(
-                  lineWidth: 2,
-                  startX: 52,
-                  startY: 80,
-                  endX: 52,
-                  endY: 696 + 80 + 136))
-          .line(
-              arg: CLine(
-                  lineWidth: 2,
-                  startX: 598 - 56 - 16,
-                  startY: 80,
-                  endX: 598 - 56 - 16,
-                  endY: 968))
-          .bar(
-              arg: CBar(
-                  x: 320,
-                  y: 696 - 4,
-                  content: "1234567890",
-                  lineWidth: 1,
-                  height: 56,
-                  codeType: CodeType.code128,
-                  codeRotation: CodeRotation.rotation_0))
-          .text(
-              arg:
-                  CText(textX: 320 + 8, textY: 696 + 54, content: "1234567890", font: Font.tss16))
-          .text(arg: CText(textX: 12, textY: 696 + 80 + 35, content: "发", font: Font.tss24))
-          .text(arg: CText(textX: 12, textY: 696 + 80 + 84, content: "件", font: Font.tss24))
-          .text(arg: CText(textX: 52 + 20, textY: 696 + 80 + 28, content: "名字13777777777", font: Font.tss24))
-          .text(arg: CText(textX: 52 + 20, textY: 696 + 80 + 28 + 32, content: "南京市浦口区威尼斯水城七街区七街区", font: Font.tss24))
-          .text(arg: CText(textX: 598 - 56 - 5, textY: 696 + 80 + 50, content: "客", font: Font.tss24))
-          .text(arg: CText(textX: 598 - 56 - 5, textY: 696 + 80 + 82, content: "户", font: Font.tss24))
-          .text(arg: CText(textX: 598 - 56 - 5, textY: 696 + 80 + 106, content: "联", font: Font.tss24))
-          .text(arg: CText(textX: 12 + 8, textY: 696 + 80 + 136 + 22 - 5, content: "物品几个快递 12kg", font: Font.tss24))
-          .box(arg: CBox(lineWidth: 2, topLeftX: 598 - 56 - 16 - 120, topLeftY: 696 + 80 + 136 + 11, bottomRightX: 598 - 56 - 16 - 16, bottomRightY: 968 - 11))
-          .text(arg: CText(textX: 598 - 56 - 16 - 120 + 17, textY: 696 + 80 + 136 + 11 + 6, content: "已验视", font: Font.tss24))
-          .print();
-      psdk.write();
       SmartDialog.showToast('打印成功');
     } catch (e) {
       SmartDialog.showToast('打印失败${e.toString()}');
     } finally {
       SmartDialog.dismiss();
     }
+  }
+
+  Future<void> doCPCLModel() async {
+    PSDK psdk = Printer()
+        .cpcl()
+        .clear()
+        .page(arg: CPage(width: 608, height: 1040))
+        .box(
+            arg: CBox(
+                lineWidth: 2,
+                topLeftX: 0,
+                topLeftY: 1,
+                bottomRightX: 598,
+                bottomRightY: 664))
+        .line(
+            arg:
+                CLine(lineWidth: 2, startX: 0, startY: 88, endX: 598, endY: 88))
+        .line(
+            arg: CLine(
+                lineWidth: 2,
+                startX: 0,
+                startY: 88 + 128,
+                endX: 598,
+                endY: 88 + 128))
+        .line(
+            arg: CLine(
+                lineWidth: 2,
+                startX: 0,
+                startY: 88 + 128 + 80,
+                endX: 598,
+                endY: 88 + 128 + 80))
+        .line(
+            arg: CLine(
+                lineWidth: 2,
+                startX: 0,
+                startY: 88 + 128 + 80 + 144,
+                endX: 598 - 56 - 16,
+                endY: 88 + 128 + 80 + 144))
+        .line(
+            arg: CLine(
+                lineWidth: 2,
+                startX: 52,
+                startY: 88 + 128 + 80,
+                endX: 52,
+                endY: 88 + 128 + 80 + 144 + 128))
+        .line(
+            arg: CLine(
+                lineWidth: 2,
+                startX: 598 - 56 - 16,
+                startY: 88 + 128 + 80,
+                endX: 598 - 56 - 16,
+                endY: 664))
+        .bar(
+            arg: CBar(
+                x: 120,
+                y: 88 + 12,
+                content: '1234567890',
+                lineWidth: 1,
+                height: 80))
+        .text(
+            arg: CText(
+                textX: 120 + 12,
+                textY: 88 + 20 + 76,
+                content: '1234567890',
+                font: CFont.tss24))
+        .text(
+            arg: CText(
+                textX: 12,
+                textY: 88 + 128 + 80 + 32,
+                content: '收',
+                font: CFont.tss24))
+        .text(
+            arg: CText(
+                textX: 12,
+                textY: 88 + 128 + 80 + 96,
+                content: '件',
+                font: CFont.tss24))
+        .text(
+            arg: CText(
+                textX: 12,
+                textY: 88 + 128 + 80 + 144 + 32,
+                content: '发',
+                font: CFont.tss24))
+        .text(
+            arg: CText(
+                textX: 12,
+                textY: 88 + 128 + 80 + 144 + 80,
+                content: '件',
+                font: CFont.tss24))
+        .text(
+            arg: CText(
+                textX: 52 + 20,
+                textY: 88 + 128 + 80 + 144 + 128 + 16,
+                content: "签收人/签收时间",
+                font: CFont.tss24))
+        .text(
+            arg: CText(
+                textX: 430,
+                textY: 88 + 128 + 80 + 144 + 128 + 36,
+                content: "月",
+                font: CFont.tss24))
+        .text(
+            arg: CText(
+                textX: 490,
+                textY: 88 + 128 + 80 + 144 + 128 + 36,
+                content: "日",
+                font: CFont.tss24))
+        .text(
+            arg: CText(
+                textX: 52 + 20,
+                textY: 88 + 128 + 80 + 24,
+                content: "收姓名13777777777",
+                font: CFont.tss24))
+        .text(
+            arg: CText(
+                textX: 52 + 20,
+                textY: 88 + 128 + 80 + 24 + 32,
+                content: "南京市浦口区威尼斯水城七街区七街区",
+                font: CFont.tss24))
+        .text(
+            arg: CText(
+                textX: 52 + 20,
+                textY: 88 + 128 + 80 + 144 + 24,
+                content: "名字13777777777",
+                font: CFont.tss24))
+        .text(
+            arg: CText(
+                textX: 52 + 20,
+                textY: 88 + 128 + 80 + 144 + 24 + 32,
+                content: "南京市浦口区威尼斯水城七街区七街区",
+                font: CFont.tss24))
+        .text(
+            arg: CText(
+                textX: 598 - 56 - 5,
+                textY: 88 + 128 + 80 + 104,
+                content: "派",
+                font: CFont.tss24))
+        .text(
+            arg: CText(
+                textX: 598 - 56 - 5,
+                textY: 88 + 128 + 80 + 160,
+                content: "件",
+                font: CFont.tss24))
+        .text(
+            arg: CText(
+                textX: 598 - 56 - 5,
+                textY: 88 + 128 + 80 + 208,
+                content: "联",
+                font: CFont.tss24))
+        .box(
+            arg: CBox(
+                lineWidth: 2,
+                topLeftX: 0,
+                topLeftY: 1,
+                bottomRightX: 598,
+                bottomRightY: 968))
+        .line(
+            arg: CLine(
+                lineWidth: 2,
+                startX: 0,
+                startY: 696 + 80,
+                endX: 598,
+                endY: 696 + 80))
+        .line(
+            arg: CLine(
+                lineWidth: 2,
+                startX: 0,
+                startY: 696 + 80 + 136,
+                endX: 598 - 56 - 16,
+                endY: 696 + 80 + 136))
+        .line(
+            arg: CLine(
+                lineWidth: 2,
+                startX: 52,
+                startY: 80,
+                endX: 52,
+                endY: 696 + 80 + 136))
+        .line(
+            arg: CLine(
+                lineWidth: 2,
+                startX: 598 - 56 - 16,
+                startY: 80,
+                endX: 598 - 56 - 16,
+                endY: 968))
+        .bar(
+            arg: CBar(
+                x: 320,
+                y: 696 - 4,
+                content: "1234567890",
+                lineWidth: 1,
+                height: 56,
+                codeType: CCodeType.code128,
+                codeRotation: CCodeRotation.rotation_0))
+        .text(
+            arg: CText(textX: 320 + 8, textY: 696 + 54, content: "1234567890", font: CFont.tss16))
+        .text(arg: CText(textX: 12, textY: 696 + 80 + 35, content: "发", font: CFont.tss24))
+        .text(arg: CText(textX: 12, textY: 696 + 80 + 84, content: "件", font: CFont.tss24))
+        .text(arg: CText(textX: 52 + 20, textY: 696 + 80 + 28, content: "名字13777777777", font: CFont.tss24))
+        .text(arg: CText(textX: 52 + 20, textY: 696 + 80 + 28 + 32, content: "南京市浦口区威尼斯水城七街区七街区", font: CFont.tss24))
+        .text(arg: CText(textX: 598 - 56 - 5, textY: 696 + 80 + 50, content: "客", font: CFont.tss24))
+        .text(arg: CText(textX: 598 - 56 - 5, textY: 696 + 80 + 82, content: "户", font: CFont.tss24))
+        .text(arg: CText(textX: 598 - 56 - 5, textY: 696 + 80 + 106, content: "联", font: CFont.tss24))
+        .text(arg: CText(textX: 12 + 8, textY: 696 + 80 + 136 + 22 - 5, content: "物品几个快递 12kg", font: CFont.tss24))
+        .box(arg: CBox(lineWidth: 2, topLeftX: 598 - 56 - 16 - 120, topLeftY: 696 + 80 + 136 + 11, bottomRightX: 598 - 56 - 16 - 16, bottomRightY: 968 - 11))
+        .text(arg: CText(textX: 598 - 56 - 16 - 120 + 17, textY: 696 + 80 + 136 + 11 + 6, content: "已验视", font: CFont.tss24))
+        .print();
+    psdk.write();
+  }
+
+  Future<void> doTSPLModel() async {
+    PSDK psdk = Printer()
+        .tspl()
+        .page(arg: TPage(width: 76, height: 130))
+        .box(
+            arg: TBox(
+                startX: 0,
+                startY: 1,
+                endX: 598,
+                endY: 664,
+                width: 2,
+                radius: 0))
+        .line(arg: TLine(startX: 0, startY: 88, endX: 598, endY: 88, width: 2))
+        .line(
+            arg: TLine(
+                startX: 0,
+                startY: 88 + 128,
+                endX: 598,
+                endY: 88 + 128,
+                width: 2))
+        .line(
+            arg: TLine(
+                startX: 0,
+                startY: 88 + 128 + 80,
+                endX: 598,
+                endY: 88 + 128 + 80,
+                width: 2))
+        .line(
+            arg: TLine(
+                startX: 0,
+                startY: 88 + 128 + 80 + 144,
+                endX: 598 - 56 - 16,
+                endY: 88 + 128 + 80 + 144,
+                width: 2))
+        .line(
+            arg: TLine(
+                startX: 0,
+                startY: 88 + 128 + 80 + 144 + 128,
+                endX: 598 - 56 - 16,
+                endY: 88 + 128 + 80 + 144 + 128,
+                width: 2))
+        .line(
+            arg: TLine(
+                startX: 52,
+                startY: 88 + 128 + 80,
+                endX: 52,
+                endY: 88 + 128 + 80 + 144 + 128,
+                width: 2))
+        .line(
+            arg: TLine(
+                startX: 598 - 56 - 16,
+                startY: 88 + 128 + 80,
+                endX: 598 - 56 - 16,
+                endY: 664,
+                width: 2))
+        .barcode(
+            arg: TBarCode(
+                x: 120,
+                y: 88 + 12,
+                cellwidth: 2,
+                height: 80,
+                content: "1234567890",
+                rotation: TRotation.rotation_0,
+                codeType: TCodeType.code128))
+        .text(
+            arg: TText(
+                x: 120 + 12,
+                y: 88 + 20 + 76,
+                content: "1234567890",
+                font: TFont.tss24,
+                xmulty: 1,
+                ymulty: 1,
+                isBold: false))
+        .text(
+            arg: TText(
+                x: 12,
+                y: 88 + 128 + 80 + 32,
+                content: "收",
+                font: TFont.tss24,
+                xmulty: 1,
+                ymulty: 1,
+                isBold: false))
+        .text(
+            arg: TText(
+                x: 12,
+                y: 88 + 128 + 80 + 96,
+                content: "件",
+                font: TFont.tss24,
+                xmulty: 1,
+                ymulty: 1,
+                isBold: false))
+        .text(
+            arg: TText(
+                x: 12,
+                y: 88 + 128 + 80 + 144 + 32,
+                content: "发",
+                font: TFont.tss24,
+                xmulty: 1,
+                ymulty: 1,
+                isBold: false))
+        .text(
+            arg: TText(
+                x: 12,
+                y: 88 + 128 + 80 + 144 + 80,
+                content: "件",
+                font: TFont.tss24,
+                xmulty: 1,
+                ymulty: 1,
+                isBold: false))
+        .text(
+            arg: TText(
+                x: 52 + 20,
+                y: 88 + 128 + 80 + 144 + 128 + 16,
+                content: "签收人/签收时间",
+                font: TFont.tss24,
+                xmulty: 1,
+                ymulty: 1,
+                isBold: false))
+        .text(
+            arg: TText(
+                x: 430,
+                y: 88 + 128 + 80 + 144 + 128 + 36,
+                content: "月",
+                font: TFont.tss24,
+                xmulty: 1,
+                ymulty: 1,
+                isBold: false))
+        .text(
+            arg: TText(
+                x: 490,
+                y: 88 + 128 + 80 + 144 + 128 + 36,
+                content: "日",
+                font: TFont.tss24,
+                xmulty: 1,
+                ymulty: 1,
+                isBold: false))
+        .text(
+            arg: TText(
+                x: 52 + 20,
+                y: 88 + 128 + 80 + 24,
+                content: "收姓名 13777777777",
+                font: TFont.tss24,
+                xmulty: 1,
+                ymulty: 1,
+                isBold: false))
+        .text(
+            arg: TText(
+                x: 52 + 20,
+                y: 88 + 128 + 80 + 24 + 32,
+                content: "南京市浦口区威尼斯水城七街区七街区",
+                font: TFont.tss24,
+                xmulty: 1,
+                ymulty: 1,
+                isBold: false))
+        .text(
+            arg: TText(
+                x: 52 + 20,
+                y: 88 + 128 + 80 + 144 + 24,
+                content: "名字 13777777777",
+                font: TFont.tss24,
+                xmulty: 1,
+                ymulty: 1,
+                isBold: false))
+        .text(
+            arg: TText(
+                x: 52 + 20,
+                y: 88 + 128 + 80 + 144 + 24 + 32,
+                content: "南京市浦口区威尼斯水城七街区七街区",
+                font: TFont.tss24,
+                xmulty: 1,
+                ymulty: 1,
+                isBold: false))
+        .text(
+            arg: TText(
+                x: 598 - 56 - 5,
+                y: 88 + 128 + 80 + 104,
+                content: "派",
+                font: TFont.tss24,
+                xmulty: 1,
+                ymulty: 1,
+                isBold: false))
+        .text(
+            arg: TText(
+                x: 598 - 56 - 5,
+                y: 88 + 128 + 80 + 160,
+                content: "件",
+                font: TFont.tss24,
+                xmulty: 1,
+                ymulty: 1,
+                isBold: false))
+        .text(
+            arg: TText(
+                x: 598 - 56 - 5,
+                y: 88 + 128 + 80 + 208,
+                content: "联",
+                font: TFont.tss24,
+                xmulty: 1,
+                ymulty: 1,
+                isBold: false))
+        .box(
+            arg: TBox(
+                startX: 0,
+                startY: 1,
+                endX: 598,
+                endY: 968,
+                width: 2,
+                radius: 0))
+        .line(
+            arg: TLine(
+                startX: 0,
+                startY: 696 + 80,
+                endX: 598,
+                endY: 696 + 80,
+                width: 2))
+        .line(
+            arg: TLine(
+                startX: 0,
+                startY: 696 + 80 + 136,
+                endX: 598 - 56 - 16,
+                endY: 696 + 80 + 136,
+                width: 2))
+        .line(
+            arg: TLine(
+                startX: 52,
+                startY: 80,
+                endX: 52,
+                endY: 696 + 80 + 136,
+                width: 2))
+        .line(
+            arg: TLine(
+                startX: 598 - 56 - 16,
+                startY: 80,
+                endX: 598 - 56 - 16,
+                endY: 968,
+                width: 2))
+        .barcode(
+            arg: TBarCode(
+                x: 320,
+                y: 696 - 4,
+                cellwidth: 2,
+                height: 56,
+                content: "1234567890",
+                rotation: TRotation.rotation_0,
+                codeType: TCodeType.code128))
+        .text(arg: TText(x: 320 + 8, y: 696 + 54, content: "1234567890", font: TFont.tss24, xmulty: 0, ymulty: 0, isBold: false))
+        .text(arg: TText(x: 12, y: 696 + 80 + 35, content: "发", font: TFont.tss24, xmulty: 0, ymulty: 0, isBold: false))
+        .text(arg: TText(x: 12, y: 696 + 80 + 84, content: "件", font: TFont.tss24, xmulty: 0, ymulty: 0, isBold: false))
+        .text(arg: TText(x: 52 + 20, y: 696 + 80 + 28, content: "名字 13777777777", font: TFont.tss24, xmulty: 0, ymulty: 0, isBold: false))
+        .text(arg: TText(x: 52 + 20, y: 696 + 80 + 28 + 32, content: "南京市浦口区威尼斯水城七街区七街区", font: TFont.tss24, xmulty: 0, ymulty: 0, isBold: false))
+        .text(arg: TText(x: 598 - 56 - 5, y: 696 + 80 + 50, content: "客", font: TFont.tss24, xmulty: 0, ymulty: 0, isBold: false))
+        .text(arg: TText(x: 598 - 56 - 5, y: 696 + 80 + 82, content: "户", font: TFont.tss24, xmulty: 0, ymulty: 0, isBold: false))
+        .text(arg: TText(x: 598 - 56 - 5, y: 696 + 80 + 106, content: "联", font: TFont.tss24, xmulty: 0, ymulty: 0, isBold: false))
+        .text(arg: TText(x: 12 + 8, y: 696 + 80 + 136 + 22 - 5, content: "物品：几个快递 12kg", font: TFont.tss24, xmulty: 0, ymulty: 0, isBold: false))
+        .box(arg: TBox(startX: 598 - 56 - 16 - 120, startY: 696 + 80 + 136 + 11, endX: 598 - 56 - 16 - 16, endY: 968 - 11, width: 2, radius: 0))
+        .text(arg: TText(x: 598 - 56 - 16 - 120 + 17, y: 696 + 80 + 136 + 11 + 6, content: "已验视", font: TFont.tss24, xmulty: 0, ymulty: 0, isBold: false))
+        .print();
+    psdk.write();
   }
 
   /// connected device bar button
@@ -397,9 +716,9 @@ class _MyHomePageState extends State<MyHomePage> {
       style: TextButton.styleFrom(
           padding: const EdgeInsets.only(left: 0, right: 8)),
       child: connectedDevice == null
-          ? Row(
+          ? const Row(
               mainAxisSize: MainAxisSize.min,
-              children: const [
+              children: [
                 Text(
                   "未连接",
                   style: TextStyle(
@@ -440,9 +759,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   /// Listen connected device
   Stream<ConnectedDevice?> listenConnectedDevice({Duration? interval}) async* {
-    Duration _interval = interval ?? const Duration(seconds: 1);
+    Duration interval0 = interval ?? const Duration(seconds: 1);
     while (true) {
-      await Future.delayed(_interval);
+      await Future.delayed(interval0);
       var isConnected = Printer().isConnected();
       if (!isConnected) {
         yield null;

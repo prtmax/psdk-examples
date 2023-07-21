@@ -1,22 +1,15 @@
 import 'dart:async';
 
-import 'package:location/location.dart';
 class BleState {
-
-  final Location location = Location();
-  late bool isConnected;
+  bool isConnected = false;
 
   /// bluetooth state
-  late bool bluetoothState;
-  late bool isEnabledLocation;
+  bool bluetoothState = false;
+  bool isEnabledLocation = false;
 
-  late var results = [];
+  var results = [];
   StreamSubscription? streamBluetoothState;
   StreamSubscription? streamBleDiscovered;
 
-  BleState() {
-    bluetoothState = false;
-    isEnabledLocation = false;
-    isConnected = false;
-  }
+  BleState() {}
 }

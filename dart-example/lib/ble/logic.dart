@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:get/get.dart';
 import 'package:psdk_bluetooth_ble/psdk_bluetooth_ble.dart';
 import '../toolkit/printer.dart';
@@ -35,7 +36,7 @@ class BleLogic extends GetxController {
     }
 
     state.streamBluetoothState =
-        BLEBluetooth().listenBluetoothState().listen((_state) {
+        BLEBluetooth().listenBluetoothState.stream.listen((_state) {
       state.bluetoothState = _state;
       super.update();
     });
@@ -44,10 +45,10 @@ class BleLogic extends GetxController {
       state.results.addAll(event);
       super.update();
     });
-    state.location.serviceEnabled().then((value) {
-      state.isEnabledLocation = value;
+
+      state.isEnabledLocation =await Geolocator.isLocationServiceEnabled();
       super.update();
-    });
+
   }
 
 
@@ -86,7 +87,7 @@ class BleLogic extends GetxController {
   }
 
   Future<void> checkLocationService() async {
-    bool isEnabled = await state.location.serviceEnabled();
+    bool isEnabled = await Geolocator.isLocationServiceEnabled();
     if (!isEnabled) {
       return;
     }
