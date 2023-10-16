@@ -126,7 +126,7 @@ class BlePage extends StatelessWidget {
 
   Widget _refreshView(BuildContext context) {
     return StreamBuilder<bool>(
-      stream: BLEBluetooth().origin().isScanning,
+      stream: BLEBluetooth().listenDiscovery.stream,
       initialData: false,
       builder: (c, snapshot) {
         var isScanning = snapshot.data ?? false;

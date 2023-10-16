@@ -21,8 +21,8 @@ import com.printer.psdk.device.bluetooth.ConnectListener;
 import com.printer.psdk.device.bluetooth.Connection;
 import com.printer.psdk.frame.father.PSDK;
 import com.printer.psdk.frame.logger.PLog;
+import com.printer.psdk.imagep.android.AndroidSourceImage;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 
@@ -54,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
         connection = Bluetooth.getInstance().createConnectionClassic(device, new ConnectListener() {
             @Override
             public void onConnectSuccess(ConnectedDevice connectedDevice) {
-                cpcl = CPCL.generic(connection);
+                cpcl = CPCL.generic(connectedDevice);
             }
 
             @Override
@@ -131,9 +131,9 @@ public class MainActivity extends AppCompatActivity {
                 Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.logo, mOptions);
                 GenericCPCL _gcpcl = cpcl.page(CPage.builder().width(400).height(320).build())
                         .image(CImage.builder()
-                                .startX(10)
+                                .startX(0)
                                 .startY(0)
-                                .image(bitmap2Bytes(bitmap))
+                                .image(new AndroidSourceImage(bitmap))
                                 .compress(true)
                                 .build()
                         )
@@ -273,17 +273,12 @@ public class MainActivity extends AppCompatActivity {
                 .text(CText.builder().textX(12 + 8).textY(696 + 80 + 136 + 22 - 5).font(Font.TSS24).content("物品：" + "几个快递" + " " + "12kg").build())
                 .box(CBox.builder().topLeftX(598 - 56 - 16 - 120).topLeftY(696 + 80 + 136 + 11).bottomRightX(598 - 56 - 16 - 16).bottomRightY(968 - 11).lineWidth(2).build())
                 .text(CText.builder().textX(598 - 56 - 16 - 120 + 17).textY(696 + 80 + 136 + 11 + 6).font(Font.TSS24).content("已验视").build())
-                .print(CPrint.builder().build())
-                .feed();
+                .form()
+                .print(CPrint.builder().build());
         String result = safeWriteAndRead(_gcpcl);
         show(result);
     }
 
-    private byte[] bitmap2Bytes(Bitmap bm) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
-        return baos.toByteArray();
-    }
 
     private String safeWriteAndRead(PSDK psdk) {
         try {

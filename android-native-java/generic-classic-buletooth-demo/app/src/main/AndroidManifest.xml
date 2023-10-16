@@ -31,6 +31,7 @@
         <activity android:name="com.example.classic_bluetooth_demo.CPCLActivity"/>
         <activity android:name="com.example.classic_bluetooth_demo.TSPLActivity"/>
         <activity android:name="com.example.classic_bluetooth_demo.ESCActivity"/>
+        <activity android:name="com.example.classic_bluetooth_demo.WIFIActivity"/>
     </application>
 
 </manifest>

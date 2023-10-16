@@ -18,11 +18,10 @@ import com.printer.psdk.device.adapter.types.WroteReporter;
 import com.printer.psdk.device.usb.USB;
 import com.printer.psdk.device.usb.USBConnectedDevice;
 import com.printer.psdk.frame.father.PSDK;
+import com.printer.psdk.imagep.android.AndroidSourceImage;
 import com.printer.psdk.tspl.GenericTSPL;
 import com.printer.psdk.tspl.TSPL;
 import com.printer.psdk.tspl.args.*;
-
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -107,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
             TImage.builder()
               .x(0)
               .y(0)
-              .image(bitmap2Bytes(rawBitmap))
+              .image(new AndroidSourceImage(rawBitmap))
               .compress(cb_compress.isChecked())
               .build()
           )
@@ -140,7 +139,7 @@ public class MainActivity extends AppCompatActivity {
             TImage.builder()
               .x(0)
               .y(0)
-              .image(bitmap2Bytes(rawBitmap))
+              .image(new AndroidSourceImage(rawBitmap))
               .compress(cb_compress.isChecked())
               .build()
           )
@@ -173,7 +172,7 @@ public class MainActivity extends AppCompatActivity {
             TImage.builder()
               .x(0)
               .y(0)
-              .image(bitmap2Bytes(rawBitmap))
+              .image(new AndroidSourceImage(rawBitmap))
               .compress(cb_compress.isChecked())
               .build()
           )
@@ -206,7 +205,7 @@ public class MainActivity extends AppCompatActivity {
             TImage.builder()
               .x(0)
               .y(0)
-              .image(bitmap2Bytes(rawBitmap))
+              .image(new AndroidSourceImage(rawBitmap))
               .compress(cb_compress.isChecked())
               .build()
           )
@@ -247,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
             TImage.builder()
               .x(0)
               .y(0)
-              .image(bitmap2Bytes(rawBitmap))
+              .image(new AndroidSourceImage(rawBitmap))
               .compress(cb_compress.isChecked())
               .build()
           )
@@ -380,11 +379,6 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        }).start();
 //    }
-  private byte[] bitmap2Bytes(Bitmap bm) {
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
-    return baos.toByteArray();
-  }
 
   private String safeWriteAndRead(PSDK psdk) {
     try {

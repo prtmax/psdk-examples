@@ -32,6 +32,7 @@ import com.printer.psdk.frame.father.PSDK;
 import com.printer.psdk.frame.father.listener.DataListener;
 import com.printer.psdk.frame.father.listener.DataListenerRunner;
 import com.printer.psdk.frame.father.listener.ListenAction;
+import com.printer.psdk.imagep.android.AndroidSourceImage;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -175,7 +176,7 @@ public class MainActivity extends Activity {
                     .location(ELocation.builder().location(Location.CENTER).build())
                     .lineDot(1)
                     .image(EImage.builder()
-                      .image(bitmap2Bytes(bitmap))
+                      .image(new AndroidSourceImage(bitmap))
                       .build())
                     .lineDot(10)
                     .stopJob();
@@ -220,7 +221,7 @@ public class MainActivity extends Activity {
                     .wakeup()
                     .location(ELocation.builder().location(Location.CENTER).build())
                     .image(EImage.builder()
-                      .image(bitmap2Bytes(bitmap))
+                      .image(new AndroidSourceImage(bitmap))
                       .build())
                     .lineDot(0)
                     .position()//缝隙标签纸打印就是打印结束后多执行了这个指令

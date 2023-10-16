@@ -18,6 +18,7 @@ import com.printer.psdk.device.bluetooth.Bluetooth;
 import com.printer.psdk.device.bluetooth.ConnectListener;
 import com.printer.psdk.device.bluetooth.Connection;
 import com.printer.psdk.frame.father.PSDK;
+import com.printer.psdk.imagep.android.AndroidSourceImage;
 import com.printer.psdk.tspl.GenericTSPL;
 import com.printer.psdk.tspl.TSPL;
 import com.printer.psdk.tspl.args.*;
@@ -25,8 +26,6 @@ import com.printer.psdk.tspl.mark.CodeType;
 import com.printer.psdk.tspl.mark.CorrectLevel;
 import com.printer.psdk.tspl.mark.Font;
 import com.printer.psdk.tspl.mark.ShowType;
-
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 
@@ -153,7 +152,7 @@ public class TSPLActivity extends Activity {
           .cls()
           .image(
             TImage.builder()
-              .image(bitmap2Bytes(bitmap))
+              .image(new AndroidSourceImage(bitmap))
               .compress(true)
               .build()
           )
@@ -270,13 +269,6 @@ public class TSPLActivity extends Activity {
     });
   }
 
-
-
-  private byte[] bitmap2Bytes(Bitmap bm) {
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
-    return baos.toByteArray();
-  }
 
   private String safeWriteAndRead(PSDK psdk) {
     try {

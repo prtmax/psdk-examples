@@ -28,6 +28,7 @@ import com.printer.psdk.esc.args.EImage;
 import com.printer.psdk.frame.father.PSDK;
 import com.printer.psdk.frame.father.args.common.Raw;
 import com.printer.psdk.frame.father.types.lifecycle.Lifecycle;
+import com.printer.psdk.imagep.android.AndroidSourceImage;
 
 
 import java.io.ByteArrayOutputStream;
@@ -121,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
 //                mOptions.inScaled = false;
 //                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.test, mOptions);
         Bitmap bitmap = drawBitmap();
-        CompatibleQR285A _gesc = esc.image(EImage.builder().image(bitmap2Bytes(bitmap))
+        CompatibleQR285A _gesc = esc.image(EImage.builder().image(new AndroidSourceImage(bitmap))
           .build()).position();
         String result = safeWriteAndRead(_gesc);
         show(result);
