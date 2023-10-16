@@ -12,7 +12,6 @@ import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 
 
-import com.printer.psdk.device.adapter.ReadOptions;
 import com.printer.psdk.device.adapter.types.WroteReporter;
 
 import com.printer.psdk.device.usb.USB;
@@ -23,8 +22,8 @@ import com.printer.psdk.esc.args.EImage;
 import com.printer.psdk.esc.args.ELocation;
 import com.printer.psdk.esc.mark.Location;
 import com.printer.psdk.frame.father.PSDK;
+import com.printer.psdk.imagep.android.AndroidSourceImage;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -94,7 +93,7 @@ public class MainActivity extends AppCompatActivity {
                                 GenericESC _gesc = esc
                                         .location(ELocation.builder().location(Location.CENTER).build())
                                         .image(EImage.builder()
-                                                .image(bitmap2Bytes(rawBitmap))
+                                                .image(new AndroidSourceImage(rawBitmap))
                                                 .build());
                                 safeWrite(_gesc);
                             } else {
@@ -147,11 +146,6 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        }).start();
 //    }
-    private byte[] bitmap2Bytes(Bitmap bm) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
-        return baos.toByteArray();
-    }
 
     private String Byte2Hex(Byte inByte) {
         return String.format("%02x", inByte).toUpperCase();
@@ -167,18 +161,6 @@ public class MainActivity extends AppCompatActivity {
         return strBuilder.toString();
     }
 
-    private byte[] safeWriteAndRead(PSDK psdk) {
-        try {
-            WroteReporter reporter = psdk.write();
-            if (!reporter.isOk()) {
-                throw new IOException("写入数据失败", reporter.getException());
-            }
-            Thread.sleep(200);
-            return psdk.read(ReadOptions.builder().timeout(2000).build());
-        } catch (Exception e) {
-            return null;
-        }
-    }
 
     private void safeWrite(PSDK psdk) {
         try {

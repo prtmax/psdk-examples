@@ -24,8 +24,8 @@ import com.printer.psdk.device.bluetooth.ConnectListener;
 import com.printer.psdk.device.bluetooth.Connection;
 import com.printer.psdk.frame.father.PSDK;
 import com.printer.psdk.frame.logger.PLog;
+import com.printer.psdk.imagep.android.AndroidSourceImage;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 
@@ -135,7 +135,7 @@ public class MainActivity extends AppCompatActivity {
                         .image(CImage.builder()
                                 .startX(10)
                                 .startY(0)
-                                .image(bitmap2Bytes(bitmap))
+                                .image(new AndroidSourceImage(bitmap))
                                 .compress(true)
                                 .build()
                         )
@@ -308,18 +308,12 @@ public class MainActivity extends AppCompatActivity {
                         .startX(0)
                         .startY(0)
                         .compress(true)
-                        .image(bitmap2Bytes(command.render().getBitmap())).build())
+                        .image(command.render().getBitmap()).build())
                 .print(CPrint.builder().build());
         String cmd = _gcpcl.command().string(Charset.defaultCharset());
         Log.e("jcz", cmd);
         String result = safeWriteAndRead(_gcpcl);
         show(result);
-    }
-
-    private byte[] bitmap2Bytes(Bitmap bm) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
-        return baos.toByteArray();
     }
 
     private String safeWriteAndRead(PSDK psdk) {

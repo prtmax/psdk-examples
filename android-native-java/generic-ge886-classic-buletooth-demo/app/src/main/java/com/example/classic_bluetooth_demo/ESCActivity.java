@@ -4,7 +4,6 @@ package com.example.classic_bluetooth_demo;
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.View;
@@ -13,7 +12,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.printer.psdk.device.adapter.ConnectedDevice;
-import com.printer.psdk.device.adapter.ReadOptions;
 import com.printer.psdk.device.adapter.types.WroteReporter;
 import com.printer.psdk.device.bluetooth.Bluetooth;
 import com.printer.psdk.device.bluetooth.ConnectListener;
@@ -22,8 +20,8 @@ import com.printer.psdk.esc.ESC;
 import com.printer.psdk.esc.GenericESC;
 import com.printer.psdk.esc.args.EImage;
 import com.printer.psdk.frame.father.PSDK;
+import com.printer.psdk.imagep.android.AndroidSourceImage;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -123,7 +121,7 @@ public class ESCActivity extends Activity {
                 bitmap = Bitmap.createScaledBitmap(bitmap, 300, 450, true);
                 GenericESC _gesc = esc
                   .image(EImage.builder()
-                    .image(bitmap2Bytes(bitmap))
+                    .image(new AndroidSourceImage(bitmap))
                     .build());
                 safeWrite(_gesc);
               }
@@ -152,7 +150,7 @@ public class ESCActivity extends Activity {
                 bitmap = Bitmap.createScaledBitmap(bitmap, 300, 450, true);
                 GenericESC _gesc = esc
                   .image(EImage.builder()
-                    .image(bitmap2Bytes(bitmap))
+                    .image(new AndroidSourceImage(bitmap))
                     .build())
                   .position();//标签纸打印就是打印结束后多执行了这个指令
                 safeWrite(_gesc);
@@ -179,11 +177,6 @@ public class ESCActivity extends Activity {
     return strBuilder.toString();
   }
 
-  private byte[] bitmap2Bytes(Bitmap bm) {
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
-    return baos.toByteArray();
-  }
 
   private void safeWrite(PSDK psdk) {
     try {

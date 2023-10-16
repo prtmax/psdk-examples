@@ -8,52 +8,56 @@
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingBottom="@dimen/activity_vertical_margin"
             tools:context=".MainActivity">
-    <LinearLayout android:layout_width="match_parent"
-                  android:layout_height="wrap_content"
-                  android:orientation="vertical">
-        <Button
-                android:id="@+id/power_on"
-                android:layout_width="fill_parent"
+  <LinearLayout android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/myButton1"/>
-        <TextView
-                android:id="@+id/tv_port"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="当前可用串口："/>
-        <Button
-                android:id="@+id/power_off"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="@string/myButton2"/>
+                android:orientation="vertical">
+    <Button
+      android:id="@+id/power_on"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:text="@string/myButton1"/>
+    <TextView
+      android:id="@+id/tv_port"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:gravity="center"
+      android:text="当前可用串口："/>
+    <Button
+      android:id="@+id/power_off"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:text="@string/myButton2"/>
 
 
+    <Button
+      android:id="@+id/printbmp"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:text="打印图片"/>
 
 
-        <Button
-                android:id="@+id/printbmp"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="打印图片"/>
+    <Button
+      android:id="@+id/barCode"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:text="打印条形码"/>
 
+    <Button
+      android:id="@+id/QRCode"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:text="打印二维码"/>
 
-        <Button
-                android:id="@+id/barCode"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="打印条形码"/>
+    <Button
+      android:id="@+id/model"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:text="打印100*180模板"/>
 
-        <Button
-                android:id="@+id/QRCode"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="打印二维码"/>
-
-        <Button
-                android:id="@+id/getInfor"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:text="获取打印机信息"/>
-    </LinearLayout>
+    <Button
+      android:id="@+id/getInfor"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:text="获取打印机信息"/>
+  </LinearLayout>
 </ScrollView>
