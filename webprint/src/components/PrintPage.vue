@@ -61,11 +61,11 @@ function closeBluetooth() {
 async function writeModel() {
   if (cmd.value == "tspl") {
     if (characteristic != null) {
-      await write(0, writeTsplModel(), characteristic, 512);
+      await write(0, writeTsplModel(), characteristic, 20);
     }
   } else if (cmd.value == "cpcl") {
     if (characteristic != null) {
-      await write(0, writeCpclModel(), characteristic, 512);
+      await write(0, writeCpclModel(), characteristic, 20);
     }
   }
 }
@@ -679,7 +679,7 @@ async function printImage() {
         )
         .print();
 
-    await write(0, tspl.command().binary(), characteristic, 512);
+    await write(0, tspl.command().binary(), characteristic, 20);
   } else if (cmd.value == "cpcl") {
     const lifecycle = new Lifecycle(new FakeConnectedDevice());
     const cpcl = CPCL.generic(lifecycle)
@@ -696,7 +696,7 @@ async function printImage() {
             })
         )
         .print();
-    await write(0, cpcl.command().binary(), characteristic, 512);
+    await write(0, cpcl.command().binary(), characteristic, 20);
   } else {
     const lifecycle = new Lifecycle(new FakeConnectedDevice());
     const esc = ESC.generic(lifecycle)
@@ -710,7 +710,7 @@ async function printImage() {
         )
         .lineDot(40)
         .stopJob();
-    await write(0, esc.command().binary(), characteristic, 512);
+    await write(0, esc.command().binary(), characteristic, 20);
   }
 }
 
