@@ -1,0 +1,50 @@
+
+@use "@configured-variables" as variables;
+
+
+
+.layout-nav-type-vertical {
+  // 👉 Layout Vertical nav
+  .layout-vertical-nav {
+    $sl-layout-nav-type-vertical: &;
+
+
+    background-color: variables.$vertical-nav-background-color;
+
+
+    // 👉 Nav header
+    .nav-header {
+      overflow: hidden;
+      padding: variables.$vertical-nav-header-padding;
+      margin-inline: variables.$vertical-nav-header-inline-spacing;
+      min-block-size: variables.$vertical-nav-header-height;
+
+      // TEMPLATE: Check if we need to move this to master
+      .app-logo {
+        flex-shrink: 0;
+        transition: transform 0.25s ease-in-out;
+
+        @at-root {
+          // Move logo a bit to align center with the icons in vertical nav mini variant
+          .layout-vertical-nav-collapsed#{$sl-layout-nav-type-vertical}:not(.hovered) .nav-header .app-logo {
+            transform: translateX(variables.$vertical-nav-header-logo-translate-x-when-vertical-nav-mini);
+
+            //@include layoutsMixins.rtl {
+            //  transform: translateX(-(variables.$vertical-nav-header-logo-translate-x-when-vertical-nav-mini));
+            //}
+          }
+        }
+      }
+
+      .app-title {
+        margin-inline-start: variables.$vertical-nav-header-logo-title-spacing;
+      }
+
+      .header-action {
+
+      }
+    }
+
+
+  }
+}
