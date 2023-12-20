@@ -205,7 +205,7 @@ public class TSPLActivity extends Activity {
           .gap(true)
           .cut(true)
           .cls()
-          .barcode(TBarCode.builder().content("1234556890").height(50).x(10).y(10).cellwidth(2).build())
+          .barcode(TBarCode.builder().content("1234556890").height(50).x(10).y(10).cellWidth(2).build())
           .print(1);
         String result = safeWriteAndRead(_gtspl);
         show(result);
@@ -253,8 +253,8 @@ public class TSPLActivity extends Activity {
           .text(TText.builder().x(30).y(720).font(Font.TSS16).xmulti(1).ymulti(1).content("进出口邮递物品监管办法”和国家法令有关禁止和限制邮寄物品的规定，以及邮").build())
           .text(TText.builder().x(30).y(740).font(Font.TSS16).xmulti(1).ymulti(1).content("寄物品的规定，以及邮电部转发的各国（地区）邮 政禁止和限制。").build())
           .text(TText.builder().x(30).y(760).font(Font.TSS16).xmulti(1).ymulti(1).content("寄件人承诺不含有法律规定的违禁物品。").build())
-          .barcode(TBarCode.builder().x(80).y(300).codeType(CodeType.CODE_128).height(90).showType(ShowType.SHOW_CENTER).cellwidth(4).content("873456093465").build())
-          .barcode(TBarCode.builder().x(550).y(910).codeType(CodeType.CODE_128).height(50).showType(ShowType.SHOW_CENTER).cellwidth(2).content("873456093465").build())
+          .barcode(TBarCode.builder().x(80).y(300).codeType(CodeType.CODE_128).height(90).showType(ShowType.SHOW_CENTER).cellWidth(4).content("873456093465").build())
+          .barcode(TBarCode.builder().x(550).y(910).codeType(CodeType.CODE_128).height(50).showType(ShowType.SHOW_CENTER).cellWidth(2).content("873456093465").build())
           .box(TBox.builder().startX(40).startY(500).endX(340).endY(650).width(4).radius(20).build())
           .text(TText.builder().x(60).y(520).font(Font.TSS24).xmulti(1).ymulti(1).content("寄件人签字：").build())
           .text(TText.builder().x(130).y(625).font(Font.TSS24).xmulti(1).ymulti(1).content("2015-10-30 09:09").build())
@@ -285,6 +285,7 @@ public class TSPLActivity extends Activity {
   }
 
   private void show(String message) {
+    if(message==null) return;
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
   }
 

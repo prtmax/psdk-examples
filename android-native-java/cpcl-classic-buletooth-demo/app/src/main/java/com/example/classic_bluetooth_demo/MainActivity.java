@@ -344,7 +344,8 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void show(String message) {
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+      if(message==null) return;
+      Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
     }
 
     @Override

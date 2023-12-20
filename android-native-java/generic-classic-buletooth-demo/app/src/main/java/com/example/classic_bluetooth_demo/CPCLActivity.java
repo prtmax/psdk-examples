@@ -254,8 +254,8 @@ public class CPCLActivity extends Activity {
       .text(CText.builder().textX(12 + 8).textY(696 + 80 + 136 + 22 - 5).font(Font.TSS24).content("物品：" + "几个快递" + " " + "12kg").build())
       .box(CBox.builder().topLeftX(598 - 56 - 16 - 120).topLeftY(696 + 80 + 136 + 11).bottomRightX(598 - 56 - 16 - 16).bottomRightY(968 - 11).lineWidth(2).build())
       .text(CText.builder().textX(598 - 56 - 16 - 120 + 17).textY(696 + 80 + 136 + 11 + 6).font(Font.TSS24).content("已验视").build())
-      .print(CPrint.builder().build())
-      .feed();
+      .form()//标签定位指令
+      .print(CPrint.builder().build());
     String result = safeWriteAndRead(_gcpcl);
     show(result);
   }
