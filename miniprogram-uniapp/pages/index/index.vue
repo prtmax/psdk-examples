@@ -15,6 +15,7 @@
 		<button @click="closeBluetooth" class="button">断开连接</button>
 		<button @click="writeModel" class="button">打印76*130模版</button>
 		<button @click="printImage" class="button">打印图片</button>
+		<button @click="writeTsplRibbonModel" class="button">打印热转印测试</button>
 		<scroll-view class="canvas-buttons" scroll-y="true">
 			<block v-for="(item, index) in discoveredDevices" :key="item.deviceId">
 				<text class="status">设备名称:{{item.name}}</text>
@@ -50,10 +51,14 @@
 		CPage,
 		CText,
 		CFont,
+		CBold,
+		CRotation,
+		CInverse,
 	} from "@psdk/cpcl";
 	import {
 		TBar,
 		TBarCode,
+		TQRCode,
 		TBox,
 		TImage,
 		TPage,
@@ -68,7 +73,10 @@
 		EImage
 	} from "@psdk/esc";
 	async function initState(vm) {
+
 		vm.bluetooth = new UniappBleBluetooth({
+			allowedWriteCharacteristic: '49535343-8841-43F4-A8D4-ECBE34729BB3',
+			allowedReadCharacteristic: '49535343-1e4d-4bd9-ba61-23c647249616',
 			allowNoName: false,
 		});
 		vm.bluetooth.discovered((devices) => {
@@ -150,7 +158,15 @@
 					console.log(vm.connectedDevice);
 					vm.$printer.init(vm.connectedDevice);
 					await Timeout.set(500);
-
+					//监听打印机返回的数据
+					// vm.connectedDevice.notify((res) => {
+					// 	console.log(res.characteristicId);
+					// 	console.log(res);
+					// 	console.log("Length:" + res.value.byteLength)
+					// 	console.log("hexvalue:" + this.ab2hex(res.value))
+					// 	const hex = this.ab2hex(res.value)
+					// 	console.log("strvalue:" + this.hexCharCodeToStr(hex));
+					// });
 					uni.showToast({
 						title: '成功',
 					});
@@ -167,11 +183,12 @@
 			async printImage() {
 				console.log("printImage")
 				const vm = this;
+
 				// 把图片画到离屏 canvas 上
 				const canvas = uni.createOffscreenCanvas({
 					type: '2d',
-					width: 500,
-					height: 960
+					width: 608,
+					height: 1040
 				});
 				const ctx = canvas.getContext('2d');
 				// 创建一个图片
@@ -179,9 +196,9 @@
 				// 等待图片加载
 				await new Promise(resolve => {
 					image.onload = resolve;
-					image.src = "/static/p3.png"; // 要加载的图片 url, 可以是base64
+					image.src = "/static/yunda.png"; // 要加载的图片 url, 可以是base64
 				});
-				ctx.drawImage(image, 0, 0, 500, 960);
+				ctx.drawImage(image, 0, 0, 608, 1040);
 				console.log("toDataURL - ", ctx.canvas.toDataURL()) // 输出的图片
 				if (this.items[this.current].type == "tspl") {
 					const report = await vm.$printer.tspl()
@@ -226,7 +243,7 @@
 						.image(
 							new EImage({
 								image: canvas,
-								compress:true,
+								compress: true,
 							})
 						)
 						.lineDot(40)
@@ -236,12 +253,40 @@
 				}
 
 			},
+			// ArrayBuffer转16进度字符串示例
+			ab2hex(buffer) {
+				const hexArr = Array.prototype.map.call(
+					new Uint8Array(buffer),
+					function(bit) {
+						return ('00' + bit.toString(16)).slice(-2)
+					}
+				)
+				return hexArr.join('')
+			},
+
+			// 将16进制的内容转成我们看得懂的字符串内容
+			hexCharCodeToStr(hexCharCodeStr) {
+				var trimedStr = hexCharCodeStr.trim();
+				var rawStr = trimedStr.substr(0, 2).toLowerCase() === "0x" ? trimedStr.substr(2) : trimedStr;
+				var len = rawStr.length;
+				if (len % 2 !== 0) {
+					alert("存在非法字符!");
+					return "";
+				}
+				var curCharCode;
+				var resultStr = [];
+				for (var i = 0; i < len; i = i + 2) {
+					curCharCode = parseInt(rawStr.substr(i, 2), 16);
+					resultStr.push(String.fromCharCode(curCharCode));
+				}
+				return resultStr.join("");
+			},
 			async writeModel() {
 				console.log("writeModel");
 				const vm = this;
 				if (this.items[this.current].type == "tspl") {
 					vm.writeTsplModel();
-				}else if(this.items[this.current].type == "cpcl"){
+				} else if (this.items[this.current].type == "cpcl") {
 					console.log("writeCpclModel");
 					vm.writeCpclModel();
 				}
@@ -522,8 +567,8 @@
 						}))
 						.form(new CForm())
 						.print();
-						console.log(cpcl.command().string());
-					const report= cpcl.write();
+					console.log(cpcl.command().string());
+					const report = await cpcl.write();
 					console.log(report);
 					uni.showToast({
 						title: '成功',
@@ -733,7 +778,7 @@
 							endY: 968,
 							width: 2
 						}))
-						.bar(new TBarCode({
+						.barcode(new TBarCode({
 							x: 320,
 							y: 696 - 4,
 							cellWidth: 2,
@@ -810,9 +855,65 @@
 							font: TFont.TSS24
 						}))
 						.print();
-						console.log(tspl.command().string());
-						const report= tspl.write();
-						console.log(report);
+					console.log(tspl.command().string());
+					const report = await tspl.write();
+					// const report = await tspl.write({enableChunkWrite:true,chunkSize:100});///uniapp运行成app需要分包发送，小程序不需要
+					console.log(report);
+					uni.showToast({
+						title: '成功',
+					});
+				} catch (e) {
+					console.error(e);
+					uni.showToast({
+						title: '失败',
+					});
+				}
+			},
+			async writeTsplRibbonModel() {
+				const vm = this;
+				try {
+					const tspl = await vm.$printer.tspl()
+						.page(new TPage({
+							width: 76,
+							height: 130
+						}))
+						//注释的为热转印机器指令
+						.label() //标签纸打印 三种纸调用的时候根据打印机实际纸张选一种就可以了
+						// .bline() //黑标纸打印
+						// .continuous() //连续纸打印
+						// .offset(0) //进纸
+						// .ribbon(false) //热敏模式
+						// .shift(0) //垂直偏移
+						// .reference(0, 0) //相对偏移
+						.qrcode(new TQRCode({
+							x: 20,
+							y: 20,
+							content: "发发发发发"
+						}))
+						///使用自定义矢量字体SIMHEI.TTF放大倍数mulX,mulY计算方式想打多大(mm)/0.35取整，例如想打5mm字体：5/0.35=14
+						.text(new TText({
+							x: 320 + 8,
+							y: 696 + 54,
+							content: "发发发发发",
+							rawFont: "SIMHEI.TTF",
+							mulX: 14,
+							mulY: 14
+						}))
+						.text(new TText({
+							x: 12,
+							y: 696 + 80 + 35,
+							content: "发发发发发",
+							rawFont: "SIMHEI.TTF",
+							mulX: 14,
+							mulY: 14
+						}))
+						.print();
+					console.log(tspl.command().string());
+					// const report = await tspl.write();
+					const report = await tspl.write({
+						enableChunkWrite: true,
+						chunkSize: 100
+					}); ///uniapp运行成app需要分包发送，小程序不需要
 					console.log(report);
 					uni.showToast({
 						title: '成功',
