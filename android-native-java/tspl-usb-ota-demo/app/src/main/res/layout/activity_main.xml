@@ -1,0 +1,121 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/sample_main_layout"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_marginLeft="10dp"
+                  android:orientation="horizontal">
+      <CheckBox
+        android:id="@+id/cb_compress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:checked="true"
+        android:text="压缩">
+
+      </CheckBox>
+      <CheckBox
+        android:id="@+id/cb_cut"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:checked="true"
+        android:text="切刀">
+
+      </CheckBox>
+      <CheckBox
+        android:id="@+id/cb_position"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:checked="true"
+        android:text="定位">
+
+      </CheckBox>
+    </LinearLayout>
+
+
+    <Button
+      android:id="@+id/switch_usb"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="5dp"
+      android:text="打开USB"/>
+    <Button
+      android:id="@+id/bt_boot"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="5dp"
+      android:text="进入升级模式"/>
+    <Button
+      android:id="@+id/print"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="5dp"
+      android:text="打印"/>
+
+    <Button
+      android:id="@+id/status"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="5dp"
+      android:text="版本查询"/>
+    <Button
+      android:id="@+id/file_choose"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="选择文件"
+    >
+    </Button>
+    <TextView
+      android:id="@+id/tv_file"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:text="未选择文件"
+      android:layout_weight="1">
+    </TextView>
+    <Button
+      android:id="@+id/bt_ota_usb"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="5dp"
+      android:text="打开升级模式的USB"/>
+    <Button
+      android:id="@+id/bt_ota"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="5dp"
+      android:text="固件升级"/>
+    <TextView
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="5dp"
+      android:text="升级步骤：1.先打开USB 点击进入升级模式 打印机滴的一声说明成功\n
+2.选择升级的固件文件，有路径显示说明选择成功\n
+3.打开升级模式的USB，提示成功则可点击固件升级"/>
+  </LinearLayout>
+
+  <ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+      android:id="@+id/logText"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="8dp"
+      android:layout_marginTop="15dp"
+      android:text=""
+      android:textColor="@android:color/black"
+      android:textSize="18sp"/>
+  </ScrollView>
+
+</LinearLayout>
+
