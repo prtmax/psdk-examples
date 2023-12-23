@@ -888,7 +888,8 @@
 						.qrcode(new TQRCode({
 							x: 20,
 							y: 20,
-							content: "发发发发发"
+							content: "发发发发发",
+              cellWidth:2
 						}))
 						///使用自定义矢量字体SIMHEI.TTF放大倍数mulX,mulY计算方式想打多大(mm)/0.35取整，例如想打5mm字体：5/0.35=14
 						.text(new TText({
