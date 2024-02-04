@@ -38,6 +38,7 @@ import {
   ESC,
   EImage
 } from "@psdk/esc";
+import { WeifeiImage } from "./weifeiimage";
 var bluetooth = new WechatBleBluetooth({
   allowNoName: false,
 })
@@ -70,7 +71,8 @@ Page({
   // 打开蓝牙
   openBluetooth: function () {
     let that = this
-    let discoveredDevices = that.data.discoveredDevices;
+    let discoveredDevices1 = that.data.discoveredDevices;
+    discoveredDevices1=[]
     that.setData({
       discoveredDevices: []
     })
@@ -78,9 +80,9 @@ Page({
       // 发现新设备
       console.log("发现新设备");
       if (!devices.length) return;
-      discoveredDevices = discoveredDevices.concat(devices)
+      discoveredDevices1 = discoveredDevices1.concat(devices)
       that.setData({
-        discoveredDevices: discoveredDevices
+        discoveredDevices: discoveredDevices1
       })
 
     });
@@ -103,7 +105,7 @@ Page({
   //连接设备
   connectTO: async function (e) {
     let that = this;
-    
+
     console.log(e);
     wx.showLoading();
     // 连接设备
@@ -132,7 +134,7 @@ Page({
     if (that.data.items[0].checked) {
       that.writeTsplModel();
     }else if(that.data.items[1].checked){
-      vm.writeCpclModel();
+      that.writeCpclModel();
     }
   },
   writeCpclModel: async function () {
@@ -705,9 +707,9 @@ Page({
     const image = canvas.createImage();
     await new Promise(resolve => {
       image.onload = resolve;
-      image.src = "/image/p3.png"; // 要加载的图片 url, 可以是base64
+      image.src = "/image/xxx.png"; // 要加载的图片 url, 可以是base64
     });
-    ctx.drawImage(image, 0, 0, 500, 960);
+    ctx.drawImage(image, 0, 0, 200, 560);
     console.log("toDataURL - ", ctx.canvas.toDataURL()) // 输出的图片
     if (that.data.items[0].checked) {
       const report = that.data.tspl
@@ -737,7 +739,7 @@ Page({
           new CImage({
             x: 0,
             y: 0,
-            compress: true,
+            compress: false,
             image: canvas
           })
         )
