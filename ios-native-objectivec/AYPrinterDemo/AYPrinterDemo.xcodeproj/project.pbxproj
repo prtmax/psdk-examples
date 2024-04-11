@@ -1,0 +1,924 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		05AE201C183EE692582D66B6 /* Pods_AYPrinterDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 022F8BE57904AABD0D7C014B /* Pods_AYPrinterDemo.framework */; };
+		218EFB1EB88D79718DCF932D /* Pods_AYPrinterDemo_AYPrinterDemoUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4EF962A242669BF50CD3CA5 /* Pods_AYPrinterDemo_AYPrinterDemoUITests.framework */; };
+		B502DDB62AB9840700B74A2F /* CpclFunctionVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B502DDB42AB9840700B74A2F /* CpclFunctionVC.m */; };
+		B502DDB72AB9840700B74A2F /* CpclFunctionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = B502DDB52AB9840700B74A2F /* CpclFunctionVC.xib */; };
+		B50C1AE02BC78C2C00292025 /* a4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B50C1ADF2BC78C2C00292025 /* a4.jpg */; };
+		B50C1AE22BC7946A00292025 /* PD-A4主动上报信息释义.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B50C1AE12BC7946A00292025 /* PD-A4主动上报信息释义.pdf */; };
+		B543E16B2AB85A3100713B63 /* BaseVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B543E16A2AB85A3100713B63 /* BaseVC.m */; };
+		B543E17A2AB85C0900713B63 /* EscFunctionVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B543E1782AB85C0900713B63 /* EscFunctionVC.m */; };
+		B543E17B2AB85C0900713B63 /* EscFunctionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = B543E1792AB85C0900713B63 /* EscFunctionVC.xib */; };
+		B56455F32BC38C9F0076C82F /* DL-Q2 V1.12.PRTU in Resources */ = {isa = PBXBuildFile; fileRef = B56455DD2BC38C9F0076C82F /* DL-Q2 V1.12.PRTU */; };
+		B56455F42BC38C9F0076C82F /* DL-Q2 V1.12MH.PRTU in Resources */ = {isa = PBXBuildFile; fileRef = B56455DE2BC38C9F0076C82F /* DL-Q2 V1.12MH.PRTU */; };
+		B56455F52BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240201.ALLAY in Resources */ = {isa = PBXBuildFile; fileRef = B56455DF2BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240201.ALLAY */; };
+		B56455F62BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240119.ALLAY in Resources */ = {isa = PBXBuildFile; fileRef = B56455E02BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240119.ALLAY */; };
+		B56455F72BC38C9F0076C82F /* dog.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B56455E22BC38C9F0076C82F /* dog.jpg */; };
+		B56455F82BC38C9F0076C82F /* unititled.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B56455E32BC38C9F0076C82F /* unititled.jpg */; };
+		B56455FA2BC38C9F0076C82F /* wenshen_dd.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B56455E52BC38C9F0076C82F /* wenshen_dd.jpg */; };
+		B56455FB2BC38C9F0076C82F /* 66671697191774.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B56455E62BC38C9F0076C82F /* 66671697191774.jpg */; };
+		B56455FD2BC38C9F0076C82F /* dessert.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B56455E82BC38C9F0076C82F /* dessert.jpg */; };
+		B56455FF2BC38C9F0076C82F /* shouji.png in Resources */ = {isa = PBXBuildFile; fileRef = B56455EA2BC38C9F0076C82F /* shouji.png */; };
+		B56456002BC38C9F0076C82F /* qmsht.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B56455EB2BC38C9F0076C82F /* qmsht.jpg */; };
+		B56456012BC38C9F0076C82F /* test.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B56455EC2BC38C9F0076C82F /* test.jpg */; };
+		B56456022BC38C9F0076C82F /* longPic.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B56455ED2BC38C9F0076C82F /* longPic.jpg */; };
+		B56456042BC38C9F0076C82F /* 蚊香液.png in Resources */ = {isa = PBXBuildFile; fileRef = B56455EF2BC38C9F0076C82F /* 蚊香液.png */; };
+		B56456052BC38C9F0076C82F /* handsomeMan.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = B56455F02BC38C9F0076C82F /* handsomeMan.jpeg */; };
+		B56456072BC38C9F0076C82F /* dithered-image.png in Resources */ = {isa = PBXBuildFile; fileRef = B56455F22BC38C9F0076C82F /* dithered-image.png */; };
+		B564560D2BC39F330076C82F /* AYSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B564560C2BC39F330076C82F /* AYSDK.framework */; };
+		B57458612AB067E600DF9716 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B57458602AB067E600DF9716 /* AppDelegate.m */; };
+		B57458642AB067E600DF9716 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B57458632AB067E600DF9716 /* SceneDelegate.m */; };
+		B57458672AB067E600DF9716 /* DeviceListVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B57458662AB067E600DF9716 /* DeviceListVC.m */; };
+		B574586A2AB067E600DF9716 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B57458682AB067E600DF9716 /* Main.storyboard */; };
+		B574586C2AB067E700DF9716 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = B574586B2AB067E700DF9716 /* Assets.xcassets */; };
+		B574586F2AB067E700DF9716 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = B574586D2AB067E700DF9716 /* LaunchScreen.storyboard */; };
+		B57458722AB067E700DF9716 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = B57458712AB067E700DF9716 /* main.m */; };
+		B574587C2AB067E700DF9716 /* BleDemo_OCTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B574587B2AB067E700DF9716 /* BleDemo_OCTests.m */; };
+		B57458862AB067E700DF9716 /* BleDemo_OCUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = B57458852AB067E700DF9716 /* BleDemo_OCUITests.m */; };
+		B57458882AB067E700DF9716 /* BleDemo_OCUITestsLaunchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B57458872AB067E700DF9716 /* BleDemo_OCUITestsLaunchTests.m */; };
+		B590F1F82AB19A6E0012CEE5 /* TsplFunctionVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B590F1F62AB19A6E0012CEE5 /* TsplFunctionVC.m */; };
+		B590F1F92AB19A6E0012CEE5 /* TsplFunctionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = B590F1F72AB19A6E0012CEE5 /* TsplFunctionVC.xib */; };
+		FECAFD37AFE582C13790ACA8 /* Pods_AYPrinterDemoTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6377182B2AED9CEC5B942E6F /* Pods_AYPrinterDemoTests.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		B57458782AB067E700DF9716 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B57458542AB067E600DF9716 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B574585B2AB067E600DF9716;
+			remoteInfo = "BleDemo-OC";
+		};
+		B57458822AB067E700DF9716 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B57458542AB067E600DF9716 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B574585B2AB067E600DF9716;
+			remoteInfo = "BleDemo-OC";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		B554499E2ADF78E1005F8C2C /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		022F8BE57904AABD0D7C014B /* Pods_AYPrinterDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AYPrinterDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1A8CD6C65B1F0B61A80D3B36 /* Pods-AYPrinterDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AYPrinterDemo.release.xcconfig"; path = "Target Support Files/Pods-AYPrinterDemo/Pods-AYPrinterDemo.release.xcconfig"; sourceTree = "<group>"; };
+		6377182B2AED9CEC5B942E6F /* Pods_AYPrinterDemoTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AYPrinterDemoTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		8E91D026547EE0C8E0D2ABEA /* Pods-AYPrinterDemoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AYPrinterDemoTests.release.xcconfig"; path = "Target Support Files/Pods-AYPrinterDemoTests/Pods-AYPrinterDemoTests.release.xcconfig"; sourceTree = "<group>"; };
+		B502DDB32AB9840700B74A2F /* CpclFunctionVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CpclFunctionVC.h; sourceTree = "<group>"; };
+		B502DDB42AB9840700B74A2F /* CpclFunctionVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CpclFunctionVC.m; sourceTree = "<group>"; };
+		B502DDB52AB9840700B74A2F /* CpclFunctionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CpclFunctionVC.xib; sourceTree = "<group>"; };
+		B50C1ADF2BC78C2C00292025 /* a4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = a4.jpg; sourceTree = "<group>"; };
+		B50C1AE12BC7946A00292025 /* PD-A4主动上报信息释义.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "PD-A4主动上报信息释义.pdf"; sourceTree = "<group>"; };
+		B543E1692AB85A3100713B63 /* BaseVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseVC.h; sourceTree = "<group>"; };
+		B543E16A2AB85A3100713B63 /* BaseVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BaseVC.m; sourceTree = "<group>"; };
+		B543E1772AB85C0900713B63 /* EscFunctionVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EscFunctionVC.h; sourceTree = "<group>"; };
+		B543E1782AB85C0900713B63 /* EscFunctionVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EscFunctionVC.m; sourceTree = "<group>"; };
+		B543E1792AB85C0900713B63 /* EscFunctionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EscFunctionVC.xib; sourceTree = "<group>"; };
+		B55449952ADF783C005F8C2C /* XPrinter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XPrinter.framework; path = "../XPrinter/build/Debug-iphoneos/XPrinter.framework"; sourceTree = "<group>"; };
+		B56455DD2BC38C9F0076C82F /* DL-Q2 V1.12.PRTU */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DL-Q2 V1.12.PRTU"; sourceTree = "<group>"; };
+		B56455DE2BC38C9F0076C82F /* DL-Q2 V1.12MH.PRTU */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DL-Q2 V1.12MH.PRTU"; sourceTree = "<group>"; };
+		B56455DF2BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240201.ALLAY */ = {isa = PBXFileReference; lastKnownFileType = file; path = "QR-888 FWQR_SFUBE_BQ_VER_01_240201.ALLAY"; sourceTree = "<group>"; };
+		B56455E02BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240119.ALLAY */ = {isa = PBXFileReference; lastKnownFileType = file; path = "QR-888 FWQR_SFUBE_BQ_VER_01_240119.ALLAY"; sourceTree = "<group>"; };
+		B56455E22BC38C9F0076C82F /* dog.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = dog.jpg; sourceTree = "<group>"; };
+		B56455E32BC38C9F0076C82F /* unititled.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = unititled.jpg; sourceTree = "<group>"; };
+		B56455E52BC38C9F0076C82F /* wenshen_dd.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = wenshen_dd.jpg; sourceTree = "<group>"; };
+		B56455E62BC38C9F0076C82F /* 66671697191774.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 66671697191774.jpg; sourceTree = "<group>"; };
+		B56455E82BC38C9F0076C82F /* dessert.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = dessert.jpg; sourceTree = "<group>"; };
+		B56455EA2BC38C9F0076C82F /* shouji.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shouji.png; sourceTree = "<group>"; };
+		B56455EB2BC38C9F0076C82F /* qmsht.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = qmsht.jpg; sourceTree = "<group>"; };
+		B56455EC2BC38C9F0076C82F /* test.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = test.jpg; sourceTree = "<group>"; };
+		B56455ED2BC38C9F0076C82F /* longPic.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = longPic.jpg; sourceTree = "<group>"; };
+		B56455EF2BC38C9F0076C82F /* 蚊香液.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "蚊香液.png"; sourceTree = "<group>"; };
+		B56455F02BC38C9F0076C82F /* handsomeMan.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = handsomeMan.jpeg; sourceTree = "<group>"; };
+		B56455F22BC38C9F0076C82F /* dithered-image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dithered-image.png"; sourceTree = "<group>"; };
+		B564560C2BC39F330076C82F /* AYSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AYSDK.framework; sourceTree = "<group>"; };
+		B574585C2AB067E600DF9716 /* AYPrinterDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AYPrinterDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		B574585F2AB067E600DF9716 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		B57458602AB067E600DF9716 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		B57458622AB067E600DF9716 /* SceneDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = SceneDelegate.h; sourceTree = "<group>"; };
+		B57458632AB067E600DF9716 /* SceneDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = SceneDelegate.m; sourceTree = "<group>"; };
+		B57458652AB067E600DF9716 /* DeviceListVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DeviceListVC.h; sourceTree = "<group>"; };
+		B57458662AB067E600DF9716 /* DeviceListVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DeviceListVC.m; sourceTree = "<group>"; };
+		B57458692AB067E600DF9716 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		B574586B2AB067E700DF9716 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		B574586E2AB067E700DF9716 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		B57458702AB067E700DF9716 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		B57458712AB067E700DF9716 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		B57458772AB067E700DF9716 /* AYPrinterDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AYPrinterDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B574587B2AB067E700DF9716 /* BleDemo_OCTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BleDemo_OCTests.m; sourceTree = "<group>"; };
+		B57458812AB067E700DF9716 /* AYPrinterDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AYPrinterDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		B57458852AB067E700DF9716 /* BleDemo_OCUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BleDemo_OCUITests.m; sourceTree = "<group>"; };
+		B57458872AB067E700DF9716 /* BleDemo_OCUITestsLaunchTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BleDemo_OCUITestsLaunchTests.m; sourceTree = "<group>"; };
+		B590F1F52AB19A6E0012CEE5 /* TsplFunctionVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TsplFunctionVC.h; sourceTree = "<group>"; };
+		B590F1F62AB19A6E0012CEE5 /* TsplFunctionVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TsplFunctionVC.m; sourceTree = "<group>"; };
+		B590F1F72AB19A6E0012CEE5 /* TsplFunctionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TsplFunctionVC.xib; sourceTree = "<group>"; };
+		C1904A8930F63CD7D33C217B /* Pods-AYPrinterDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AYPrinterDemo.debug.xcconfig"; path = "Target Support Files/Pods-AYPrinterDemo/Pods-AYPrinterDemo.debug.xcconfig"; sourceTree = "<group>"; };
+		CD7E3EEB09CAA511CE409ADA /* Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig"; path = "Target Support Files/Pods-AYPrinterDemo-AYPrinterDemoUITests/Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig"; sourceTree = "<group>"; };
+		D4EF962A242669BF50CD3CA5 /* Pods_AYPrinterDemo_AYPrinterDemoUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AYPrinterDemo_AYPrinterDemoUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		E83A385BF0E5D52BAE63E271 /* Pods-AYPrinterDemoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AYPrinterDemoTests.debug.xcconfig"; path = "Target Support Files/Pods-AYPrinterDemoTests/Pods-AYPrinterDemoTests.debug.xcconfig"; sourceTree = "<group>"; };
+		F412A6CD0280B267A8D7A4B6 /* Pods-AYPrinterDemo-AYPrinterDemoUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AYPrinterDemo-AYPrinterDemoUITests.debug.xcconfig"; path = "Target Support Files/Pods-AYPrinterDemo-AYPrinterDemoUITests/Pods-AYPrinterDemo-AYPrinterDemoUITests.debug.xcconfig"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		B57458592AB067E600DF9716 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				05AE201C183EE692582D66B6 /* Pods_AYPrinterDemo.framework in Frameworks */,
+				B564560D2BC39F330076C82F /* AYSDK.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B57458742AB067E700DF9716 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FECAFD37AFE582C13790ACA8 /* Pods_AYPrinterDemoTests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B574587E2AB067E700DF9716 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				218EFB1EB88D79718DCF932D /* Pods_AYPrinterDemo_AYPrinterDemoUITests.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		1AF99DFFCA4AF1605466860D /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				C1904A8930F63CD7D33C217B /* Pods-AYPrinterDemo.debug.xcconfig */,
+				1A8CD6C65B1F0B61A80D3B36 /* Pods-AYPrinterDemo.release.xcconfig */,
+				F412A6CD0280B267A8D7A4B6 /* Pods-AYPrinterDemo-AYPrinterDemoUITests.debug.xcconfig */,
+				CD7E3EEB09CAA511CE409ADA /* Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig */,
+				E83A385BF0E5D52BAE63E271 /* Pods-AYPrinterDemoTests.debug.xcconfig */,
+				8E91D026547EE0C8E0D2ABEA /* Pods-AYPrinterDemoTests.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
+		B55449942ADF783C005F8C2C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				B55449952ADF783C005F8C2C /* XPrinter.framework */,
+				022F8BE57904AABD0D7C014B /* Pods_AYPrinterDemo.framework */,
+				D4EF962A242669BF50CD3CA5 /* Pods_AYPrinterDemo_AYPrinterDemoUITests.framework */,
+				6377182B2AED9CEC5B942E6F /* Pods_AYPrinterDemoTests.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		B56455DC2BC38C9F0076C82F /* ota */ = {
+			isa = PBXGroup;
+			children = (
+				B56455DD2BC38C9F0076C82F /* DL-Q2 V1.12.PRTU */,
+				B56455DE2BC38C9F0076C82F /* DL-Q2 V1.12MH.PRTU */,
+				B56455DF2BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240201.ALLAY */,
+				B56455E02BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240119.ALLAY */,
+			);
+			path = ota;
+			sourceTree = "<group>";
+		};
+		B56455E12BC38C9F0076C82F /* image */ = {
+			isa = PBXGroup;
+			children = (
+				B50C1ADF2BC78C2C00292025 /* a4.jpg */,
+				B56455E22BC38C9F0076C82F /* dog.jpg */,
+				B56455E32BC38C9F0076C82F /* unititled.jpg */,
+				B56455E52BC38C9F0076C82F /* wenshen_dd.jpg */,
+				B56455E62BC38C9F0076C82F /* 66671697191774.jpg */,
+				B56455E82BC38C9F0076C82F /* dessert.jpg */,
+				B56455EA2BC38C9F0076C82F /* shouji.png */,
+				B56455EB2BC38C9F0076C82F /* qmsht.jpg */,
+				B56455EC2BC38C9F0076C82F /* test.jpg */,
+				B56455ED2BC38C9F0076C82F /* longPic.jpg */,
+				B56455EF2BC38C9F0076C82F /* 蚊香液.png */,
+				B56455F02BC38C9F0076C82F /* handsomeMan.jpeg */,
+				B56455F22BC38C9F0076C82F /* dithered-image.png */,
+			);
+			path = image;
+			sourceTree = "<group>";
+		};
+		B57458532AB067E600DF9716 = {
+			isa = PBXGroup;
+			children = (
+				B574585E2AB067E600DF9716 /* AYPrinterDemo */,
+				B574587A2AB067E700DF9716 /* AYPrinterDemoTests */,
+				B57458842AB067E700DF9716 /* AYPrinterDemoUITests */,
+				B574585D2AB067E600DF9716 /* Products */,
+				B55449942ADF783C005F8C2C /* Frameworks */,
+				1AF99DFFCA4AF1605466860D /* Pods */,
+			);
+			sourceTree = "<group>";
+		};
+		B574585D2AB067E600DF9716 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B574585C2AB067E600DF9716 /* AYPrinterDemo.app */,
+				B57458772AB067E700DF9716 /* AYPrinterDemoTests.xctest */,
+				B57458812AB067E700DF9716 /* AYPrinterDemoUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		B574585E2AB067E600DF9716 /* AYPrinterDemo */ = {
+			isa = PBXGroup;
+			children = (
+				B50C1AE12BC7946A00292025 /* PD-A4主动上报信息释义.pdf */,
+				B564560C2BC39F330076C82F /* AYSDK.framework */,
+				B5BF753A2AB2B59D00399B5C /* Files */,
+				B574585F2AB067E600DF9716 /* AppDelegate.h */,
+				B57458602AB067E600DF9716 /* AppDelegate.m */,
+				B57458622AB067E600DF9716 /* SceneDelegate.h */,
+				B57458632AB067E600DF9716 /* SceneDelegate.m */,
+				B57458652AB067E600DF9716 /* DeviceListVC.h */,
+				B57458662AB067E600DF9716 /* DeviceListVC.m */,
+				B57458682AB067E600DF9716 /* Main.storyboard */,
+				B543E1692AB85A3100713B63 /* BaseVC.h */,
+				B543E16A2AB85A3100713B63 /* BaseVC.m */,
+				B590F1F52AB19A6E0012CEE5 /* TsplFunctionVC.h */,
+				B590F1F62AB19A6E0012CEE5 /* TsplFunctionVC.m */,
+				B590F1F72AB19A6E0012CEE5 /* TsplFunctionVC.xib */,
+				B543E1772AB85C0900713B63 /* EscFunctionVC.h */,
+				B543E1782AB85C0900713B63 /* EscFunctionVC.m */,
+				B543E1792AB85C0900713B63 /* EscFunctionVC.xib */,
+				B502DDB32AB9840700B74A2F /* CpclFunctionVC.h */,
+				B502DDB42AB9840700B74A2F /* CpclFunctionVC.m */,
+				B502DDB52AB9840700B74A2F /* CpclFunctionVC.xib */,
+				B574586B2AB067E700DF9716 /* Assets.xcassets */,
+				B574586D2AB067E700DF9716 /* LaunchScreen.storyboard */,
+				B57458702AB067E700DF9716 /* Info.plist */,
+				B57458712AB067E700DF9716 /* main.m */,
+			);
+			path = AYPrinterDemo;
+			sourceTree = "<group>";
+		};
+		B574587A2AB067E700DF9716 /* AYPrinterDemoTests */ = {
+			isa = PBXGroup;
+			children = (
+				B574587B2AB067E700DF9716 /* BleDemo_OCTests.m */,
+			);
+			path = AYPrinterDemoTests;
+			sourceTree = "<group>";
+		};
+		B57458842AB067E700DF9716 /* AYPrinterDemoUITests */ = {
+			isa = PBXGroup;
+			children = (
+				B57458852AB067E700DF9716 /* BleDemo_OCUITests.m */,
+				B57458872AB067E700DF9716 /* BleDemo_OCUITestsLaunchTests.m */,
+			);
+			path = AYPrinterDemoUITests;
+			sourceTree = "<group>";
+		};
+		B5BF753A2AB2B59D00399B5C /* Files */ = {
+			isa = PBXGroup;
+			children = (
+				B56455E12BC38C9F0076C82F /* image */,
+				B56455DC2BC38C9F0076C82F /* ota */,
+			);
+			path = Files;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		B574585B2AB067E600DF9716 /* AYPrinterDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B574588B2AB067E700DF9716 /* Build configuration list for PBXNativeTarget "AYPrinterDemo" */;
+			buildPhases = (
+				87A198BEAF43BFBFAD44FA3A /* [CP] Check Pods Manifest.lock */,
+				B57458582AB067E600DF9716 /* Sources */,
+				B57458592AB067E600DF9716 /* Frameworks */,
+				B574585A2AB067E600DF9716 /* Resources */,
+				B554499E2ADF78E1005F8C2C /* Embed Frameworks */,
+				71D4A0DFD02A9E0C175AD46E /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AYPrinterDemo;
+			productName = "BleDemo-OC";
+			productReference = B574585C2AB067E600DF9716 /* AYPrinterDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+		B57458762AB067E700DF9716 /* AYPrinterDemoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B574588E2AB067E700DF9716 /* Build configuration list for PBXNativeTarget "AYPrinterDemoTests" */;
+			buildPhases = (
+				E00949D5EEC3A61104905C03 /* [CP] Check Pods Manifest.lock */,
+				B57458732AB067E700DF9716 /* Sources */,
+				B57458742AB067E700DF9716 /* Frameworks */,
+				B57458752AB067E700DF9716 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B57458792AB067E700DF9716 /* PBXTargetDependency */,
+			);
+			name = AYPrinterDemoTests;
+			productName = "BleDemo-OCTests";
+			productReference = B57458772AB067E700DF9716 /* AYPrinterDemoTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		B57458802AB067E700DF9716 /* AYPrinterDemoUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = B57458912AB067E700DF9716 /* Build configuration list for PBXNativeTarget "AYPrinterDemoUITests" */;
+			buildPhases = (
+				7EF8D55EDFE50C57AC94187F /* [CP] Check Pods Manifest.lock */,
+				B574587D2AB067E700DF9716 /* Sources */,
+				B574587E2AB067E700DF9716 /* Frameworks */,
+				B574587F2AB067E700DF9716 /* Resources */,
+				76CB575BCF6727F202B2225C /* [CP] Embed Pods Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				B57458832AB067E700DF9716 /* PBXTargetDependency */,
+			);
+			name = AYPrinterDemoUITests;
+			productName = "BleDemo-OCUITests";
+			productReference = B57458812AB067E700DF9716 /* AYPrinterDemoUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		B57458542AB067E600DF9716 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1510;
+				TargetAttributes = {
+					B574585B2AB067E600DF9716 = {
+						CreatedOnToolsVersion = 14.3.1;
+					};
+					B57458762AB067E700DF9716 = {
+						CreatedOnToolsVersion = 14.3.1;
+						TestTargetID = B574585B2AB067E600DF9716;
+					};
+					B57458802AB067E700DF9716 = {
+						CreatedOnToolsVersion = 14.3.1;
+						TestTargetID = B574585B2AB067E600DF9716;
+					};
+				};
+			};
+			buildConfigurationList = B57458572AB067E600DF9716 /* Build configuration list for PBXProject "AYPrinterDemo" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = B57458532AB067E600DF9716;
+			productRefGroup = B574585D2AB067E600DF9716 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				B574585B2AB067E600DF9716 /* AYPrinterDemo */,
+				B57458762AB067E700DF9716 /* AYPrinterDemoTests */,
+				B57458802AB067E700DF9716 /* AYPrinterDemoUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		B574585A2AB067E600DF9716 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B56455F42BC38C9F0076C82F /* DL-Q2 V1.12MH.PRTU in Resources */,
+				B56455F32BC38C9F0076C82F /* DL-Q2 V1.12.PRTU in Resources */,
+				B56455FA2BC38C9F0076C82F /* wenshen_dd.jpg in Resources */,
+				B56455FF2BC38C9F0076C82F /* shouji.png in Resources */,
+				B50C1AE22BC7946A00292025 /* PD-A4主动上报信息释义.pdf in Resources */,
+				B56455F82BC38C9F0076C82F /* unititled.jpg in Resources */,
+				B543E17B2AB85C0900713B63 /* EscFunctionVC.xib in Resources */,
+				B574586F2AB067E700DF9716 /* LaunchScreen.storyboard in Resources */,
+				B56456002BC38C9F0076C82F /* qmsht.jpg in Resources */,
+				B56456072BC38C9F0076C82F /* dithered-image.png in Resources */,
+				B590F1F92AB19A6E0012CEE5 /* TsplFunctionVC.xib in Resources */,
+				B502DDB72AB9840700B74A2F /* CpclFunctionVC.xib in Resources */,
+				B574586C2AB067E700DF9716 /* Assets.xcassets in Resources */,
+				B56455F62BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240119.ALLAY in Resources */,
+				B574586A2AB067E600DF9716 /* Main.storyboard in Resources */,
+				B56456042BC38C9F0076C82F /* 蚊香液.png in Resources */,
+				B56455F72BC38C9F0076C82F /* dog.jpg in Resources */,
+				B50C1AE02BC78C2C00292025 /* a4.jpg in Resources */,
+				B56456012BC38C9F0076C82F /* test.jpg in Resources */,
+				B56456022BC38C9F0076C82F /* longPic.jpg in Resources */,
+				B56456052BC38C9F0076C82F /* handsomeMan.jpeg in Resources */,
+				B56455FB2BC38C9F0076C82F /* 66671697191774.jpg in Resources */,
+				B56455F52BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240201.ALLAY in Resources */,
+				B56455FD2BC38C9F0076C82F /* dessert.jpg in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B57458752AB067E700DF9716 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B574587F2AB067E700DF9716 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		71D4A0DFD02A9E0C175AD46E /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AYPrinterDemo/Pods-AYPrinterDemo-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AYPrinterDemo/Pods-AYPrinterDemo-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AYPrinterDemo/Pods-AYPrinterDemo-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		76CB575BCF6727F202B2225C /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AYPrinterDemo-AYPrinterDemoUITests/Pods-AYPrinterDemo-AYPrinterDemoUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AYPrinterDemo-AYPrinterDemoUITests/Pods-AYPrinterDemo-AYPrinterDemoUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AYPrinterDemo-AYPrinterDemoUITests/Pods-AYPrinterDemo-AYPrinterDemoUITests-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		7EF8D55EDFE50C57AC94187F /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-AYPrinterDemo-AYPrinterDemoUITests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		87A198BEAF43BFBFAD44FA3A /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-AYPrinterDemo-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		E00949D5EEC3A61104905C03 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-AYPrinterDemoTests-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		B57458582AB067E600DF9716 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B57458672AB067E600DF9716 /* DeviceListVC.m in Sources */,
+				B57458612AB067E600DF9716 /* AppDelegate.m in Sources */,
+				B590F1F82AB19A6E0012CEE5 /* TsplFunctionVC.m in Sources */,
+				B543E17A2AB85C0900713B63 /* EscFunctionVC.m in Sources */,
+				B502DDB62AB9840700B74A2F /* CpclFunctionVC.m in Sources */,
+				B543E16B2AB85A3100713B63 /* BaseVC.m in Sources */,
+				B57458722AB067E700DF9716 /* main.m in Sources */,
+				B57458642AB067E600DF9716 /* SceneDelegate.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B57458732AB067E700DF9716 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B574587C2AB067E700DF9716 /* BleDemo_OCTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		B574587D2AB067E700DF9716 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				B57458862AB067E700DF9716 /* BleDemo_OCUITests.m in Sources */,
+				B57458882AB067E700DF9716 /* BleDemo_OCUITestsLaunchTests.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		B57458792AB067E700DF9716 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B574585B2AB067E600DF9716 /* AYPrinterDemo */;
+			targetProxy = B57458782AB067E700DF9716 /* PBXContainerItemProxy */;
+		};
+		B57458832AB067E700DF9716 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B574585B2AB067E600DF9716 /* AYPrinterDemo */;
+			targetProxy = B57458822AB067E700DF9716 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		B57458682AB067E600DF9716 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B57458692AB067E600DF9716 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		B574586D2AB067E700DF9716 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				B574586E2AB067E700DF9716 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		B57458892AB067E700DF9716 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		B574588A2AB067E700DF9716 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				OTHER_LDFLAGS = "-ObjC";
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		B574588C2AB067E700DF9716 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = C1904A8930F63CD7D33C217B /* Pods-AYPrinterDemo.debug.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 76F7233WS7;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/AYPrinterDemo",
+					"$(PROJECT_DIR)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AYPrinterDemo/Info.plist;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "是否允许使用蓝牙";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.iprt.BleDemo-OC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		B574588D2AB067E700DF9716 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 1A8CD6C65B1F0B61A80D3B36 /* Pods-AYPrinterDemo.release.xcconfig */;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 76F7233WS7;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/AYPrinterDemo",
+					"$(PROJECT_DIR)",
+				);
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AYPrinterDemo/Info.plist;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "是否允许使用蓝牙";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.iprt.BleDemo-OC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		B574588F2AB067E700DF9716 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E83A385BF0E5D52BAE63E271 /* Pods-AYPrinterDemoTests.debug.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 76F7233WS7;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.iprt.BleDemo-OCTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AYPrinterDemo.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AYPrinterDemo";
+			};
+			name = Debug;
+		};
+		B57458902AB067E700DF9716 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 8E91D026547EE0C8E0D2ABEA /* Pods-AYPrinterDemoTests.release.xcconfig */;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 76F7233WS7;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.iprt.BleDemo-OCTests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AYPrinterDemo.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/AYPrinterDemo";
+			};
+			name = Release;
+		};
+		B57458922AB067E700DF9716 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = F412A6CD0280B267A8D7A4B6 /* Pods-AYPrinterDemo-AYPrinterDemoUITests.debug.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 76F7233WS7;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.iprt.BleDemo-OCUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "BleDemo-OC";
+			};
+			name = Debug;
+		};
+		B57458932AB067E700DF9716 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = CD7E3EEB09CAA511CE409ADA /* Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig */;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 76F7233WS7;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.iprt.BleDemo-OCUITests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_TARGET_NAME = "BleDemo-OC";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		B57458572AB067E600DF9716 /* Build configuration list for PBXProject "AYPrinterDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B57458892AB067E700DF9716 /* Debug */,
+				B574588A2AB067E700DF9716 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B574588B2AB067E700DF9716 /* Build configuration list for PBXNativeTarget "AYPrinterDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B574588C2AB067E700DF9716 /* Debug */,
+				B574588D2AB067E700DF9716 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B574588E2AB067E700DF9716 /* Build configuration list for PBXNativeTarget "AYPrinterDemoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B574588F2AB067E700DF9716 /* Debug */,
+				B57458902AB067E700DF9716 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		B57458912AB067E700DF9716 /* Build configuration list for PBXNativeTarget "AYPrinterDemoUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				B57458922AB067E700DF9716 /* Debug */,
+				B57458932AB067E700DF9716 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = B57458542AB067E600DF9716 /* Project object */;
+}
