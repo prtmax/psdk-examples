@@ -1,6 +1,0 @@
-framework module tspl {
-  umbrella header "tspl.h"
-
-  export *
-  module * { export * }
-}

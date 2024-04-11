@@ -1,6 +1,0 @@
-framework module appleble {
-  umbrella header "AppleBle.h"
-
-  export *
-  module * { export * }
-}

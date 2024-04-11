@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EscFunctionVC">
+            <connections>
+                <outlet property="copiesTextF" destination="Z9o-oP-W67" id="B3F-kC-BEG"/>
+                <outlet property="displayLabel" destination="vbQ-qV-f7M" id="8XM-nF-cZ2"/>
+                <outlet property="otaProgressView" destination="Lq3-Wj-MlN" id="7z2-P9-Jck"/>
+                <outlet property="view" destination="C5W-8C-Kxv" id="v9i-gc-XEY"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="C5W-8C-Kxv">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Z3n-VU-A5A">
+                    <rect key="frame" x="0.0" y="65" width="393" height="36.333333333333343"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="份数:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Eqd-zs-1QG">
+                            <rect key="frame" x="17.000000000000004" y="7.9999999999999982" width="39.333333333333343" height="20.333333333333329"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <textField opaque="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="1" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Z9o-oP-W67">
+                            <rect key="frame" x="68.333333333333329" y="1.3333333333333286" width="50" height="34"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="50" id="o83-Ia-aA6"/>
+                            </constraints>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <textInputTraits key="textInputTraits" keyboardType="numberPad"/>
+                        </textField>
+                    </subviews>
+                    <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    <constraints>
+                        <constraint firstItem="Eqd-zs-1QG" firstAttribute="centerY" secondItem="Z3n-VU-A5A" secondAttribute="centerY" id="Cmq-xW-Ufu"/>
+                        <constraint firstItem="Z9o-oP-W67" firstAttribute="leading" secondItem="Eqd-zs-1QG" secondAttribute="trailing" constant="12" id="ERs-Kp-DKd"/>
+                        <constraint firstItem="Eqd-zs-1QG" firstAttribute="top" secondItem="Z3n-VU-A5A" secondAttribute="topMargin" id="TMC-lX-dZG"/>
+                        <constraint firstItem="Z9o-oP-W67" firstAttribute="centerY" secondItem="Z3n-VU-A5A" secondAttribute="centerY" id="fUp-VB-Gj7"/>
+                        <constraint firstItem="Eqd-zs-1QG" firstAttribute="leading" secondItem="Z3n-VU-A5A" secondAttribute="leading" constant="17" id="vha-Le-FX9"/>
+                    </constraints>
+                </view>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Ufd-up-xBL">
+                    <rect key="frame" x="0.0" y="107.33333333333334" width="196.66666666666666" height="300.33333333333326"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ipf-b4-pLf">
+                            <rect key="frame" x="0.0" y="0.0" width="196.66666666666666" height="34.333333333333336"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="连续纸打印"/>
+                            <connections>
+                                <action selector="continuousPrint" destination="-1" eventType="touchUpInside" id="Gco-Pr-qd0"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HlO-zq-O1h">
+                            <rect key="frame" x="0.0" y="44.333333333333329" width="196.66666666666666" height="34.333333333333329"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="蓝牙名称"/>
+                            <connections>
+                                <action selector="printerBtname:" destination="-1" eventType="touchUpInside" id="2IB-pZ-e7i"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kqW-3s-G2q">
+                            <rect key="frame" x="0.0" y="88.666666666666671" width="196.66666666666666" height="34.333333333333329"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="蓝牙固件版本"/>
+                            <connections>
+                                <action selector="printerBtVersion:" destination="-1" eventType="touchUpInside" id="Yrc-cR-3X9"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jWs-Rd-Q0P">
+                            <rect key="frame" x="0.0" y="133" width="196.66666666666666" height="34.333333333333343"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="打印机固件版本"/>
+                            <connections>
+                                <action selector="printerVersion:" destination="-1" eventType="touchUpInside" id="YRA-ED-pSA"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Tyd-RI-0Uz">
+                            <rect key="frame" x="0.0" y="177.33333333333337" width="196.66666666666666" height="34.333333333333343"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="打印机型号"/>
+                            <connections>
+                                <action selector="PrinterModel:" destination="-1" eventType="touchUpInside" id="ybK-sv-eum"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9I8-E2-zUD" userLabel="关机时间">
+                            <rect key="frame" x="0.0" y="221.66666666666669" width="196.66666666666666" height="34.333333333333314"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="关机时间"/>
+                            <connections>
+                                <action selector="shutTime:" destination="-1" eventType="touchUpInside" id="38m-hI-Bfi"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IeU-pE-u6K">
+                            <rect key="frame" x="0.0" y="266" width="196.66666666666666" height="34.333333333333314"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="OTA"/>
+                            <connections>
+                                <action selector="ota:" destination="-1" eventType="touchUpInside" id="bvD-eR-hnu"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                </stackView>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="iit-KW-Kxk">
+                    <rect key="frame" x="196.66666666666663" y="107.33333333333334" width="196.33333333333337" height="300.33333333333326"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J0x-wD-pas">
+                            <rect key="frame" x="0.0" y="0.0" width="196.33333333333334" height="34.333333333333336"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="标签纸打印"/>
+                            <connections>
+                                <action selector="labelPrint" destination="-1" eventType="touchUpInside" id="IEF-SA-Eny"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="qgU-Zb-xNU">
+                            <rect key="frame" x="0.0" y="44.333333333333329" width="196.33333333333334" height="34.333333333333329"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="打印机状态"/>
+                            <connections>
+                                <action selector="printerState:" destination="-1" eventType="touchUpInside" id="w21-pS-Q2X"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3pD-EC-mFo">
+                            <rect key="frame" x="0.0" y="88.666666666666671" width="196.33333333333334" height="34.333333333333329"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="电池电量"/>
+                            <connections>
+                                <action selector="printerBatteryVol:" destination="-1" eventType="touchUpInside" id="Nwq-Zd-al5"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ibk-Ee-i8u">
+                            <rect key="frame" x="0.0" y="133" width="196.33333333333334" height="34.333333333333343"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="蓝牙 mac 地址"/>
+                            <connections>
+                                <action selector="printerMac:" destination="-1" eventType="touchUpInside" id="0XK-JQ-eS2"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="JdJ-F3-ChZ">
+                            <rect key="frame" x="0.0" y="177.33333333333337" width="196.33333333333334" height="34.333333333333343"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="sn 号"/>
+                            <connections>
+                                <action selector="PrinterSN:" destination="-1" eventType="touchUpInside" id="A46-jh-Sos"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="F3t-Gx-BV1" userLabel="设置关机时间">
+                            <rect key="frame" x="0.0" y="221.66666666666669" width="196.33333333333334" height="34.333333333333314"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="设置关机时间"/>
+                            <connections>
+                                <action selector="setShutTime:" destination="-1" eventType="touchUpInside" id="b3C-E4-r5w"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jOf-hy-cGj" userLabel="设置浓度">
+                            <rect key="frame" x="0.0" y="266" width="196.33333333333334" height="34.333333333333314"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="设置浓度"/>
+                            <connections>
+                                <action selector="setThickness:" destination="-1" eventType="touchUpInside" id="6rl-Oq-i8u"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                </stackView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vbQ-qV-f7M">
+                    <rect key="frame" x="10" y="427.66666666666669" width="373" height="0.0"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" red="0.33378222482673592" green="0.63910055160522461" blue="0.30279906652251509" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <progressView hidden="YES" opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Lq3-Wj-MlN">
+                    <rect key="frame" x="10" y="437.66666666666669" width="373" height="5"/>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="4" id="dYa-07-b4B"/>
+                    </constraints>
+                </progressView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="ky2-Nu-n2i"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="vbQ-qV-f7M" firstAttribute="leading" secondItem="ky2-Nu-n2i" secondAttribute="leading" constant="10" id="6dx-4r-8No"/>
+                <constraint firstItem="iit-KW-Kxk" firstAttribute="top" secondItem="Ufd-up-xBL" secondAttribute="top" id="95q-iM-xdj"/>
+                <constraint firstItem="Z3n-VU-A5A" firstAttribute="top" secondItem="ky2-Nu-n2i" secondAttribute="top" constant="6" id="Ev3-sT-FDn"/>
+                <constraint firstItem="Ufd-up-xBL" firstAttribute="top" secondItem="Z3n-VU-A5A" secondAttribute="bottom" constant="6" id="K2e-5l-6PI"/>
+                <constraint firstItem="Lq3-Wj-MlN" firstAttribute="leading" secondItem="ky2-Nu-n2i" secondAttribute="leading" constant="10" id="KwR-cg-bdV"/>
+                <constraint firstItem="ky2-Nu-n2i" firstAttribute="trailing" secondItem="Lq3-Wj-MlN" secondAttribute="trailing" constant="10" id="Llc-5T-ins"/>
+                <constraint firstItem="ky2-Nu-n2i" firstAttribute="trailing" secondItem="iit-KW-Kxk" secondAttribute="trailing" id="Lnk-H5-Owb"/>
+                <constraint firstItem="Ufd-up-xBL" firstAttribute="leading" secondItem="ky2-Nu-n2i" secondAttribute="leading" id="PJf-Uc-Exd"/>
+                <constraint firstItem="iit-KW-Kxk" firstAttribute="leading" secondItem="Ufd-up-xBL" secondAttribute="trailing" id="YMq-bA-ikC"/>
+                <constraint firstItem="ky2-Nu-n2i" firstAttribute="trailing" secondItem="vbQ-qV-f7M" secondAttribute="trailing" constant="10" id="ZpX-Fi-wGb"/>
+                <constraint firstItem="ky2-Nu-n2i" firstAttribute="trailing" secondItem="Z3n-VU-A5A" secondAttribute="trailing" id="eqX-Em-V9W"/>
+                <constraint firstItem="Z3n-VU-A5A" firstAttribute="leading" secondItem="ky2-Nu-n2i" secondAttribute="leading" id="ggv-dR-gGz"/>
+                <constraint firstItem="iit-KW-Kxk" firstAttribute="width" secondItem="Ufd-up-xBL" secondAttribute="width" id="gjt-6R-wzf"/>
+                <constraint firstItem="Lq3-Wj-MlN" firstAttribute="top" secondItem="vbQ-qV-f7M" secondAttribute="bottom" constant="10" id="klZ-RU-y5s"/>
+                <constraint firstItem="vbQ-qV-f7M" firstAttribute="top" secondItem="Ufd-up-xBL" secondAttribute="bottom" constant="20" id="ufN-Fn-rXO"/>
+            </constraints>
+            <point key="canvasLocation" x="-1236" y="-354"/>
+        </view>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>

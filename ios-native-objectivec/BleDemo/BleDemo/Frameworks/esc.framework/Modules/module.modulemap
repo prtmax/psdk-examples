@@ -1,6 +1,0 @@
-framework module esc {
-  umbrella header "esc.h"
-
-  export *
-  module * { export * }
-}
