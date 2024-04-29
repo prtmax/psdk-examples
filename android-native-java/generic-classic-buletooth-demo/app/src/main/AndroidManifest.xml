@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
           package="com.example.classic_bluetooth_demo">
-
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -32,6 +33,10 @@
         <activity android:name="com.example.classic_bluetooth_demo.TSPLActivity"/>
         <activity android:name="com.example.classic_bluetooth_demo.ESCActivity"/>
         <activity android:name="com.example.classic_bluetooth_demo.WIFIActivity"/>
+        <activity
+          android:name=".zxing.activity.CaptureActivity"
+          android:screenOrientation="portrait"
+          android:theme="@android:style/Theme.Black"/>
     </application>
 
 </manifest>
