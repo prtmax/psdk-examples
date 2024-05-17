@@ -2,6 +2,7 @@ package com.example.classic_bluetooth_demo;
 
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothDevice;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
@@ -30,6 +31,8 @@ import com.printer.psdk.frame.father.listener.DataListener;
 import com.printer.psdk.frame.father.listener.DataListenerRunner;
 import com.printer.psdk.frame.father.listener.ListenAction;
 import com.printer.psdk.imagep.android.AndroidSourceImage;
+import comprinter.psdk.frame.ota.types.esc.UpdatePrinterESC;
+import comprinter.psdk.frame.ota.types.mark.UpgradeMarker;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -56,8 +59,8 @@ public class ESCActivity extends Activity {
   private Button get_off_time;
   private Button bottom_stock;
   private Button bottom_label;
-  private Button paper_info, paper_uid, paper_used_length, paper_rest_length;
-  private EditText sampleEdit;
+  private Button paper_info, paper_uid, paper_used_length, paper_rest_length, setThickness, updatePrinterButton;
+  private EditText sampleEdit, thickness;
   private int sampleNumber;
   private final int ReceiveFLAG = 0x10;
   private final int StatusFLAG = 0x11;
@@ -65,6 +68,8 @@ public class ESCActivity extends Activity {
   private final int StartOrStopFLAG = 0x13;
   private ReadMark readMark = ReadMark.NONE;
   private boolean isSending = false;
+  private ProgressDialog progressDialog;
+  private DataListenerRunner dataListenerRunner;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +77,9 @@ public class ESCActivity extends Activity {
     setContentView(R.layout.activity_esc);
     tv_connect_status = findViewById(R.id.tv_connect_status);
     sampleEdit = (EditText) findViewById(R.id.sampleEdit);
+    thickness = (EditText) findViewById(R.id.thickness);
     sampleEdit.setText("1");
+    setThickness = findViewById(R.id.setThickness);
     continueButton = (Button) findViewById(R.id.print_continue);
     labelButton = (Button) findViewById(R.id.printer_label);
     statusButton = (Button) findViewById(R.id.printer_status);
@@ -92,6 +99,7 @@ public class ESCActivity extends Activity {
     paper_uid = (Button) findViewById(R.id.paper_uid);
     paper_used_length = (Button) findViewById(R.id.paper_used_length);
     paper_rest_length = (Button) findViewById(R.id.paper_rest_length);
+    updatePrinterButton = (Button) findViewById(R.id.updatePrinter);
     BluetoothDevice device = getIntent().getParcelableExtra("device");
 
     connection = Bluetooth.getInstance().createConnectionClassic(device, new ConnectListener() {
@@ -158,40 +166,29 @@ public class ESCActivity extends Activity {
         } else {
           sampleNumber = Integer.parseInt(sampleEdit.getText().toString().trim());
         }
-        if (!isSending) {
-          new Thread(new Runnable() {
-            @Override
-            public void run() {
-              for (int i = 0; i < sampleNumber; i++) {
-                isSending = true;
-                if (connection.isConnected()) {
-                  //打印图片指令
-                  InputStream is = getResources().openRawResource(R.raw.test);
-                  BitmapDrawable bmpDraw = new BitmapDrawable(is);
-                  Bitmap bitmap = bmpDraw.getBitmap();
-                  GenericESC _gesc = esc.enable()
-                    .wakeup()
-                    .location(ELocation.builder().location(Location.CENTER).build())
-                    .lineDot(1)
-                    .image(EImage.builder()
-                      .image(new AndroidSourceImage(bitmap))
-                      .build())
-                    .lineDot(10)
-                    .stopJob();
-                  safeWrite(_gesc);
-                  try {
-                    Thread.sleep(100);
-                  } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                  }
-                  if (i == (sampleNumber - 1)) {
-                    isSending = false;
-                  }
-                }
-              }
+        new Thread(new Runnable() {
+          @Override
+          public void run() {
+            if (connection.isConnected()) {
+              readMark = ReadMark.OPERATE_PRINT;
+              //打印图片指令
+              InputStream is = getResources().openRawResource(R.raw.dog);
+              BitmapDrawable bmpDraw = new BitmapDrawable(is);
+              Bitmap bitmap = bmpDraw.getBitmap();
+              GenericESC _gesc = esc.enable()
+                .wakeup()
+                .location(ELocation.builder().location(Location.CENTER).build())
+                .lineDot(1)
+                .image(EImage.builder()
+                  .image(new AndroidSourceImage(bitmap))
+                  .build())
+                .lineDot(10)
+                .stopJob();
+              safeWrite(_gesc);
+              sampleNumber--;
             }
-          }).start();
-        }
+          }
+        }).start();
       }
     });
     labelButton.setOnClickListener(new View.OnClickListener() {
@@ -202,40 +199,41 @@ public class ESCActivity extends Activity {
         } else {
           sampleNumber = Integer.parseInt(sampleEdit.getText().toString().trim());
         }
-        if (!isSending) {
-          isSending = true;
-          new Thread(new Runnable() {
-            @Override
-            public void run() {
-              for (int i = 0; i < sampleNumber; i++) {
-                isSending = true;
-                if (connection.isConnected()) {
-                  //打印图片指令
-                  InputStream is = getResources().openRawResource(R.raw.logo);
-                  BitmapDrawable bmpDraw = new BitmapDrawable(is);
-                  Bitmap bitmap = bmpDraw.getBitmap();
-                  GenericESC _gesc = esc.enable()
-                    .wakeup()
-                    .location(ELocation.builder().location(Location.CENTER).build())
-                    .image(EImage.builder()
-                      .image(new AndroidSourceImage(bitmap))
-                      .build())
-                    .lineDot(10)
-                    .position()//缝隙标签纸打印就是打印结束后多执行了这个指令
-                    .stopJob();
-                  safeWrite(_gesc);
-                  try {
-                    Thread.sleep(100);
-                  } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                  }
-                  if (i == (sampleNumber - 1)) {
-                    isSending = false;
-                  }
-                }
-              }
+        new Thread(new Runnable() {
+          @Override
+          public void run() {
+            if (connection.isConnected()) {
+              readMark = ReadMark.OPERATE_PRINT;
+              //打印图片指令
+              InputStream is = getResources().openRawResource(R.raw.logo);
+              BitmapDrawable bmpDraw = new BitmapDrawable(is);
+              Bitmap bitmap = bmpDraw.getBitmap();
+              GenericESC _gesc = esc.enable()
+                .wakeup()
+                .location(ELocation.builder().location(Location.CENTER).build())
+                .image(EImage.builder()
+                  .image(new AndroidSourceImage(bitmap))
+                  .build())
+                .lineDot(10)
+                .position()//缝隙标签纸打印就是打印结束后多执行了这个指令
+                .stopJob();
+              safeWrite(_gesc);
+              sampleNumber--;
             }
-          }).start();
+          }
+        }).start();
+      }
+    });
+    setThickness.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (thickness.getText() != null && thickness.length() != 0) {
+          String nongduzhi = thickness.getText().toString().trim();
+          int thickness = Integer.valueOf(nongduzhi);
+          GenericESC _gesc = esc.thickness(thickness);
+          safeWrite(_gesc);
+        } else {
+          show("请先输入浓度值");
         }
       }
     });
@@ -375,13 +373,27 @@ public class ESCActivity extends Activity {
         safeWrite(_gesc);
       }
     });
+    updatePrinterButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        progressDialog = new ProgressDialog(ESCActivity.this);
+        progressDialog.setMessage("打印机正在进入升级模式，此过程可能需要几分钟，请耐心等待......");
+        showprogress();
+        //调用更新方法前一定要先调用改方法停止
+        dataListenerRunner.stop();
+        UpdatePrinterESC updatePrinter = new UpdatePrinterESC(connection, readResources(R.raw.x8prov1099hd2024423), otaHandler);
+//        updatePrinter.setStartAddress(0x1020000);
+        updatePrinter.startUpdate();
+      }
+    });
   }
 
   private void dataListen(ConnectedDevice connectedDevice) {
-    DataListenerRunner dataListenerRunner = DataListener.with(connectedDevice)
+    dataListenerRunner = DataListener.with(connectedDevice)
       .listen(new ListenAction() {
         @Override
         public void action(byte[] received) {
+          Log.e("action", ByteArrToHex(received));
           if (received[0] == (byte) 0xFE) {
             Message message = new Message();
             message.what = PaperErrorFLAG;
@@ -412,6 +424,46 @@ public class ESCActivity extends Activity {
       .start();
   }
 
+  //打印机固件升级部分
+  private final Handler otaHandler = new Handler() {
+    @Override
+    public void handleMessage(Message msg) {
+      UpgradeMarker transactionTypeEnum = UpgradeMarker.getByCode(msg.what);
+      switch (transactionTypeEnum) {
+        case MSG_UPDATE_PROGRESS_BAR_PRINTER: {
+          int progress = (int) msg.obj;
+          if (progressDialog != null) {
+            progressDialog.setProgress(progress);
+          }
+          break;
+        }
+        case MSG_OTA_DATA_COMMAND_SEND_FAILED_PRINTER: {
+          if (progressDialog != null) {
+            progressDialog.dismiss();
+          }
+          Toast.makeText(ESCActivity.this, "打印机升级失败", Toast.LENGTH_SHORT).show();
+          break;
+        }
+        case MSG_OTA_DATA_START_PRINTER: {
+          if (progressDialog != null) {
+            progressDialog.setMessage("开始升级打印机");
+          }
+          break;
+        }
+        case MSG_OTA_FINISHED_PRINTER: {
+          if (progressDialog != null) {
+            progressDialog.setProgress(100);
+            progressDialog.dismiss();
+            progressDialog = null;
+          }
+          Toast.makeText(ESCActivity.this, "打印机升级完成", Toast.LENGTH_SHORT).show();
+          break;
+        }
+      }
+    }
+  };
+
+  //打印机上报状态数据
   private final Handler myHandler = new Handler() {
     public void handleMessage(Message msg) {
       switch (msg.what) {
@@ -660,8 +712,34 @@ public class ESCActivity extends Activity {
         show(rest_length);
         Log.e(TAG, "纸张剩余长度: " + rest_length);
         break;
+      case OPERATE_PRINT:
+        readMark = ReadMark.NONE;
+        if (ByteArrToHex(bytes).equals("4F4B") || ByteArrToHex(bytes).equals("AA")) {//打印成功 比如标签纸打印完成会返回4F4B 连续纸打印完成会返回AA
+          if (connection.isConnected() && sampleNumber > 0) {
+            new Thread(new Runnable() {
+              @Override
+              public void run() {
+                InputStream is = getResources().openRawResource(R.raw.dog);
+                BitmapDrawable bmpDraw = new BitmapDrawable(is);
+                Bitmap bitmap = bmpDraw.getBitmap();
+                GenericESC _gesc = esc.enable()
+                  .wakeup()
+                  .lineDot(10)
+                  .image(EImage.builder()
+                    .image(new AndroidSourceImage(bitmap))
+                    .build())
+                  .lineDot(10)
+                  .stopJob();
+                safeWrite(_gesc);
+                sampleNumber--;
+              }
+            }).start();
+          }
+        }
+        break;
       default:
-        if (ByteArrToHex(bytes).equals("4F4B")) {//固件一些其他的返回在这里处理 比如标签纸打印完成会返回4F4B 连续纸打印完成会返回AA
+        readMark = ReadMark.NONE;
+        if (ByteArrToHex(bytes).equals("4F4B")) {//固件一些其他的返回在这里处理
           show("成功");
           Log.e(TAG, "成功");
         }
@@ -709,6 +787,30 @@ public class ESCActivity extends Activity {
       return;
     }
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+  }
+
+  private void showprogress() {
+    progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);// 设置水平进度条
+    progressDialog.setCancelable(true);// 设置是否可以通过点击Back键取消
+    progressDialog.setCanceledOnTouchOutside(false);// 设置在点击Dialog外是否取消Dialog进度条
+    progressDialog.setIcon(R.mipmap.ic_launcher);// 设置提示的title的图标，默认是没有的
+    progressDialog.setTitle("提示");
+    progressDialog.setMax(100);
+    progressDialog.show();
+  }
+
+  private byte[] readResources(int ID) {
+    try {
+      InputStream in = getResources().openRawResource(ID);
+      int length = in.available();
+      byte[] buffer = new byte[length];
+      in.read(buffer);
+      in.close();
+      return buffer;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
   @Override

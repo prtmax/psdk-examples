@@ -33,12 +33,15 @@ import {
   TText,
   TFont,
   TTLine,
+  TQRCode,
 } from "@psdk/tspl";
 import {
   ESC,
   EImage
 } from "@psdk/esc";
 var bluetooth = new WechatBleBluetooth({
+  allowedWriteCharacteristic: '49535343-8841-43F4-A8D4-ECBE34729BB3',
+	allowedReadCharacteristic: '49535343-1e4d-4bd9-ba61-23c647249616',
   allowNoName: false,
 })
 // index.js
@@ -70,7 +73,8 @@ Page({
   // 打开蓝牙
   openBluetooth: function () {
     let that = this
-    let discoveredDevices = that.data.discoveredDevices;
+    let discoveredDevices1 = that.data.discoveredDevices;
+    discoveredDevices1=[]
     that.setData({
       discoveredDevices: []
     })
@@ -78,9 +82,9 @@ Page({
       // 发现新设备
       console.log("发现新设备");
       if (!devices.length) return;
-      discoveredDevices = discoveredDevices.concat(devices)
+      discoveredDevices1 = discoveredDevices1.concat(devices)
       that.setData({
-        discoveredDevices: discoveredDevices
+        discoveredDevices: discoveredDevices1
       })
 
     });
@@ -109,7 +113,9 @@ Page({
     // 连接设备
     try {
       that.data.connectedDevice = await bluetooth.connect(that.data.discoveredDevices[e.currentTarget.id]);
+      console.log(that.data.connectedDevice);
     } catch (error) {
+      console.log(error);
       wx.showToast({
         title: '连接失败',
       })
@@ -132,7 +138,7 @@ Page({
     if (that.data.items[0].checked) {
       that.writeTsplModel();
     }else if(that.data.items[1].checked){
-      vm.writeCpclModel();
+      that.writeCpclModel();
     }
   },
   writeCpclModel: async function () {
@@ -411,7 +417,7 @@ Page({
       .form(new CForm())
       .print();
     console.log(cpcl.command().string());
-    const report = cpcl.write();
+    const report = await cpcl.write({enableChunkWrite:true,chunkSize:20});//分包发送 20一包 嫌慢可以增加分包数 不保证会不会丢包
     console.log(report);
   },
   writeTsplModel: async function () {
@@ -477,14 +483,12 @@ Page({
         endY: 664,
         width: 2
       }))
-      .bar(new TBarCode({
+      .bar(new TBar({
         x: 120,
         y: 88 + 12,
-        cellWidth: 2,
-        height: 80,
-        content: "1234567890",
-        rotation: TRotation.ROTATION_0,
-        codeType: TCodeType.CODE_128
+        width: 500,
+        height: 2,
+        line:TTLine.DOTTED_LINE,
       }))
       .text(new TText({
         x: 120 + 12,
@@ -611,7 +615,7 @@ Page({
         endY: 968,
         width: 2
       }))
-      .bar(new TBarCode({
+      .barcode(new TBarCode({
         x: 320,
         y: 696 - 4,
         cellWidth: 2,
@@ -689,7 +693,50 @@ Page({
       }))
       .print();
     console.log(tspl.command().string());
-    const report = tspl.write();
+    const report = await tspl.write({enableChunkWrite:true,chunkSize:20});//分包发送 20一包 嫌慢可以增加分包数 不保证会不会丢包
+    console.log(report);
+  },
+  writeTsplRibbonModel: async function () {
+    let that = this;
+    const tspl = that.data.tspl
+    .page(new TPage({
+      width: 76,
+      height: 130
+    }))
+    //注释的为热转印机器指令
+    .label() //标签纸打印 三种纸调用的时候根据打印机实际纸张选一种就可以了
+    // .bline() //黑标纸打印
+    // .continuous() //连续纸打印
+    // .offset(0) //进纸
+    // .ribbon(false) //热敏模式
+    // .shift(0) //垂直偏移
+    // .reference(0, 0) //相对偏移
+    .qrcode(new TQRCode({
+      x: 20,
+      y: 20,
+      content: "发发发发发",
+      cellWidth:2
+    }))
+    ///使用自定义矢量字体SIMHEI.TTF放大倍数mulX,mulY计算方式想打多大(mm)/0.35取整，例如想打5mm字体：5/0.35=14
+    .text(new TText({
+      x: 320 + 8,
+      y: 696 + 54,
+      content: "发发发发发",
+      rawFont: "SIMHEI.TTF",
+      mulX: 14,
+      mulY: 14
+    }))
+    .text(new TText({
+      x: 12,
+      y: 696 + 80 + 35,
+      content: "发发发发发",
+      rawFont: "SIMHEI.TTF",
+      mulX: 14,
+      mulY: 14
+    }))
+    .print();
+    console.log(tspl.command().string());
+    const report = await tspl.write({enableChunkWrite:true,chunkSize:20});//分包发送 20一包 嫌慢可以增加分包数 不保证会不会丢包
     console.log(report);
   },
   writeImage: async function () {
@@ -698,19 +745,19 @@ Page({
     // 把图片画到离屏 canvas 上
     const canvas = wx.createOffscreenCanvas({
       type: '2d',
-      width: 500,
-      height: 960
+      width: 576,
+      height: 873
     });
     const ctx = canvas.getContext('2d');
     const image = canvas.createImage();
     await new Promise(resolve => {
       image.onload = resolve;
-      image.src = "/image/p3.png"; // 要加载的图片 url, 可以是base64
+      image.src = "/image/dog.jpg"; // 要加载的图片 url, 可以是base64
     });
-    ctx.drawImage(image, 0, 0, 500, 960);
+    ctx.drawImage(image, 0, 0, 576, 873);
     console.log("toDataURL - ", ctx.canvas.toDataURL()) // 输出的图片
     if (that.data.items[0].checked) {
-      const report = that.data.tspl
+      const report = await that.data.tspl
         .page(new TPage({
           width: 76,
           height: 130
@@ -725,10 +772,10 @@ Page({
           })
         )
         .print()
-        .write()
+        .write({enableChunkWrite:true,chunkSize:20});//分包发送 20一包 嫌慢可以增加分包数 不保证会不会丢包
       console.log(report);
     } else if (that.data.items[1].checked) {
-      const report = that.data.cpcl
+      const report = await that.data.cpcl
         .page(new CPage({
           width: 608,
           height: 1040
@@ -742,19 +789,21 @@ Page({
           })
         )
         .print()
-        .write()
+        .write({enableChunkWrite:true,chunkSize:20});//分包发送 20一包 嫌慢可以增加分包数 不保证会不会丢包
       console.log(report);
     } else {
-      const report = that.data.esc
+      const report = await that.data.esc
         .enable()
         .wakeup()
         .image(
           new EImage({
             image: canvas,
+            compress:true,
+            threshold:128
           })
         )
         .stopJob()
-        .write()
+        .write({enableChunkWrite:true,chunkSize:20});//分包发送 20一包 嫌慢可以增加分包数 不保证会不会丢包
       console.log(report);
     }
 

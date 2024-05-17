@@ -4,7 +4,7 @@ var __DEFINE__ = function(modId, func, req) { var m = { exports: {}, _tempexport
 var __REQUIRE__ = function(modId, source) { if(!__MODS__[modId]) return require(source); if(!__MODS__[modId].status) { var m = __MODS__[modId].m; m._exports = m._tempexports; var desp = Object.getOwnPropertyDescriptor(m, "exports"); if (desp && desp.configurable) Object.defineProperty(m, "exports", { set: function (val) { if(typeof val === "object" && val !== m._exports) { m._exports.__proto__ = val.__proto__; Object.keys(val).forEach(function (k) { m._exports[k] = val[k]; }); } m._tempexports = val }, get: function () { return m._tempexports; } }); __MODS__[modId].status = 1; __MODS__[modId].func(__MODS__[modId].req, m, m.exports); } return __MODS__[modId].m.exports; };
 var __REQUIRE_WILDCARD__ = function(obj) { if(obj && obj.__esModule) { return obj; } else { var newObj = {}; if(obj != null) { for(var k in obj) { if (Object.prototype.hasOwnProperty.call(obj, k)) newObj[k] = obj[k]; } } newObj.default = obj; return newObj; } };
 var __REQUIRE_DEFAULT__ = function(obj) { return obj && obj.__esModule ? obj.default : obj; };
-__DEFINE__(1681364781975, function(require, module, exports) {
+__DEFINE__(1715917494021, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -25,8 +25,8 @@ __exportStar(require("./device/adapter"), exports);
 __exportStar(require("./father"), exports);
 __exportStar(require("./toolkit"), exports);
 
-}, function(modId) {var map = {"./device/adapter":1681364781976,"./father":1681364781979,"./toolkit":1681364781984}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781976, function(require, module, exports) {
+}, function(modId) {var map = {"./device/adapter":1715917494022,"./father":1715917494025,"./toolkit":1715917494030}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1715917494022, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -46,8 +46,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./connected_device"), exports);
 __exportStar(require("./types"), exports);
 
-}, function(modId) { var map = {"./connected_device":1681364781977,"./types":1681364781978}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781977, function(require, module, exports) {
+}, function(modId) { var map = {"./connected_device":1715917494023,"./types":1715917494024}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1715917494023, function(require, module, exports) {
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -69,6 +69,9 @@ const father_1 = require("../../father");
  * Fake connected device
  */
 class FakeConnectedDevice {
+    origin() {
+        return "FAKE-DEVICE";
+    }
     connectionState() {
         return types_1.ConnectionState.CONNECTED;
     }
@@ -97,8 +100,8 @@ class FakeConnectedDevice {
 }
 exports.FakeConnectedDevice = FakeConnectedDevice;
 
-}, function(modId) { var map = {"./types":1681364781978,"../../father":1681364781979}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781978, function(require, module, exports) {
+}, function(modId) { var map = {"./types":1715917494024,"../../father":1715917494025}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1715917494024, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReadOptions = exports.WroteReporter = exports.ConnectionState = void 0;
@@ -155,7 +158,7 @@ class ReadOptions {
 exports.ReadOptions = ReadOptions;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781979, function(require, module, exports) {
+__DEFINE__(1715917494025, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -177,8 +180,8 @@ __exportStar(require("./types"), exports);
 __exportStar(require("./command"), exports);
 __exportStar(require("./PSDK"), exports);
 
-}, function(modId) { var map = {"./args":1681364781980,"./types":1681364781982,"./command":1681364781993,"./PSDK":1681364782001}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781980, function(require, module, exports) {
+}, function(modId) { var map = {"./args":1715917494026,"./types":1715917494028,"./command":1715917494039,"./PSDK":1715917494047}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1715917494026, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -199,8 +202,8 @@ __exportStar(require("./arg"), exports);
 __exportStar(require("./common/easy"), exports);
 __exportStar(require("./common/raw"), exports);
 
-}, function(modId) { var map = {"./arg":1681364781981,"./common/easy":1681364781992,"./common/raw":1681364782000}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781981, function(require, module, exports) {
+}, function(modId) { var map = {"./arg":1715917494027,"./common/easy":1715917494038,"./common/raw":1715917494046}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1715917494027, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BasicArg = void 0;
@@ -212,8 +215,8 @@ class BasicArg {
 }
 exports.BasicArg = BasicArg;
 
-}, function(modId) { var map = {"../types":1681364781982}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781982, function(require, module, exports) {
+}, function(modId) { var map = {"../types":1715917494028}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1715917494028, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -235,8 +238,8 @@ __exportStar(require("./hex_output"), exports);
 __exportStar(require("./write"), exports);
 __exportStar(require("./lifecycle"), exports);
 
-}, function(modId) { var map = {"./psdk_const":1681364781983,"./hex_output":1681364781989,"./write":1681364781990,"./lifecycle":1681364781991}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781983, function(require, module, exports) {
+}, function(modId) { var map = {"./psdk_const":1715917494029,"./hex_output":1715917494035,"./write":1715917494036,"./lifecycle":1715917494037}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1715917494029, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PsdkConst = void 0;
@@ -260,8 +263,8 @@ exports.PsdkConst = {
     EMPTY_BYTES: new Uint8Array([]),
 };
 
-}, function(modId) { var map = {"../../toolkit":1681364781984}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781984, function(require, module, exports) {
+}, function(modId) { var map = {"../../toolkit":1715917494030}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1715917494030, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -283,8 +286,8 @@ __exportStar(require("./pvariable"), exports);
 __exportStar(require("./pcollection"), exports);
 __exportStar(require("./pimage"), exports);
 
-}, function(modId) { var map = {"./byte":1681364781985,"./pvariable":1681364781986,"./pcollection":1681364781987,"./pimage":1681364781988}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781985, function(require, module, exports) {
+}, function(modId) { var map = {"./byte":1715917494031,"./pvariable":1715917494032,"./pcollection":1715917494033,"./pimage":1715917494034}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1715917494031, function(require, module, exports) {
 
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -334,7 +337,7 @@ class ByteKit {
 exports.ByteKit = ByteKit;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781986, function(require, module, exports) {
+__DEFINE__(1715917494032, function(require, module, exports) {
 
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -381,7 +384,7 @@ class PVariableKit {
 exports.PVariableKit = PVariableKit;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781987, function(require, module, exports) {
+__DEFINE__(1715917494033, function(require, module, exports) {
 
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -451,7 +454,7 @@ class CollectionKit {
 exports.CollectionKit = CollectionKit;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781988, function(require, module, exports) {
+__DEFINE__(1715917494034, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ImageKit = void 0;
@@ -524,7 +527,7 @@ class ImageKit {
 exports.ImageKit = ImageKit;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781989, function(require, module, exports) {
+__DEFINE__(1715917494035, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.HexOutput = void 0;
@@ -601,7 +604,7 @@ class HexOutput {
 exports.HexOutput = HexOutput;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781990, function(require, module, exports) {
+__DEFINE__(1715917494036, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.WriteControl = exports.DataWrote = exports.DataWrite = exports.IDataWriteCallback = exports.WriteOptions = void 0;
@@ -679,8 +682,8 @@ var WriteControl;
     WriteControl["STOP"] = "STOP";
 })(WriteControl = exports.WriteControl || (exports.WriteControl = {}));
 
-}, function(modId) { var map = {"./psdk_const":1681364781983}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781991, function(require, module, exports) {
+}, function(modId) { var map = {"./psdk_const":1715917494029}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1715917494037, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Lifecycle = void 0;
@@ -696,7 +699,7 @@ class Lifecycle {
 exports.Lifecycle = Lifecycle;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781992, function(require, module, exports) {
+__DEFINE__(1715917494038, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.OnlyTextHeaderArg = exports.OnlyBinaryHeaderArg = exports.EasyArg = void 0;
@@ -763,6 +766,9 @@ class OnlyBinaryHeaderArg extends EasyArg {
     clause() {
         return command_1.CommandClause.binary(this.header());
     }
+    newline() {
+        return false;
+    }
 }
 exports.OnlyBinaryHeaderArg = OnlyBinaryHeaderArg;
 class OnlyTextHeaderArg extends EasyArg {
@@ -780,8 +786,8 @@ class OnlyTextHeaderArg extends EasyArg {
 }
 exports.OnlyTextHeaderArg = OnlyTextHeaderArg;
 
-}, function(modId) { var map = {"../arg":1681364781981,"../../command":1681364781993}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781993, function(require, module, exports) {
+}, function(modId) { var map = {"../arg":1715917494027,"../../command":1715917494039}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1715917494039, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -805,8 +811,8 @@ __exportStar(require("./single/appendat"), exports);
 __exportStar(require("./single/binary_command"), exports);
 __exportStar(require("./single/single_command"), exports);
 
-}, function(modId) { var map = {"./print/command":1681364781994,"./print/commander":1681364781996,"./print/command_clause":1681364781995,"./single/appendat":1681364781997,"./single/binary_command":1681364781998,"./single/single_command":1681364781999}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781994, function(require, module, exports) {
+}, function(modId) { var map = {"./print/command":1715917494040,"./print/commander":1715917494042,"./print/command_clause":1715917494041,"./single/appendat":1715917494043,"./single/binary_command":1715917494044,"./single/single_command":1715917494045}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1715917494040, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -859,7 +865,7 @@ class DefaultCommand extends BasicCommand {
                     //# use gbk encoding
                     const t_buffer = iconv.encode(t, (_a = clause.charset) !== null && _a !== void 0 ? _a : types_1.PsdkConst.DEF_CHARSET);
                     const t_binary = Array.prototype.slice.call(t_buffer, 0);
-                    bytes.push(...t_binary);
+                    bytes = bytes.concat(t_binary);
                     //# use utf8 encoding
                     // const t_binary = ByteKit.textToU8A(t)
                     // const array = Array.from(t_binary)
@@ -868,7 +874,7 @@ class DefaultCommand extends BasicCommand {
                 case command_clause_1.ClauseType.NEWLINE:
                 case command_clause_1.ClauseType.BINARY:
                     const b = Array.from((_b = clause.binary) !== null && _b !== void 0 ? _b : types_1.PsdkConst.EMPTY_BYTES);
-                    bytes.push(...b);
+                    bytes = bytes.concat(b);
                     break;
             }
         }
@@ -888,8 +894,8 @@ class DefaultCommand extends BasicCommand {
 }
 exports.DefaultCommand = DefaultCommand;
 
-}, function(modId) { var map = {"../../types":1681364781982,"./command_clause":1681364781995,"../../../toolkit":1681364781984}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781995, function(require, module, exports) {
+}, function(modId) { var map = {"../../types":1715917494028,"./command_clause":1715917494041,"../../../toolkit":1715917494030}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1715917494041, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CommandClause = exports.ClauseType = void 0;
@@ -935,8 +941,8 @@ class CommandClause {
 }
 exports.CommandClause = CommandClause;
 
-}, function(modId) { var map = {"../../types":1681364781982}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781996, function(require, module, exports) {
+}, function(modId) { var map = {"../../types":1715917494028}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1715917494042, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.Commander = void 0;
@@ -1040,8 +1046,8 @@ class Commander {
 }
 exports.Commander = Commander;
 
-}, function(modId) { var map = {"./command_clause":1681364781995,"../../types":1681364781982,"./command":1681364781994}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781997, function(require, module, exports) {
+}, function(modId) { var map = {"./command_clause":1715917494041,"../../types":1715917494028,"./command":1715917494040}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1715917494043, function(require, module, exports) {
 
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -1107,7 +1113,7 @@ class TextAppendat extends Appendat {
     argument() {
         const arg = super.argument();
         if (is_js_1.default.not.truthy(arg))
-            return arg;
+            return this._quote ? '""' : '';
         if (this._quote) {
             return `"${arg}"`;
         }
@@ -1117,7 +1123,7 @@ class TextAppendat extends Appendat {
 exports.TextAppendat = TextAppendat;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781998, function(require, module, exports) {
+__DEFINE__(1715917494044, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -1173,7 +1179,7 @@ class BinaryCommand {
     }
     appendU8A(u8a) {
         const b = Array.from(u8a);
-        this.binary.push(...b);
+        this.binary = this.binary.concat(b);
         return this;
     }
     output() {
@@ -1186,8 +1192,8 @@ class BinaryCommand {
 }
 exports.BinaryCommand = BinaryCommand;
 
-}, function(modId) { var map = {"../../types":1681364781982,"../print/command_clause":1681364781995}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781999, function(require, module, exports) {
+}, function(modId) { var map = {"../../types":1715917494028,"../print/command_clause":1715917494041}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1715917494045, function(require, module, exports) {
 
 var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
@@ -1331,8 +1337,8 @@ class TSPLCommand extends BasicStringSingleCommand {
 }
 exports.TSPLCommand = TSPLCommand;
 
-}, function(modId) { var map = {"./appendat":1681364781997,"../print/command_clause":1681364781995}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364782000, function(require, module, exports) {
+}, function(modId) { var map = {"./appendat":1715917494043,"../print/command_clause":1715917494041}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1715917494046, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.RawMode = exports.Raw = void 0;
@@ -1399,8 +1405,8 @@ var RawMode;
     RawMode["TEXT"] = "TEXT";
 })(RawMode = exports.RawMode || (exports.RawMode = {}));
 
-}, function(modId) { var map = {"./easy":1681364781992,"../../command":1681364781993,"../../types":1681364781982}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364782001, function(require, module, exports) {
+}, function(modId) { var map = {"./easy":1715917494038,"../../command":1715917494039,"../../types":1715917494028}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1715917494047, function(require, module, exports) {
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1420,7 +1426,7 @@ class PSDK {
      * sdk version
      */
     sversion() {
-        return '0.0.18-snapshot';
+        return '0.2.67';
     }
     /**
      * authors
@@ -1493,8 +1499,8 @@ class PSDK {
 }
 exports.PSDK = PSDK;
 
-}, function(modId) { var map = {"./types":1681364781982,"./device/write_operation":1681364782002}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364782002, function(require, module, exports) {
+}, function(modId) { var map = {"./types":1715917494028,"./device/write_operation":1715917494048}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1715917494048, function(require, module, exports) {
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -1586,8 +1592,8 @@ class DataWriteOperation {
 }
 exports.DataWriteOperation = DataWriteOperation;
 
-}, function(modId) { var map = {"../types":1681364781982,"../../device/adapter":1681364781976,"../../toolkit":1681364781984}; return __REQUIRE__(map[modId], modId); })
-return __REQUIRE__(1681364781975);
+}, function(modId) { var map = {"../types":1715917494028,"../../device/adapter":1715917494022,"../../toolkit":1715917494030}; return __REQUIRE__(map[modId], modId); })
+return __REQUIRE__(1715917494021);
 })()
 //miniprogram-npm-outsideDeps=["is_js","js-base64","iconv-lite"]
 //# sourceMappingURL=index.js.map

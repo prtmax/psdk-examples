@@ -1,0 +1,10 @@
+@use "@configured-variables" as variables;
+
+
+.v-application.v-theme--dark {
+  .tree .tree-node {
+    .node-text, .icon-wrapper {
+      color: #fff;
+    }
+  }
+}

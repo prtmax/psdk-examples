@@ -14,6 +14,7 @@
 	<button bindtap="closeBluetooth" class="button">断开连接</button>
 	<button bindtap="writeModel" class="button">打印76*130模版</button>
   <button bindtap="writeImage" class="button">打印图片</button>
+  <button bindtap="writeTsplRibbonModel" class="button">打印热转印测试</button>
 </view>
 <view class="venues_list">
   <block wx:for="{{discoveredDevices}}" wx:for-item="item" wx:key="index">
