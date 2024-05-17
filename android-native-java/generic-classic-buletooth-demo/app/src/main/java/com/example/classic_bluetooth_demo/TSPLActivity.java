@@ -233,9 +233,16 @@ public class TSPLActivity extends Activity {
     btnModel.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        GenericTSPL _gtspl = tspl.page(TPage.builder().width(100).height(180).build())//单位毫米
+        //page宽高的单位是mm 下面坐标的xy单位是dot 1mm=8dot(分辨率203) 1mm=12dot(分辨率300) 开发者根据自己使用的打印机来适配
+        GenericTSPL _gtspl = tspl.page(TPage.builder().width(100).height(180).build())
+          .label()//标签纸打印 三种纸调用的时候根据打印机实际纸张选一种就可以了
+//          .bline()//黑标纸打印
+//          .continuous()//连续纸打印
+//          .offset(0)//进纸
+//          .ribbon(false)//热敏模式
+//          .shift(0)//垂直偏移
+//          .reference(0, 0)//相对偏移
           .direction(TDirection.builder().direction(TDirection.Direction.UP_OUT).mirror(TDirection.Mirror.NO_MIRROR).build())
-          .gap(true)
           .cut(true)
           .speed(6)
           .density(6)
@@ -244,6 +251,7 @@ public class TSPLActivity extends Activity {
           .bar(TBar.builder().x(30).y(100).width(740).height(4).build())
           .bar(TBar.builder().x(30).y(880).width(740).height(4).build())
           .bar(TBar.builder().x(30).y(1300).width(740).height(4).build())
+//          .text(TText.builder().x(400).y(25).rawFont("SIMHEI.TTF").xmulti(14).ymulti(14).content("上海浦东").build())//使用自定义矢量字体放大倍数计算方式想打多大(mm)/0.35取整，例如想打5mm字体：5/0.35=14
           .text(TText.builder().x(400).y(25).font(Font.TSS24).xmulti(3).ymulti(3).content("上海浦东").build())
           .text(TText.builder().x(30).y(120).font(Font.TSS24).xmulti(1).ymulti(1).content("发  件  人：张三 (电话 874236021)").build())
           .text(TText.builder().x(30).y(150).font(Font.TSS24).xmulti(1).ymulti(1).content("发件人地址：广州省 深圳市 福田区 思创路123号\"工业园\"1栋2楼").build())

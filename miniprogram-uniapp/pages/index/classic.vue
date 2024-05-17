@@ -14,14 +14,13 @@
 		<button @click="discovery" class="button">开始搜索</button>
 		<button @click="closeBluetooth" class="button">断开连接</button>
 		<button @click="writeModel" class="button">打印76*130模版</button>
-		<button @click="printImage" class="button">打印图片</button>
 		<button @click="writeTsplRibbonModel" class="button">打印热转印测试</button>
 		<scroll-view class="canvas-buttons" scroll-y="true">
-			<block v-for="(item, index) in discoveredDevices" :key="item.deviceId">
+			<block v-for="(item, index) in discoveredDevices" :key="item.address">
 				<text class="status">设备名称:{{item.name}}</text>
-				<text class="status">设备ID:{{item.deviceId}}</text>
-				<text class="status">连接状态:{{connectedDeviceId == item.deviceId?"已连接":"未连接"}}</text>
-				<button type="warn" class="button" @click="connectDevice(item)">连接</button>
+				<text class="status">设备ID:{{item.address}}</text>
+				<text class="status">连接状态:{{connectedDeviceId == item.address?"已连接":"未连接"}}</text>
+				<button type="warn" class="button" @click="connectBT(item)">连接</button>
 			</block>
 		</scroll-view>
 	</view>
@@ -29,6 +28,8 @@
 </template>
 
 <script>
+	// 获取 安卓经典蓝牙插件 
+	const bluetoothModule = uni.requireNativePlugin("mb-bluetooth")
 	import {
 		UniappBleBluetooth
 	} from "@psdk/device-ble-uniapp";
@@ -73,30 +74,12 @@
 	import {
 		EImage
 	} from "@psdk/esc";
-	async function initState(vm) {
-		//uniapp自带的蓝牙方法只支持ble蓝牙(发送数据效率慢)，开发者如果只需要运行成安卓app可以参考classic.vue页面(是通过经典蓝牙的插件调用原生的方法实现的，打印速度比较快)
-		vm.bluetooth = new UniappBleBluetooth({
-			allowedWriteCharacteristic: '49535343-8841-43F4-A8D4-ECBE34729BB3',
-			allowedReadCharacteristic: '49535343-1e4d-4bd9-ba61-23c647249616',
-			allowNoName: false,
-		});
-		vm.bluetooth.discovered((devices) => {
-			vm.discoveredDevices.push(...devices);
-
-		});
-	}
-	async function discoveryDevices(vm) {
-		await vm.bluetooth.startDiscovery();
-	}
-
-
 	export default {
 		data() {
 			return {
 				discoveredDevices: [],
 				connectedDeviceId: "",
 				cpcl: null,
-				connectedDevice: null,
 				items: [{
 						type: 'tspl',
 						checked: 'true',
@@ -111,9 +94,7 @@
 				current: 0,
 			}
 		},
-		async onLoad() {
-			await initState(this);
-		},
+		async onLoad() {},
 		methods: {
 			radioChange(evt) {
 				console.log(evt.detail.value);
@@ -125,135 +106,88 @@
 					}
 				}
 			},
-			async discovery() {
-				const vm = this;
-				try {
-					console.log('start discovery devices');
-					vm.discoveredDevices = [];
-					await discoveryDevices(vm);
-				} catch (e) {
-					console.error(e);
-				}
+			discovery() {
+				console.log('start discovery devices');
+				this.discoveredDevices = [];
+				bluetoothModule.enableBluetooth(data => {
+					if (data.success) {
+						bluetoothModule.startBluetoothDiscovery((device) => {
+							if (typeof device === 'undefined') return;
+							if (typeof device.name === 'undefined') return;
+							console.log(device.name);
+							if (device.name === '') return;
+							if (device.name.toUpperCase().endsWith('_BLE') ||
+								device.name.toUpperCase().endsWith('-LE') ||
+								device.name.toUpperCase().endsWith('-BLE')) return;
+							const isDuplicate = this.discoveredDevices.find(item => item.address === device
+								.address);
+							if (isDuplicate) return;
+							this.discoveredDevices.push(device);
+						})
+
+					} else {
+						uni.showToast({
+							icon: 'none',
+							title: '请开启蓝牙'
+						})
+					}
+				})
+
+			},
+			stopSearchBT() {
+				bluetoothModule.stopBluetoothDiscovery();
 			},
 			async closeBluetooth() {
 				const vm = this;
 				try {
 					console.log('closeBluetooth');
-					if (vm.connectedDevice != null) {
-						vm.connectedDevice.disconnect();
-						vm.connectedDevice = null;
-						vm.connectedDeviceId = "";
+					bluetoothModule.disconnectBluetooth((res) => {
+						if (res.success) {
+							uni.showToast({
+								icon: 'none',
+								title: res.msg
+							})
+							vm.connectedDeviceId = "";
+						} else {
+							uni.showToast({
+								icon: 'none',
+								title: res.msg
+							})
+						}
+					})
+				} catch (e) {
+					console.error(e);
+				}
+			},
+			async connectBT(device) {
+				const vm = this;
+				uni.showLoading({
+					title: '连接中'
+				});
+				await Timeout.set(100);
+				bluetoothModule.connectBluetooth(device.address, (res) => {
+					bluetoothModule.stopBluetoothDiscovery();
+					vm.$printer.init(new FakeConnectedDevice());
+					vm.connectedDeviceId = device.address;
+					// 设备是否连接成功
+					if (res.success) {
+						uni.showToast({
+							icon: 'none',
+							title: '连接成功'
+						})
+					} else {
+						uni.showToast({
+							icon: 'none',
+							title: '连接失败'
+						})
 					}
 
-				} catch (e) {
-					console.error(e);
-				}
+				}, (res) => {
+					// 接收的数据
+					// this.receiveMsg = res.msg
+				})
 			},
-			async connectDevice(device) {
-				const vm = this;
-				try {
-					uni.showLoading({
-						title: '连接中'
-					});
-					vm.connectedDevice = await vm.bluetooth.connect(device);
-					console.log(vm.connectedDevice);
-					vm.$printer.init(vm.connectedDevice);
-					await Timeout.set(500);
-					//监听打印机返回的数据
-					// vm.connectedDevice.notify((res) => {
-					// 	console.log(res.characteristicId);
-					// 	console.log(res);
-					// 	console.log("Length:" + res.value.byteLength)
-					// 	console.log("hexvalue:" + this.ab2hex(res.value))
-					// 	const hex = this.ab2hex(res.value)
-					// 	console.log("strvalue:" + this.hexCharCodeToStr(hex));
-					// });
-					uni.showToast({
-						title: '成功',
-					});
-					vm.connectedDeviceId = device.deviceId;
-					await Timeout.set(500);
-					uni.hideToast();
-				} catch (e) {
-					console.error(e);
-					uni.showToast({
-						title: '失败',
-					});
-				}
-			},
-			async printImage() {
-				console.log("printImage")
-				const vm = this;
 
-				// 把图片画到离屏 canvas 上
-				const canvas = uni.createOffscreenCanvas({
-					type: '2d',
-					width: 608,
-					height: 1040
-				});
-				const ctx = canvas.getContext('2d');
-				// 创建一个图片
-				const image = canvas.createImage();
-				// 等待图片加载
-				await new Promise(resolve => {
-					image.onload = resolve;
-					image.src = "/static/yunda.png"; // 要加载的图片 url, 可以是base64
-				});
-				ctx.drawImage(image, 0, 0, 608, 1040);
-				console.log("toDataURL - ", ctx.canvas.toDataURL()) // 输出的图片
-				if (this.items[this.current].type == "tspl") {
-					const report = await vm.$printer.tspl()
-						.page(new TPage({
-							width: 76,
-							height: 130
-						}))
-						.gap(true)
-						.image(
-							new TImage({
-								x: 0,
-								y: 0,
-								compress: true,
-								image: canvas
-							})
-						)
-						.print()
-						.write()
-					console.log(report);
-				} else if (this.items[this.current].type == "cpcl") {
-					const report = await vm.$printer.cpcl()
-						.page(new CPage({
-							width: 608,
-							height: 1040
-						}))
-						.image(
-							new CImage({
-								x: 0,
-								y: 0,
-								compress: true,
-								image: canvas
-							})
-						)
-						.print()
-						.write()
-					console.log(report);
-				} else {
-					// vm.$printer.init(new FakeConnectedDevice());
-					const report = await vm.$printer.esc()
-						.enable()
-						.wakeup()
-						.image(
-							new EImage({
-								image: canvas,
-								compress: true,
-							})
-						)
-						.lineDot(40)
-						.stopJob()
-						.write()
-					console.log(report);
-				}
-
-			},
 			// ArrayBuffer转16进度字符串示例
 			ab2hex(buffer) {
 				const hexArr = Array.prototype.map.call(
@@ -281,6 +215,22 @@
 					resultStr.push(String.fromCharCode(curCharCode));
 				}
 				return resultStr.join("");
+			},
+			async sendMessage(cmd) {
+				bluetoothModule.writeHexData(cmd, (res) => {
+					if (res.success) {
+						uni.showToast({
+							icon: 'none',
+							title: '发送成功'
+						})
+
+					} else {
+						uni.showToast({
+							icon: 'none',
+							title: '发送失败'
+						})
+					}
+				})
 			},
 			async writeModel() {
 				const vm = this;
@@ -567,15 +517,7 @@
 						.form(new CForm()) //标签纸需要加定位指令
 						.print();
 					console.log(cpcl.command().string());
-					const report = await cpcl.write({
-						enableChunkWrite: true,
-						chunkSize: 100
-					});
-					// const report = await cpcl.write({enableChunkWrite:true,chunkSize:100});///uniapp运行成app需要分包发送，小程序不需要
-					console.log(report);
-					uni.showToast({
-						title: '成功',
-					});
+					await this.sendMessage(cpcl.command().hex())
 				} catch (e) {
 					console.error(e);
 					uni.showToast({
@@ -857,15 +799,7 @@
 						}))
 						.print();
 					console.log(tspl.command().string());
-					// const report = await tspl.write();
-					const report = await tspl.write({
-						enableChunkWrite: true,
-						chunkSize: 100
-					}); ///uniapp运行成app需要分包发送，小程序不需要
-					console.log(report);
-					uni.showToast({
-						title: '成功',
-					});
+					await this.sendMessage(tspl.command().hex())
 				} catch (e) {
 					console.error(e);
 					uni.showToast({
@@ -914,15 +848,7 @@
 						}))
 						.print();
 					console.log(tspl.command().string());
-					// const report = await tspl.write();
-					const report = await tspl.write({
-						enableChunkWrite: true,
-						chunkSize: 100
-					}); ///uniapp运行成app需要分包发送，小程序不需要
-					console.log(report);
-					uni.showToast({
-						title: '成功',
-					});
+					await this.sendMessage(tspl.command().hex())
 				} catch (e) {
 					console.error(e);
 					uni.showToast({

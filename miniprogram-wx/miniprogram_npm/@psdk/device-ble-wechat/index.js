@@ -4,7 +4,7 @@ var __DEFINE__ = function(modId, func, req) { var m = { exports: {}, _tempexport
 var __REQUIRE__ = function(modId, source) { if(!__MODS__[modId]) return require(source); if(!__MODS__[modId].status) { var m = __MODS__[modId].m; m._exports = m._tempexports; var desp = Object.getOwnPropertyDescriptor(m, "exports"); if (desp && desp.configurable) Object.defineProperty(m, "exports", { set: function (val) { if(typeof val === "object" && val !== m._exports) { m._exports.__proto__ = val.__proto__; Object.keys(val).forEach(function (k) { m._exports[k] = val[k]; }); } m._tempexports = val }, get: function () { return m._tempexports; } }); __MODS__[modId].status = 1; __MODS__[modId].func(__MODS__[modId].req, m, m.exports); } return __MODS__[modId].m.exports; };
 var __REQUIRE_WILDCARD__ = function(obj) { if(obj && obj.__esModule) { return obj; } else { var newObj = {}; if(obj != null) { for(var k in obj) { if (Object.prototype.hasOwnProperty.call(obj, k)) newObj[k] = obj[k]; } } newObj.default = obj; return newObj; } };
 var __REQUIRE_DEFAULT__ = function(obj) { return obj && obj.__esModule ? obj.default : obj; };
-__DEFINE__(1681364781936, function(require, module, exports) {
+__DEFINE__(1715917493980, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -24,8 +24,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./connected"), exports);
 __exportStar(require("./provider"), exports);
 
-}, function(modId) {var map = {"./connected":1681364781937,"./provider":1681364781938}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781937, function(require, module, exports) {
+}, function(modId) {var map = {"./connected":1715917493981,"./provider":1715917493982}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1715917493981, function(require, module, exports) {
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -51,22 +51,30 @@ class WechatBleConnectedDevice {
         this.dataOfRead = [];
         this.doListen();
     }
+    notify(callback) {
+        this.notifyCallback = callback;
+    }
     doListen() {
-        wx.onBLECharacteristicValueChange(value => {
-            this.dataOfRead.push(value);
-        });
+        if (this.scpair.read == null)
+            return;
+        wx.onBLECharacteristicValueChange((value) => __awaiter(this, void 0, void 0, function* () {
+            // this.dataOfRead.push(value)
+            if (this.notifyCallback) {
+                yield this.notifyCallback(value);
+            }
+        }));
         wx.onBLEConnectionStateChange(value => {
             this._connectionState = value.connected ? frame_father_1.ConnectionState.CONNECTED : frame_father_1.ConnectionState.DISCONNECTED;
         });
-        // wx.notifyBLECharacteristicValueChange({
-        //   deviceId: this.device.deviceId,
-        //   serviceId: this.readPair.service.uuid,
-        //   characteristicId: this.readPair.characteristic.uuid,
-        //   state: true,
-        //   success: result => console.log(result),
-        //   // @ts-ignore
-        //   fail: (e) => console.error(e),
-        // });
+        wx.notifyBLECharacteristicValueChange({
+            deviceId: this.device.deviceId,
+            serviceId: this.scpair.service.uuid,
+            characteristicId: this.scpair.read.uuid,
+            state: true,
+            success: result => console.log(result),
+            // @ts-ignore
+            fail: (e) => console.error(e),
+        });
     }
     realRead() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -91,6 +99,9 @@ class WechatBleConnectedDevice {
                 });
             });
         });
+    }
+    origin() {
+        return this.device;
     }
     connectionState() {
         return this._connectionState;
@@ -170,7 +181,7 @@ class WechatBleConnectedDevice {
 exports.WechatBleConnectedDevice = WechatBleConnectedDevice;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781938, function(require, module, exports) {
+__DEFINE__(1715917493982, function(require, module, exports) {
 
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
@@ -409,7 +420,7 @@ class WechatBleBluetooth extends device_bluetooth_traits_1.Jluetooth {
         });
     }
     findSCPair(options) {
-        var _a, _b, _c, _d, _e, _f, _g, _h;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
         return __awaiter(this, void 0, void 0, function* () {
             // fill data
             const _characteristicsMap = new Map();
@@ -421,27 +432,36 @@ class WechatBleBluetooth extends device_bluetooth_traits_1.Jluetooth {
                 _characteristicsMap.set(service.uuid, characteristics);
             }
             // use special first
-            if ((_a = this.options) === null || _a === void 0 ? void 0 : _a.allowCharacteristic) {
+            if (((_a = this.options) === null || _a === void 0 ? void 0 : _a.allowedWriteCharacteristic) && ((_b = this.options) === null || _b === void 0 ? void 0 : _b.allowedReadCharacteristic)) {
                 for (const service of options.services) {
-                    if (!device_bluetooth_traits_1.TBluetoothHelpers.isAllowServices(service.uuid, (_b = this.options) === null || _b === void 0 ? void 0 : _b.allowServices)) {
+                    if (!device_bluetooth_traits_1.TBluetoothHelpers.isAllowServices(service.uuid, (_c = this.options) === null || _c === void 0 ? void 0 : _c.allowServices)) {
                         continue;
                     }
                     const characteristics = _characteristicsMap.get(service.uuid);
+                    let writeCharacteristic = null;
+                    let readCharacteristic = null;
                     for (const characteristic of characteristics) {
-                        if (((_c = this.options) === null || _c === void 0 ? void 0 : _c.allowCharacteristic) != characteristic.uuid)
-                            continue;
-                        const properties = characteristic.properties;
+                        if (((_d = this.options) === null || _d === void 0 ? void 0 : _d.allowedWriteCharacteristic.toLowerCase()) == characteristic.uuid.toLowerCase()) {
+                            writeCharacteristic = characteristic;
+                        }
+                    }
+                    for (const characteristic of characteristics) {
+                        if (((_e = this.options) === null || _e === void 0 ? void 0 : _e.allowedReadCharacteristic.toLowerCase()) == characteristic.uuid.toLowerCase()) {
+                            readCharacteristic = characteristic;
+                        }
+                    }
+                    if (writeCharacteristic != null && readCharacteristic != null) {
                         return {
                             service,
-                            write: characteristic,
-                            read: properties.read ? characteristic : null,
+                            write: writeCharacteristic,
+                            read: readCharacteristic,
                         };
                     }
                 }
             }
             // choose best characteristic
             for (const service of options.services) {
-                if (!device_bluetooth_traits_1.TBluetoothHelpers.isAllowServices(service.uuid, (_d = this.options) === null || _d === void 0 ? void 0 : _d.allowServices)) {
+                if (!device_bluetooth_traits_1.TBluetoothHelpers.isAllowServices(service.uuid, (_f = this.options) === null || _f === void 0 ? void 0 : _f.allowServices)) {
                     continue;
                 }
                 const characteristics = _characteristicsMap.get(service.uuid);
@@ -450,7 +470,7 @@ class WechatBleBluetooth extends device_bluetooth_traits_1.Jluetooth {
                 const pickedCharacteristic = characteristics.find(characteristic => {
                     const properties = characteristic.properties;
                     // @ts-ignore
-                    return (properties.writeNoResponse || properties.write) && (properties.read);
+                    return properties.write && (properties.notify);
                 });
                 if (pickedCharacteristic) {
                     return {
@@ -460,21 +480,21 @@ class WechatBleBluetooth extends device_bluetooth_traits_1.Jluetooth {
                     };
                 }
             }
-            if ((_f = (_e = this.options) === null || _e === void 0 ? void 0 : _e.allowDetectDifferentCharacteristic) !== null && _f !== void 0 ? _f : false) {
+            if ((_h = (_g = this.options) === null || _g === void 0 ? void 0 : _g.allowDetectDifferentCharacteristic) !== null && _h !== void 0 ? _h : true) {
                 // choose different characteristic with write and read properties
                 for (const service of options.services) {
-                    if (!device_bluetooth_traits_1.TBluetoothHelpers.isAllowServices(service.uuid, (_g = this.options) === null || _g === void 0 ? void 0 : _g.allowServices)) {
+                    if (!device_bluetooth_traits_1.TBluetoothHelpers.isAllowServices(service.uuid, (_j = this.options) === null || _j === void 0 ? void 0 : _j.allowServices)) {
                         continue;
                     }
                     const characteristics = _characteristicsMap.get(service.uuid);
                     const writeCharacteristic = characteristics.find(characteristic => {
                         const properties = characteristic.properties;
                         // @ts-ignore
-                        return (properties.writeNoResponse || properties.write);
+                        return properties.write;
                     });
                     const readCharacteristic = characteristics.find(characteristic => {
                         const properties = characteristic.properties;
-                        return (properties.read);
+                        return (properties.notify);
                     });
                     if (writeCharacteristic && readCharacteristic) {
                         return {
@@ -488,14 +508,14 @@ class WechatBleBluetooth extends device_bluetooth_traits_1.Jluetooth {
             else {
                 // only write
                 for (const service of options.services) {
-                    if (!device_bluetooth_traits_1.TBluetoothHelpers.isAllowServices(service.uuid, (_h = this.options) === null || _h === void 0 ? void 0 : _h.allowServices)) {
+                    if (!device_bluetooth_traits_1.TBluetoothHelpers.isAllowServices(service.uuid, (_k = this.options) === null || _k === void 0 ? void 0 : _k.allowServices)) {
                         continue;
                     }
                     const characteristics = _characteristicsMap.get(service.uuid);
                     const writeCharacteristic = characteristics.find(characteristic => {
                         const properties = characteristic.properties;
                         // @ts-ignore
-                        return (properties.writeNoResponse || properties.write);
+                        return properties.write;
                     });
                     if (writeCharacteristic) {
                         return {
@@ -510,8 +530,8 @@ class WechatBleBluetooth extends device_bluetooth_traits_1.Jluetooth {
 }
 exports.WechatBleBluetooth = WechatBleBluetooth;
 
-}, function(modId) { var map = {"./connected":1681364781937}; return __REQUIRE__(map[modId], modId); })
-return __REQUIRE__(1681364781936);
+}, function(modId) { var map = {"./connected":1715917493981}; return __REQUIRE__(map[modId], modId); })
+return __REQUIRE__(1715917493980);
 })()
 //miniprogram-npm-outsideDeps=["@psdk/frame-father","await-timeout","@psdk/device-bluetooth-traits"]
 //# sourceMappingURL=index.js.map
