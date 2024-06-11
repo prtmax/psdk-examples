@@ -19,6 +19,7 @@
 #import <AYSDK/AYOtaHelper.h>
 #import <AYSDK/NSString+AY.h>
 #import <AYSDK/NSData+AY.h>
+#import <AYSDK/SdkInfo.h>
 
 //! Project version number for AYSDK.
 FOUNDATION_EXPORT double AYSDKVersionNumber;

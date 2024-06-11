@@ -56,6 +56,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)barcodeX:(int)x y:(int)y type:(CCodeType)ct direction:(CBarcodeDirection)d width:(int)width height:(int)height content:(NSString *)content;
 
 /**
+ * 用于打印二维码
+ * @param x 横向起始位置
+ * @param y 纵向起始位置
+ * @param width 条码宽度高度， 范围1~32
+ * @param ecc 纠错等级，详见 CEccLevel
+ * @param rotate 旋转角度，详见 CCodeRotation
+ * @param content 内容
+ */
+- (void)qrCodeX:(int)x y:(int)y width:(int)width ecc:(CEccLevel)ecc rotate:(CCodeRotation)rotate content:(NSString *)content;
+
+/**
  * 文本加粗
  * @param bold 是否加粗
  */
@@ -75,14 +86,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * 用于将所定义区域内的在其之前创建 的对象的黑色区域将重绘为白色，白色区域将重绘为黑色。这些对象可以包括文本、条码和/或图形
- * @param text 文本
+ * @param content 文本
  * @param font  字体，详见CFont
  * @param x  起点的 x 坐标（单位：点）
  * @param y  起点的 y 坐标（单位：点）
  * @param rotate 旋转角度，详见CRotation
  * @param reverse 是否反色
  */
-- (void)text:(NSString *)text font:(CFont)font x:(int)x y:(int)y rotate:(CRotation)rotate reverse:(BOOL)reverse;
+- (void)textX:(int)x y:(int)y font:(CFont)font rotate:(CRotation)rotate reverse:(BOOL)reverse content:(NSString *)content;
 
 /**
  * 生成指定线条宽度的矩形

@@ -40,6 +40,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 /**
  * 设置打印浓度
+ * @param density 浓度，0~15 0：最淡 15：最浓 8：默认浓度
  */
 - (void)density:(int)density;
 
@@ -197,6 +198,16 @@ NS_ASSUME_NONNULL_BEGIN
  * 查询打印机版本
  */
 - (void)readVersion;
+
+/**
+ * 查询打印机电量，适用于电池款
+ */
+- (void)readBatteryLevel;
+
+/**
+ * 查询打印机状态
+ */
+- (void)readPrinterState;
 
 @end
 

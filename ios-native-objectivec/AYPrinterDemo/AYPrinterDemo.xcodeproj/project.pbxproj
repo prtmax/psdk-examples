@@ -12,7 +12,7 @@
 		B502DDB62AB9840700B74A2F /* CpclFunctionVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B502DDB42AB9840700B74A2F /* CpclFunctionVC.m */; };
 		B502DDB72AB9840700B74A2F /* CpclFunctionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = B502DDB52AB9840700B74A2F /* CpclFunctionVC.xib */; };
 		B50C1AE02BC78C2C00292025 /* a4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B50C1ADF2BC78C2C00292025 /* a4.jpg */; };
-		B50C1AE22BC7946A00292025 /* PD-A4主动上报信息释义.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B50C1AE12BC7946A00292025 /* PD-A4主动上报信息释义.pdf */; };
+		B5101EF12C12D0AC001B38E0 /* one.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = B5101EF02C12D0AC001B38E0 /* one.jpeg */; };
 		B543E16B2AB85A3100713B63 /* BaseVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B543E16A2AB85A3100713B63 /* BaseVC.m */; };
 		B543E17A2AB85C0900713B63 /* EscFunctionVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B543E1782AB85C0900713B63 /* EscFunctionVC.m */; };
 		B543E17B2AB85C0900713B63 /* EscFunctionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = B543E1792AB85C0900713B63 /* EscFunctionVC.xib */; };
@@ -22,7 +22,6 @@
 		B56455F62BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240119.ALLAY in Resources */ = {isa = PBXBuildFile; fileRef = B56455E02BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240119.ALLAY */; };
 		B56455F72BC38C9F0076C82F /* dog.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B56455E22BC38C9F0076C82F /* dog.jpg */; };
 		B56455F82BC38C9F0076C82F /* unititled.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B56455E32BC38C9F0076C82F /* unititled.jpg */; };
-		B56455FA2BC38C9F0076C82F /* wenshen_dd.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B56455E52BC38C9F0076C82F /* wenshen_dd.jpg */; };
 		B56455FB2BC38C9F0076C82F /* 66671697191774.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B56455E62BC38C9F0076C82F /* 66671697191774.jpg */; };
 		B56455FD2BC38C9F0076C82F /* dessert.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B56455E82BC38C9F0076C82F /* dessert.jpg */; };
 		B56455FF2BC38C9F0076C82F /* shouji.png in Resources */ = {isa = PBXBuildFile; fileRef = B56455EA2BC38C9F0076C82F /* shouji.png */; };
@@ -43,6 +42,8 @@
 		B574587C2AB067E700DF9716 /* BleDemo_OCTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B574587B2AB067E700DF9716 /* BleDemo_OCTests.m */; };
 		B57458862AB067E700DF9716 /* BleDemo_OCUITests.m in Sources */ = {isa = PBXBuildFile; fileRef = B57458852AB067E700DF9716 /* BleDemo_OCUITests.m */; };
 		B57458882AB067E700DF9716 /* BleDemo_OCUITestsLaunchTests.m in Sources */ = {isa = PBXBuildFile; fileRef = B57458872AB067E700DF9716 /* BleDemo_OCUITestsLaunchTests.m */; };
+		B57B35B72C0D942B00BBBD13 /* rgb1.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B57B35B62C0D942B00BBBD13 /* rgb1.jpg */; };
+		B581BA202BDA071D00D25CF6 /* A4主动上报信息释义.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B581BA1F2BDA071D00D25CF6 /* A4主动上报信息释义.pdf */; };
 		B590F1F82AB19A6E0012CEE5 /* TsplFunctionVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B590F1F62AB19A6E0012CEE5 /* TsplFunctionVC.m */; };
 		B590F1F92AB19A6E0012CEE5 /* TsplFunctionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = B590F1F72AB19A6E0012CEE5 /* TsplFunctionVC.xib */; };
 		FECAFD37AFE582C13790ACA8 /* Pods_AYPrinterDemoTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6377182B2AED9CEC5B942E6F /* Pods_AYPrinterDemoTests.framework */; };
@@ -87,7 +88,7 @@
 		B502DDB42AB9840700B74A2F /* CpclFunctionVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CpclFunctionVC.m; sourceTree = "<group>"; };
 		B502DDB52AB9840700B74A2F /* CpclFunctionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CpclFunctionVC.xib; sourceTree = "<group>"; };
 		B50C1ADF2BC78C2C00292025 /* a4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = a4.jpg; sourceTree = "<group>"; };
-		B50C1AE12BC7946A00292025 /* PD-A4主动上报信息释义.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "PD-A4主动上报信息释义.pdf"; sourceTree = "<group>"; };
+		B5101EF02C12D0AC001B38E0 /* one.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = one.jpeg; sourceTree = "<group>"; };
 		B543E1692AB85A3100713B63 /* BaseVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseVC.h; sourceTree = "<group>"; };
 		B543E16A2AB85A3100713B63 /* BaseVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BaseVC.m; sourceTree = "<group>"; };
 		B543E1772AB85C0900713B63 /* EscFunctionVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EscFunctionVC.h; sourceTree = "<group>"; };
@@ -100,7 +101,6 @@
 		B56455E02BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240119.ALLAY */ = {isa = PBXFileReference; lastKnownFileType = file; path = "QR-888 FWQR_SFUBE_BQ_VER_01_240119.ALLAY"; sourceTree = "<group>"; };
 		B56455E22BC38C9F0076C82F /* dog.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = dog.jpg; sourceTree = "<group>"; };
 		B56455E32BC38C9F0076C82F /* unititled.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = unititled.jpg; sourceTree = "<group>"; };
-		B56455E52BC38C9F0076C82F /* wenshen_dd.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = wenshen_dd.jpg; sourceTree = "<group>"; };
 		B56455E62BC38C9F0076C82F /* 66671697191774.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 66671697191774.jpg; sourceTree = "<group>"; };
 		B56455E82BC38C9F0076C82F /* dessert.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = dessert.jpg; sourceTree = "<group>"; };
 		B56455EA2BC38C9F0076C82F /* shouji.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = shouji.png; sourceTree = "<group>"; };
@@ -128,6 +128,8 @@
 		B57458812AB067E700DF9716 /* AYPrinterDemoUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AYPrinterDemoUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		B57458852AB067E700DF9716 /* BleDemo_OCUITests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BleDemo_OCUITests.m; sourceTree = "<group>"; };
 		B57458872AB067E700DF9716 /* BleDemo_OCUITestsLaunchTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BleDemo_OCUITestsLaunchTests.m; sourceTree = "<group>"; };
+		B57B35B62C0D942B00BBBD13 /* rgb1.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = rgb1.jpg; sourceTree = "<group>"; };
+		B581BA1F2BDA071D00D25CF6 /* A4主动上报信息释义.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "A4主动上报信息释义.pdf"; sourceTree = "<group>"; };
 		B590F1F52AB19A6E0012CEE5 /* TsplFunctionVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TsplFunctionVC.h; sourceTree = "<group>"; };
 		B590F1F62AB19A6E0012CEE5 /* TsplFunctionVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TsplFunctionVC.m; sourceTree = "<group>"; };
 		B590F1F72AB19A6E0012CEE5 /* TsplFunctionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TsplFunctionVC.xib; sourceTree = "<group>"; };
@@ -205,10 +207,11 @@
 		B56455E12BC38C9F0076C82F /* image */ = {
 			isa = PBXGroup;
 			children = (
+				B5101EF02C12D0AC001B38E0 /* one.jpeg */,
 				B50C1ADF2BC78C2C00292025 /* a4.jpg */,
+				B57B35B62C0D942B00BBBD13 /* rgb1.jpg */,
 				B56455E22BC38C9F0076C82F /* dog.jpg */,
 				B56455E32BC38C9F0076C82F /* unititled.jpg */,
-				B56455E52BC38C9F0076C82F /* wenshen_dd.jpg */,
 				B56455E62BC38C9F0076C82F /* 66671697191774.jpg */,
 				B56455E82BC38C9F0076C82F /* dessert.jpg */,
 				B56455EA2BC38C9F0076C82F /* shouji.png */,
@@ -247,7 +250,7 @@
 		B574585E2AB067E600DF9716 /* AYPrinterDemo */ = {
 			isa = PBXGroup;
 			children = (
-				B50C1AE12BC7946A00292025 /* PD-A4主动上报信息释义.pdf */,
+				B581BA1F2BDA071D00D25CF6 /* A4主动上报信息释义.pdf */,
 				B564560C2BC39F330076C82F /* AYSDK.framework */,
 				B5BF753A2AB2B59D00399B5C /* Files */,
 				B574585F2AB067E600DF9716 /* AppDelegate.h */,
@@ -413,13 +416,12 @@
 			files = (
 				B56455F42BC38C9F0076C82F /* DL-Q2 V1.12MH.PRTU in Resources */,
 				B56455F32BC38C9F0076C82F /* DL-Q2 V1.12.PRTU in Resources */,
-				B56455FA2BC38C9F0076C82F /* wenshen_dd.jpg in Resources */,
 				B56455FF2BC38C9F0076C82F /* shouji.png in Resources */,
-				B50C1AE22BC7946A00292025 /* PD-A4主动上报信息释义.pdf in Resources */,
 				B56455F82BC38C9F0076C82F /* unititled.jpg in Resources */,
 				B543E17B2AB85C0900713B63 /* EscFunctionVC.xib in Resources */,
 				B574586F2AB067E700DF9716 /* LaunchScreen.storyboard in Resources */,
 				B56456002BC38C9F0076C82F /* qmsht.jpg in Resources */,
+				B581BA202BDA071D00D25CF6 /* A4主动上报信息释义.pdf in Resources */,
 				B56456072BC38C9F0076C82F /* dithered-image.png in Resources */,
 				B590F1F92AB19A6E0012CEE5 /* TsplFunctionVC.xib in Resources */,
 				B502DDB72AB9840700B74A2F /* CpclFunctionVC.xib in Resources */,
@@ -431,6 +433,8 @@
 				B50C1AE02BC78C2C00292025 /* a4.jpg in Resources */,
 				B56456012BC38C9F0076C82F /* test.jpg in Resources */,
 				B56456022BC38C9F0076C82F /* longPic.jpg in Resources */,
+				B57B35B72C0D942B00BBBD13 /* rgb1.jpg in Resources */,
+				B5101EF12C12D0AC001B38E0 /* one.jpeg in Resources */,
 				B56456052BC38C9F0076C82F /* handsomeMan.jpeg in Resources */,
 				B56455FB2BC38C9F0076C82F /* 66671697191774.jpg in Resources */,
 				B56455F52BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240201.ALLAY in Resources */,

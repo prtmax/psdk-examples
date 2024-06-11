@@ -16,6 +16,9 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
+    self.bleHelper.onDataReceived = ^(NSData *data) {
+        
+    };
 }
 
 - (IBAction)printImage:(id)sender {
@@ -27,6 +30,8 @@
     
     [self.bleHelper writeCommands:cpcl.commands];
 }
+
+
 
 
 @end

@@ -9,16 +9,19 @@
 #import <CoreBluetooth/CoreBluetooth.h>
 #import <AYSDK/AYPrinter.h>
 #import <AYSDK/ETypes.h>
+#import <AYSDK/TTypes.h>
 
 #define BlueManager [BleHelper shareInstance]
 
 typedef NS_ENUM(NSInteger, BleState) {
     BleStateDisconnected,
     BleStateConnected,
+    BleStateFailToConnect
 };
 
 typedef void(^OnEscQueryChange)(EQuery type, NSData *data);
 typedef void(^OnEscSettingChange)(ESet type, NSData *data);
+typedef void(^onTsplDataReceived)(TReceivedType type, NSData *data);
 typedef void(^OnDataReceived)(NSData *data);
 
 @protocol BleHelperDelegate <NSObject>
@@ -28,7 +31,7 @@ typedef void(^OnDataReceived)(NSData *data);
 
 - (void)bleHelperDiscoverPeripheral:(AYPrinter *)printer;
 
-- (void)bleHelperDidConnectPeripheral:(CBPeripheral *)peripheral;
+- (void)bleHelperDidChangeConnectState:(BleState)state peripheral:(CBPeripheral *)peripheral;
 
 @end
 
@@ -36,7 +39,7 @@ typedef void(^OnDataReceived)(NSData *data);
 
 @property(assign, nonatomic) BleState state;
 @property(weak, nonatomic) id<BleHelperDelegate> delegate;
-/// 打印机回调 - 接收所以打印机数据返回
+/// 打印机回调 - 接收所有打印机数据返回
 @property(copy, nonatomic) OnDataReceived onDataReceived;
 /// esc 查询回调 - 只接收 esc 查询数据返回
 @property(copy, nonatomic) OnEscQueryChange escQueryChange;
@@ -46,6 +49,8 @@ typedef void(^OnDataReceived)(NSData *data);
 @property(copy, nonatomic) OnDataReceived onPrintSuccess;
 /// 打印主动上报回调 - 只接收打印主动上报返回
 @property(copy, nonatomic) OnDataReceived onPrinterAutoReport;
+/// 打印主动上报回调 - tspl反馈
+@property(copy, nonatomic) onTsplDataReceived onTsplDataReceived;
 
 + (instancetype)shareInstance;
 

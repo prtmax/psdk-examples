@@ -5,6 +5,16 @@
 //  Created by aiyin on 2023/9/14.
 //
 
+
+typedef NS_ENUM(NSInteger, TReceivedType) {
+    TReceivedTypeSN,
+    TReceivedTypeVersion,
+    TReceivedBatteryLevel,
+    TReceivedPrinterState,
+    TReceivedPrintSuccess,
+    TReceivedNone,
+};
+
 typedef NS_ENUM(NSInteger, TOutDirection) {
     UP_OUT,      // 0-上端先出
     DOWN_OUT    // 1－下端先出

@@ -28,6 +28,11 @@ typedef NS_ENUM(NSInteger, CRotation) {
     CRotation_270
 };
 
+typedef NS_ENUM(NSInteger, CCodeRotation) {
+    CCodeRotation_0,
+    CCodeRotation_90,
+};
+
 typedef NS_ENUM(NSInteger, CBarcodeDirection) {
     CBarcodeDirection_H,  // horizontal
     CBarcodeDirection_V,  // vertical
@@ -44,4 +49,11 @@ typedef NS_ENUM(NSInteger, CCodeType) {
     CCodeType_UPCA,
     CCodeType_UPCE,
     CCodeType_I2OF5,
+};
+
+typedef NS_ENUM(int, CEccLevel) {
+    CEccLevelL = 0,
+    CEccLevelM = 1,
+    CEccLevelQ = 2,
+    CEccLevelH = 3,
 };

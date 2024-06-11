@@ -25,6 +25,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.copiesTextF.delegate = self;
+    self.copies = [_copiesTextF.text intValue];
     self.esc = [EscCommand new];
     [self initCallBack];
 }
@@ -35,11 +36,27 @@
 
 - (void)initCallBack {
     __weak typeof(self) weakSelf = self;
+    // 所以打印机数据接收
+    self.bleHelper.onDataReceived = ^(NSData *data) {
+        
+    };
     // 查询回调
     self.bleHelper.escQueryChange = ^(EQuery type, NSData *data) {
         Byte *bytes = (Byte *)[data bytes];
         switch (type) {
+            case QueryInfo:
+                // 对应信息： 蓝牙名称 | 经典蓝牙 mac | ble mac | 打印机固件版本 | sn号 | 电量
+                NSLog(@"打印机信息：%@", data);
+                weakSelf.displayLabel.text = [NSString stringWithFormat:@"打印机信息：%@", [data toRawString]];
+                break;
             case QueryState:
+                // * 0:打印机正常
+                // * 其他（根据"位"判断打印机状态）
+                // * 第0位：1：正在打印
+                // * 第1位：1：纸舱盖开
+                // * 第2位：1：缺纸
+                // * 第3位：1：电池电压低
+                // * 第4位：1：打印头过热
                 NSLog(@"打印机状态：%@", data);
                 weakSelf.displayLabel.text = [NSString stringWithFormat:@"打印机状态：%@", data];
                 break;
@@ -83,7 +100,7 @@
     
     // 设置回调
     self.bleHelper.escSettingChange = ^(ESet type, NSData *data) {
-        // NSLog(@"escSettingChange : %ld, data: %@", type, data);
+         NSLog(@"escSettingChange : %ld, data: %@", type, data);
         switch (type) {
             case SetShutTime:
                 NSLog(@"设置关机时间成功...");
@@ -93,7 +110,20 @@
                 NSLog(@"设置浓度成功...");
                 weakSelf.displayLabel.text = @"设置浓度成功...";
                 break;
-                
+            case SetLabelGap: {
+                if ([data.toRawString isEqualToString:@"OK"]) {
+                    [weakSelf.esc clean];
+                    [weakSelf.esc enable];
+                    [weakSelf.esc linedots:10];
+                    [weakSelf.esc position];
+                    [weakSelf.esc stopPrintJob];
+                    [weakSelf.bleHelper writeCommands:weakSelf.esc.commands];
+                    weakSelf.displayLabel.text = @"设置学习标签缝隙成功";
+                } else {
+                    weakSelf.displayLabel.text = @"设置学习标签缝隙失败";
+                }
+            }
+                break;
             default:
                 break;
         }
@@ -101,7 +131,10 @@
     
     // 打印成功回调
     self.bleHelper.onPrintSuccess = ^(NSData *data) {
-        // NSLog(@"打印成功： %@", data);
+        if (!weakSelf.isPrinting) {
+            return;
+        }
+        NSLog(@"打印成功： %@, 剩余份数： %d", data, weakSelf.copies);
         if (weakSelf.copies <= 0) {
             weakSelf.isPrinting = NO;
             weakSelf.displayLabel.text = @"打印完成";
@@ -143,19 +176,16 @@
                 NSLog(@"打印机正常");
             } else {
                 if ((bytes[1] & (Byte)0x01) ==  (Byte)0x01) {
-                    NSLog(@"打印机缺纸");
+                    NSLog(@"打印机过热");
                 }
                 if ((bytes[1] & (Byte)0x02) ==  (Byte)0x02) {
                     NSLog(@"打印机开盖");
                 }
-                if ((bytes[1] & (Byte)0x03) ==  (Byte)0x03) {
-                    NSLog(@"打印机过热");
-                }
                 if ((bytes[1] & (Byte)0x04) ==  (Byte)0x04) {
-                    NSLog(@"打印机低电量");
+                    NSLog(@"打印机缺纸");
                 }
                 if ((bytes[1] & (Byte)0x08) ==  (Byte)0x08) {
-                    NSLog(@"打印机合盖，前提要打印机支持此功能");
+                    NSLog(@"打印机低压");
                 }
                 if ((bytes[1] & (Byte)0x10) ==  (Byte)0x10) {
                     NSLog(@"请使用PikDik品牌标签，获得更好的打印体验");
@@ -181,12 +211,12 @@
 }
 
 #pragma mark - 打印/print
-/// 标签纸
+/// 标签纸 / 黑标纸
 - (IBAction)labelPrint {
     [self.esc clean];
     [self.esc wake];
     [self.esc enable];
-    [self.esc image:[UIImage imageNamed:@"蚊香液.png"] compress:NO mode:Normal];
+    [self.esc image:[UIImage imageNamed:@"one.jpeg"] compress:YES mode:Normal];
     [self.esc position];
     [self.esc stopPrintJob];
 
@@ -203,7 +233,7 @@
     [self.esc wake];
     [self.esc enable];
     [self.esc linedots:80];
-    [self.esc image:[UIImage imageNamed:@"wenshen_dd.jpg"] compress:YES mode:Normal];
+    [self.esc image:[UIImage imageNamed:@"a4.jpg"] compress:YES mode:Normal];
     [self.esc linedots:80];
     [self.esc stopPrintJob];
     
@@ -278,6 +308,13 @@
     [self.bleHelper writeCommands:self.esc.commands];
 }
 
+- (IBAction)printerInfo:(id)sender {
+    if (self.isPrinting) return;
+    [self.esc clean];
+    [self.esc printerInfo];
+    [self.bleHelper writeCommands:self.esc.commands];
+}
+
 #pragma mark - 设置/setting
 - (IBAction)setShutTime:(id)sender {
     if (self.isPrinting) return;
@@ -293,7 +330,15 @@
     [self.bleHelper writeCommands:self.esc.commands];
 }
 
+- (IBAction)learnLabelGap:(id)sender {
+    if (self.isPrinting) return;
+    [self.esc clean];
+    [self.esc learnLabelGap];
+    [self.bleHelper writeCommands:self.esc.commands];
+}
+
 #pragma mark - OTA升级/OTA Upgrade
+#warning 仅适用于部分机型，请勿随意升级
 - (IBAction)ota:(id)sender {
     if (self.isPrinting) return;
     __weak typeof(self) weakSelf = self;

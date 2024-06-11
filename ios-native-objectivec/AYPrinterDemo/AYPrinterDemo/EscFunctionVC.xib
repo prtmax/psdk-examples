@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="22505" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22504"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -50,7 +50,7 @@
                     </constraints>
                 </view>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Ufd-up-xBL">
-                    <rect key="frame" x="0.0" y="107.33333333333334" width="196.66666666666666" height="300.33333333333326"/>
+                    <rect key="frame" x="0.0" y="107.33333333333334" width="196.66666666666666" height="344.66666666666663"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ipf-b4-pLf">
                             <rect key="frame" x="0.0" y="0.0" width="196.66666666666666" height="34.333333333333336"/>
@@ -60,8 +60,16 @@
                                 <action selector="continuousPrint" destination="-1" eventType="touchUpInside" id="Gco-Pr-qd0"/>
                             </connections>
                         </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HlO-zq-O1h">
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="8cC-Lu-hbL">
                             <rect key="frame" x="0.0" y="44.333333333333329" width="196.66666666666666" height="34.333333333333329"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="打印机信息"/>
+                            <connections>
+                                <action selector="printerInfo:" destination="-1" eventType="touchUpInside" id="rqI-Hu-1yp"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="HlO-zq-O1h">
+                            <rect key="frame" x="0.0" y="88.666666666666671" width="196.66666666666666" height="34.333333333333329"/>
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="plain" title="蓝牙名称"/>
                             <connections>
@@ -69,7 +77,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kqW-3s-G2q">
-                            <rect key="frame" x="0.0" y="88.666666666666671" width="196.66666666666666" height="34.333333333333329"/>
+                            <rect key="frame" x="0.0" y="133" width="196.66666666666666" height="34.333333333333343"/>
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="plain" title="蓝牙固件版本"/>
                             <connections>
@@ -77,7 +85,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="jWs-Rd-Q0P">
-                            <rect key="frame" x="0.0" y="133" width="196.66666666666666" height="34.333333333333343"/>
+                            <rect key="frame" x="0.0" y="177.33333333333337" width="196.66666666666666" height="34.333333333333343"/>
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="plain" title="打印机固件版本"/>
                             <connections>
@@ -85,7 +93,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Tyd-RI-0Uz">
-                            <rect key="frame" x="0.0" y="177.33333333333337" width="196.66666666666666" height="34.333333333333343"/>
+                            <rect key="frame" x="0.0" y="221.66666666666669" width="196.66666666666666" height="34.333333333333314"/>
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="plain" title="打印机型号"/>
                             <connections>
@@ -93,7 +101,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="9I8-E2-zUD" userLabel="关机时间">
-                            <rect key="frame" x="0.0" y="221.66666666666669" width="196.66666666666666" height="34.333333333333314"/>
+                            <rect key="frame" x="0.0" y="266" width="196.66666666666666" height="34.333333333333314"/>
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="plain" title="关机时间"/>
                             <connections>
@@ -101,7 +109,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="IeU-pE-u6K">
-                            <rect key="frame" x="0.0" y="266" width="196.66666666666666" height="34.333333333333314"/>
+                            <rect key="frame" x="0.0" y="310.33333333333337" width="196.66666666666666" height="34.333333333333314"/>
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="plain" title="OTA"/>
                             <connections>
@@ -111,12 +119,12 @@
                     </subviews>
                 </stackView>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="iit-KW-Kxk">
-                    <rect key="frame" x="196.66666666666663" y="107.33333333333334" width="196.33333333333337" height="300.33333333333326"/>
+                    <rect key="frame" x="196.66666666666663" y="107.33333333333334" width="196.33333333333337" height="344.66666666666663"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="J0x-wD-pas">
                             <rect key="frame" x="0.0" y="0.0" width="196.33333333333334" height="34.333333333333336"/>
                             <state key="normal" title="Button"/>
-                            <buttonConfiguration key="configuration" style="plain" title="标签纸打印"/>
+                            <buttonConfiguration key="configuration" style="plain" title="标签 / 黑标纸打印"/>
                             <connections>
                                 <action selector="labelPrint" destination="-1" eventType="touchUpInside" id="IEF-SA-Eny"/>
                             </connections>
@@ -169,16 +177,24 @@
                                 <action selector="setThickness:" destination="-1" eventType="touchUpInside" id="6rl-Oq-i8u"/>
                             </connections>
                         </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="kEc-xs-ugk" userLabel="设置浓度">
+                            <rect key="frame" x="0.0" y="310.33333333333337" width="196.33333333333334" height="34.333333333333314"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="学习标签缝隙"/>
+                            <connections>
+                                <action selector="learnLabelGap:" destination="-1" eventType="touchUpInside" id="4yY-Jf-ZcF"/>
+                            </connections>
+                        </button>
                     </subviews>
                 </stackView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vbQ-qV-f7M">
-                    <rect key="frame" x="10" y="427.66666666666669" width="373" height="0.0"/>
+                    <rect key="frame" x="10" y="472" width="373" height="0.0"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                    <color key="textColor" red="0.33378222482673592" green="0.63910055160522461" blue="0.30279906652251509" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                    <color key="textColor" red="0.33333333333333331" green="0.63921568627450975" blue="0.30196078431372547" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <progressView hidden="YES" opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Lq3-Wj-MlN">
-                    <rect key="frame" x="10" y="437.66666666666669" width="373" height="5"/>
+                    <rect key="frame" x="10" y="482" width="373" height="4"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="4" id="dYa-07-b4B"/>
                     </constraints>
@@ -203,7 +219,7 @@
                 <constraint firstItem="Lq3-Wj-MlN" firstAttribute="top" secondItem="vbQ-qV-f7M" secondAttribute="bottom" constant="10" id="klZ-RU-y5s"/>
                 <constraint firstItem="vbQ-qV-f7M" firstAttribute="top" secondItem="Ufd-up-xBL" secondAttribute="bottom" constant="20" id="ufN-Fn-rXO"/>
             </constraints>
-            <point key="canvasLocation" x="-1236" y="-354"/>
+            <point key="canvasLocation" x="-2543" y="-294"/>
         </view>
     </objects>
     <resources>

@@ -28,6 +28,7 @@
     self.bleHelper.delegate = self;
     self.searchBar.delegate = self;
     self.tableView.tableFooterView = [UIView new];
+    NSLog(@"SDK INFO: %@", [SdkInfo info]);
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -62,6 +63,11 @@
     for (AYPrinter *p in self.printers) {
         if ([p.uuid isEqualToString:printer.uuid]) {
             isExist = YES;
+            if (!p.mac.length) {
+                [self.printers replaceObjectAtIndex:[self.printers indexOfObject:p] withObject:printer];
+                [self.tableView reloadData];
+            }
+            break;
         }
     }
     if (!isExist) {
@@ -78,32 +84,36 @@
 //    return pow(10, power);
 //}
 
-- (void)bleHelperDidConnectPeripheral:(CBPeripheral *)peripheral {
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"指令类型" message:nil preferredStyle:UIAlertControllerStyleAlert];
-    UIAlertAction *tsplAction = [UIAlertAction actionWithTitle:@"TSPL" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        TsplFunctionVC *vc = [[TsplFunctionVC alloc] init];
-        vc.navigationItem.title = peripheral.name;
-        [self.navigationController pushViewController:vc animated:YES];
-    }];
-    UIAlertAction *escAction = [UIAlertAction actionWithTitle:@"ESC" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        EscFunctionVC *vc = [[EscFunctionVC alloc] init];
-        vc.navigationItem.title = peripheral.name;
-        [self.navigationController pushViewController:vc animated:YES];
-    }];
-    UIAlertAction *cpclAction = [UIAlertAction actionWithTitle:@"CPCL" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
-        CpclFunctionVC *vc = [[CpclFunctionVC alloc] init];
-        vc.navigationItem.title = peripheral.name;
-        [self.navigationController pushViewController:vc animated:YES];
-    }];
-    UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
-        [self.bleHelper disconnect];
-    }];
-    
-    [alertController addAction:tsplAction];
-    [alertController addAction:escAction];
-    [alertController addAction:cpclAction];
-    [alertController addAction:cancelAction];
-    [self presentViewController:alertController animated:YES completion:nil];
+- (void)bleHelperDidChangeConnectState:(BleState)state peripheral:(CBPeripheral *)peripheral {
+    NSLog(@"bleHelperDidChangeConnectState: %ld", state);
+    if (state == BleStateConnected) {
+        
+        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"指令类型" message:nil preferredStyle:UIAlertControllerStyleAlert];
+        UIAlertAction *tsplAction = [UIAlertAction actionWithTitle:@"TSPL" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            TsplFunctionVC *vc = [[TsplFunctionVC alloc] init];
+            vc.navigationItem.title = peripheral.name;
+            [self.navigationController pushViewController:vc animated:YES];
+        }];
+        UIAlertAction *escAction = [UIAlertAction actionWithTitle:@"ESC" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            EscFunctionVC *vc = [[EscFunctionVC alloc] init];
+            vc.navigationItem.title = peripheral.name;
+            [self.navigationController pushViewController:vc animated:YES];
+        }];
+        UIAlertAction *cpclAction = [UIAlertAction actionWithTitle:@"CPCL" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+            CpclFunctionVC *vc = [[CpclFunctionVC alloc] init];
+            vc.navigationItem.title = peripheral.name;
+            [self.navigationController pushViewController:vc animated:YES];
+        }];
+        UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+            [self.bleHelper disconnect];
+        }];
+        
+        [alertController addAction:tsplAction];
+        [alertController addAction:escAction];
+        [alertController addAction:cpclAction];
+        [alertController addAction:cancelAction];
+        [self presentViewController:alertController animated:YES completion:nil];
+    }
 }
 
 #pragma mark - UISearchBarDelegate

@@ -6,34 +6,42 @@
 //
 
 typedef NS_ENUM(NSInteger, EImageMode) {
-    Normal,
-    DoubleWidth,
-    DoubleHeight,
-    DoubleAll
+    Normal = 0,      // 正常打印
+    DoubleWidth,     // 倍宽打印
+    DoubleHeight,    // 倍高打印
+    DoubleAll        // 倍宽倍高打印
 };
 
 typedef NS_ENUM(NSInteger, EPosition) {
-    EPositionLeft,
-    EPositionCenter,
-    EPositionRight
+    EPositionLeft,      // 居左
+    EPositionCenter,    // 居中
+    EPositionRight      // 居右
 };
 
 typedef NS_ENUM(NSInteger, EThickness) {
-    EThicknessLow,
-    EThicknessMedium,
-    EThicknessHigh
+    EThicknessLow,      // 低浓度
+    EThicknessMedium,   // 中浓度
+    EThicknessHigh      // 高浓度
 };
 
 typedef NS_ENUM(NSInteger, EPaperType) {
-    BLP,
-    CP,
-    LP
+    EPaperTypeBlackMark = 0,    // 黑标纸模式
+    EPaperTypeContinuous,       // 连续纸模式
+    EPaperTypeGap,              // 缝隙纸模式
+};
+
+typedef NS_ENUM(NSInteger, EPaperTypeQX) {
+    EPaperTypeQXGap,              // 缝隙纸模式
+    EPaperTypeQXBlackMark,    // 黑标纸模式
+    EPaperTypeQXContinuous,       // 连续纸模式
 };
 
 typedef NS_ENUM(NSInteger, ESet) {
-    SetThickness = 0,       // 设置浓度
-    SetShutTime = 1,        // 设置关机时间
-    SetNone                 // none
+    SetThickness = 0,   // 设置浓度
+    SetShutTime = 1,    // 设置关机时间
+    SetPaperType,       // 设置纸张类型
+    SetLabelGap,        // 设置学习标签缝隙
+    SetNone             // none
 };
 
 
