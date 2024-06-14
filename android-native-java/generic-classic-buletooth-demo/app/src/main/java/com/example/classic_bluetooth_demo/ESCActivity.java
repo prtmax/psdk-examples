@@ -181,6 +181,7 @@ public class ESCActivity extends Activity {
                 .lineDot(1)
                 .image(EImage.builder()
                   .image(new AndroidSourceImage(bitmap))
+//                  .compress(true)//支持压缩的打印机可以走压缩
                   .build())
                 .lineDot(10)
                 .stopJob();
@@ -205,7 +206,7 @@ public class ESCActivity extends Activity {
             if (connection.isConnected()) {
               readMark = ReadMark.OPERATE_PRINT;
               //打印图片指令
-              InputStream is = getResources().openRawResource(R.raw.logo);
+              InputStream is = getResources().openRawResource(R.raw.dog);
               BitmapDrawable bmpDraw = new BitmapDrawable(is);
               Bitmap bitmap = bmpDraw.getBitmap();
               GenericESC _gesc = esc.enable()
@@ -213,6 +214,7 @@ public class ESCActivity extends Activity {
                 .location(ELocation.builder().location(Location.CENTER).build())
                 .image(EImage.builder()
                   .image(new AndroidSourceImage(bitmap))
+//                  .compress(true)//支持压缩的打印机可以走压缩
                   .build())
                 .lineDot(10)
                 .position()//缝隙标签纸打印就是打印结束后多执行了这个指令
