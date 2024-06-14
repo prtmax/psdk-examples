@@ -135,7 +135,7 @@ public class CPCLActivity extends Activity {
         GenericCPCL _gcpcl = cpcl.page(CPage.builder().width(608).height(600).build())
           .image(CImage.builder()
             .image(new AndroidSourceImage(bitmap))
-            .reverse(true)
+//            .compress(true)//支持压缩的打印机可以走压缩
             .build()
           )
           .print(CPrint.builder().build());

@@ -28,8 +28,8 @@
 </template>
 
 <script>
-	// 获取 安卓经典蓝牙插件 
-	const bluetoothModule = uni.requireNativePlugin("mb-bluetooth")
+	import bluetoothTool from '@/plugins/BluetoothTool.js'
+	import permission from '@/plugins/permission.js'
 	import {
 		UniappBleBluetooth
 	} from "@psdk/device-ble-uniapp";
@@ -56,6 +56,8 @@
 		CRotation,
 		CInverse,
 		CMag,
+		CQRCode,
+		CCorrectLevel,
 	} from "@psdk/cpcl";
 	import {
 		TBar,
@@ -94,8 +96,53 @@
 				current: 0,
 			}
 		},
-		async onLoad() {},
+		async onLoad() {
+
+			//#ifdef APP-PLUS
+			// 蓝牙
+			bluetoothTool.init({
+				listenBTStatusCallback: (state) => {
+					if (state == 'STATE_ON') {
+						console.log(state);
+					}
+				},
+				discoveryDeviceCallback: this.onDevice,
+				discoveryFinishedCallback: function() {
+					console.log("搜索完成");
+				},
+				readDataCallback: function(dataByteArr) {
+					/* if(that.receiveDataArr.length >= 200) {
+						that.receiveDataArr = [];
+					}
+					that.receiveDataArr.push.apply(that.receiveDataArr, dataByteArr); */
+				},
+				connExceptionCallback: function(e) {
+					console.log(e);
+				}
+			});
+			//#endif
+		},
 		methods: {
+			async checkLocation() {
+			  try {
+			    let checkResult = await permission.androidPermissionCheck("location");
+			    console.log("检测信息：", checkResult);
+			    if (checkResult.code == 1) {
+			      let result = checkResult.data;
+			      if (result == 1) {
+			        console.log("授权成功!");
+			      }
+			      if (result == 0) {
+			        console.log("授权已拒绝!");
+			      }
+			      if (result == -1) {
+			        console.log("您已永久拒绝权限，请在应用设置中手动打开!");
+			      }
+			    }
+			  } catch (err) {
+			    console.log("授权失败：", err);
+			  }
+			},
 			radioChange(evt) {
 				console.log(evt.detail.value);
 				for (let i = 0; i < this.items.length; i++) {
@@ -106,71 +153,47 @@
 					}
 				}
 			},
-			discovery() {
-				console.log('start discovery devices');
-				this.discoveredDevices = [];
-				bluetoothModule.enableBluetooth(data => {
-					if (data.success) {
-						bluetoothModule.startBluetoothDiscovery((device) => {
-							if (typeof device === 'undefined') return;
-							if (typeof device.name === 'undefined') return;
-							console.log(device.name);
-							if (device.name === '') return;
-							if (device.name.toUpperCase().endsWith('_BLE') ||
-								device.name.toUpperCase().endsWith('-LE') ||
-								device.name.toUpperCase().endsWith('-BLE')) return;
-							const isDuplicate = this.discoveredDevices.find(item => item.address === device
-								.address);
-							if (isDuplicate) return;
-							this.discoveredDevices.push(device);
-						})
-
-					} else {
-						uni.showToast({
-							icon: 'none',
-							title: '请开启蓝牙'
-						})
+			async discovery() {
+				var that = this
+				// 使用openBluetoothAdapter 接口，免去主动申请权限的麻烦
+				uni.openBluetoothAdapter({
+					success: async (res) => {
+						await this.checkLocation();
+						console.log('start discovery devices');
+						this.discoveredDevices = [];
+						console.log(res)
+						bluetoothTool.discoveryNewDevice();
 					}
 				})
-
 			},
-			stopSearchBT() {
-				bluetoothModule.stopBluetoothDiscovery();
+			onDevice(device) {
+				console.log("监听寻找到新设备的事件---------------")
+				console.log(device)
+				if (typeof device === 'undefined') return;
+				if (typeof device.name === 'undefined') return;
+				console.log(device.name);
+				if (device.name === '') return;
+				if (device.name === null) return;
+				if (device.name.toUpperCase().endsWith('_BLE') ||
+					device.name.toUpperCase().endsWith('-LE') ||
+					device.name.toUpperCase().endsWith('-BLE')) return;
+				const isDuplicate = this.discoveredDevices.find(item => item.address === device.address);
+				if (isDuplicate) return;
+				this.discoveredDevices.push(device);
 			},
-			async closeBluetooth() {
-				const vm = this;
-				try {
-					console.log('closeBluetooth');
-					bluetoothModule.disconnectBluetooth((res) => {
-						if (res.success) {
-							uni.showToast({
-								icon: 'none',
-								title: res.msg
-							})
-							vm.connectedDeviceId = "";
-						} else {
-							uni.showToast({
-								icon: 'none',
-								title: res.msg
-							})
-						}
-					})
-				} catch (e) {
-					console.error(e);
-				}
-			},
-			async connectBT(device) {
+			connectBT(device) {
 				const vm = this;
 				uni.showLoading({
 					title: '连接中'
 				});
-				await Timeout.set(100);
-				bluetoothModule.connectBluetooth(device.address, (res) => {
-					bluetoothModule.stopBluetoothDiscovery();
-					vm.$printer.init(new FakeConnectedDevice());
-					vm.connectedDeviceId = device.address;
-					// 设备是否连接成功
-					if (res.success) {
+
+				bluetoothTool.connDevice(device.address, (result) => {
+					uni.hideLoading()
+					if (result) {
+						console.log(result);
+						bluetoothTool.cancelDiscovery();
+						vm.$printer.init(new FakeConnectedDevice());
+						vm.connectedDeviceId = device.address;
 						uni.showToast({
 							icon: 'none',
 							title: '连接成功'
@@ -181,13 +204,28 @@
 							title: '连接失败'
 						})
 					}
-
-				}, (res) => {
-					// 接收的数据
-					// this.receiveMsg = res.msg
-				})
+				});
 			},
-
+			async requestLocation() {
+				return new Promise((resolve, reject) => {
+					uni.getLocation({
+						success: () => resolve(),
+						// @ts-ignore
+						fail: (e) => reject(e),
+					});
+				});
+			},
+			stopSearchBT() {
+				console.log("停止搜寻附近的蓝牙外围设备---------------")
+				bluetoothTool.cancelDiscovery();
+			},
+			closeBluetooth() {
+				const vm = this;
+				if (vm.connectedDeviceId != '') {
+					bluetoothTool.closeBtSocket();
+					vm.connectedDeviceId = "";
+				}
+			},
 			// ArrayBuffer转16进度字符串示例
 			ab2hex(buffer) {
 				const hexArr = Array.prototype.map.call(
@@ -217,36 +255,34 @@
 				return resultStr.join("");
 			},
 			async sendMessage(cmd) {
-				bluetoothModule.writeHexData(cmd, (res) => {
-					if (res.success) {
-						uni.showToast({
-							icon: 'none',
-							title: '发送成功'
-						})
-
-					} else {
-						uni.showToast({
-							icon: 'none',
-							title: '发送失败'
-						})
-					}
+				console.log(cmd);
+				const result = bluetoothTool.sendByteData(cmd);
+				uni.showToast({
+					icon: 'none',
+					title: result ? '发送成功！' : '发送失败...'
 				})
+			},
+			async writeModel1() {
+				const vm = this;
+				for (let i = 0; i < 5; i++) {
+					await vm.writeCpclModel();
+				}
 			},
 			async writeModel() {
 				const vm = this;
 				if (this.items[this.current].type == "tspl") {
-					vm.writeTsplModel();
+					await vm.writeTsplModel();
 				} else if (this.items[this.current].type == "cpcl") {
-					vm.writeCpclModel();
+					await vm.writeCpclModel();
 				}
 			},
 			async writeCpclModel() {
 				const vm = this;
 				try {
-					const cpcl = await vm.$printer.cpcl()
+					const cpcl = await vm.$printer.cpcl().clear()
 						.page(new CPage({
 							width: 608,
-							height: 1040
+							height: 200
 						}))
 						.box(new CBox({
 							topLeftX: 0,
@@ -517,7 +553,8 @@
 						.form(new CForm()) //标签纸需要加定位指令
 						.print();
 					console.log(cpcl.command().string());
-					await this.sendMessage(cpcl.command().hex())
+					var binary = cpcl.command().binary();
+					await this.sendMessage(Array.from(this.uint8ArrayToSignedArray(binary)));
 				} catch (e) {
 					console.error(e);
 					uni.showToast({
@@ -525,10 +562,22 @@
 					});
 				}
 			},
+			///转成安卓有符号的
+			uint8ArrayToSignedArray(uint8Array) {
+			    let signedArray = new Array(uint8Array.length);
+			    for (let i = 0; i < uint8Array.length; i++) {
+			        if (uint8Array[i] >= 128) {
+			            signedArray[i] = uint8Array[i] - 256;
+			        } else {
+			            signedArray[i] = uint8Array[i];
+			        }
+			    }
+			    return signedArray;
+			},
 			async writeTsplModel() {
 				const vm = this;
 				try {
-					const tspl = await vm.$printer.tspl()
+					const tspl = await vm.$printer.tspl().clear()
 						.page(new TPage({
 							width: 76,
 							height: 130
@@ -799,7 +848,8 @@
 						}))
 						.print();
 					console.log(tspl.command().string());
-					await this.sendMessage(tspl.command().hex())
+					var binary = tspl.command().binary();
+					await this.sendMessage(Array.from(this.uint8ArrayToSignedArray(binary)));
 				} catch (e) {
 					console.error(e);
 					uni.showToast({
@@ -848,7 +898,8 @@
 						}))
 						.print();
 					console.log(tspl.command().string());
-					await this.sendMessage(tspl.command().hex())
+					var binary = cpcl.command().binary();
+					await this.sendMessage(Array.from(this.uint8ArrayToSignedArray(binary)));
 				} catch (e) {
 					console.error(e);
 					uni.showToast({
