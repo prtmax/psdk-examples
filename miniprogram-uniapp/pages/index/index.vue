@@ -184,7 +184,7 @@
 			async printImage() {
 				console.log("printImage")
 				const vm = this;
-
+				//运行成安卓app会报API `createOffscreenCanvas` is not yet implemented，所以安卓端不支持图片
 				// 把图片画到离屏 canvas 上
 				const canvas = uni.createOffscreenCanvas({
 					type: '2d',
@@ -558,11 +558,12 @@
 							bottomRightY: 968 - 11,
 							lineWidth: 2
 						}))
+						.mag(new CMag({font:CFont.TSS24_MAX2}))//字号有用到MAX的或者使用MAX后要恢复成没有MAX的需要加个mag指令
 						.text(new CText({
 							x: 598 - 56 - 16 - 120 + 17,
 							y: 696 + 80 + 136 + 11 + 6,
 							content: "已验视",
-							font: CFont.TSS24
+							font: CFont.CFont.TSS24_MAX2
 						}))
 						.form(new CForm()) //标签纸需要加定位指令
 						.print();

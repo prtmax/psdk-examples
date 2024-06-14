@@ -41,8 +41,6 @@
                     "<uses-permission android:name=\"android.permission.FLASHLIGHT\"/>",
                     "<uses-permission android:name=\"android.permission.GET_ACCOUNTS\"/>",
                     "<uses-permission android:name=\"android.permission.MOUNT_UNMOUNT_FILESYSTEMS\"/>",
-                    "<uses-permission android:name=\"android.permission.READ_LOGS\"/>",
-                    "<uses-permission android:name=\"android.permission.READ_PHONE_STATE\"/>",
                     "<uses-permission android:name=\"android.permission.VIBRATE\"/>",
                     "<uses-permission android:name=\"android.permission.WAKE_LOCK\"/>",
                     "<uses-permission android:name=\"android.permission.WRITE_SETTINGS\"/>"
@@ -57,22 +55,7 @@
                 "ad" : {}
             }
         },
-        "nativePlugins" : {
-            "mb-bluetooth" : {
-                "__plugin_info__" : {
-                    "name" : "android经典蓝牙开发",
-                    "description" : "android经典蓝牙开发，包含搜索，发送等功能",
-                    "platforms" : "Android",
-                    "url" : "https://ext.dcloud.net.cn/plugin?id=16615",
-                    "android_package_name" : "uni.UNI22D97A0",
-                    "ios_bundle_id" : "",
-                    "isCloud" : true,
-                    "bought" : 1,
-                    "pid" : "16615",
-                    "parameters" : {}
-                }
-            }
-        }
+        "nativePlugins" : {}
     },
     /* 快应用特有相关 */
     "quickapp" : {},
