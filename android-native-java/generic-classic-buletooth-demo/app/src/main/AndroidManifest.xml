@@ -37,6 +37,18 @@
           android:name=".zxing.activity.CaptureActivity"
           android:screenOrientation="portrait"
           android:theme="@android:style/Theme.Black"/>
+      <activity
+        android:name="com.example.classic_bluetooth_demo.USBActivity"
+        android:launchMode="singleTask"
+        android:exported="true">
+        <intent-filter>
+          <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
+        </intent-filter>
+
+        <meta-data
+          android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
+          android:resource="@xml/device_filter" />
+      </activity>
     </application>
 
 </manifest>

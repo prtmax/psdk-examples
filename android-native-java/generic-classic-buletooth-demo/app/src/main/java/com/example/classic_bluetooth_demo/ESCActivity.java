@@ -381,7 +381,7 @@ public class ESCActivity extends Activity {
         progressDialog = new ProgressDialog(ESCActivity.this);
         progressDialog.setMessage("打印机正在进入升级模式，此过程可能需要几分钟，请耐心等待......");
         showprogress();
-        //调用更新方法前一定要先调用改方法停止
+        //调用更新方法前一定要先调用该方法停止
         dataListenerRunner.stop();
         UpdatePrinterESC updatePrinter = new UpdatePrinterESC(connection, readResources(R.raw.x8prov1099hd2024423), otaHandler);
 //        updatePrinter.setStartAddress(0x1020000);

@@ -1,11 +1,9 @@
-package com.sf;
+package com.qr_demo;
 
-import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -44,7 +42,7 @@ public class MainActivity extends Activity {
     setContentView(R.layout.activity_main);
     GetSerialPort getSerialPort = new GetSerialPort();
     String port = getSerialPort.QiRui_GetCOM();
-    open = (Button) findViewById(R.id.power_on);
+    open = findViewById(R.id.power_on);
     tv_port = findViewById(R.id.tv_port);
     tv_port.setText("当前可用串口：" + port);
     open.setOnClickListener(new View.OnClickListener() {
@@ -133,9 +131,11 @@ public class MainActivity extends Activity {
     model.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        GenericTSPL _gtspl = tspl.page(TPage.builder().width(100).height(180).build())
+        GenericTSPL _gtspl = tspl.page(TPage.builder().width(100).height(180).build())//纸张宽高单位是mm 下面的xy单位是dot 1mm=8dot
           .direction(TDirection.builder().direction(TDirection.Direction.UP_OUT).mirror(TDirection.Mirror.NO_MIRROR).build())
-          .gap(true)
+          .label()//标签纸打印 三种纸调用的时候根据打印机实际纸张选一种就可以了
+//          .bline()//黑标纸打印
+//          .continuous()//连续纸打印
           .cut(true)
           .speed(6)
           .density(6)

@@ -6,7 +6,7 @@ android {
   compileSdk 32
 
   defaultConfig {
-    applicationId "com.example.classic_buletooth_demo"
+    applicationId "com.example.qr_demo"
     minSdk 19
     targetSdk 32
     versionCode 1
@@ -35,6 +35,6 @@ dependencies {
   testImplementation 'junit:junit:4.+'
   androidTestImplementation 'androidx.test.ext:junit:1.1.2'
   androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
-  implementation files('libs/fat-generic-tspl-android-serialport-0.1.16-GA.jar')
+  implementation files('libs/fat-generic-super-fat-sdk-0.1.17-GA.jar')
 
 }
