@@ -4,7 +4,7 @@ var __DEFINE__ = function(modId, func, req) { var m = { exports: {}, _tempexport
 var __REQUIRE__ = function(modId, source) { if(!__MODS__[modId]) return require(source); if(!__MODS__[modId].status) { var m = __MODS__[modId].m; m._exports = m._tempexports; var desp = Object.getOwnPropertyDescriptor(m, "exports"); if (desp && desp.configurable) Object.defineProperty(m, "exports", { set: function (val) { if(typeof val === "object" && val !== m._exports) { m._exports.__proto__ = val.__proto__; Object.keys(val).forEach(function (k) { m._exports[k] = val[k]; }); } m._tempexports = val }, get: function () { return m._tempexports; } }); __MODS__[modId].status = 1; __MODS__[modId].func(__MODS__[modId].req, m, m.exports); } return __MODS__[modId].m.exports; };
 var __REQUIRE_WILDCARD__ = function(obj) { if(obj && obj.__esModule) { return obj; } else { var newObj = {}; if(obj != null) { for(var k in obj) { if (Object.prototype.hasOwnProperty.call(obj, k)) newObj[k] = obj[k]; } } newObj.default = obj; return newObj; } };
 var __REQUIRE_DEFAULT__ = function(obj) { return obj && obj.__esModule ? obj.default : obj; };
-__DEFINE__(1715917493943, function(require, module, exports) {
+__DEFINE__(1720570344520, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -25,8 +25,8 @@ __exportStar(require("./impls"), exports);
 __exportStar(require("./args"), exports);
 __exportStar(require("./types"), exports);
 
-}, function(modId) {var map = {"./impls":1715917493944,"./args":1715917493947,"./types":1715917493950}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493944, function(require, module, exports) {
+}, function(modId) {var map = {"./impls":1720570344521,"./args":1720570344524,"./types":1720570344527}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344521, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -46,8 +46,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./generic"), exports);
 __exportStar(require("./cpcl"), exports);
 
-}, function(modId) { var map = {"./generic":1715917493945,"./cpcl":1715917493979}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493945, function(require, module, exports) {
+}, function(modId) { var map = {"./generic":1720570344522,"./cpcl":1720570344556}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344522, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GenericCPCL = void 0;
@@ -59,8 +59,8 @@ class GenericCPCL extends basic_1.BasicCPCL {
 }
 exports.GenericCPCL = GenericCPCL;
 
-}, function(modId) { var map = {"./basic":1715917493946}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493946, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344523}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344523, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BasicCPCL = void 0;
@@ -191,8 +191,8 @@ class BasicCPCL extends frame_father_1.PSDK {
 }
 exports.BasicCPCL = BasicCPCL;
 
-}, function(modId) { var map = {"../args":1715917493947,"../types":1715917493950}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493947, function(require, module, exports) {
+}, function(modId) { var map = {"../args":1720570344524,"../types":1720570344527}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344524, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -233,8 +233,8 @@ __exportStar(require("./underline"), exports);
 __exportStar(require("./watermark"), exports);
 __exportStar(require("./sn"), exports);
 
-}, function(modId) { var map = {"./bar":1715917493948,"./basic":1715917493949,"./bold":1715917493958,"./box":1715917493959,"./feed":1715917493960,"./form":1715917493963,"./gap":1715917493962,"./image":1715917493965,"./inverse":1715917493966,"./line":1715917493967,"./mag":1715917493968,"./page":1715917493969,"./pageheight":1715917493970,"./pagemode":1715917493971,"./pagesetup":1715917493972,"./pagewidth":1715917493961,"./print":1715917493964,"./qrcode":1715917493973,"./status":1715917493974,"./text":1715917493975,"./underline":1715917493976,"./watermark":1715917493977,"./sn":1715917493978}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493948, function(require, module, exports) {
+}, function(modId) { var map = {"./bar":1720570344525,"./basic":1720570344526,"./bold":1720570344535,"./box":1720570344536,"./feed":1720570344537,"./form":1720570344540,"./gap":1720570344539,"./image":1720570344542,"./inverse":1720570344543,"./line":1720570344544,"./mag":1720570344545,"./page":1720570344546,"./pageheight":1720570344547,"./pagemode":1720570344548,"./pagesetup":1720570344549,"./pagewidth":1720570344538,"./print":1720570344541,"./qrcode":1720570344550,"./status":1720570344551,"./text":1720570344552,"./underline":1720570344553,"./watermark":1720570344554,"./sn":1720570344555}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344525, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CBar = void 0;
@@ -307,8 +307,8 @@ class CodeTypeEntity {
     }
 }
 
-}, function(modId) { var map = {"./basic":1715917493949,"../types":1715917493950}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493949, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526,"../types":1720570344527}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344526, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BasicCPCLArg = void 0;
@@ -326,7 +326,7 @@ class BasicCPCLArg extends frame_father_1.EasyArg {
 exports.BasicCPCLArg = BasicCPCLArg;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493950, function(require, module, exports) {
+__DEFINE__(1720570344527, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -351,8 +351,8 @@ __exportStar(require("./location"), exports);
 __exportStar(require("./mode"), exports);
 __exportStar(require("./rotation"), exports);
 
-}, function(modId) { var map = {"./coderotation":1715917493951,"./codetype":1715917493952,"./correctlevel":1715917493953,"./font":1715917493954,"./location":1715917493955,"./mode":1715917493956,"./rotation":1715917493957}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493951, function(require, module, exports) {
+}, function(modId) { var map = {"./coderotation":1720570344528,"./codetype":1720570344529,"./correctlevel":1720570344530,"./font":1720570344531,"./location":1720570344532,"./mode":1720570344533,"./rotation":1720570344534}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344528, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CCodeRotation = void 0;
@@ -369,7 +369,7 @@ var CCodeRotation;
 })(CCodeRotation = exports.CCodeRotation || (exports.CCodeRotation = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493952, function(require, module, exports) {
+__DEFINE__(1720570344529, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CCodeType = void 0;
@@ -417,7 +417,7 @@ var CCodeType;
 })(CCodeType = exports.CCodeType || (exports.CCodeType = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493953, function(require, module, exports) {
+__DEFINE__(1720570344530, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CCorrectLevel = void 0;
@@ -442,7 +442,7 @@ var CCorrectLevel;
 })(CCorrectLevel = exports.CCorrectLevel || (exports.CCorrectLevel = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493954, function(require, module, exports) {
+__DEFINE__(1720570344531, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CFont = void 0;
@@ -494,7 +494,7 @@ var CFont;
 })(CFont = exports.CFont || (exports.CFont = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493955, function(require, module, exports) {
+__DEFINE__(1720570344532, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CLocation = void 0;
@@ -511,7 +511,7 @@ var CLocation;
 })(CLocation = exports.CLocation || (exports.CLocation = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493956, function(require, module, exports) {
+__DEFINE__(1720570344533, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CMode = void 0;
@@ -528,7 +528,7 @@ var CMode;
 })(CMode = exports.CMode || (exports.CMode = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493957, function(require, module, exports) {
+__DEFINE__(1720570344534, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CRotation = void 0;
@@ -553,7 +553,7 @@ var CRotation;
 })(CRotation = exports.CRotation || (exports.CRotation = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493958, function(require, module, exports) {
+__DEFINE__(1720570344535, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CBold = void 0;
@@ -576,8 +576,8 @@ class CBold extends basic_1.BasicCPCLArg {
 }
 exports.CBold = CBold;
 
-}, function(modId) { var map = {"./basic":1715917493949}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493959, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344536, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CBox = void 0;
@@ -614,8 +614,8 @@ class CBox extends basic_1.BasicCPCLArg {
 }
 exports.CBox = CBox;
 
-}, function(modId) { var map = {"./basic":1715917493949}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493960, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344537, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CFeed = void 0;
@@ -640,8 +640,8 @@ class CFeed extends basic_1.BasicCPCLArg {
 }
 exports.CFeed = CFeed;
 
-}, function(modId) { var map = {"./basic":1715917493949,"./pagewidth":1715917493961,"./gap":1715917493962,"./form":1715917493963,"./print":1715917493964,"../types":1715917493950}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493961, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526,"./pagewidth":1720570344538,"./gap":1720570344539,"./form":1720570344540,"./print":1720570344541,"../types":1720570344527}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344538, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPageWidth = void 0;
@@ -664,8 +664,8 @@ class CPageWidth extends basic_1.BasicCPCLArg {
 }
 exports.CPageWidth = CPageWidth;
 
-}, function(modId) { var map = {"./basic":1715917493949}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493962, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344539, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CGap = void 0;
@@ -678,7 +678,7 @@ class CGap extends frame_father_1.OnlyTextHeaderArg {
 exports.CGap = CGap;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493963, function(require, module, exports) {
+__DEFINE__(1720570344540, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CForm = void 0;
@@ -691,7 +691,7 @@ class CForm extends frame_father_1.OnlyTextHeaderArg {
 exports.CForm = CForm;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493964, function(require, module, exports) {
+__DEFINE__(1720570344541, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPrint = void 0;
@@ -709,8 +709,8 @@ class CPrint extends frame_father_1.OnlyTextHeaderArg {
 }
 exports.CPrint = CPrint;
 
-}, function(modId) { var map = {"../types":1715917493950}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493965, function(require, module, exports) {
+}, function(modId) { var map = {"../types":1720570344527}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344542, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CImage = void 0;
@@ -733,7 +733,6 @@ class CImage extends basic_1.BasicCPCLArg {
     }
     clause() {
         const processer = new frame_imageb_1.Pbita({
-            command: 'cpcl',
             threshold: this.threshold,
             compress: this.compress,
             reverse: this.reverse,
@@ -766,8 +765,8 @@ class CImage extends basic_1.BasicCPCLArg {
 }
 exports.CImage = CImage;
 
-}, function(modId) { var map = {"./basic":1715917493949}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493966, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344543, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CInverse = void 0;
@@ -797,8 +796,8 @@ class CInverse extends basic_1.BasicCPCLArg {
 }
 exports.CInverse = CInverse;
 
-}, function(modId) { var map = {"./basic":1715917493949}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493967, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344544, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CLine = void 0;
@@ -830,8 +829,8 @@ class CLine extends basic_1.BasicCPCLArg {
 }
 exports.CLine = CLine;
 
-}, function(modId) { var map = {"./basic":1715917493949}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493968, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344545, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CMag = void 0;
@@ -851,10 +850,7 @@ class CMag extends basic_1.BasicCPCLArg {
                 fontEntity = new FontEntity(1, 1, 55, 0, 16);
                 break;
             case types_1.CFont.TSS20:
-                fontEntity = new FontEntity(1, 1, 6, 0, 20);
-                break;
-            case types_1.CFont.TSS20_MAX1:
-                fontEntity = new FontEntity(1, 1, 6, 0, 40);
+                fontEntity = new FontEntity(1, 1, 6, 1, 20);
                 break;
             case types_1.CFont.TSS24:
                 fontEntity = new FontEntity(1, 1, 24, 0, 24);
@@ -898,8 +894,8 @@ class FontEntity {
     }
 }
 
-}, function(modId) { var map = {"./basic":1715917493949,"../types":1715917493950}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493969, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526,"../types":1720570344527}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344546, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPage = void 0;
@@ -927,8 +923,8 @@ class CPage extends basic_1.BasicCPCLArg {
 }
 exports.CPage = CPage;
 
-}, function(modId) { var map = {"./basic":1715917493949,"./pageheight":1715917493970,"./pagewidth":1715917493961}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493970, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526,"./pageheight":1720570344547,"./pagewidth":1720570344538}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344547, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPageHeight = void 0;
@@ -953,8 +949,8 @@ class CPageHeight extends basic_1.BasicCPCLArg {
 }
 exports.CPageHeight = CPageHeight;
 
-}, function(modId) { var map = {"./basic":1715917493949}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493971, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344548, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPageMode = void 0;
@@ -981,8 +977,8 @@ class CPageMode extends basic_1.BasicCPCLArg {
 }
 exports.CPageMode = CPageMode;
 
-}, function(modId) { var map = {"./basic":1715917493949,"../types":1715917493950,"./gap":1715917493962,"./form":1715917493963}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493972, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526,"../types":1720570344527,"./gap":1720570344539,"./form":1720570344540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344549, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPageSetup = void 0;
@@ -1008,8 +1004,8 @@ class CPageSetup extends basic_1.BasicCPCLArg {
 }
 exports.CPageSetup = CPageSetup;
 
-}, function(modId) { var map = {"./basic":1715917493949,"./pageheight":1715917493970,"./pagewidth":1715917493961}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493973, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526,"./pageheight":1720570344547,"./pagewidth":1720570344538}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344550, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CQRCode = void 0;
@@ -1046,8 +1042,8 @@ class CQRCode extends basic_1.BasicCPCLArg {
 }
 exports.CQRCode = CQRCode;
 
-}, function(modId) { var map = {"./basic":1715917493949,"../types":1715917493950}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493974, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526,"../types":1720570344527}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344551, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CStatus = void 0;
@@ -1066,7 +1062,7 @@ class CStatus extends frame_father_1.OnlyBinaryHeaderArg {
 exports.CStatus = CStatus;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493975, function(require, module, exports) {
+__DEFINE__(1720570344552, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CText = void 0;
@@ -1141,8 +1137,8 @@ class FontEntity {
     }
 }
 
-}, function(modId) { var map = {"./basic":1715917493949,"../types":1715917493950}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493976, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526,"../types":1720570344527}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344553, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CUnderLine = void 0;
@@ -1165,8 +1161,8 @@ class CUnderLine extends basic_1.BasicCPCLArg {
 }
 exports.CUnderLine = CUnderLine;
 
-}, function(modId) { var map = {"./basic":1715917493949}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493977, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344554, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CWaterMark = void 0;
@@ -1189,8 +1185,8 @@ class CWaterMark extends basic_1.BasicCPCLArg {
 }
 exports.CWaterMark = CWaterMark;
 
-}, function(modId) { var map = {"./basic":1715917493949}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493978, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344555, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CSN = void 0;
@@ -1209,7 +1205,7 @@ class CSN extends frame_father_1.OnlyBinaryHeaderArg {
 exports.CSN = CSN;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1715917493979, function(require, module, exports) {
+__DEFINE__(1720570344556, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPCL = void 0;
@@ -1228,8 +1224,8 @@ class CPCL {
 }
 exports.CPCL = CPCL;
 
-}, function(modId) { var map = {"./generic":1715917493945}; return __REQUIRE__(map[modId], modId); })
-return __REQUIRE__(1715917493943);
+}, function(modId) { var map = {"./generic":1720570344522}; return __REQUIRE__(map[modId], modId); })
+return __REQUIRE__(1720570344520);
 })()
 //miniprogram-npm-outsideDeps=["@psdk/frame-father","@psdk/frame-imageb"]
 //# sourceMappingURL=index.js.map

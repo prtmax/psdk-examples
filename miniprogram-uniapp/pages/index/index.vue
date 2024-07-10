@@ -16,6 +16,8 @@
 		<button @click="writeModel" class="button">打印76*130模版</button>
 		<button @click="printImage" class="button">打印图片</button>
 		<button @click="writeTsplRibbonModel" class="button">打印热转印测试</button>
+		<!-- <button @click="downloadBmp" class="button">下载位图</button> -->
+
 		<scroll-view class="canvas-buttons" scroll-y="true">
 			<block v-for="(item, index) in discoveredDevices" :key="item.deviceId">
 				<text class="status">设备名称:{{item.name}}</text>
@@ -39,6 +41,9 @@
 		Raw,
 		FakeConnectedDevice,
 		WriteOptions,
+		TSPLCommand,
+		TextAppendat,
+		Commander,
 	} from '@psdk/frame-father';
 	import {
 		CBar,
@@ -69,6 +74,7 @@
 		TText,
 		TFont,
 		TTLine,
+		TPutImage,
 	} from "@psdk/tspl";
 	import {
 		EImage
@@ -81,8 +87,14 @@
 			allowNoName: false,
 		});
 		vm.bluetooth.discovered((devices) => {
-			vm.discoveredDevices.push(...devices);
-
+			devices.forEach(device => {
+				const isDuplicate = vm.discoveredDevices.find(item => item.deviceId === device
+					.deviceId);
+				if (isDuplicate) {
+					return;
+				}
+				vm.discoveredDevices.push(device);
+			});
 		});
 	}
 	async function discoveryDevices(vm) {
@@ -97,6 +109,7 @@
 				connectedDeviceId: "",
 				cpcl: null,
 				connectedDevice: null,
+				isPrint: false,
 				items: [{
 						type: 'tspl',
 						checked: 'true',
@@ -202,7 +215,7 @@
 				ctx.drawImage(image, 0, 0, 608, 1040);
 				console.log("toDataURL - ", ctx.canvas.toDataURL()) // 输出的图片
 				if (this.items[this.current].type == "tspl") {
-					const report = await vm.$printer.tspl()
+					const tspl = await vm.$printer.tspl()
 						.page(new TPage({
 							width: 76,
 							height: 130
@@ -216,11 +229,10 @@
 								image: canvas
 							})
 						)
-						.print()
-						.write()
-					console.log(report);
+						.print();
+						await vm.safeWrite(tspl);
 				} else if (this.items[this.current].type == "cpcl") {
-					const report = await vm.$printer.cpcl()
+					const cpcl = await vm.$printer.cpcl()
 						.page(new CPage({
 							width: 608,
 							height: 1040
@@ -233,12 +245,11 @@
 								image: canvas
 							})
 						)
-						.print()
-						.write()
-					console.log(report);
+						.print();
+						await vm.safeWrite(cpcl);
 				} else {
 					// vm.$printer.init(new FakeConnectedDevice());
-					const report = await vm.$printer.esc()
+					const esc = await vm.$printer.esc()
 						.enable()
 						.wakeup()
 						.image(
@@ -248,9 +259,8 @@
 							})
 						)
 						.lineDot(40)
-						.stopJob()
-						.write()
-					console.log(report);
+						.stopJob();
+					await vm.safeWrite(esc);
 				}
 
 			},
@@ -282,6 +292,75 @@
 				}
 				return resultStr.join("");
 			},
+			async downloadBmp() {
+				uni.showLoading({
+					title: '正在下载中'
+				});
+				uni.request({
+					url: 'https://wisdom.jsc1319.com/uploads/20240628/9234f7cb54e2e9f0633de617d0a9a97c.bmp', // 在线图片文件的 URL
+					method: 'GET',
+					responseType: 'arraybuffer', // 设置响应类型为 arraybuffer，以获取二进制数据流
+					success: async (res) => {
+						console.log(res);
+						const arrayBufferData = res.data // 获取二进制数据流
+						console.log(this.ab2hex(arrayBufferData));
+						const data = new Uint8Array(arrayBufferData);
+						const vm = this;
+						try {
+							const psdk = await vm.$printer.tspl()
+								.downloadBmp('wx555.bmp',
+								data); //传入图片文件名(与后面要打印的时候传的文件名要保持一致)和图片文件数据流Uint8Array
+							await vm.safeWrite(psdk);
+						} catch (e) {
+							console.error(e);
+							uni.showToast({
+								title: '失败',
+							});
+						}
+					}
+				})
+				// const fs = uni.getFileSystemManager();
+				// const base64 = fs.readFileSync('static/wx.png', "base64"); //一定要是1位深的单色图bmp
+				// const arrayBufferData = uni.base64ToArrayBuffer(base64)
+				// const data = new Uint8Array(arrayBufferData);
+				// const vm = this;
+				// try {
+				// const psdk = await vm.$printer.tspl()
+				// 	.downloadBmp('wx222.bmp', data); //传入图片文件名(与后面要打印的时候传的文件名要保持一致)和图片文件数据流Uint8Array
+				// await vm.safeWrite(psdk);
+				// } catch (e) {
+				// 	console.error(e);
+				// 	uni.showToast({
+				// 		title: '失败',
+				// 	});
+				// }
+			},
+			async safeWrite(psdk) {
+				const vm = this;
+				try {
+					if (!vm.isPrint) {
+						vm.isPrint = true;
+						const report = await psdk.write();//不分包发送，如果不会丢包可以不分包
+						// const report = await psdk.write({
+						// 	enableChunkWrite: true,
+						// 	chunkSize: 20
+						// });//分包发送，chunkSize:分包大小
+						vm.isPrint = false;
+						console.log(report);
+						uni.showToast({
+							title: '成功',
+						});
+						return true;
+					}
+				} catch (e) {
+					vm.isPrint = false;
+					console.error(e);
+					uni.showToast({
+						title: '失败',
+					});
+					return false;
+				}
+			},
 			async writeModel() {
 				const vm = this;
 				if (this.items[this.current].type == "tspl") {
@@ -293,7 +372,7 @@
 			async writeCpclModel() {
 				const vm = this;
 				try {
-					const cpcl = await vm.$printer.cpcl()
+					const cpcl = await vm.$printer.cpcl().clear()
 						.page(new CPage({
 							width: 608,
 							height: 1040
@@ -558,7 +637,9 @@
 							bottomRightY: 968 - 11,
 							lineWidth: 2
 						}))
-						.mag(new CMag({font:CFont.TSS24_MAX2}))//字号有用到MAX的或者使用MAX后要恢复成没有MAX的需要加个mag指令
+						.mag(new CMag({
+							font: CFont.TSS24_MAX2
+						})) //字号有用到MAX的或者使用MAX后要恢复成没有MAX的需要加个mag指令
 						.text(new CText({
 							x: 598 - 56 - 16 - 120 + 17,
 							y: 696 + 80 + 136 + 11 + 6,
@@ -568,15 +649,7 @@
 						.form(new CForm()) //标签纸需要加定位指令
 						.print();
 					console.log(cpcl.command().string());
-					const report = await cpcl.write({
-						enableChunkWrite: true,
-						chunkSize: 100
-					});
-					// const report = await cpcl.write({enableChunkWrite:true,chunkSize:100});///uniapp运行成app需要分包发送，小程序不需要
-					console.log(report);
-					uni.showToast({
-						title: '成功',
-					});
+					await vm.safeWrite(cpcl);
 				} catch (e) {
 					console.error(e);
 					uni.showToast({
@@ -587,7 +660,7 @@
 			async writeTsplModel() {
 				const vm = this;
 				try {
-					const tspl = await vm.$printer.tspl()
+					const tspl = await vm.$printer.tspl().clear()
 						.page(new TPage({
 							width: 76,
 							height: 130
@@ -858,15 +931,7 @@
 						}))
 						.print();
 					console.log(tspl.command().string());
-					// const report = await tspl.write();
-					const report = await tspl.write({
-						enableChunkWrite: true,
-						chunkSize: 100
-					}); ///uniapp运行成app需要分包发送，小程序不需要
-					console.log(report);
-					uni.showToast({
-						title: '成功',
-					});
+					await vm.safeWrite(tspl);
 				} catch (e) {
 					console.error(e);
 					uni.showToast({
@@ -877,7 +942,7 @@
 			async writeTsplRibbonModel() {
 				const vm = this;
 				try {
-					const tspl = await vm.$printer.tspl()
+					const tspl = await vm.$printer.tspl().clear()
 						.page(new TPage({
 							width: 76,
 							height: 130
@@ -915,12 +980,7 @@
 						}))
 						.print();
 					console.log(tspl.command().string());
-					// const report = await tspl.write();
-					const report = await tspl.write({
-						enableChunkWrite: true,
-						chunkSize: 100
-					}); ///uniapp运行成app需要分包发送，小程序不需要
-					console.log(report);
+					await vm.safeWrite(tspl);
 					uni.showToast({
 						title: '成功',
 					});
