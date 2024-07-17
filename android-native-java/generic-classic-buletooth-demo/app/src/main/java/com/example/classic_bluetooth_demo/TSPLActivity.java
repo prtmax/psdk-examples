@@ -79,7 +79,6 @@ public class TSPLActivity extends Activity {
           case Connection.STATE_PAIRED:
             msg = "配对成功";
             break;
-
           case Connection.STATE_CONNECTED:
             msg = "连接成功";
             break;
