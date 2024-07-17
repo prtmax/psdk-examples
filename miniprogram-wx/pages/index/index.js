@@ -53,6 +53,7 @@ Page({
     discoveredDevices: [],
     connectedDeviceId: "",
     connectedDevice:null,
+    isPrint:false,
     cpcl: null,
     tspl: null,
     esc: null,
@@ -132,6 +133,32 @@ Page({
     that.data.cpcl = CPCL.generic(lifecycle);
     that.data.tspl = TSPL.generic(lifecycle);
     that.data.esc = ESC.generic(lifecycle);
+  },
+  safeWrite: async function(psdk) {
+    let that = this;
+    try {
+      if (!that.data.isPrint) {
+        that.data.isPrint = true;
+        const report = await psdk.write();//不分包发送，如果不会丢包可以不分包
+        // const report = await psdk.write({
+        // 	enableChunkWrite: true,
+        // 	chunkSize: 20
+        // });//分包发送，chunkSize:分包大小
+        that.data.isPrint = false;
+        console.log(report);
+        wx.showToast({
+          title: '成功',
+        });
+        return true;
+      }
+    } catch (e) {
+      that.data.isPrint = false;
+      console.error(e);
+      wx.showToast({
+        title: '失败',
+      });
+      return false;
+    }
   },
   writeModel: async function () {
     let that = this;
@@ -414,11 +441,10 @@ Page({
         content: "已验视",
         font: CFont.TSS24
       }))
-      .form(new CForm())
+      .form(new CForm())//定位指令
       .print();
     console.log(cpcl.command().string());
-    const report = await cpcl.write({enableChunkWrite:true,chunkSize:20});//分包发送 20一包 嫌慢可以增加分包数 不保证会不会丢包
-    console.log(report);
+    await that.safeWrite(cpcl);
   },
   writeTsplModel: async function () {
     let that = this;
@@ -693,8 +719,7 @@ Page({
       }))
       .print();
     console.log(tspl.command().string());
-    const report = await tspl.write({enableChunkWrite:true,chunkSize:20});//分包发送 20一包 嫌慢可以增加分包数 不保证会不会丢包
-    console.log(report);
+    await that.safeWrite(tspl);
   },
   writeTsplRibbonModel: async function () {
     let that = this;
@@ -736,8 +761,7 @@ Page({
     }))
     .print();
     console.log(tspl.command().string());
-    const report = await tspl.write({enableChunkWrite:true,chunkSize:20});//分包发送 20一包 嫌慢可以增加分包数 不保证会不会丢包
-    console.log(report);
+    await that.safeWrite(tspl);
   },
   writeImage: async function () {
     console.log("writeImage")
@@ -757,7 +781,7 @@ Page({
     ctx.drawImage(image, 0, 0, 576, 873);
     console.log("toDataURL - ", ctx.canvas.toDataURL()) // 输出的图片
     if (that.data.items[0].checked) {
-      const report = await that.data.tspl
+      const tspl = await that.data.tspl
         .page(new TPage({
           width: 76,
           height: 130
@@ -771,11 +795,10 @@ Page({
             image: canvas
           })
         )
-        .print()
-        .write({enableChunkWrite:true,chunkSize:20});//分包发送 20一包 嫌慢可以增加分包数 不保证会不会丢包
-      console.log(report);
+        .print();
+        await that.safeWrite(tspl);
     } else if (that.data.items[1].checked) {
-      const report = await that.data.cpcl
+      const cpcl = await that.data.cpcl
         .page(new CPage({
           width: 608,
           height: 1040
@@ -788,11 +811,10 @@ Page({
             image: canvas
           })
         )
-        .print()
-        .write({enableChunkWrite:true,chunkSize:20});//分包发送 20一包 嫌慢可以增加分包数 不保证会不会丢包
-      console.log(report);
+        .print();
+        await that.safeWrite(cpcl);
     } else {
-      const report = await that.data.esc
+      const esc = await that.data.esc
         .enable()
         .wakeup()
         .image(
@@ -802,27 +824,19 @@ Page({
             threshold:128
           })
         )
-        .stopJob()
-        .write({enableChunkWrite:true,chunkSize:20});//分包发送 20一包 嫌慢可以增加分包数 不保证会不会丢包
-      console.log(report);
+        .stopJob();
+        await that.safeWrite(esc);
     }
 
   },
   onLoad() {
-    if (wx.getUserProfile) {
-      this.setData({
-        canIUseGetUserProfile: true
-      })
-    }
+   
   },
   radioChange(e) {
     let that = this;
-    console.log('radio发生change事件，携带value值为：', e.detail.value)
     const items = that.data.items
     for (let i = 0, len = items.length; i < len; ++i) {
       items[i].checked = items[i].type === e.detail.value
     }
-
   },
-
 })

@@ -6,6 +6,7 @@ import android.bluetooth.BluetoothDevice;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -78,7 +79,6 @@ public class TSPLActivity extends Activity {
           case Connection.STATE_PAIRED:
             msg = "配对成功";
             break;
-
           case Connection.STATE_CONNECTED:
             msg = "连接成功";
             break;
@@ -252,7 +252,7 @@ public class TSPLActivity extends Activity {
           .bar(TBar.builder().x(30).y(880).width(740).height(4).build())
           .bar(TBar.builder().x(30).y(1300).width(740).height(4).build())
 //          .text(TText.builder().x(400).y(25).rawFont("SIMHEI.TTF").xmulti(14).ymulti(14).content("上海浦东").build())//使用自定义矢量字体放大倍数计算方式想打多大(mm)/0.35取整，例如想打5mm字体：5/0.35=14
-          .text(TText.builder().x(400).y(25).font(Font.TSS24).xmulti(3).ymulti(3).content("上海浦东").build())
+          .text(TText.builder().x(400).y(25).font(Font.TSS24).xmulti(2).ymulti(3).content("上海浦东").build())
           .text(TText.builder().x(30).y(120).font(Font.TSS24).xmulti(1).ymulti(1).content("发  件  人：张三 (电话 874236021)").build())
           .text(TText.builder().x(30).y(150).font(Font.TSS24).xmulti(1).ymulti(1).content("发件人地址：广州省 深圳市 福田区 思创路123号\"工业园\"1栋2楼").build())
           .text(TText.builder().x(30).y(200).font(Font.TSS24).xmulti(1).ymulti(1).content("收  件  人：李四 (电话 13899658435)").build())

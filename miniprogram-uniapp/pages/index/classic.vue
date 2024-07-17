@@ -97,7 +97,7 @@
 			}
 		},
 		async onLoad() {
-
+			
 			//#ifdef APP-PLUS
 			// 蓝牙
 			bluetoothTool.init({
