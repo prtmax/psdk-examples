@@ -5,14 +5,19 @@
 //  Created by aiyin on 2023/9/14.
 //
 
+typedef NS_ENUM(NSInteger, CReceivedType) {
+    CReceivedTypeSN,        // 接收sn数据
+    CReceivedTypeState,     // 接收打印机状态数据
+    CReceivedNone,
+};
 
 typedef NS_ENUM(NSInteger, CFont) {
-    TSS16 = 1,          // 16点阵
+    TSS16 = 1,      // 16点阵
     TSS20,          // 20点阵
     TSS20_MAX1,     // 20点阵放大一倍
     TSS24,          // 24点阵
     TSS28,          // 28点阵
-    TSS32,         // 32点阵
+    TSS32,          // 32点阵
     TSS24_MAX1,     // 24点阵放大一倍
     TSS28_MAX1,     // 28点阵放大一倍
     TSS32_MAX1,     // 32点阵放大一倍

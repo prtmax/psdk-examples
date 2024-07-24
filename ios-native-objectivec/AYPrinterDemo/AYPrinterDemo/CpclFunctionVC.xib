@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="21701" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="21679"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -20,7 +20,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="zho-KF-toH">
-                    <rect key="frame" x="0.0" y="79" width="393" height="256"/>
+                    <rect key="frame" x="0.0" y="78.999999999999986" width="393" height="211.66666666666663"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2xn-kO-1id">
                             <rect key="frame" x="0.0" y="0.0" width="393" height="34.333333333333336"/>
@@ -33,27 +33,34 @@
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="4wj-7d-dRn">
                             <rect key="frame" x="0.0" y="44.333333333333329" width="393" height="34.333333333333329"/>
                             <state key="normal" title="Button"/>
-                            <buttonConfiguration key="configuration" style="plain" title="条码"/>
-                        </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nT4-uf-nNl">
-                            <rect key="frame" x="0.0" y="88.666666666666657" width="393" height="34.333333333333343"/>
-                            <state key="normal" title="Button"/>
-                            <buttonConfiguration key="configuration" style="plain" title="二维码"/>
-                        </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="i1z-GG-AbI">
-                            <rect key="frame" x="0.0" y="133" width="393" height="34.333333333333343"/>
-                            <state key="normal" title="Button"/>
-                            <buttonConfiguration key="configuration" style="plain" title="文本"/>
-                        </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="j5K-7O-u3t" userLabel="模板">
-                            <rect key="frame" x="0.0" y="177.33333333333331" width="393" height="34.333333333333343"/>
-                            <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="plain" title="模板"/>
+                            <connections>
+                                <action selector="printTemplate:" destination="-1" eventType="touchUpInside" id="5pp-xd-aBt"/>
+                            </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Zns-4K-pV0" userLabel="自测页">
-                            <rect key="frame" x="0.0" y="221.66666666666669" width="393" height="34.333333333333314"/>
+                            <rect key="frame" x="0.0" y="88.666666666666657" width="393" height="34.333333333333343"/>
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="plain" title="自测页"/>
+                            <connections>
+                                <action selector="selfTest:" destination="-1" eventType="touchUpInside" id="66i-hb-aih"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="nT4-uf-nNl">
+                            <rect key="frame" x="0.0" y="133" width="393" height="34.333333333333343"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="sn"/>
+                            <connections>
+                                <action selector="sn:" destination="-1" eventType="touchUpInside" id="UBh-1B-Vau"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="i1z-GG-AbI">
+                            <rect key="frame" x="0.0" y="177.33333333333331" width="393" height="34.333333333333343"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="状态"/>
+                            <connections>
+                                <action selector="state:" destination="-1" eventType="touchUpInside" id="yZX-rb-mTM"/>
+                            </connections>
                         </button>
                     </subviews>
                 </stackView>
@@ -65,7 +72,7 @@
                 <constraint firstItem="zho-KF-toH" firstAttribute="leading" secondItem="An7-0R-4UA" secondAttribute="leading" id="cJ1-ky-Sh3"/>
                 <constraint firstItem="An7-0R-4UA" firstAttribute="trailing" secondItem="zho-KF-toH" secondAttribute="trailing" id="kNj-37-EoW"/>
             </constraints>
-            <point key="canvasLocation" x="131" y="-11"/>
+            <point key="canvasLocation" x="-144" y="-42"/>
         </view>
     </objects>
     <resources>

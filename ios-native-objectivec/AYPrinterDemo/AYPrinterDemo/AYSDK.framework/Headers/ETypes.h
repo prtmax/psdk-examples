@@ -28,11 +28,14 @@ typedef NS_ENUM(NSInteger, EPaperType) {
     EPaperTypeBlackMark = 0,    // 黑标纸模式
     EPaperTypeContinuous,       // 连续纸模式
     EPaperTypeGap,              // 缝隙纸模式
+    EPaperTypeHole,             // 打孔纸模式
+    EPaperTypeTattoo,           // 纹身纸模式
+    EPaperTypeTattooWrinkles,   // 纹身纸（防皱模式）
 };
 
 typedef NS_ENUM(NSInteger, EPaperTypeQX) {
     EPaperTypeQXGap,              // 缝隙纸模式
-    EPaperTypeQXBlackMark,    // 黑标纸模式
+    EPaperTypeQXBlackMark,        // 黑标纸模式
     EPaperTypeQXContinuous,       // 连续纸模式
 };
 

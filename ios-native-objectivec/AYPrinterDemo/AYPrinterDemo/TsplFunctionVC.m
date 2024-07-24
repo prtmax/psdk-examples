@@ -111,6 +111,7 @@
     [tspl lineX:0 y:83 endX:480 endY:83 width:2 lineType:3];
     [tspl lineX:0 y:107 endX:480 endY:107 width:2 lineType:4];
     [tspl qrCodeX:50 y:350 ecc:TECCLevelM cellwidth:6 rotation:TRotation_0 content:@"28938928"];
+    [tspl textX:100 y:100 font:TFontTSS12 rotation:TRotation_0 xMulti:3 yMulti:3 bold:YES content:@"hello world, 你好"];
     [tspl print:1];
     
     [self.bleHelper writeCommands:tspl.commands];
@@ -144,7 +145,7 @@
     [self.bleHelper writeCommands:tspl.commands];
 }
 
-- (IBAction)BatteryLevel:(id)sender {
+- (IBAction)batteryLevel:(id)sender {
     TsplCommand *tspl = [TsplCommand new];
     [tspl readBatteryLevel];
     

@@ -10,6 +10,7 @@
 #import <AYSDK/AYPrinter.h>
 #import <AYSDK/ETypes.h>
 #import <AYSDK/TTypes.h>
+#import <AYSDK/CTypes.h>
 
 #define BlueManager [BleHelper shareInstance]
 
@@ -21,7 +22,8 @@ typedef NS_ENUM(NSInteger, BleState) {
 
 typedef void(^OnEscQueryChange)(EQuery type, NSData *data);
 typedef void(^OnEscSettingChange)(ESet type, NSData *data);
-typedef void(^onTsplDataReceived)(TReceivedType type, NSData *data);
+typedef void(^OnTsplDataReceived)(TReceivedType type, NSData *data);
+typedef void(^OnCpclDataReceived)(CReceivedType type, NSData *data);
 typedef void(^OnDataReceived)(NSData *data);
 
 @protocol BleHelperDelegate <NSObject>
@@ -50,7 +52,9 @@ typedef void(^OnDataReceived)(NSData *data);
 /// 打印主动上报回调 - 只接收打印主动上报返回
 @property(copy, nonatomic) OnDataReceived onPrinterAutoReport;
 /// 打印主动上报回调 - tspl反馈
-@property(copy, nonatomic) onTsplDataReceived onTsplDataReceived;
+@property(copy, nonatomic) OnTsplDataReceived onTsplDataReceived;
+/// 打印主动上报回调 - cpcl反馈
+@property(copy, nonatomic) OnCpclDataReceived onCpclDataReceived;
 
 + (instancetype)shareInstance;
 

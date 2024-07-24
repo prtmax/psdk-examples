@@ -13,6 +13,8 @@
 		B502DDB72AB9840700B74A2F /* CpclFunctionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = B502DDB52AB9840700B74A2F /* CpclFunctionVC.xib */; };
 		B50C1AE02BC78C2C00292025 /* a4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B50C1ADF2BC78C2C00292025 /* a4.jpg */; };
 		B5101EF12C12D0AC001B38E0 /* one.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = B5101EF02C12D0AC001B38E0 /* one.jpeg */; };
+		B5175E362C2FB34500E533FF /* dithered-image (1).png in Resources */ = {isa = PBXBuildFile; fileRef = B5175E352C2FB34500E533FF /* dithered-image (1).png */; };
+		B5175E382C2FB55B00E533FF /* dithered-image (2).png in Resources */ = {isa = PBXBuildFile; fileRef = B5175E372C2FB55B00E533FF /* dithered-image (2).png */; };
 		B543E16B2AB85A3100713B63 /* BaseVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B543E16A2AB85A3100713B63 /* BaseVC.m */; };
 		B543E17A2AB85C0900713B63 /* EscFunctionVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B543E1782AB85C0900713B63 /* EscFunctionVC.m */; };
 		B543E17B2AB85C0900713B63 /* EscFunctionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = B543E1792AB85C0900713B63 /* EscFunctionVC.xib */; };
@@ -89,6 +91,8 @@
 		B502DDB52AB9840700B74A2F /* CpclFunctionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CpclFunctionVC.xib; sourceTree = "<group>"; };
 		B50C1ADF2BC78C2C00292025 /* a4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = a4.jpg; sourceTree = "<group>"; };
 		B5101EF02C12D0AC001B38E0 /* one.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = one.jpeg; sourceTree = "<group>"; };
+		B5175E352C2FB34500E533FF /* dithered-image (1).png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dithered-image (1).png"; sourceTree = "<group>"; };
+		B5175E372C2FB55B00E533FF /* dithered-image (2).png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dithered-image (2).png"; sourceTree = "<group>"; };
 		B543E1692AB85A3100713B63 /* BaseVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseVC.h; sourceTree = "<group>"; };
 		B543E16A2AB85A3100713B63 /* BaseVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BaseVC.m; sourceTree = "<group>"; };
 		B543E1772AB85C0900713B63 /* EscFunctionVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EscFunctionVC.h; sourceTree = "<group>"; };
@@ -207,6 +211,8 @@
 		B56455E12BC38C9F0076C82F /* image */ = {
 			isa = PBXGroup;
 			children = (
+				B5175E372C2FB55B00E533FF /* dithered-image (2).png */,
+				B5175E352C2FB34500E533FF /* dithered-image (1).png */,
 				B5101EF02C12D0AC001B38E0 /* one.jpeg */,
 				B50C1ADF2BC78C2C00292025 /* a4.jpg */,
 				B57B35B62C0D942B00BBBD13 /* rgb1.jpg */,
@@ -317,7 +323,6 @@
 				B57458592AB067E600DF9716 /* Frameworks */,
 				B574585A2AB067E600DF9716 /* Resources */,
 				B554499E2ADF78E1005F8C2C /* Embed Frameworks */,
-				71D4A0DFD02A9E0C175AD46E /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -355,7 +360,6 @@
 				B574587D2AB067E700DF9716 /* Sources */,
 				B574587E2AB067E700DF9716 /* Frameworks */,
 				B574587F2AB067E700DF9716 /* Resources */,
-				76CB575BCF6727F202B2225C /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -374,7 +378,7 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastUpgradeCheck = 1510;
+				LastUpgradeCheck = 1540;
 				TargetAttributes = {
 					B574585B2AB067E600DF9716 = {
 						CreatedOnToolsVersion = 14.3.1;
@@ -419,11 +423,13 @@
 				B56455FF2BC38C9F0076C82F /* shouji.png in Resources */,
 				B56455F82BC38C9F0076C82F /* unititled.jpg in Resources */,
 				B543E17B2AB85C0900713B63 /* EscFunctionVC.xib in Resources */,
+				B5175E382C2FB55B00E533FF /* dithered-image (2).png in Resources */,
 				B574586F2AB067E700DF9716 /* LaunchScreen.storyboard in Resources */,
 				B56456002BC38C9F0076C82F /* qmsht.jpg in Resources */,
 				B581BA202BDA071D00D25CF6 /* A4主动上报信息释义.pdf in Resources */,
 				B56456072BC38C9F0076C82F /* dithered-image.png in Resources */,
 				B590F1F92AB19A6E0012CEE5 /* TsplFunctionVC.xib in Resources */,
+				B5175E362C2FB34500E533FF /* dithered-image (1).png in Resources */,
 				B502DDB72AB9840700B74A2F /* CpclFunctionVC.xib in Resources */,
 				B574586C2AB067E700DF9716 /* Assets.xcassets in Resources */,
 				B56455F62BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240119.ALLAY in Resources */,
@@ -459,40 +465,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		71D4A0DFD02A9E0C175AD46E /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-AYPrinterDemo/Pods-AYPrinterDemo-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-AYPrinterDemo/Pods-AYPrinterDemo-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AYPrinterDemo/Pods-AYPrinterDemo-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
-		76CB575BCF6727F202B2225C /* [CP] Embed Pods Frameworks */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-AYPrinterDemo-AYPrinterDemoUITests/Pods-AYPrinterDemo-AYPrinterDemoUITests-frameworks-${CONFIGURATION}-input-files.xcfilelist",
-			);
-			name = "[CP] Embed Pods Frameworks";
-			outputFileListPaths = (
-				"${PODS_ROOT}/Target Support Files/Pods-AYPrinterDemo-AYPrinterDemoUITests/Pods-AYPrinterDemo-AYPrinterDemoUITests-frameworks-${CONFIGURATION}-output-files.xcfilelist",
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AYPrinterDemo-AYPrinterDemoUITests/Pods-AYPrinterDemo-AYPrinterDemoUITests-frameworks.sh\"\n";
-			showEnvVarsInLog = 0;
-		};
 		7EF8D55EDFE50C57AC94187F /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -763,6 +735,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -797,6 +770,7 @@
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UIRequiresFullScreen = YES;
 				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (

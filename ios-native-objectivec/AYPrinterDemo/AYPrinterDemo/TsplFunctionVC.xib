@@ -76,7 +76,7 @@
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="plain" title="电量"/>
                             <connections>
-                                <action selector="BatteryLevel:" destination="-1" eventType="touchUpInside" id="uiz-DG-wHl"/>
+                                <action selector="batteryLevel:" destination="-1" eventType="touchUpInside" id="lA2-Cg-Oqb"/>
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="3mh-be-tpl">

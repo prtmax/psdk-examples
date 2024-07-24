@@ -9,7 +9,8 @@
 
 @interface EscFunctionVC ()<UITextFieldDelegate>
 
-@property (weak, nonatomic) IBOutlet UITextField *copiesTextF;
+@property (weak, nonatomic) IBOutlet UILabel *copiesLabel;
+@property (weak, nonatomic) IBOutlet UIStepper *stepper;
 @property (weak, nonatomic) IBOutlet UILabel *displayLabel;
 @property (weak, nonatomic) IBOutlet UIProgressView *otaProgressView;
 @property (strong, nonatomic) AYOtaHelper *ota;
@@ -17,6 +18,7 @@
 @property (assign, nonatomic) int copies;
 @property (assign, nonatomic) bool isLabel;
 @property (assign, nonatomic) bool isPrinting;
+@property (assign, nonatomic) bool isCompress;
 
 @end
 
@@ -24,14 +26,14 @@
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.copiesTextF.delegate = self;
-    self.copies = [_copiesTextF.text intValue];
+    self.copies = _copiesLabel.text.intValue;
     self.esc = [EscCommand new];
     [self initCallBack];
 }
 
-- (void)textFieldDidEndEditing:(UITextField *)textField {
-    self.copies = [textField.text intValue];
+- (IBAction)stepperValueChanged:(UIStepper *)sender {
+    self.copies = sender.value;
+    self.copiesLabel.text = [NSString stringWithFormat:@"%d", self.copies];
 }
 
 - (void)initCallBack {
@@ -138,7 +140,7 @@
         if (weakSelf.copies <= 0) {
             weakSelf.isPrinting = NO;
             weakSelf.displayLabel.text = @"打印完成";
-            weakSelf.copies = weakSelf.copiesTextF.text.intValue;
+            weakSelf.copies = weakSelf.copiesLabel.text.intValue;
             return;
         };
         if (weakSelf.isLabel) {
@@ -210,13 +212,17 @@
     };
 }
 
+- (IBAction)compressChange:(UISwitch *)sender {
+    self.isCompress = sender.isOn;
+}
 #pragma mark - 打印/print
 /// 标签纸 / 黑标纸
 - (IBAction)labelPrint {
     [self.esc clean];
     [self.esc wake];
     [self.esc enable];
-    [self.esc image:[UIImage imageNamed:@"one.jpeg"] compress:YES mode:Normal];
+    [self.esc contentPosition:EPositionCenter];
+    [self.esc image:[UIImage imageNamed:@"蚊香液.png"] compress:self.isCompress mode:Normal];
     [self.esc position];
     [self.esc stopPrintJob];
 
@@ -233,7 +239,7 @@
     [self.esc wake];
     [self.esc enable];
     [self.esc linedots:80];
-    [self.esc image:[UIImage imageNamed:@"a4.jpg"] compress:YES mode:Normal];
+    [self.esc image:[UIImage imageNamed:@"dog.jpg"] compress:self.isCompress mode:Normal];
     [self.esc linedots:80];
     [self.esc stopPrintJob];
     

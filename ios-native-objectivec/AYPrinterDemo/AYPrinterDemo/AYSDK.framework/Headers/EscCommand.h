@@ -117,11 +117,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)paperType;
 
 /**
- * 查询打印机纸张类型(Q1 Q2 Q3 D11 D30 B21 B22用这个)
- */
-- (void)paperTypeQX;
-
-/**
  * 获取标签纸张信息
  */
 - (void)nfcPaper;

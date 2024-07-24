@@ -35,16 +35,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)print:(BOOL)isClockwise180;
 
 /**
- * 查询打印机状态
- */
-- (void)state;
-
-/**
- * 自测页
- */
-- (void)selfTest;
-
-/**
  * 用于以指定的宽和高横向或纵向打印条码
  * @param x 横向起始位置
  * @param y 纵向起始位置
@@ -135,7 +125,20 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)inverseLineX:(int)x y:(int)y endX:(int)ex endY:(int)ey width:(int)width;
 
+/**
+ * 打印自检页
+ */
+- (void)selfTest;
 
+/**
+ * 查询打印机sn号
+ */
+- (void)readSn;
+
+/**
+ * 查询打印机状态
+ */
+- (void)readState;
 
 @end
 
