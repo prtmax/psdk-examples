@@ -1,0 +1,79 @@
+// Write your overrides
+
+.nav-items .v-list {
+  background: transparent !important;
+}
+
+.nav-items  {
+  .v-list-group {
+    --parent-padding: var(--indent-padding);
+  }
+
+  .v-list-group__items {
+    --indent-padding: calc(var(--parent-padding) + var(--list-indent-size));
+  }
+
+  .v-list-group__items .v-list-item {
+    padding-inline-start: calc(16px + var(--indent-padding)) !important;
+  }
+}
+
+.x-topbar {
+  .v-input {
+    margin-right: 5px;
+    max-width: 8rem;
+  }
+}
+
+.x-btn-group {
+  .v-btn, .v-icon {
+    margin-right: 4px !important;
+  }
+  .v-btn:last-child, .v-icon:last-child {
+    margin-right: 0 !important;
+  }
+}
+
+.v-dialog--scrollable {
+  .v-card-text {
+    height: auto;
+    max-height: 500px;
+  }
+}
+
+.text-ellipsis {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.x-chip-group .v-chip {
+  margin-right: 4px !important;
+}
+
+.x-chip-group .v-chip:last-child {
+  margin-right: 0 !important;
+}
+
+.endpoint-text-LOCAL {
+  color: grey;
+}
+
+.endpoint-text-DEVELOP {
+  //@extend .text-grey;
+  color: brown;
+}
+
+.endpoint-text-STAGING {
+  //@extend .text-purple;
+  color: purple;
+}
+
+.endpoint-text-PRODUCTION {
+  //@extend .text-green;
+  color: green;
+}
+
+.state-generic-INVALID {
+  color: red;
+}

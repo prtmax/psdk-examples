@@ -15,7 +15,6 @@ import android.os.Process;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +32,7 @@ public class ScanActivity extends Activity {
 
   private myAdapter listAdapter;
   private TextView tvEmpty;
-  private Button tvScan;
+  private Button bt_Scan,bt_usb;
   private EditText edit_name;
   private final List<Device> devList = new ArrayList<>();
   private final List<Device> searchList = new ArrayList<>();
@@ -131,21 +130,29 @@ public class ScanActivity extends Activity {
 
     ListView lv = findViewById(R.id.lv);
     tvEmpty = findViewById(R.id.tvEmpty);
-    tvScan = findViewById(R.id.tvScan);
+    bt_Scan = findViewById(R.id.bt_Scan);
+    bt_usb = findViewById(R.id.bt_usb);
     edit_name = findViewById(R.id.edit_name);
     listAdapter = new myAdapter(this, devList);
     lv.setAdapter(listAdapter);
     lv.setOnItemClickListener((parent, view, position, id) -> showList(position));
-    tvScan.setOnClickListener(new View.OnClickListener() {
+    bt_usb.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        Intent intent = new Intent(ScanActivity.this, USBActivity.class);
+        startActivity(intent);
+      }
+    });
+    bt_Scan.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
         if (Bluetooth.getInstance().isInitialized()) {
-          if (tvScan.getText().toString().equals("扫描")) {
+          if (bt_Scan.getText().toString().equals("扫描")) {
             doStartDiscovery();
 
           } else {
             Bluetooth.getInstance().stopDiscovery();
-            tvScan.setText("扫描");
+            bt_Scan.setText("扫描");
           }
         }
       }
@@ -259,7 +266,7 @@ public class ScanActivity extends Activity {
     listAdapter.notifyDataSetChanged();
     tvEmpty.setVisibility(View.VISIBLE);
     Bluetooth.getInstance().startDiscovery();
-    tvScan.setText("停止扫描");
+    bt_Scan.setText("停止扫描");
   }
 
   public class myAdapter extends BaseAdapter {

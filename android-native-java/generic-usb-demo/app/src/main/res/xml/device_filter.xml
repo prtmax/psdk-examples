@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 0x0403 / 0x6001: FTDI FT232R UART -->
+    <!--<usb-device vendor-id="04C5" product-id="106F" />-->
+    <!--<usb-device vendor-id="0525" product-id="A702" />-->
+<!--    <usb-device vendor-id="09c5" product-id="0588" />-->
+    <usb-device vendor-id="2501" product-id="1416" />
+</resources>

@@ -4,7 +4,7 @@ var __DEFINE__ = function(modId, func, req) { var m = { exports: {}, _tempexport
 var __REQUIRE__ = function(modId, source) { if(!__MODS__[modId]) return require(source); if(!__MODS__[modId].status) { var m = __MODS__[modId].m; m._exports = m._tempexports; var desp = Object.getOwnPropertyDescriptor(m, "exports"); if (desp && desp.configurable) Object.defineProperty(m, "exports", { set: function (val) { if(typeof val === "object" && val !== m._exports) { m._exports.__proto__ = val.__proto__; Object.keys(val).forEach(function (k) { m._exports[k] = val[k]; }); } m._tempexports = val }, get: function () { return m._tempexports; } }); __MODS__[modId].status = 1; __MODS__[modId].func(__MODS__[modId].req, m, m.exports); } return __MODS__[modId].m.exports; };
 var __REQUIRE_WILDCARD__ = function(obj) { if(obj && obj.__esModule) { return obj; } else { var newObj = {}; if(obj != null) { for(var k in obj) { if (Object.prototype.hasOwnProperty.call(obj, k)) newObj[k] = obj[k]; } } newObj.default = obj; return newObj; } };
 var __REQUIRE_DEFAULT__ = function(obj) { return obj && obj.__esModule ? obj.default : obj; };
-__DEFINE__(1681364781899, function(require, module, exports) {
+__DEFINE__(1720570344520, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -25,8 +25,8 @@ __exportStar(require("./impls"), exports);
 __exportStar(require("./args"), exports);
 __exportStar(require("./types"), exports);
 
-}, function(modId) {var map = {"./impls":1681364781900,"./args":1681364781903,"./types":1681364781906}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781900, function(require, module, exports) {
+}, function(modId) {var map = {"./impls":1720570344521,"./args":1720570344524,"./types":1720570344527}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344521, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -46,8 +46,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./generic"), exports);
 __exportStar(require("./cpcl"), exports);
 
-}, function(modId) { var map = {"./generic":1681364781901,"./cpcl":1681364781935}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781901, function(require, module, exports) {
+}, function(modId) { var map = {"./generic":1720570344522,"./cpcl":1720570344556}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344522, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GenericCPCL = void 0;
@@ -59,8 +59,8 @@ class GenericCPCL extends basic_1.BasicCPCL {
 }
 exports.GenericCPCL = GenericCPCL;
 
-}, function(modId) { var map = {"./basic":1681364781902}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781902, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344523}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344523, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BasicCPCL = void 0;
@@ -79,65 +79,120 @@ class BasicCPCL extends frame_father_1.PSDK {
     commander() {
         return this._commander;
     }
+    /**
+     * 一维码
+     */
     bar(arg) {
         return super.push(arg);
     }
+    /**
+     * 画矩形边框
+     */
     box(arg) {
         return super.push(arg);
     }
-    bold(arg) {
-        return super.push(arg);
+    /**
+     * 加粗
+     * @param bold true 加粗 false 不加粗
+     */
+    bold(bold) {
+        return super.push(new args_1.CBold({ bold: bold }));
     }
+    /**
+     * 定位到标签(print指令之前调用)
+     */
     feed(arg) {
         return super.push(arg);
     }
+    /**
+     * 定位到标签(可以放在print指令之后调用)
+     */
     form(arg) {
         return super.push(arg);
     }
+    /**
+     * 打印图片
+     */
     image(arg) {
         return super.push(arg);
     }
+    /**
+     * 文字反白
+     */
     inverse(arg) {
         return super.push(arg);
     }
+    /**
+     * 画线(能画斜线)
+     */
     line(arg) {
         return super.push(arg);
     }
     mag(arg) {
         return super.push(arg);
     }
+    /**
+     * 打印模式(是否定位)
+     */
     pageMode(arg) {
         return super.push(arg);
     }
+    /**
+     * 创建打印页面大小
+     */
     page(arg) {
         return super.push(arg);
     }
+    /**
+     * 打印
+     */
     print(arg) {
         return super.push(arg !== null && arg !== void 0 ? arg : new args_1.CPrint({ mode: types_1.CMode.NORMAL }));
     }
+    /**
+     * 打印二维码
+     */
     qrcode(arg) {
         return super.push(arg);
     }
+    /**
+     * 打印文本
+     */
     text(arg) {
         return super.push(arg);
     }
-    underline(arg) {
-        return super.push(arg);
+    /**
+     * 下划线
+     *
+     * @param underline true 画下划线 false 不画下划线
+     */
+    underline(underline) {
+        return super.push(new args_1.CUnderLine({ underline: underline }));
     }
+    /**
+     * 水印
+     * @param arg
+     */
     waterMark(arg) {
         return super.push(arg);
     }
+    /**
+     * 查询打印机状态
+     */
     status(arg) {
         return super.push(arg);
     }
+    /**
+     * 查询打印机SN
+     */
     sn(arg) {
         return super.push(arg);
     }
 }
 exports.BasicCPCL = BasicCPCL;
 
-}, function(modId) { var map = {"../args":1681364781903,"../types":1681364781906}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781903, function(require, module, exports) {
+}, function(modId) { var map = {"../args":1720570344524,"../types":1720570344527}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344524, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -178,8 +233,8 @@ __exportStar(require("./underline"), exports);
 __exportStar(require("./watermark"), exports);
 __exportStar(require("./sn"), exports);
 
-}, function(modId) { var map = {"./bar":1681364781904,"./basic":1681364781905,"./bold":1681364781914,"./box":1681364781915,"./feed":1681364781916,"./form":1681364781919,"./gap":1681364781918,"./image":1681364781921,"./inverse":1681364781922,"./line":1681364781923,"./mag":1681364781924,"./page":1681364781925,"./pageheight":1681364781926,"./pagemode":1681364781927,"./pagesetup":1681364781928,"./pagewidth":1681364781917,"./print":1681364781920,"./qrcode":1681364781929,"./status":1681364781930,"./text":1681364781931,"./underline":1681364781932,"./watermark":1681364781933,"./sn":1681364781934}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781904, function(require, module, exports) {
+}, function(modId) { var map = {"./bar":1720570344525,"./basic":1720570344526,"./bold":1720570344535,"./box":1720570344536,"./feed":1720570344537,"./form":1720570344540,"./gap":1720570344539,"./image":1720570344542,"./inverse":1720570344543,"./line":1720570344544,"./mag":1720570344545,"./page":1720570344546,"./pageheight":1720570344547,"./pagemode":1720570344548,"./pagesetup":1720570344549,"./pagewidth":1720570344538,"./print":1720570344541,"./qrcode":1720570344550,"./status":1720570344551,"./text":1720570344552,"./underline":1720570344553,"./watermark":1720570344554,"./sn":1720570344555}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344525, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CBar = void 0;
@@ -252,8 +307,8 @@ class CodeTypeEntity {
     }
 }
 
-}, function(modId) { var map = {"./basic":1681364781905,"../types":1681364781906}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781905, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526,"../types":1720570344527}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344526, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BasicCPCLArg = void 0;
@@ -271,7 +326,7 @@ class BasicCPCLArg extends frame_father_1.EasyArg {
 exports.BasicCPCLArg = BasicCPCLArg;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781906, function(require, module, exports) {
+__DEFINE__(1720570344527, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -296,8 +351,8 @@ __exportStar(require("./location"), exports);
 __exportStar(require("./mode"), exports);
 __exportStar(require("./rotation"), exports);
 
-}, function(modId) { var map = {"./coderotation":1681364781907,"./codetype":1681364781908,"./correctlevel":1681364781909,"./font":1681364781910,"./location":1681364781911,"./mode":1681364781912,"./rotation":1681364781913}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781907, function(require, module, exports) {
+}, function(modId) { var map = {"./coderotation":1720570344528,"./codetype":1720570344529,"./correctlevel":1720570344530,"./font":1720570344531,"./location":1720570344532,"./mode":1720570344533,"./rotation":1720570344534}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344528, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CCodeRotation = void 0;
@@ -314,7 +369,7 @@ var CCodeRotation;
 })(CCodeRotation = exports.CCodeRotation || (exports.CCodeRotation = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781908, function(require, module, exports) {
+__DEFINE__(1720570344529, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CCodeType = void 0;
@@ -362,7 +417,7 @@ var CCodeType;
 })(CCodeType = exports.CCodeType || (exports.CCodeType = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781909, function(require, module, exports) {
+__DEFINE__(1720570344530, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CCorrectLevel = void 0;
@@ -387,7 +442,7 @@ var CCorrectLevel;
 })(CCorrectLevel = exports.CCorrectLevel || (exports.CCorrectLevel = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781910, function(require, module, exports) {
+__DEFINE__(1720570344531, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CFont = void 0;
@@ -405,37 +460,41 @@ var CFont;
      */
     CFont[CFont["TSS20"] = 1] = "TSS20";
     /**
+     * 20点阵放大一倍
+     */
+    CFont[CFont["TSS20_MAX1"] = 2] = "TSS20_MAX1";
+    /**
      * 24点阵
      */
-    CFont[CFont["TSS24"] = 2] = "TSS24";
+    CFont[CFont["TSS24"] = 3] = "TSS24";
     /**
      * 32点阵
      */
-    CFont[CFont["TSS32"] = 3] = "TSS32";
+    CFont[CFont["TSS32"] = 4] = "TSS32";
     /**
      * 24点阵放大一倍
      */
-    CFont[CFont["TSS24_MAX1"] = 4] = "TSS24_MAX1";
+    CFont[CFont["TSS24_MAX1"] = 5] = "TSS24_MAX1";
     /**
      * 32点阵放大一倍
      */
-    CFont[CFont["TSS32_MAX1"] = 5] = "TSS32_MAX1";
+    CFont[CFont["TSS32_MAX1"] = 6] = "TSS32_MAX1";
     /**
      * 24点阵放大两倍
      */
-    CFont[CFont["TSS24_MAX2"] = 6] = "TSS24_MAX2";
+    CFont[CFont["TSS24_MAX2"] = 7] = "TSS24_MAX2";
     /**
      * 32点阵放大两倍
      */
-    CFont[CFont["TSS32_MAX2"] = 7] = "TSS32_MAX2";
+    CFont[CFont["TSS32_MAX2"] = 8] = "TSS32_MAX2";
     /**
      * 28点阵放大一倍
      */
-    CFont[CFont["TSS28_MAX1"] = 8] = "TSS28_MAX1";
+    CFont[CFont["TSS28_MAX1"] = 9] = "TSS28_MAX1";
 })(CFont = exports.CFont || (exports.CFont = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781911, function(require, module, exports) {
+__DEFINE__(1720570344532, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CLocation = void 0;
@@ -452,7 +511,7 @@ var CLocation;
 })(CLocation = exports.CLocation || (exports.CLocation = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781912, function(require, module, exports) {
+__DEFINE__(1720570344533, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CMode = void 0;
@@ -469,7 +528,7 @@ var CMode;
 })(CMode = exports.CMode || (exports.CMode = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781913, function(require, module, exports) {
+__DEFINE__(1720570344534, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CRotation = void 0;
@@ -494,7 +553,7 @@ var CRotation;
 })(CRotation = exports.CRotation || (exports.CRotation = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781914, function(require, module, exports) {
+__DEFINE__(1720570344535, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CBold = void 0;
@@ -517,8 +576,8 @@ class CBold extends basic_1.BasicCPCLArg {
 }
 exports.CBold = CBold;
 
-}, function(modId) { var map = {"./basic":1681364781905}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781915, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344536, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CBox = void 0;
@@ -555,8 +614,8 @@ class CBox extends basic_1.BasicCPCLArg {
 }
 exports.CBox = CBox;
 
-}, function(modId) { var map = {"./basic":1681364781905}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781916, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344537, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CFeed = void 0;
@@ -581,8 +640,8 @@ class CFeed extends basic_1.BasicCPCLArg {
 }
 exports.CFeed = CFeed;
 
-}, function(modId) { var map = {"./basic":1681364781905,"./pagewidth":1681364781917,"./gap":1681364781918,"./form":1681364781919,"./print":1681364781920,"../types":1681364781906}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781917, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526,"./pagewidth":1720570344538,"./gap":1720570344539,"./form":1720570344540,"./print":1720570344541,"../types":1720570344527}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344538, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPageWidth = void 0;
@@ -605,8 +664,8 @@ class CPageWidth extends basic_1.BasicCPCLArg {
 }
 exports.CPageWidth = CPageWidth;
 
-}, function(modId) { var map = {"./basic":1681364781905}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781918, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344539, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CGap = void 0;
@@ -619,7 +678,7 @@ class CGap extends frame_father_1.OnlyTextHeaderArg {
 exports.CGap = CGap;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781919, function(require, module, exports) {
+__DEFINE__(1720570344540, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CForm = void 0;
@@ -632,7 +691,7 @@ class CForm extends frame_father_1.OnlyTextHeaderArg {
 exports.CForm = CForm;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781920, function(require, module, exports) {
+__DEFINE__(1720570344541, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPrint = void 0;
@@ -650,8 +709,8 @@ class CPrint extends frame_father_1.OnlyTextHeaderArg {
 }
 exports.CPrint = CPrint;
 
-}, function(modId) { var map = {"../types":1681364781906}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781921, function(require, module, exports) {
+}, function(modId) { var map = {"../types":1720570344527}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344542, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CImage = void 0;
@@ -706,60 +765,28 @@ class CImage extends basic_1.BasicCPCLArg {
 }
 exports.CImage = CImage;
 
-}, function(modId) { var map = {"./basic":1681364781905}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781922, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344543, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CInverse = void 0;
 const frame_father_1 = require("@psdk/frame-father");
 const basic_1 = require("./basic");
-const types_1 = require("../types");
 class CInverse extends basic_1.BasicCPCLArg {
     constructor(options) {
-        var _a, _b, _c, _d, _e;
+        var _a, _b, _c, _d;
         super();
         this.x = (_a = options === null || options === void 0 ? void 0 : options.x) !== null && _a !== void 0 ? _a : 0;
         this.y = (_b = options === null || options === void 0 ? void 0 : options.y) !== null && _b !== void 0 ? _b : 0;
         this.width = (_c = options === null || options === void 0 ? void 0 : options.width) !== null && _c !== void 0 ? _c : 0;
         this.height = (_d = options === null || options === void 0 ? void 0 : options.height) !== null && _d !== void 0 ? _d : 0;
-        this.font = (_e = options === null || options === void 0 ? void 0 : options.font) !== null && _e !== void 0 ? _e : types_1.CFont.TSS16;
     }
     clause() {
-        let fontEntity;
-        switch (this.font) {
-            case types_1.CFont.TSS16:
-                fontEntity = new FontEntity(1, 1, 55, 0, 16);
-                break;
-            case types_1.CFont.TSS20:
-                fontEntity = new FontEntity(1, 1, 6, 1, 20);
-                break;
-            case types_1.CFont.TSS24:
-                fontEntity = new FontEntity(1, 1, 24, 0, 24);
-                break;
-            case types_1.CFont.TSS32:
-                fontEntity = new FontEntity(1, 1, 4, 0, 32);
-                break;
-            case types_1.CFont.TSS24_MAX1:
-                fontEntity = new FontEntity(2, 2, 24, 0, 48);
-                break;
-            case types_1.CFont.TSS24_MAX2:
-                fontEntity = new FontEntity(3, 3, 24, 0, 72);
-                break;
-            case types_1.CFont.TSS28_MAX1:
-                fontEntity = new FontEntity(1, 1, 7, 3, 56);
-                break;
-            case types_1.CFont.TSS32_MAX1:
-                fontEntity = new FontEntity(2, 2, 4, 0, 64);
-                break;
-            case types_1.CFont.TSS32_MAX2:
-                fontEntity = new FontEntity(3, 3, 4, 0, 96);
-                break;
-        }
         return frame_father_1.CPCLCommand.with(this.header())
             .appendNumber(this.x)
             .appendNumber(this.y)
             .appendNumber(this.x + this.width)
-            .appendNumber(this.y + fontEntity.height)
+            .appendNumber(this.y)
             .appendNumber(this.height)
             .clause();
     }
@@ -768,18 +795,9 @@ class CInverse extends basic_1.BasicCPCLArg {
     }
 }
 exports.CInverse = CInverse;
-class FontEntity {
-    constructor(ex, ey, family, size, height) {
-        this.ex = ex;
-        this.ey = ey;
-        this.family = family;
-        this.size = size;
-        this.height = height;
-    }
-}
 
-}, function(modId) { var map = {"./basic":1681364781905,"../types":1681364781906}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781923, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344544, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CLine = void 0;
@@ -811,8 +829,8 @@ class CLine extends basic_1.BasicCPCLArg {
 }
 exports.CLine = CLine;
 
-}, function(modId) { var map = {"./basic":1681364781905}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781924, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344545, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CMag = void 0;
@@ -876,8 +894,8 @@ class FontEntity {
     }
 }
 
-}, function(modId) { var map = {"./basic":1681364781905,"../types":1681364781906}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781925, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526,"../types":1720570344527}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344546, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPage = void 0;
@@ -905,8 +923,8 @@ class CPage extends basic_1.BasicCPCLArg {
 }
 exports.CPage = CPage;
 
-}, function(modId) { var map = {"./basic":1681364781905,"./pageheight":1681364781926,"./pagewidth":1681364781917}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781926, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526,"./pageheight":1720570344547,"./pagewidth":1720570344538}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344547, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPageHeight = void 0;
@@ -931,8 +949,8 @@ class CPageHeight extends basic_1.BasicCPCLArg {
 }
 exports.CPageHeight = CPageHeight;
 
-}, function(modId) { var map = {"./basic":1681364781905}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781927, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344548, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPageMode = void 0;
@@ -959,8 +977,8 @@ class CPageMode extends basic_1.BasicCPCLArg {
 }
 exports.CPageMode = CPageMode;
 
-}, function(modId) { var map = {"./basic":1681364781905,"../types":1681364781906,"./gap":1681364781918,"./form":1681364781919}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781928, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526,"../types":1720570344527,"./gap":1720570344539,"./form":1720570344540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344549, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPageSetup = void 0;
@@ -986,8 +1004,8 @@ class CPageSetup extends basic_1.BasicCPCLArg {
 }
 exports.CPageSetup = CPageSetup;
 
-}, function(modId) { var map = {"./basic":1681364781905,"./pageheight":1681364781926,"./pagewidth":1681364781917}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781929, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526,"./pageheight":1720570344547,"./pagewidth":1720570344538}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344550, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CQRCode = void 0;
@@ -1024,8 +1042,8 @@ class CQRCode extends basic_1.BasicCPCLArg {
 }
 exports.CQRCode = CQRCode;
 
-}, function(modId) { var map = {"./basic":1681364781905,"../types":1681364781906}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781930, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526,"../types":1720570344527}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344551, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CStatus = void 0;
@@ -1044,7 +1062,7 @@ class CStatus extends frame_father_1.OnlyBinaryHeaderArg {
 exports.CStatus = CStatus;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781931, function(require, module, exports) {
+__DEFINE__(1720570344552, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CText = void 0;
@@ -1069,7 +1087,10 @@ class CText extends basic_1.BasicCPCLArg {
                 fontEntity = new FontEntity(1, 1, 55, 0, 16);
                 break;
             case types_1.CFont.TSS20:
-                fontEntity = new FontEntity(1, 1, 6, 1, 20);
+                fontEntity = new FontEntity(1, 1, 6, 0, 20);
+                break;
+            case types_1.CFont.TSS20_MAX1:
+                fontEntity = new FontEntity(1, 1, 6, 0, 40);
                 break;
             case types_1.CFont.TSS24:
                 fontEntity = new FontEntity(1, 1, 24, 0, 24);
@@ -1102,7 +1123,7 @@ class CText extends basic_1.BasicCPCLArg {
             .clause();
     }
     header() {
-        return 'TEXT';
+        return 'T' + this.rotation;
     }
 }
 exports.CText = CText;
@@ -1116,8 +1137,8 @@ class FontEntity {
     }
 }
 
-}, function(modId) { var map = {"./basic":1681364781905,"../types":1681364781906}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781932, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526,"../types":1720570344527}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344553, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CUnderLine = void 0;
@@ -1140,8 +1161,8 @@ class CUnderLine extends basic_1.BasicCPCLArg {
 }
 exports.CUnderLine = CUnderLine;
 
-}, function(modId) { var map = {"./basic":1681364781905}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781933, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344554, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CWaterMark = void 0;
@@ -1164,8 +1185,8 @@ class CWaterMark extends basic_1.BasicCPCLArg {
 }
 exports.CWaterMark = CWaterMark;
 
-}, function(modId) { var map = {"./basic":1681364781905}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781934, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1720570344526}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1720570344555, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CSN = void 0;
@@ -1184,7 +1205,7 @@ class CSN extends frame_father_1.OnlyBinaryHeaderArg {
 exports.CSN = CSN;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1681364781935, function(require, module, exports) {
+__DEFINE__(1720570344556, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPCL = void 0;
@@ -1203,8 +1224,8 @@ class CPCL {
 }
 exports.CPCL = CPCL;
 
-}, function(modId) { var map = {"./generic":1681364781901}; return __REQUIRE__(map[modId], modId); })
-return __REQUIRE__(1681364781899);
+}, function(modId) { var map = {"./generic":1720570344522}; return __REQUIRE__(map[modId], modId); })
+return __REQUIRE__(1720570344520);
 })()
 //miniprogram-npm-outsideDeps=["@psdk/frame-father","@psdk/frame-imageb"]
 //# sourceMappingURL=index.js.map

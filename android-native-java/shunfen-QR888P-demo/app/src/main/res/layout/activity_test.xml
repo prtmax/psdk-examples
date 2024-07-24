@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+      <Button
+        android:id="@+id/btnScan"
+        android:layout_margin="5dp"
+        android:text="扫码连接"
+        android:layout_weight="1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+          <Button
+            android:id="@+id/btnModel"
+            android:layout_margin="5dp"
+            android:text="打印测试"
+            android:layout_weight="1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        </LinearLayout>
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+          android:id="@+id/file_choose"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="选择文件"
+        >
+        </Button>
+        <TextView
+          android:id="@+id/tv_file"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="未选择文件"
+          android:layout_weight="1">
+        </TextView>
+        <Button
+          android:id="@+id/btnUpdate"
+          android:layout_margin="5dp"
+          android:text="固件升级"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"/>
+      </LinearLayout>
+
+      <TextView
+        android:id="@+id/tv_cur_ver"
+        android:layout_margin="5dp"
+        android:text="当前固件版本"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+      <TextView
+        android:id="@+id/tv_new_ver"
+        android:layout_margin="5dp"
+        android:text="最新固件版本"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+      <ImageView android:id="@+id/image"
+                 android:layout_width="wrap_content"
+                 android:layout_height="wrap_content">
+
+      </ImageView>
+    </LinearLayout>
+
+
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_alignParentBottom="true"
+            android:background="@android:color/holo_red_light"
+            android:orientation="horizontal">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:text="连接状态："
+                android:textColor="@android:color/white"
+                android:textSize="18sp"/>
+
+        <TextView
+                android:id="@+id/tv_connect_status"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dp"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:textColor="@android:color/white"
+                android:textSize="18sp"/>
+    </LinearLayout>
+</RelativeLayout>

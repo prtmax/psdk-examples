@@ -24,6 +24,7 @@ import com.printer.psdk.device.bluetooth.Bluetooth;
 import com.printer.psdk.device.bluetooth.ConnectListener;
 import com.printer.psdk.device.bluetooth.Connection;
 import com.printer.psdk.frame.father.PSDK;
+import com.printer.psdk.frame.father.args.common.Raw;
 import com.printer.psdk.frame.logger.PLog;
 import com.printer.psdk.imagep.android.AndroidSourceImage;
 
@@ -134,7 +135,7 @@ public class CPCLActivity extends Activity {
         GenericCPCL _gcpcl = cpcl.page(CPage.builder().width(608).height(600).build())
           .image(CImage.builder()
             .image(new AndroidSourceImage(bitmap))
-            .reverse(true)
+//            .compress(true)//支持压缩的打印机可以走压缩
             .build()
           )
           .print(CPrint.builder().build());
@@ -179,7 +180,7 @@ public class CPCLActivity extends Activity {
         if (sampleEdit.getText().toString().trim().equals("")) {
           sampleNumber = 1;
         } else {
-          sampleNumber = Integer.valueOf(sampleEdit.getText().toString().trim());
+          sampleNumber = Integer.parseInt(sampleEdit.getText().toString().trim());
         }
         if (!isSending) {
           new Thread(new Runnable() {
@@ -190,13 +191,13 @@ public class CPCLActivity extends Activity {
                 try {
                   printNow();
                 } catch (Exception e) {
-
+                  e.printStackTrace();
                 }
-//                        try {
-//                            Thread.sleep(1000);
-//                        } catch (InterruptedException e) {
-//                            e.printStackTrace();
-//                        }
+                try {
+                  Thread.sleep(500);
+                } catch (InterruptedException e) {
+                  e.printStackTrace();
+                }
                 if (i == (sampleNumber - 1)) {
                   isSending = false;
                 }
@@ -211,6 +212,12 @@ public class CPCLActivity extends Activity {
     });
   }
 
+  /**
+   * 说明：1.以下单位都是dot 1mm=8dot(分辨率203) 1mm=12dot(分辨率300) 开发者根据自己使用的打印机来适配
+   * 2.字体问题，当使用到例如Font.TSS24_MAX1 带MAX这类的字体时需要.font(Font.TSS24_MAX1).mag(true)才会生效 .mag(true)是允许倍数放大
+   * 3.一个完整的指令.page()是指令头 .print()是指令尾必不可少的
+   * 4.需要整个页面旋转的时候.print(CPrint.builder().mode(CPrint.Mode.MIRROR).build());
+   */
   private void printNow() {
     GenericCPCL _gcpcl = cpcl.page(CPage.builder().width(608).height(1040).copies(sampleNumber).build())
       .box(CBox.builder().topLeftX(0).topLeftY(1).bottomRightX(598).bottomRightY(664).lineWidth(2).build())
@@ -222,7 +229,7 @@ public class CPCLActivity extends Activity {
       .line(CLine.builder().startX(52).startY(88 + 128 + 80).endX(52).endY(88 + 128 + 80 + 144 + 128).lineWidth(2).build())
       .line(CLine.builder().startX(598 - 56 - 16).startY(88 + 128 + 80).endX(598 - 56 - 16).endY(664).lineWidth(2).build())
       .bar(CBar.builder().x(120).y(88 + 12).lineWidth(1).height(80).content("1234567890").codeType(CodeType.CODE128).codeRotation(CodeRotation.ROTATION_0).build())
-      .text(CText.builder().textX(120 + 12).textY(88 + 20 + 76).font(Font.TSS24).content("1234567890").build())
+      .text(CText.builder().textX(120 + 12).textY(88 + 20 + 76).font(Font.TSS24_MAX1).content("1234567890").build())
       .text(CText.builder().textX(12).textY(88 + 128 + 80 + 32).font(Font.TSS24).content("收").build())
       .text(CText.builder().textX(12).textY(88 + 128 + 80 + 96).font(Font.TSS24).content("件").build())
       .text(CText.builder().textX(12).textY(88 + 128 + 80 + 144 + 32).font(Font.TSS24).content("发").build())
@@ -254,8 +261,8 @@ public class CPCLActivity extends Activity {
       .text(CText.builder().textX(12 + 8).textY(696 + 80 + 136 + 22 - 5).font(Font.TSS24).content("物品：" + "几个快递" + " " + "12kg").build())
       .box(CBox.builder().topLeftX(598 - 56 - 16 - 120).topLeftY(696 + 80 + 136 + 11).bottomRightX(598 - 56 - 16 - 16).bottomRightY(968 - 11).lineWidth(2).build())
       .text(CText.builder().textX(598 - 56 - 16 - 120 + 17).textY(696 + 80 + 136 + 11 + 6).font(Font.TSS24).content("已验视").build())
-      .print(CPrint.builder().build())
-      .feed();
+      .form()//标签定位指令
+      .print(CPrint.builder().mode(CPrint.Mode.MIRROR).build());
     String result = safeWriteAndRead(_gcpcl);
     show(result);
   }
@@ -281,8 +288,7 @@ public class CPCLActivity extends Activity {
         throw new IOException("写入数据失败", reporter.getException());
       }
       Thread.sleep(200);
-      byte[] bytes = psdk.read(ReadOptions.builder().timeout(2000).build());
-      return bytes;
+      return psdk.read(ReadOptions.builder().timeout(2000).build());
     } catch (Exception e) {
       PLog.error("Write data error: " + e.getMessage());
       return null;
