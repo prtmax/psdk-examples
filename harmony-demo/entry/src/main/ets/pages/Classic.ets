@@ -7,22 +7,28 @@ import socket from '@ohos.bluetooth.socket';
 import promptAction from '@ohos.promptAction';
 import a2dp from '@ohos.bluetooth.a2dp';
 import { baseProfile } from '@kit.ConnectivityKit';
-import { GenericTSPL, TBar, TBarCode, TBox,
-  TCodeType,
-  TFont, TLine, TPage, TRotation, TSPL, TText, TTLine } from '@psdk/tspl';
+import { GenericTSPL, TSPL } from '@psdk/tspl';
 import { ConnectedDevice, FakeConnectedDevice, Lifecycle } from '@psdk/frame-father';
+import CommonUtil from '../common/CommonUtil';
+import { CPCL, GenericCPCL } from '@psdk/cpcl';
+import { ESC } from '@psdk/esc/build/impls/esc';
+import { GenericESC } from '@psdk/esc';
+import { OhosBluetoothClassic } from '@psdk/ohos-bluetooth-classic/build/provider';
+
 let tspl: GenericTSPL;
+let cpcl: GenericCPCL;
+let esc: GenericESC
 @Entry
 @Component
 struct Index {
   @State discoveredDevices: DeviceData[] = [];
   @State connectionState: string = '未连接';
   private clientNumber = -1;
-  private cmd = 'tspl';
-  private settings: RenderingContextSettings = new RenderingContextSettings(true)
-  private context: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.settings)
-  private offCanvas: OffscreenCanvas = new OffscreenCanvas(200, 300)
-  private img:ImageBitmap = new ImageBitmap("common/images/dog.jpg")
+  private cmdType = 'tspl';
+  private bluetooth = new OhosBluetoothClassic({
+    allowNoName: false
+  });
+
   aboutToAppear() {
     console.info('IndexComponent aboutToAppear');
     try {
@@ -96,6 +102,8 @@ struct Index {
           try {
             const lifecycle = new Lifecycle(new FakeConnectedDevice());
             tspl = TSPL.generic(lifecycle);
+            cpcl = CPCL.generic(lifecycle);
+            esc = ESC.generic(lifecycle);
             connection.stopBluetoothDiscovery();
             socket.on('sppRead', number, this.dataRead);
           } catch (err) {
@@ -118,280 +126,30 @@ struct Index {
       });
     }
   }
-  async writeTsplModel() {
+  async onPrintTemplate() {
     try {
-      const gtspl = tspl.clear()
-        .page(new TPage({
-          width: 76,
-          height: 130
-        }))
-        .box(new TBox({
-          startX: 0,
-          startY: 1,
-          endX: 598,
-          endY: 664,
-          width: 2
-        }))
-        .line(new TLine({
-          startX: 0,
-          startY: 88,
-          endX: 598,
-          endY: 88,
-          width: 2
-        }))
-        .line(new TLine({
-          startX: 0,
-          startY: 88 + 128,
-          endX: 598,
-          endY: 88 + 128,
-          width: 2
-        }))
-        .line(new TLine({
-          startX: 0,
-          startY: 88 + 128 + 80,
-          endX: 598,
-          endY: 88 + 128 + 80,
-          width: 2
-        }))
-        .line(new TLine({
-          startX: 0,
-          startY: 88 + 128 + 80 + 144,
-          endX: 598 - 56 - 16,
-          endY: 88 + 128 + 80 + 144,
-          width: 2
-        }))
-        .line(new TLine({
-          startX: 0,
-          startY: 88 + 128 + 80 + 144 + 128,
-          endX: 598 - 56 - 16,
-          endY: 88 + 128 + 80 + 144 + 128,
-          width: 2
-        }))
-        .line(new TLine({
-          startX: 52,
-          startY: 88 + 128 + 80,
-          endX: 52,
-          endY: 88 + 128 + 80 + 144 + 128,
-          width: 2
-        }))
-        .line(new TLine({
-          startX: 598 - 56 - 16,
-          startY: 88 + 128 + 80,
-          endX: 598 - 56 - 16,
-          endY: 664,
-          width: 2
-        }))
-        .bar(new TBar({
-          x: 120,
-          y: 88 + 12,
-          width: 500,
-          height: 2,
-          line: TTLine.DOTTED_LINE,
-        }))
-        .text(new TText({
-          x: 120 + 12,
-          y: 88 + 20 + 76,
-          content: "1234567890",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 12,
-          y: 88 + 128 + 80 + 32,
-          content: "",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 12,
-          y: 88 + 128 + 80 + 96,
-          content: "件",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 12,
-          y: 88 + 128 + 80 + 144 + 32,
-          content: "发",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 12,
-          y: 88 + 128 + 80 + 144 + 80,
-          content: "件",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 52 + 20,
-          y: 88 + 128 + 80 + 144 + 128 + 16,
-          content: "签收人/签收时间",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 430,
-          y: 88 + 128 + 80 + 144 + 128 + 36,
-          content: "月",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 490,
-          y: 88 + 128 + 80 + 144 + 128 + 36,
-          content: "日",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 52 + 20,
-          y: 88 + 128 + 80 + 24,
-          content: "收姓名" + " " + "13777777777",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 52 + 20,
-          y: 88 + 128 + 80 + 24 + 32,
-          content: "南京市浦口区威尼斯水城七街区七街区",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 52 + 20,
-          y: 88 + 128 + 80 + 144 + 24,
-          content: "名字" + " " + "13777777777",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 52 + 20,
-          y: 88 + 128 + 80 + 144 + 24 + 32,
-          content: "南京市浦口区威尼斯水城七街区七街区",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 598 - 56 - 5,
-          y: 88 + 128 + 80 + 104,
-          content: "派",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 598 - 56 - 5,
-          y: 88 + 128 + 80 + 160,
-          content: "件",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 598 - 56 - 5,
-          y: 88 + 128 + 80 + 208,
-          content: "联",
-          font: TFont.TSS24
-        }))
-        .box(new TBox({
-          startX: 0,
-          startY: 1,
-          endX: 598,
-          endY: 968,
-          width: 2
-        }))
-        .line(new TLine({
-          startX: 0,
-          startY: 696 + 80,
-          endX: 598,
-          endY: 696 + 80,
-          width: 2
-        }))
-        .line(new TLine({
-          startX: 0,
-          startY: 696 + 80 + 136,
-          endX: 598 - 56 - 16,
-          endY: 696 + 80 + 136,
-          width: 2
-        }))
-        .line(new TLine({
-          startX: 52,
-          startY: 80,
-          endX: 52,
-          endY: 696 + 80 + 136,
-          width: 2
-        }))
-        .line(new TLine({
-          startX: 598 - 56 - 16,
-          startY: 80,
-          endX: 598 - 56 - 16,
-          endY: 968,
-          width: 2
-        }))
-        .barcode(new TBarCode({
-          x: 320,
-          y: 696 - 4,
-          cellWidth: 2,
-          height: 56,
-          content: "1234567890",
-          rotation: TRotation.ROTATION_0,
-          codeType: TCodeType.CODE_128
-        }))
-        .text(new TText({
-          x: 320 + 8,
-          y: 696 + 54,
-          content: "1234567890",
-          font: TFont.TSS16
-        }))
-        .text(new TText({
-          x: 12,
-          y: 696 + 80 + 35,
-          content: "发",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 12,
-          y: 696 + 80 + 84,
-          content: "件",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 52 + 20,
-          y: 696 + 80 + 28,
-          content: "名字" + " " + "13777777777",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 52 + 20,
-          y: 696 + 80 + 28 + 32,
-          content: "南京市浦口区威尼斯水城七街区七街区",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 598 - 56 - 5,
-          y: 696 + 80 + 50,
-          content: "客",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 598 - 56 - 5,
-          y: 696 + 80 + 82,
-          content: "户",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 598 - 56 - 5,
-          y: 696 + 80 + 106,
-          content: "联",
-          font: TFont.TSS24
-        }))
-        .text(new TText({
-          x: 12 + 8,
-          y: 696 + 80 + 136 + 22 - 5,
-          content: "物品：" + "几个快递" + " " + "12kg",
-          font: TFont.TSS24
-        }))
-        .box(new TBox({
-          startX: 598 - 56 - 16 - 120,
-          startY: 696 + 80 + 136 + 11,
-          endX: 598 - 56 - 16 - 16,
-          endY: 968 - 11,
-          width: 2
-        }))
-        .text(new TText({
-          x: 598 - 56 - 16 - 120 + 17,
-          y: 696 + 80 + 136 + 11 + 6,
-          content: "已验视",
-          font: TFont.TSS24
-        }))
-        .print();
-      console.log(gtspl.command().string());
-      const binary = gtspl.command().binary();
+      let binary: Uint8Array = new Uint8Array();
+      switch (this.cmdType) {
+        case 'tspl':
+          const gtspl = CommonUtil.tsplTemplateCmd(tspl);
+          console.log(gtspl.command().string());
+          binary = gtspl.command().binary();
+          break;
+        case 'cpcl':
+          const gcpcl = CommonUtil.cpclTemplateCmd(cpcl);
+          console.log(gcpcl.command().string());
+          binary = gcpcl.command().binary();
+          break;
+        case 'esc':
+          promptAction.showToast({
+            message: 'esc 仅支持图片打印！！！',
+            duration: 2000
+          });
+          return;
+        default:
+          break;
+      }
+
       socket.sppWrite(this.clientNumber, binary.buffer);
       promptAction.showToast({
         message: '打印成功',
@@ -405,6 +163,44 @@ struct Index {
       });
     }
   }
+
+  onPrintImage() {
+    try {
+      let binary: Uint8Array = new Uint8Array();
+      switch (this.cmdType) {
+        case 'tspl':
+          const gtspl = CommonUtil.tsplImageCmd(tspl);
+          console.log(gtspl.command().string());
+          binary = gtspl.command().binary();
+          break;
+        case 'cpcl':
+          const gcpcl = CommonUtil.cpclImageCmd(cpcl);
+          console.log(gcpcl.command().string());
+          binary = gcpcl.command().binary();
+          break;
+        case 'esc':
+          const gesc = CommonUtil.escImageCmd(esc);
+          console.log(gesc.command().string());
+          binary = gesc.command().binary();
+          break;
+        default:
+          break;
+      }
+
+      socket.sppWrite(this.clientNumber, binary.buffer);
+      promptAction.showToast({
+        message: '打印成功',
+        duration: 2000
+      });
+    } catch (e) {
+      console.error(e);
+      promptAction.showToast({
+        message: '打印失败',
+        duration: 2000
+      });
+    }
+  }
+
   onWrite() {
     try {
       let printString = 'SIZE 100 mm,175 mm\r\n' +
@@ -466,17 +262,7 @@ struct Index {
       console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
     }
   }
-  onPrintImage() {
-    try {
-      let offContext = this.offCanvas.getContext("2d", this.settings)
-      offContext.drawImage(this.img,0,0,384,582);
-      this.context.drawImage(this.img,0,0,384,582)
-      let imageData = this.context.getImageData(0,0,384,582)
-      this.context.putImageData(imageData,150,150)
-    } catch (err) {
-      console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
-    }
-  }
+
   build() {
     Stack() {
       Row() {
@@ -494,7 +280,7 @@ struct Index {
                 .width(25)
                 .onChange((isChecked: boolean) => {
                   if (isChecked) {
-                    this.cmd = 'tspl';
+                    this.cmdType = 'tspl';
                   }
                 })
             }
@@ -509,7 +295,7 @@ struct Index {
                 .width(25)
                 .onChange((isChecked: boolean) => {
                   if (isChecked) {
-                    this.cmd = 'cpcl';
+                    this.cmdType = 'cpcl';
                   }
                 })
             }
@@ -524,7 +310,7 @@ struct Index {
                 .width(25)
                 .onChange((isChecked: boolean) => {
                   if (isChecked) {
-                    this.cmd = 'esc';
+                    this.cmdType = 'esc';
                   }
                 })
             }
@@ -533,27 +319,19 @@ struct Index {
           Button('开始搜索')
             .width('90%')
             .height(40)
-            .onClick(() => {
-              this.discovery()
-            })
+            .onClick(() => this.discovery())
           Button('断开连接')
             .width('90%')
             .height(40)
-            .onClick(() => {
-              this.onDisconnect()
-            })
+            .onClick(() => this.onDisconnect())
           Button('打印模版')
             .width('90%')
             .height(40)
-            .onClick(() => {
-              this.writeTsplModel()
-            })
+            .onClick(() => this.onPrintTemplate())
           Button('打印图片')
             .width('90%')
             .height(40)
-            .onClick(() => {
-              this.discovery()
-            })
+            .onClick(() => this.onPrintImage())
           Text(this.connectionState)
             .fontColor(Color.Red)
         }

@@ -5,7 +5,9 @@ import { BusinessError } from '@ohos.base';
 import promptAction from '@ohos.promptAction';
 import {constant } from '@kit.ConnectivityKit';
 import ble from '@ohos.bluetooth.ble';
-import commonUtil from '../common/CommonUtil';
+import commonUtil, { CommonUtil } from '../common/CommonUtil';
+import { GenericTSPL } from '@psdk/tspl';
+import { GenericCPCL } from '@psdk/cpcl';
 
 let device: ble.GattClientDevice;
 let allowServiceUuid: string = '49535343-FE7D-4AE5-8FA9-9FAFD205E455';
@@ -19,7 +21,7 @@ let readCharacteristicUuid: string;
 struct Ble {
   @State discoveredDevices: DeviceData[] = [];
   @State connectionState: string = '未连接';
-  private cmd = 'tspl';
+  private cmdType = 'tspl';
   private settings: RenderingContextSettings = new RenderingContextSettings(true)
   private context: CanvasRenderingContext2D = new CanvasRenderingContext2D(this.settings)
   private offCanvas: OffscreenCanvas = new OffscreenCanvas(200, 300)
@@ -233,7 +235,7 @@ struct Ble {
                 .width(25)
                 .onChange((isChecked: boolean) => {
                   if (isChecked) {
-                    this.cmd = 'tspl';
+                    this.cmdType = 'tspl';
                   }
                 })
             }
@@ -249,7 +251,7 @@ struct Ble {
                 .width(25)
                 .onChange((isChecked: boolean) => {
                   if (isChecked) {
-                    this.cmd = 'cpcl';
+                    this.cmdType = 'cpcl';
                   }
                 })
             }
@@ -265,7 +267,7 @@ struct Ble {
                 .width(25)
                 .onChange((isChecked: boolean) => {
                   if (isChecked) {
-                    this.cmd = 'esc';
+                    this.cmdType = 'esc';
                   }
                 })
             }
