@@ -3,6 +3,7 @@ package com.example.classic_bluetooth_demo;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -11,7 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.printer.psdk.cpcl.CPCL;
+import com.example.classic_bluetooth_demo.util.PrintUtil;
 import com.printer.psdk.cpcl.GenericCPCL;
 import com.printer.psdk.cpcl.args.*;
 import com.printer.psdk.cpcl.mark.CodeRotation;
@@ -24,7 +25,6 @@ import com.printer.psdk.device.bluetooth.Bluetooth;
 import com.printer.psdk.device.bluetooth.ConnectListener;
 import com.printer.psdk.device.bluetooth.Connection;
 import com.printer.psdk.frame.father.PSDK;
-import com.printer.psdk.frame.father.args.common.Raw;
 import com.printer.psdk.frame.logger.PLog;
 import com.printer.psdk.imagep.android.AndroidSourceImage;
 
@@ -35,8 +35,7 @@ public class CPCLActivity extends Activity {
   private Connection connection;
   private TextView tv_connect_status;
   private EditText etMsg;
-  private Button btnText, btnBitmap, btnStatus, btnBarCode, btnQRCode, btnModel;
-  private GenericCPCL cpcl;
+  private Button btnText, btnBitmap, btnStatus, btnBarCode, btnQRCode, btnModel, btnPDF;
   private EditText sampleEdit;
   private int sampleNumber;
   private boolean isSending = false;
@@ -53,6 +52,7 @@ public class CPCLActivity extends Activity {
     btnBarCode = findViewById(R.id.btnBarCode);
     btnQRCode = findViewById(R.id.btnQRCode);
     btnModel = findViewById(R.id.btnModel);
+    btnPDF = findViewById(R.id.btnPDF);
     sampleEdit = (EditText) findViewById(R.id.sampleEdit);
     sampleEdit.setText("1");
     BluetoothDevice device = getIntent().getParcelableExtra("device");
@@ -60,7 +60,7 @@ public class CPCLActivity extends Activity {
     connection = Bluetooth.getInstance().createConnectionClassic(device, new ConnectListener() {
       @Override
       public void onConnectSuccess(ConnectedDevice connectedDevice) {
-        cpcl = CPCL.generic(connectedDevice);
+        PrintUtil.getInstance().init(connectedDevice);
       }
 
       @Override
@@ -120,7 +120,7 @@ public class CPCLActivity extends Activity {
 
       @Override
       public void onClick(View v) {
-        GenericCPCL _gcpcl = cpcl.page(CPage.builder().width(100).height(100).build())
+        GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().page(CPage.builder().width(100).height(100).build())
           .text(CText.builder().font(Font.TSS32).content(etMsg.getText().toString()).build())
           .print(CPrint.builder().build());
         String result = safeWriteAndRead(_gcpcl);
@@ -132,7 +132,7 @@ public class CPCLActivity extends Activity {
       @Override
       public void onClick(View v) {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.raw.logo);
-        GenericCPCL _gcpcl = cpcl.page(CPage.builder().width(608).height(600).build())
+        GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().page(CPage.builder().width(608).height(600).build())
           .image(CImage.builder()
             .image(new AndroidSourceImage(bitmap))
 //            .compress(true)//支持压缩的打印机可以走压缩
@@ -148,7 +148,7 @@ public class CPCLActivity extends Activity {
     btnStatus.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        GenericCPCL _gcpcl = cpcl.status();
+        GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().status();
         byte[] result = safeWriteAndReadByte(_gcpcl);
         show(printerStatus(result));
       }
@@ -157,7 +157,7 @@ public class CPCLActivity extends Activity {
     btnBarCode.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        GenericCPCL _gcpcl = cpcl.page(CPage.builder().width(500).height(100).build())
+        GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().page(CPage.builder().width(500).height(100).build())
           .bar(CBar.builder().x(10).y(10).content("1236549879").height(50).lineWidth(2).build())
           .print(CPrint.builder().build());
         String result = safeWriteAndRead(_gcpcl);
@@ -167,7 +167,7 @@ public class CPCLActivity extends Activity {
     btnQRCode.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        GenericCPCL _gcpcl = cpcl.page(CPage.builder().width(100).height(100).build())
+        GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().page(CPage.builder().width(100).height(100).build())
           .qrcode(CQRCode.builder().x(10).y(10).content("1236549879").width(100).build())
           .print(CPrint.builder().build());
         String result = safeWriteAndRead(_gcpcl);
@@ -210,6 +210,13 @@ public class CPCLActivity extends Activity {
 
       }
     });
+    btnPDF.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        Intent intent = new Intent(CPCLActivity.this, PDFActivity.class);
+        startActivity(intent);
+      }
+    });
   }
 
   /**
@@ -219,7 +226,7 @@ public class CPCLActivity extends Activity {
    * 4.需要整个页面旋转的时候.print(CPrint.builder().mode(CPrint.Mode.MIRROR).build());
    */
   private void printNow() {
-    GenericCPCL _gcpcl = cpcl.page(CPage.builder().width(608).height(1040).copies(sampleNumber).build())
+    GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().page(CPage.builder().width(608).height(1040).copies(sampleNumber).build())
       .box(CBox.builder().topLeftX(0).topLeftY(1).bottomRightX(598).bottomRightY(664).lineWidth(2).build())
       .line(CLine.builder().startX(0).startY(88).endX(598).endY(88).lineWidth(2).build())
       .line(CLine.builder().startX(0).startY(88 + 128).endX(598).endY(88 + 128).lineWidth(2).build())

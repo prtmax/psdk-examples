@@ -20,16 +20,57 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:checked="true"
-        android:text="tspl" />
+        android:text="tspl"/>
 
       <RadioButton
         android:id="@+id/radioButtonOption2"
         android:layout_margin="10dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="cpcl" />
+        android:text="cpcl"/>
+
+      <RadioButton
+        android:id="@+id/radioButtonOption3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="esc"/>
 
     </RadioGroup>
+
+    <LinearLayout
+      android:gravity="center_vertical"
+      android:orientation="horizontal"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="10dp">
+      <TextView
+        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="纸张大小:"
+        android:layout_marginStart="10dp"/>
+      <EditText android:textSize="14sp"
+                android:textColor="@android:color/black"
+                android:id="@+id/et_width"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="100"
+                android:hint="宽度(mm)"
+                android:ems="10"
+                android:inputType="number"
+                android:layout_marginStart="10dp"/>
+      <EditText android:textSize="14sp"
+                android:textColor="@android:color/black"
+                android:id="@+id/et_height"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="150"
+                android:hint="高度(mm)"
+                android:ems="10"
+                android:inputType="number"
+                android:layout_marginStart="10dp"/>
+    </LinearLayout>
     <LinearLayout android:layout_width="match_parent"
                   android:layout_height="wrap_content"
                   android:layout_marginLeft="10dp"
@@ -39,7 +80,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:checked="true"
+        android:checked="false"
         android:text="压缩">
 
       </CheckBox>
@@ -48,7 +89,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:checked="true"
+        android:checked="false"
         android:text="切刀">
 
       </CheckBox>
@@ -57,7 +98,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
-        android:checked="true"
+        android:checked="false"
         android:text="定位">
 
       </CheckBox>
@@ -72,35 +113,24 @@
       android:text="打开USB"/>
 
     <Button
-      android:id="@+id/print1"
+      android:id="@+id/printImage"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="5dp"
-      android:text="打印1"/>
+      android:text="打印图片"/>
     <Button
-      android:id="@+id/print2"
+      android:id="@+id/printModel"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="5dp"
-      android:text="打印2"/>
+      android:text="打印模板"/>
     <Button
-      android:id="@+id/print3"
+      android:id="@+id/printPdf"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
       android:layout_marginTop="5dp"
-      android:text="打印3"/>
-    <Button
-      android:id="@+id/print4"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="5dp"
-      android:text="打印4"/>
-    <Button
-      android:id="@+id/print5"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:layout_marginTop="5dp"
-      android:text="打印5"/>
+      android:text="打印pdf"/>
+
 
     <Button
       android:id="@+id/status"

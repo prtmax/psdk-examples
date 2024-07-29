@@ -3,15 +3,16 @@ package com.example.classic_bluetooth_demo;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.example.classic_bluetooth_demo.util.PrintUtil;
 import com.printer.psdk.device.adapter.ConnectedDevice;
 import com.printer.psdk.device.adapter.ReadOptions;
 import com.printer.psdk.device.adapter.types.WroteReporter;
@@ -21,7 +22,6 @@ import com.printer.psdk.device.bluetooth.Connection;
 import com.printer.psdk.frame.father.PSDK;
 import com.printer.psdk.imagep.android.AndroidSourceImage;
 import com.printer.psdk.tspl.GenericTSPL;
-import com.printer.psdk.tspl.TSPL;
 import com.printer.psdk.tspl.args.*;
 import com.printer.psdk.tspl.mark.CodeType;
 import com.printer.psdk.tspl.mark.CorrectLevel;
@@ -34,8 +34,7 @@ public class TSPLActivity extends Activity {
   private Connection connection;
   private TextView tv_connect_status;
   private EditText etMsg, etDensity;
-  private Button btnText, btnDensity, btnSN, btnBitmap, btnVer, btnStatus, btnBarCode, btnQRCode, btnModel;
-  private GenericTSPL tspl;
+  private Button btnText, btnDensity, btnSN, btnBitmap, btnVer, btnStatus, btnBarCode, btnQRCode, btnModel, btnPDF;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -53,12 +52,13 @@ public class TSPLActivity extends Activity {
     btnBarCode = findViewById(R.id.btnBarCode);
     btnQRCode = findViewById(R.id.btnQRCode);
     btnModel = findViewById(R.id.btnModel);
+    btnPDF = findViewById(R.id.btnPDF);
     BluetoothDevice device = getIntent().getParcelableExtra("device");
 
     connection = Bluetooth.getInstance().createConnectionClassic(device, new ConnectListener() {
       @Override
       public void onConnectSuccess(ConnectedDevice connectedDevice) {
-        tspl = TSPL.generic(connectedDevice);
+        PrintUtil.getInstance().init(connectedDevice);
       }
 
       @Override
@@ -119,7 +119,7 @@ public class TSPLActivity extends Activity {
       @Override
       public void onClick(View v) {
 
-        GenericTSPL _gtspl = tspl.page(TPage.builder().width(100).height(100).build())
+        GenericTSPL _gtspl = PrintUtil.getInstance().tspl().page(TPage.builder().width(100).height(100).build())
           .direction(
             TDirection.builder()
               .direction(TDirection.Direction.UP_OUT)
@@ -140,7 +140,7 @@ public class TSPLActivity extends Activity {
       @Override
       public void onClick(View v) {
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
-        GenericTSPL _gtspl = tspl.page(TPage.builder().width(100).height(100).build())
+        GenericTSPL _gtspl = PrintUtil.getInstance().tspl().page(TPage.builder().width(100).height(100).build())
           .direction(
             TDirection.builder()
               .direction(TDirection.Direction.UP_OUT)
@@ -164,14 +164,14 @@ public class TSPLActivity extends Activity {
     btnSN.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        GenericTSPL _gtspl = tspl.sn();
+        GenericTSPL _gtspl = PrintUtil.getInstance().tspl().sn();
         String result = safeWriteAndRead(_gtspl);
       }
     });
     btnVer.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        GenericTSPL _gtspl = tspl.version();
+        GenericTSPL _gtspl = PrintUtil.getInstance().tspl().version();
         String result = safeWriteAndRead(_gtspl);
         show(result);
       }
@@ -179,7 +179,7 @@ public class TSPLActivity extends Activity {
     btnStatus.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        GenericTSPL _gtspl = tspl.state();
+        GenericTSPL _gtspl = PrintUtil.getInstance().tspl().state();
         String result = safeWriteAndRead(_gtspl);
         show(result);
       }
@@ -187,7 +187,7 @@ public class TSPLActivity extends Activity {
     btnDensity.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        GenericTSPL _gtspl = tspl.density(Integer.parseInt(etDensity.getText().toString()));
+        GenericTSPL _gtspl = PrintUtil.getInstance().tspl().density(Integer.parseInt(etDensity.getText().toString()));
         String result = safeWriteAndRead(_gtspl);
         show(result);
       }
@@ -195,7 +195,7 @@ public class TSPLActivity extends Activity {
     btnBarCode.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        GenericTSPL _gtspl = tspl.page(TPage.builder().width(100).height(100).build())
+        GenericTSPL _gtspl = PrintUtil.getInstance().tspl().page(TPage.builder().width(100).height(100).build())
           .direction(
             TDirection.builder()
               .direction(TDirection.Direction.UP_OUT)
@@ -214,7 +214,7 @@ public class TSPLActivity extends Activity {
     btnQRCode.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        GenericTSPL _gtspl = tspl.page(TPage.builder().width(100).height(100).build())
+        GenericTSPL _gtspl = PrintUtil.getInstance().tspl().page(TPage.builder().width(100).height(100).build())
           .direction(
             TDirection.builder()
               .direction(TDirection.Direction.UP_OUT)
@@ -234,7 +234,7 @@ public class TSPLActivity extends Activity {
       @Override
       public void onClick(View v) {
         //page宽高的单位是mm 下面坐标的xy单位是dot 1mm=8dot(分辨率203) 1mm=12dot(分辨率300) 开发者根据自己使用的打印机来适配
-        GenericTSPL _gtspl = tspl.page(TPage.builder().width(100).height(180).build())
+        GenericTSPL _gtspl = PrintUtil.getInstance().tspl().page(TPage.builder().width(100).height(180).build())
           .label()//标签纸打印 三种纸调用的时候根据打印机实际纸张选一种就可以了
 //          .bline()//黑标纸打印
 //          .continuous()//连续纸打印
@@ -273,6 +273,13 @@ public class TSPLActivity extends Activity {
           .print(1);
         String result = safeWriteAndRead(_gtspl);
         show(result);
+      }
+    });
+    btnPDF.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        Intent intent = new Intent(TSPLActivity.this, PDFActivity.class);
+        startActivity(intent);
       }
     });
   }
