@@ -1,14 +1,17 @@
 import usb from '@ohos.usbManager';
 import { BusinessError } from '@ohos.base';
+
 let currentDevice: usb.USBDevice;
-let mUsbInterface: usb.USBInterface| null;
-let mUsbEndpointOut: usb.USBEndpoint| null;
-let mUsbEndpointIn: usb.USBEndpoint| null;
-let mUsbDeviceConnection: usb.USBDevicePipe| null;
+let mUsbInterface: usb.USBInterface | null;
+let mUsbEndpointOut: usb.USBEndpoint | null;
+let mUsbEndpointIn: usb.USBEndpoint | null;
+let mUsbDeviceConnection: usb.USBDevicePipe | null;
+
 export class UsbUtil {
   private VIDQR: number = 0x09C5;
   private VIDMY: number = 0x09C6;
   private isOpen: boolean = false;
+
   /**
    * 打开USB端口
    */
@@ -31,6 +34,7 @@ export class UsbUtil {
     }
     return false;
   }
+
   initCommunication(device: usb.USBDevice): boolean {
     let interfaceCount = device.configs[0].interfaces.length;
     for (let interfaceIndex = 0; interfaceIndex < interfaceCount; interfaceIndex++) {
@@ -66,6 +70,7 @@ export class UsbUtil {
     }
     return false;
   }
+
   /**
    * 获得usb打开状态
    *
@@ -74,6 +79,7 @@ export class UsbUtil {
   isOpened(): boolean {
     return this.isOpen;
   }
+
   /**
    * 关闭usb
    */

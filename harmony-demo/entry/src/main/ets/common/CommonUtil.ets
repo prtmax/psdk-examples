@@ -1,9 +1,21 @@
-import { GenericTSPL, TBar, TBarCode, TBox,
+import {
+  GenericTSPL,
+  TBar,
+  TBarCode,
+  TBox,
   TCodeType,
   TFont,
   TImage,
-  TLine, TPage, TRotation, TSPL, TText, TTLine } from '@psdk/tspl';
-import { GenericCPCL, CBar,
+  TLine,
+  TPage,
+  TRotation,
+  TSPL,
+  TText,
+  TTLine
+} from '@psdk/tspl';
+import {
+  GenericCPCL,
+  CBar,
   CBox,
   CForm,
   CImage,
@@ -16,12 +28,26 @@ import { GenericCPCL, CBar,
   CBold,
   CRotation,
   CInverse,
-  CMag, } from '@psdk/cpcl';
+  CMag,
+} from '@psdk/cpcl';
 
 import { LengthMetricsUnit } from '@ohos.arkui.node'
 import { EImage, GenericESC } from '@psdk/esc';
+import { promptAction } from '@kit.ArkUI';
+import { PrinterUtil } from './PrinterUtil';
 
 export class CommonUtil {
+  showMessage(text: string) {
+    try {
+      promptAction.showToast({
+        message: text,
+        duration: 2000,
+      });
+    } catch (error) {
+      console.error(`showToast args error code is ${error.code}, message is ${error.message}`);
+    }
+  }
+
   /**
    * Split array
    *
@@ -53,8 +79,8 @@ export class CommonUtil {
     return rets;
   }
 
-  tsplTemplateCmd(tspl: GenericTSPL): GenericTSPL  {
-    return tspl.clear()
+  tsplTemplateCmd(): GenericTSPL {
+    return PrinterUtil.getInstance().tspl().clear()
       .page(new TPage({
         width: 76,
         height: 130
@@ -326,8 +352,8 @@ export class CommonUtil {
       .print();
   }
 
-  tsplImageCmd(tspl: GenericTSPL): GenericTSPL {
-    return tspl.clear()
+  tsplImageCmd(): GenericTSPL {
+    return PrinterUtil.getInstance().tspl().clear()
       .page(new TPage({
         width: 76,
         height: 130
@@ -344,8 +370,8 @@ export class CommonUtil {
       .print();
   }
 
-  cpclTemplateCmd(cpcl: GenericCPCL): GenericCPCL {
-    return cpcl
+  cpclTemplateCmd(): GenericCPCL {
+    return PrinterUtil.getInstance().cpcl()
       .clear()
       .page(new CPage({
         width: 608,
@@ -613,19 +639,19 @@ export class CommonUtil {
       }))
       .mag(new CMag({
         font: CFont.TSS24_MAX2
-      })) //字号有用到MAX的或者使用MAX后要恢复成没有MAX的需要加个mag指令
+      }))//字号有用到MAX的或者使用MAX后要恢复成没有MAX的需要加个mag指令
       .text(new CText({
         x: 598 - 56 - 16 - 120 + 17,
         y: 696 + 80 + 136 + 11 + 6,
         content: "已验视",
         font: CFont.TSS24_MAX2
       }))
-      .form(new CForm()) //标签纸需要加定位指令
+      .form(new CForm())//标签纸需要加定位指令
       .print()
   }
 
-  cpclImageCmd(cpcl: GenericCPCL): GenericCPCL {
-    return cpcl.clear()
+  cpclImageCmd(): GenericCPCL {
+    return PrinterUtil.getInstance().cpcl().clear()
       .page(new CPage({
         width: 608,
         height: 1040
@@ -641,8 +667,8 @@ export class CommonUtil {
       .print();
   }
 
-  escImageCmd(esc: GenericESC): GenericESC {
-    return esc.clear()
+  escImageCmd(): GenericESC {
+    return PrinterUtil.getInstance().esc().clear()
       .enable()
       .wakeup()
       .image(
@@ -656,7 +682,7 @@ export class CommonUtil {
       .stopJob();
   }
 
-  _createCanvas(imgPath: string, width: number, height: number, ): OffscreenCanvas {
+  _createCanvas(imgPath: string, width: number, height: number,): OffscreenCanvas {
     const settings: RenderingContextSettings = new RenderingContextSettings(true)
     const offCanvas: OffscreenCanvas = new OffscreenCanvas(width, height, LengthMetricsUnit.PX);
     const img: ImageBitmap = new ImageBitmap(imgPath)

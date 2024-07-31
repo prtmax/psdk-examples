@@ -45,6 +45,17 @@
           ],
           "when": "always"
         }
+      },
+      {
+        //允许应用网络连接
+        "name": "ohos.permission.INTERNET",
+        "reason": "$string:app_name",
+        "usedScene": {
+          "abilities": [
+            "EntryAbility"
+          ],
+          "when": "always"
+        }
       }
     ]
   }

@@ -3,8 +3,8 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { window } from '@kit.ArkUI';
 import PermissionsUtil from '../common/PermissionsUtil';
 
-const permissions = ["ohos.permission.ACCESS_BLUETOOTH"]
-const permissions1 :Permissions[] = ['ohos.permission.ACCESS_BLUETOOTH'];
+const permissions = ['ohos.permission.ACCESS_BLUETOOTH','ohos.permission.INTERNET']
+const permissions1 :Permissions[] = ['ohos.permission.ACCESS_BLUETOOTH','ohos.permission.INTERNET'];
 
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
@@ -18,7 +18,7 @@ export default class EntryAbility extends UIAbility {
   onWindowStageCreate(windowStage: window.WindowStage): void {
     // Main window is created, set main page for this ability
     hilog.info(0x0000, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
-    PermissionsUtil.checkPermissions(permissions1,()=>{},()=>{PermissionsUtil.requestPermissions(this.context, permissions)})
+    PermissionsUtil.requestPermissions(this.context, permissions);
     windowStage.loadContent('pages/MainPage', (err) => {
       if (err.code) {
         hilog.error(0x0000, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err) ?? '');

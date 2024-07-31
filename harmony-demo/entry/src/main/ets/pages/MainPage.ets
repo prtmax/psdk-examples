@@ -25,6 +25,12 @@ struct MainPage {
       })
         .height(50)
         .width('90%')
+
+      Button('以太网').onClick(() => {
+        router.pushUrl({ url: "pages/Wifi" })
+      })
+        .height(50)
+        .width('90%')
     }
     .height('100%')
     .width('100%')

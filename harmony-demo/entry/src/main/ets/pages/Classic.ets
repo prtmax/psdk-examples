@@ -1,4 +1,3 @@
-import util from '@ohos.util';
 import DevicesPage from '../common/DevicesPage';
 import DeviceData from '../model/DeviceData';
 import { BusinessError } from '@ohos.base';
@@ -7,17 +6,11 @@ import socket from '@ohos.bluetooth.socket';
 import promptAction from '@ohos.promptAction';
 import a2dp from '@ohos.bluetooth.a2dp';
 import { baseProfile } from '@kit.ConnectivityKit';
-import { GenericTSPL, TSPL } from '@psdk/tspl';
-import { ConnectedDevice, FakeConnectedDevice, Lifecycle } from '@psdk/frame-father';
+import { ConnectedDevice, FakeConnectedDevice} from '@psdk/frame-father';
 import CommonUtil from '../common/CommonUtil';
-import { CPCL, GenericCPCL } from '@psdk/cpcl';
-import { ESC } from '@psdk/esc/build/impls/esc';
-import { GenericESC } from '@psdk/esc';
 import { OhosBluetoothClassic } from '@psdk/ohos-bluetooth-classic/build/provider';
+import { PrinterUtil } from '../common/PrinterUtil';
 
-let tspl: GenericTSPL;
-let cpcl: GenericCPCL;
-let esc: GenericESC
 @Entry
 @Component
 struct Index {
@@ -25,11 +18,21 @@ struct Index {
   @State connectionState: string = '未连接';
   private clientNumber = -1;
   private cmdType = 'tspl';
-  private bluetooth = new OhosBluetoothClassic({
+  private ohosBluetoothClassic = new OhosBluetoothClassic({
     allowNoName: false
   });
 
   aboutToAppear() {
+    this.ohosBluetoothClassic.discovered((devices) => {
+      devices.forEach(device => {
+        const isDuplicate = this.discoveredDevices.find(item => item.address === device.deviceId);
+        if (isDuplicate) {
+          return;
+        }
+        this.discoveredDevices.push(new DeviceData(device.name, device.deviceId));
+      });
+      return Promise.resolve();
+    });
     console.info('IndexComponent aboutToAppear');
     try {
       let a2dpSrc = a2dp.createA2dpSrcProfile();
@@ -45,11 +48,12 @@ struct Index {
     console.info('IndexComponent aboutToDisappear');
   }
 
-  discovery() {
+  async discovery() {
     this.discoveredDevices = [];
     try {
-      connection.on('bluetoothDeviceFind', this.onReceiveEvent);
-      connection.startBluetoothDiscovery();
+      // connection.on('bluetoothDeviceFind', this.onReceiveEvent);
+      // connection.startBluetoothDiscovery();
+     await this.ohosBluetoothClassic.startDiscovery();
     } catch (err) {
       console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
     }
@@ -100,10 +104,7 @@ struct Index {
           // 获取的clientNumber用作客户端后续读/写操作socket的id。
           this.clientNumber = number;
           try {
-            const lifecycle = new Lifecycle(new FakeConnectedDevice());
-            tspl = TSPL.generic(lifecycle);
-            cpcl = CPCL.generic(lifecycle);
-            esc = ESC.generic(lifecycle);
+            PrinterUtil.getInstance().init(new FakeConnectedDevice());
             connection.stopBluetoothDiscovery();
             socket.on('sppRead', number, this.dataRead);
           } catch (err) {
@@ -131,12 +132,12 @@ struct Index {
       let binary: Uint8Array = new Uint8Array();
       switch (this.cmdType) {
         case 'tspl':
-          const gtspl = CommonUtil.tsplTemplateCmd(tspl);
+          const gtspl = CommonUtil.tsplTemplateCmd();
           console.log(gtspl.command().string());
           binary = gtspl.command().binary();
           break;
         case 'cpcl':
-          const gcpcl = CommonUtil.cpclTemplateCmd(cpcl);
+          const gcpcl = CommonUtil.cpclTemplateCmd();
           console.log(gcpcl.command().string());
           binary = gcpcl.command().binary();
           break;
@@ -169,17 +170,17 @@ struct Index {
       let binary: Uint8Array = new Uint8Array();
       switch (this.cmdType) {
         case 'tspl':
-          const gtspl = CommonUtil.tsplImageCmd(tspl);
+          const gtspl = CommonUtil.tsplImageCmd();
           console.log(gtspl.command().string());
           binary = gtspl.command().binary();
           break;
         case 'cpcl':
-          const gcpcl = CommonUtil.cpclImageCmd(cpcl);
+          const gcpcl = CommonUtil.cpclImageCmd();
           console.log(gcpcl.command().string());
           binary = gcpcl.command().binary();
           break;
         case 'esc':
-          const gesc = CommonUtil.escImageCmd(esc);
+          const gesc = CommonUtil.escImageCmd();
           console.log(gesc.command().string());
           binary = gesc.command().binary();
           break;
@@ -194,59 +195,6 @@ struct Index {
       });
     } catch (e) {
       console.error(e);
-      promptAction.showToast({
-        message: '打印失败',
-        duration: 2000
-      });
-    }
-  }
-
-  onWrite() {
-    try {
-      let printString = 'SIZE 100 mm,175 mm\r\n' +
-        'DIRECTION 0,0\r\n' +
-        'SET CUTTER 1\r\n' +
-        'SET GAP ON\r\n' +
-        'SPEED 6\r\n' +
-        'DENSITY 12\r\n' +
-        'CLS\r\n' +
-        'TEXT 20,10,"TSS24.BF2",0,2,2,"测试啊"\r\n' +
-        'BAR 300,10,4,90,0\r\n' +
-        'LINE 320,420,600,700,5\r\n' +
-        'LINE 320,780,600,780,8,M3\r\n' +
-        'TEXTBOX 30,800,"TSS24.BF2",0,1,1,700,L24,B1,"万琛电子根据物流行业对电子面单打印机的需求，推出全新的电子面单打印机—启锐电子面单打印机，针对物流行业对电子面单的高标准，该机型做了大量的调整和创新，推出了现行同规格电子面单打印机没有的全新功能，同时也对现有打印机存在的问题进行了转向改进。"\r\n' +
-        'BAR 30,100,740,4,0\r\n' +
-        'BAR 30,880,740,4,0\r\n' +
-        'BAR 30,1300,740,4,0\r\n' +
-        'TEXT 400,25,"TSS24.BF2",0,3,3,"上海浦东"\r\n' +
-        'TEXT 30,120,"TSS24.BF2",0,1,1,"发  件  人：张三 (电话 874236021)"\r\n' +
-        'TEXT 30,150,"TSS24.BF2",0,1,1,"发件人地址：广州省 深圳市 福田区 思创路123号\["]工业园\["]1栋2楼"\r\n' +
-        'TEXT 30,200,"TSS24.BF2",0,1,1,"收  件  人：李四 (电话 13899658435)"\r\n' +
-        'TEXT 30,230,"TSS24.BF2",0,1,1,"收件人地址：上海市 浦东区 太仓路司务小区9栋1105室"\r\n' +
-        'TEXT 30,700,"TSS16.BF2",0,1,1,"各类邮件禁寄、限寄的范围，除上述规定外，还应参阅“中华人民共和国海关对"\r\n' +
-        'TEXT 30,720,"TSS16.BF2",0,1,1,"进出口邮递物品监管办法”和国家法令有关禁止和限制邮寄物品的规定，以及邮"\r\n' +
-        'TEXT 30,740,"TSS16.BF2",0,1,1,"寄物品的规定，以及邮电部转发的各国（地区）邮 政禁止和限制。"\r\n' +
-        'TEXT 30,760,"TSS16.BF2",0,1,1,"寄件人承诺不含有法律规定的违禁物品。"\r\n' +
-        'BARCODE 80,300,"128",90,2,0,4,4,"873456093465"\r\n' +
-        'BARCODE 550,910,"128",50,2,0,2,2,"873456093465"\r\n' +
-        'BOX 40,500,340,650,4,20\r\n' +
-        'TEXT 60,520,"TSS24.BF2",0,1,1,"寄件人签字："\r\n' +
-        'TEXT 130,625,"TSS24.BF2",0,1,1,"2015-10-30 09:09"\r\n' +
-        'TEXT 50,1000,"TSS32.BF2",0,2,3,E8,"广东 ---- 上海浦东"\r\n' +
-        'CIRCLE 700,1200,50,6\r\n' +
-        'TEXT 670,1170,"TSS24.BF2",0,3,3,"碎"\r\n' +
-        'QRCODE 600,620,H,4,A,0,M2,S7,"www.qrprt.com   www.qrprt.com   www.qrprt.com"\r\n' +
-        'PRINT 1,1\r\n';
-      let textEncoder = new util.TextEncoder('gbk');
-      let result = textEncoder.encodeInto(printString);
-      // let cmd = Uint8Array.from([0x10, 0xff, 0xef, 0xf2])
-      socket.sppWrite(this.clientNumber, result.buffer);
-      promptAction.showToast({
-        message: '打印成功',
-        duration: 2000
-      });
-    } catch (err) {
-      console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
       promptAction.showToast({
         message: '打印失败',
         duration: 2000

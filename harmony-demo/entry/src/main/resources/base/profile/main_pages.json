@@ -3,6 +3,7 @@
     "pages/MainPage",
     "pages/Classic",
     "pages/Usb",
-    "pages/Ble"
+    "pages/Ble",
+    "pages/Wifi"
   ]
 }

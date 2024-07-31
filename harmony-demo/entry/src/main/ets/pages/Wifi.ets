@@ -1,17 +1,18 @@
-import usbUtil from '../common/UsbUtil';
-import util from '@ohos.util';
 import promptAction from '@ohos.promptAction'
-import CommonUtil from '../common/CommonUtil';
 import { FakeConnectedDevice } from '@psdk/frame-father';
+import CommonUtil from '../common/CommonUtil';
 import { PrinterUtil } from '../common/PrinterUtil';
-
+import wifiUtil from '../common/WifiUtil';
 
 @Entry
 @Component
-struct Usb {
-  @State switchText: string = '打开USB'
+struct Wifi {
   private isOpen: boolean = false;
+  @State address: string = '192.168.1.239';
+  @State port: number = 9100;
   private cmdType = 'tspl';
+  addressController: TextInputController = new TextInputController()
+  portController: TextInputController = new TextInputController()
 
   async onPrintTemplate() {
     try {
@@ -36,9 +37,9 @@ struct Usb {
         default:
           break;
       }
-      let sendResult = await usbUtil.send_usb(binary);
+      await wifiUtil.send(binary);
       promptAction.showToast({
-        message: sendResult ? '打印成功' : '打印失败',
+        message: '打印成功',
         duration: 2000
       });
     } catch (e) {
@@ -72,9 +73,9 @@ struct Usb {
         default:
           break;
       }
-      let sendResult = await usbUtil.send_usb(binary);
+      await wifiUtil.send(binary);
       promptAction.showToast({
-        message: sendResult ? '打印成功' : '打印失败',
+        message: '打印成功',
         duration: 2000
       });
     } catch (e) {
@@ -83,17 +84,6 @@ struct Usb {
         message: '打印失败',
         duration: 2000
       });
-    }
-  }
-
-  showMessage(text: string) {
-    try {
-      promptAction.showToast({
-        message: text,
-        duration: 2000,
-      });
-    } catch (error) {
-      console.error(`showToast args error code is ${error.code}, message is ${error.message}`);
     }
   }
 
@@ -150,31 +140,61 @@ struct Usb {
               })
           }
         }.padding({ top: 30 })
+        Row(){
+          Text('IP地址')
+            .margin(10)
+          TextInput({ text: this.address, placeholder: '输入IP地址...', controller: this.addressController })
+            .caretColor(Color.Blue)
+            .width('60%')
+            .height(40)
+            .fontSize(14)
+            .fontColor(Color.Black)
+            .onChange((value: string) => {
+              this.address = value
+            })
+        }
+        Row(){
+          Text('端口号')
+            .margin(10)
+          TextInput({ text: this.port.toString(), placeholder: '输入端口号...', controller: this.portController })
+            .caretColor(Color.Blue)
+            .width('60%')
+            .height(40)
+            .fontSize(14)
+            .fontColor(Color.Black)
+            .onChange((value: string) => {
+              this.port = parseInt(value);
+            })
+        }
 
-        Button(this.switchText)
+        Button('连接端口')
+          .width('90%')
+          .height(40)
+          .onClick(async () => {
+            if (this.address === '' || this.port.toString() === '') {
+              CommonUtil.showMessage("请输入IP地址或端口号");
+            }
+            this.isOpen = await wifiUtil.openSocket(this.address,this.port);
+            if (this.isOpen) {
+              CommonUtil.showMessage("打开成功");
+              PrinterUtil.getInstance().init(new FakeConnectedDevice());
+            } else {
+              CommonUtil.showMessage("打开失败，检查地址或端口是否正确");
+            }
+          })
+        Button('关闭端口')
           .width('90%')
           .height(40)
           .onClick(() => {
-            if (this.isOpen) {
-              usbUtil.closeUsb();
-              this.switchText = "打开USB";
-              this.isOpen = false;
-            } else {
-              if (usbUtil.openUsb()) {
-                this.switchText = "关闭USB";
-                this.isOpen = true;
-                PrinterUtil.getInstance().init(new FakeConnectedDevice());
-              } else {
-                this.showMessage("打开失败，检查是否有可用的USB端口");
-              }
-            }
+            wifiUtil.closeSocket();
+            this.isOpen = false;
           })
         Button('打印模版')
           .width('90%')
           .height(40)
           .onClick(() => {
             if (!this.isOpen) {
-              this.showMessage("未打开USB端口");
+              CommonUtil.showMessage("未打开端口");
               return
             }
             this.onPrintTemplate();
@@ -184,7 +204,7 @@ struct Usb {
           .height(40)
           .onClick(() => {
             if (!this.isOpen) {
-              this.showMessage("未打开USB端口");
+              CommonUtil.showMessage("未打开端口");
               return
             }
             this.onPrintImage();
