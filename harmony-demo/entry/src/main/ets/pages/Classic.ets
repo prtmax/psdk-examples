@@ -98,12 +98,12 @@ struct Index {
         // 	enableChunkWrite: true,
         // 	chunkSize: 20
         // });//分包发送，chunkSize:分包大小
-        this.isPrint = false;
-        console.log(`${report}`);
+        console.log(`safeWrite report : ${report}`);
         promptAction.showToast({
           message: '打印成功',
-          duration: 2000
+          duration: 1000
         });
+        this.isPrint = false;
       }
     } catch (e) {
       this.isPrint = false;
@@ -115,76 +115,82 @@ struct Index {
   }
 
   async onPrintTemplate() {
-    let psdk: PSDK<GenericTSPL> |  PSDK<GenericCPCL> | PSDK<GenericESC>
-    try {
-      switch (this.cmdType) {
-        case 'tspl':
-          psdk = CommonUtil.tsplTemplateCmd();
-          await this.safeWrite(psdk);
-          console.log(psdk.command().string());
-          break;
-        case 'cpcl':
-          psdk = CommonUtil.cpclTemplateCmd();
-          await this.safeWrite(psdk);
-          console.log(psdk.command().string());
-          break;
-        case 'esc':
-          promptAction.showToast({
-            message: 'esc 仅支持图片打印！！！',
-            duration: 2000
-          });
-          return;
-        default:
-          break;
-      }
-    } catch (e) {
-      console.error(e);
+    if (this.connectedDevice === undefined) {
       promptAction.showToast({
-        message: '打印失败',
-        duration: 2000
+        message: '请连接设备！！！',
+        duration: 1000
       });
+      return;
+    }
+    let psdk: PSDK<GenericTSPL> |  PSDK<GenericCPCL> | PSDK<GenericESC>
+    switch (this.cmdType) {
+      case 'tspl':
+        psdk = CommonUtil.tsplTemplateCmd();
+        await this.safeWrite(psdk);
+        console.log(psdk.command().string());
+        break;
+      case 'cpcl':
+        psdk = CommonUtil.cpclTemplateCmd();
+        await this.safeWrite(psdk);
+        console.log(psdk.command().string());
+        break;
+      case 'esc':
+        promptAction.showToast({
+          message: 'esc 仅支持图片打印！！！',
+          duration: 2000
+        });
+        return;
+      default:
+        break;
     }
   }
 
   async onPrintImage() {
-    try {
-      let psdk: PSDK<GenericTSPL> |  PSDK<GenericCPCL> | PSDK<GenericESC>
-      switch (this.cmdType) {
-        case 'tspl':
-          psdk = CommonUtil.tsplImageCmd();
-          await this.safeWrite(psdk);
-          console.log(psdk.command().string());
-          break;
-        case 'cpcl':
-          psdk = CommonUtil.cpclImageCmd();
-          await this.safeWrite(psdk);
-          console.log(psdk.command().string());
-          break;
-        case 'esc':
-          psdk = CommonUtil.escImageCmd();
-          await this.safeWrite(psdk);
-          console.log(psdk.command().string());
-          break;
-        default:
-          break;
-      };
-    } catch (e) {
-      console.error(e);
+    if (this.connectedDevice === undefined) {
       promptAction.showToast({
-        message: '打印失败',
+        message: '请连接设备！！！',
         duration: 2000
       });
+      return;
     }
+    let psdk: PSDK<GenericTSPL> |  PSDK<GenericCPCL> | PSDK<GenericESC>
+    switch (this.cmdType) {
+      case 'tspl':
+        psdk = CommonUtil.tsplImageCmd();
+        await this.safeWrite(psdk);
+        console.log(psdk.command().string());
+        break;
+      case 'cpcl':
+        psdk = CommonUtil.cpclImageCmd();
+        await this.safeWrite(psdk);
+        console.log(psdk.command().string());
+        break;
+      case 'esc':
+        psdk = CommonUtil.escImageCmd();
+        await this.safeWrite(psdk);
+        console.log(psdk.command().string());
+        break;
+      default:
+        break;
+    };
   }
 
   onDisconnect() {
     try {
-      this.connectedDevice?.disconnect();
+      if (this.connectedDevice === undefined) {
+        promptAction.showToast({
+          message: '请连接设备！！！',
+          duration: 1000
+        });
+        return;
+      }
+      this.connectedDevice.disconnect();
       this.connectionState = '未连接';
       promptAction.showToast({
         message: '断开成功',
         duration: 2000
       });
+      this.connectedDevice = undefined;
     } catch (err) {
       console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
     }
