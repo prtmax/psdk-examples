@@ -18,8 +18,7 @@ export class PrinterUtil {
   }
 
   // 设置方法为私有
-  private  constructor() {
-  }
+  private constructor() { }
 
   init(connectedDevice : ConnectedDevice) {
     this._connectedDevice = connectedDevice;

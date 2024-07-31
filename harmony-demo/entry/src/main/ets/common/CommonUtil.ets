@@ -80,7 +80,8 @@ export class CommonUtil {
   }
 
   tsplTemplateCmd(): GenericTSPL {
-    return PrinterUtil.getInstance().tspl().clear()
+    return PrinterUtil.getInstance().tspl()
+      .clear()
       .page(new TPage({
         width: 76,
         height: 130
@@ -353,7 +354,8 @@ export class CommonUtil {
   }
 
   tsplImageCmd(): GenericTSPL {
-    return PrinterUtil.getInstance().tspl().clear()
+    return PrinterUtil.getInstance().tspl()
+      .clear()
       .page(new TPage({
         width: 76,
         height: 130
@@ -651,7 +653,8 @@ export class CommonUtil {
   }
 
   cpclImageCmd(): GenericCPCL {
-    return PrinterUtil.getInstance().cpcl().clear()
+    return PrinterUtil.getInstance().cpcl()
+      .clear()
       .page(new CPage({
         width: 608,
         height: 1040
@@ -668,7 +671,8 @@ export class CommonUtil {
   }
 
   escImageCmd(): GenericESC {
-    return PrinterUtil.getInstance().esc().clear()
+    return PrinterUtil.getInstance().esc()
+      .clear()
       .enable()
       .wakeup()
       .image(

@@ -1,35 +1,41 @@
 import DevicesPage from '../common/DevicesPage';
 import DeviceData from '../model/DeviceData';
 import { BusinessError } from '@ohos.base';
-import connection from '@ohos.bluetooth.connection';
-import socket from '@ohos.bluetooth.socket';
 import promptAction from '@ohos.promptAction';
 import a2dp from '@ohos.bluetooth.a2dp';
 import { baseProfile } from '@kit.ConnectivityKit';
-import { ConnectedDevice, FakeConnectedDevice} from '@psdk/frame-father';
+import { ConnectedDevice, PSDK } from '@psdk/frame-father';
 import CommonUtil from '../common/CommonUtil';
 import { OhosBluetoothClassic } from '@psdk/ohos-bluetooth-classic/build/provider';
+import { JluetoothDevice } from '@psdk/device-bluetooth-traits/build/index';
 import { PrinterUtil } from '../common/PrinterUtil';
+import { GenericTSPL } from '@psdk/tspl';
+import { GenericCPCL } from '@psdk/cpcl';
+import { GenericESC } from '@psdk/esc/build/impls/generic';
 
 @Entry
 @Component
 struct Index {
-  @State discoveredDevices: DeviceData[] = [];
+  @State discoveredDevices: Array<JluetoothDevice<string>> = [];
   @State connectionState: string = '未连接';
-  private clientNumber = -1;
+  @State connectedDevice?: ConnectedDevice = undefined;
+  private suffix = ['_BLE', '-LE', '-BLE'];
   private cmdType = 'tspl';
-  private ohosBluetoothClassic = new OhosBluetoothClassic({
-    allowNoName: false
-  });
+  private ohosBluetoothClassic = new OhosBluetoothClassic({ allowNoName: false });
+  private isPrint = false
 
   aboutToAppear() {
     this.ohosBluetoothClassic.discovered((devices) => {
       devices.forEach(device => {
-        const isDuplicate = this.discoveredDevices.find(item => item.address === device.deviceId);
+        const isBle = this.suffix.find((item) => device.name.toUpperCase().endsWith(item));
+        if (isBle) {
+          return;
+        }
+        const isDuplicate = this.discoveredDevices.find(item => item.deviceId === device.deviceId);
         if (isDuplicate) {
           return;
         }
-        this.discoveredDevices.push(new DeviceData(device.name, device.deviceId));
+        this.discoveredDevices.push(device);
       });
       return Promise.resolve();
     });
@@ -41,9 +47,11 @@ struct Index {
       console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
     }
   }
-  onConnectionStateEvent = (data: baseProfile.StateChangeParam)=> {
+
+  onConnectionStateEvent = (data: baseProfile.StateChangeParam) => {
     console.info('a2dp state = ' + JSON.stringify(data));
   }
+
   aboutToDisappear() {
     console.info('IndexComponent aboutToDisappear');
   }
@@ -51,74 +59,27 @@ struct Index {
   async discovery() {
     this.discoveredDevices = [];
     try {
-      // connection.on('bluetoothDeviceFind', this.onReceiveEvent);
-      // connection.startBluetoothDiscovery();
-     await this.ohosBluetoothClassic.startDiscovery();
+      await this.ohosBluetoothClassic.startDiscovery();
     } catch (err) {
       console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
     }
   }
 
-  onReceiveEvent = (data: Array<string>) => {
-    console.info('bluetooth device find = ' + JSON.stringify(data));
-    try {
-      let remoteDeviceName: string = connection.getRemoteDeviceName(data[0]);
-      if (remoteDeviceName === '') {
-        return;
-      }
-      if (remoteDeviceName === null) {
-        return;
-      }
-      if (remoteDeviceName.toUpperCase().endsWith('_BLE') ||
-      remoteDeviceName.toUpperCase().endsWith('-LE') ||
-      remoteDeviceName.toUpperCase().endsWith('-BLE')) {
-        return;
-      }
-      const isDuplicate = this.discoveredDevices.find(item => item.address === data[0]);
-      if (isDuplicate) {
-        return;
-      }
-      this.discoveredDevices.push(new DeviceData(remoteDeviceName, data[0]));
-    } catch (err) {
-      console.error("errCode:" + err.code + ",errMessage:" + err.message);
-    }
-  }
   dataRead = (dataBuffer: ArrayBuffer) => {
     let data = new Uint8Array(dataBuffer);
     console.log('bluetooth data is: ' + data[0]);
   }
 
-  onConnect(address: string) {
-    let sppOption: socket.SppOptions = { uuid: '00001101-0000-1000-8000-00805f9b34fb', secure: false, type: 0 };
+  async onConnect(device: JluetoothDevice<string>) {
     try {
-      socket.sppConnect(address, sppOption, (code: BusinessError, number: number) => {
-        if (code) {
-          console.error('sppListen error, code is ' + code);
-          promptAction.showToast({
-            message: '连接失败',
-            duration: 2000
-          });
-          return;
-        } else {
-          console.log('bluetooth serverSocket Number: ' + number);
-          // 获取的clientNumber用作客户端后续读/写操作socket的id。
-          this.clientNumber = number;
-          try {
-            PrinterUtil.getInstance().init(new FakeConnectedDevice());
-            connection.stopBluetoothDiscovery();
-            socket.on('sppRead', number, this.dataRead);
-          } catch (err) {
-            console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' +
-            (err as BusinessError).message);
-          }
-          let remoteDeviceName: string = connection.getRemoteDeviceName(address);
-          this.connectionState = remoteDeviceName+'已连接';
-          promptAction.showToast({
-            message: '连接成功',
-            duration: 2000
-          });
-        }
+      this.connectedDevice = await this.ohosBluetoothClassic.connect(device);
+      PrinterUtil.getInstance().init(this.connectedDevice);
+      this.connectionState = `${this.connectedDevice.deviceName()}已连接`;
+      promptAction.showToast({
+        message: `${this.connectedDevice.deviceName()}连接成功`,
+        duration: 2000
       });
+      console.log("this.connectedDevice: ", this.connectedDevice);
     } catch (err) {
       console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
       promptAction.showToast({
@@ -127,19 +88,45 @@ struct Index {
       });
     }
   }
-  async onPrintTemplate() {
+
+  async safeWrite(psdk: PSDK<GenericTSPL> |  PSDK<GenericCPCL> | PSDK<GenericESC>) {
     try {
-      let binary: Uint8Array = new Uint8Array();
+      if (!this.isPrint) {
+        this.isPrint = true;
+        const report = await psdk.write();//不分包发送，如果不会丢包可以不分包
+        // const report = await psdk.write({
+        // 	enableChunkWrite: true,
+        // 	chunkSize: 20
+        // });//分包发送，chunkSize:分包大小
+        this.isPrint = false;
+        console.log(`${report}`);
+        promptAction.showToast({
+          message: '打印成功',
+          duration: 2000
+        });
+      }
+    } catch (e) {
+      this.isPrint = false;
+      console.error(e);
+      promptAction.showToast({
+        message: '打印失败',
+      });
+    }
+  }
+
+  async onPrintTemplate() {
+    let psdk: PSDK<GenericTSPL> |  PSDK<GenericCPCL> | PSDK<GenericESC>
+    try {
       switch (this.cmdType) {
         case 'tspl':
-          const gtspl = CommonUtil.tsplTemplateCmd();
-          console.log(gtspl.command().string());
-          binary = gtspl.command().binary();
+          psdk = CommonUtil.tsplTemplateCmd();
+          await this.safeWrite(psdk);
+          console.log(psdk.command().string());
           break;
         case 'cpcl':
-          const gcpcl = CommonUtil.cpclTemplateCmd();
-          console.log(gcpcl.command().string());
-          binary = gcpcl.command().binary();
+          psdk = CommonUtil.cpclTemplateCmd();
+          await this.safeWrite(psdk);
+          console.log(psdk.command().string());
           break;
         case 'esc':
           promptAction.showToast({
@@ -150,12 +137,6 @@ struct Index {
         default:
           break;
       }
-
-      socket.sppWrite(this.clientNumber, binary.buffer);
-      promptAction.showToast({
-        message: '打印成功',
-        duration: 2000
-      });
     } catch (e) {
       console.error(e);
       promptAction.showToast({
@@ -165,34 +146,28 @@ struct Index {
     }
   }
 
-  onPrintImage() {
+  async onPrintImage() {
     try {
-      let binary: Uint8Array = new Uint8Array();
+      let psdk: PSDK<GenericTSPL> |  PSDK<GenericCPCL> | PSDK<GenericESC>
       switch (this.cmdType) {
         case 'tspl':
-          const gtspl = CommonUtil.tsplImageCmd();
-          console.log(gtspl.command().string());
-          binary = gtspl.command().binary();
+          psdk = CommonUtil.tsplImageCmd();
+          await this.safeWrite(psdk);
+          console.log(psdk.command().string());
           break;
         case 'cpcl':
-          const gcpcl = CommonUtil.cpclImageCmd();
-          console.log(gcpcl.command().string());
-          binary = gcpcl.command().binary();
+          psdk = CommonUtil.cpclImageCmd();
+          await this.safeWrite(psdk);
+          console.log(psdk.command().string());
           break;
         case 'esc':
-          const gesc = CommonUtil.escImageCmd();
-          console.log(gesc.command().string());
-          binary = gesc.command().binary();
+          psdk = CommonUtil.escImageCmd();
+          await this.safeWrite(psdk);
+          console.log(psdk.command().string());
           break;
         default:
           break;
-      }
-
-      socket.sppWrite(this.clientNumber, binary.buffer);
-      promptAction.showToast({
-        message: '打印成功',
-        duration: 2000
-      });
+      };
     } catch (e) {
       console.error(e);
       promptAction.showToast({
@@ -204,8 +179,12 @@ struct Index {
 
   onDisconnect() {
     try {
-      socket.sppCloseClientSocket(this.clientNumber);
+      this.connectedDevice?.disconnect();
       this.connectionState = '未连接';
+      promptAction.showToast({
+        message: '断开成功',
+        duration: 2000
+      });
     } catch (err) {
       console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
     }
@@ -247,6 +226,7 @@ struct Index {
                   }
                 })
             }
+
             Column() {
               Text('esc')
               Radio({ value: 'esc', group: 'radioGroup' })
@@ -286,8 +266,9 @@ struct Index {
         .layoutWeight(1)
 
         DevicesPage({
-          devices: $discoveredDevices, connect: (address) => {
-            this.onConnect(address)
+          devices: $discoveredDevices,
+          connect: (device) => {
+            this.onConnect(device)
           }
         })
           .layoutWeight(1)

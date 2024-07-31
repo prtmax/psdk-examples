@@ -1,14 +1,15 @@
-import DeviceData from '../model/DeviceData'
+import { JluetoothDevice } from '@psdk/device-bluetooth-traits/build/index';
+
 @Component
 export default struct DevicesPage {
-  @Link devices: Array<DeviceData>
-  private connect: (address: string) => void = () => {}
+  @Link devices: Array<JluetoothDevice<string>>
+  private connect: (device: JluetoothDevice<string>) => void = () => {}
   build() {
     Column() {
       List({ space: 10 }) {
-        ForEach(this.devices, (item: DeviceData) => {
+        ForEach(this.devices, (item: JluetoothDevice<string>) => {
           ListItem() {
-            Text('' + item.name+"\r\n"+item.address)
+            Text(item.name + "\r" + item.deviceId)
               .padding({top: 10, bottom: 10})
               .width('100%')
               .fontSize(16)
@@ -17,7 +18,7 @@ export default struct DevicesPage {
               .backgroundColor(0xFFFFFF)
           }
           .onClick(() => {
-            this.connect(item.address)
+            this.connect(item)
           })
         })
       }
