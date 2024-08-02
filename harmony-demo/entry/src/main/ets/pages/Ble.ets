@@ -1,104 +1,62 @@
-import DevicesPage from '../common/DevicesPage';
-import DeviceData from '../model/DeviceData';
 import { BusinessError } from '@ohos.base';
 import promptAction from '@ohos.promptAction';
-import {constant } from '@kit.ConnectivityKit';
 import ble from '@ohos.bluetooth.ble';
 import CommonUtil from '../common/CommonUtil';
-import commonUtil from '../common/CommonUtil';
+import { OhosBluetoothLe } from '@psdk/ohos-bluetooth-le';
+import { JluetoothDevice } from '@psdk/device-bluetooth-traits';
+import { ConnectedDevice, PSDK } from '@psdk/frame-father';
+import { PrinterUtil } from '../common/PrinterUtil';
+import DevicesPageBle from '../common/DevicesPageBle';
+import { GenericTSPL } from '@psdk/tspl';
+import { GenericCPCL } from '@psdk/cpcl';
+import { GenericESC } from '@psdk/esc';
 
-let device: ble.GattClientDevice;
 let allowServiceUuid: string = '49535343-FE7D-4AE5-8FA9-9FAFD205E455';
 let allowWriteCharacteristicUuid: string = '49535343-8841-43F4-A8D4-ECBE34729BB3';
 let allowReadCharacteristicUuid: string = '49535343-1e4d-4bd9-ba61-23c647249616';
-let serviceUuid: string;
-let writeCharacteristicUuid: string;
-let readCharacteristicUuid: string;
+
 @Entry
 @Component
 struct Ble {
-  @State discoveredDevices: DeviceData[] = [];
+  @State discoveredDevices: Array<JluetoothDevice<ble.ScanResult>> = [];
   @State connectionState: string = '未连接';
+  @State connectedDevice?: ConnectedDevice = undefined;
   private cmdType = 'tspl';
   private mtu = 20;
+  private ohosBluetoothLe = new OhosBluetoothLe({
+    allowNoName: false,
+    allowedWriteCharacteristic: '49535343-8841-43F4-A8D4-ECBE34729BB3',
+    allowedReadCharacteristic: '49535343-1e4d-4bd9-ba61-23c647249616'
+  });
+  private isPrint = false;
+
   aboutToAppear() {
     console.info('IndexComponent aboutToAppear');
+    this.ohosBluetoothLe.discovered((devices) => {
+      devices.forEach(device => {
+        const isDuplicate = this.discoveredDevices.find(item => item.deviceId === device.deviceId);
+        if (isDuplicate) {
+          return;
+        }
+        this.discoveredDevices.push(device);
+      });
+      return Promise.resolve();
+    });
   }
 
   aboutToDisappear() {
     console.info('IndexComponent aboutToDisappear');
   }
 
-  onConnectionStateEvent = async (state: ble.BLEConnectionChangeState) => {
-    console.log('bluetooth connect state changed');
-    let connectState: ble.ProfileConnectionState = state.state;
-    if (connectState == constant.ProfileConnectionState.STATE_CONNECTED) {
-      device.setBLEMtuSize(512);
-      device.on('BLEMtuChange', (mtu: number) => {
-        console.info('BLEMtuChange, mtu: ' + mtu);
-        this.mtu = mtu;
-      });
-      let allServices = await device.getServices();
-      for (const service of allServices) {
-        if(service.serviceUuid.toLowerCase() === allowServiceUuid.toLowerCase()){
-          serviceUuid = service.serviceUuid;
-          let allCharacteristics = service.characteristics;
-          for (const characteristic of allCharacteristics) {
-            if(characteristic.characteristicUuid.toLowerCase() === allowWriteCharacteristicUuid.toLowerCase()){
-              writeCharacteristicUuid = characteristic.characteristicUuid;
-            }
-            if(characteristic.characteristicUuid.toLowerCase() === allowReadCharacteristicUuid.toLowerCase()){
-              readCharacteristicUuid = characteristic.characteristicUuid;
-            }
-          }
-        }
-      }
-      let remoteDeviceName: string = await device.getDeviceName();
-      this.connectionState = remoteDeviceName + '已连接';
-      promptAction.showToast({
-        message: '连接成功',
-        duration: 2000
-      });
-    }
-    if (connectState == constant.ProfileConnectionState.STATE_DISCONNECTED) {
-      this.connectionState = '未连接';
-    }
-  }
-
-  discovery() {
+  async discovery() {
     this.discoveredDevices = [];
     try {
-      ble.on("BLEDeviceFind", this.onReceiveEvent);
-      let scanOptions: ble.ScanOptions = {
-        interval: 500,
-        dutyMode: ble.ScanDuty.SCAN_MODE_LOW_POWER,
-        matchMode: ble.MatchMode.MATCH_MODE_AGGRESSIVE,
-      }
-      ble.startBLEScan(null, scanOptions);
+      await this.ohosBluetoothLe.startDiscovery();
     } catch (err) {
       console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
     }
   }
 
-  onReceiveEvent = (data: Array<ble.ScanResult>) => {
-    console.info('bluetooth device find = ' + JSON.stringify(data));
-    try {
-      let remoteDeviceName: string = data[0].deviceName;
-      if (remoteDeviceName === '') {
-        return;
-      }
-      if (remoteDeviceName === null) {
-        return;
-      }
-      const isDuplicate = this.discoveredDevices.find(item => item.address === data[0].deviceId);
-      if (isDuplicate) {
-        return;
-      }
-      this.discoveredDevices.push(new DeviceData(remoteDeviceName, data[0].deviceId));
-    } catch (err) {
-      console.error("errCode:" + err.code + ",errMessage:" + err.message);
-    }
-  }
   dataRead = (characteristicChangeReq: ble.BLECharacteristic) => {
     let serviceUuid: string = characteristicChangeReq.serviceUuid;
     let characteristicUuid: string = characteristicChangeReq.characteristicUuid;
@@ -106,14 +64,20 @@ struct Ble {
     console.log('bluetooth data is: ' + data[0]);
   }
 
-  async onConnect(address: string) {
+  async onConnect(device: JluetoothDevice<ble.ScanResult>) {
     try {
-      device = ble.createGattClientDevice(address);
-      device.on('BLEConnectionStateChange', this.onConnectionStateEvent);
-      device.connect()
-      ble.stopBLEScan();
-      device.on('BLECharacteristicChange', this.dataRead);
-
+      promptAction.showToast({
+        message: `连接中。。。。`,
+        duration: 2000
+      });
+      this.connectedDevice = await this.ohosBluetoothLe.connect(device);
+      PrinterUtil.getInstance().init(this.connectedDevice);
+      this.connectionState = `${this.connectedDevice.deviceName()}已连接`;
+      promptAction.showToast({
+        message: `${this.connectedDevice.deviceName()}连接成功`,
+        duration: 2000
+      });
+      console.log("this.connectedDevice: ", this.connectedDevice);
     } catch (err) {
       console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
       promptAction.showToast({
@@ -123,107 +87,108 @@ struct Ble {
     }
   }
 
-  async onPrintTemplate() {
+  async safeWrite(psdk: PSDK<GenericTSPL> |  PSDK<GenericCPCL> | PSDK<GenericESC>) {
     try {
-      let binary: Uint8Array = new Uint8Array();
-      switch (this.cmdType) {
-        case 'tspl':
-          const gtspl = CommonUtil.tsplTemplateCmd();
-          console.log(gtspl.command().string());
-          binary = gtspl.command().binary();
-          break;
-        case 'cpcl':
-          const gcpcl = CommonUtil.cpclTemplateCmd();
-          console.log(gcpcl.command().string());
-          binary = gcpcl.command().binary();
-          break;
-        case 'esc':
-          promptAction.showToast({
-            message: 'esc 仅支持图片打印！！！',
-            duration: 2000
-          });
-          return;
-        default:
-          break;
+      if (!this.isPrint) {
+        this.isPrint = true;
+        const report = await psdk.write();//不分包发送，如果不会丢包可以不分包
+        // const report = await psdk.write({
+        // 	enableChunkWrite: true,
+        // 	chunkSize: 20
+        // });//分包发送，chunkSize:分包大小
+        console.log(`safeWrite report : ${report}`);
+        promptAction.showToast({
+          message: '打印成功',
+          duration: 1000
+        });
+        this.isPrint = false;
       }
-      let writeData = Array.from(binary);
-      let parts = commonUtil.split(writeData, this.mtu);
-
-      for (const part of parts) {
-        const partBinary = new Uint8Array(part);
-        let characteristic: ble.BLECharacteristic = {
-          serviceUuid: serviceUuid,
-          characteristicUuid: writeCharacteristicUuid,
-          characteristicValue: partBinary.buffer,
-          descriptors: []
-        };
-        await device.writeCharacteristicValue(characteristic, ble.GattWriteType.WRITE);
-      }
-      promptAction.showToast({
-        message: '打印成功',
-        duration: 2000
-      });
     } catch (e) {
+      this.isPrint = false;
       console.error(e);
       promptAction.showToast({
         message: '打印失败',
-        duration: 2000
       });
+    }
+  }
+
+  async onPrintTemplate() {
+    if (this.connectedDevice === undefined) {
+      promptAction.showToast({
+        message: '请连接设备！！！',
+        duration: 1000
+      });
+      return;
+    }
+    let psdk: PSDK<GenericTSPL> |  PSDK<GenericCPCL> | PSDK<GenericESC>
+    switch (this.cmdType) {
+      case 'tspl':
+        psdk = CommonUtil.tsplTemplateCmd();
+        await this.safeWrite(psdk);
+        console.log(psdk.command().string());
+        break;
+      case 'cpcl':
+        psdk = CommonUtil.cpclTemplateCmd();
+        await this.safeWrite(psdk);
+        console.log(psdk.command().string());
+        break;
+      case 'esc':
+        promptAction.showToast({
+          message: 'esc 仅支持图片打印！！！',
+          duration: 2000
+        });
+        return;
+      default:
+        break;
     }
   }
 
   async onPrintImage() {
-    try {
-      let binary: Uint8Array = new Uint8Array();
-      switch (this.cmdType) {
-        case 'tspl':
-          const gtspl = CommonUtil.tsplImageCmd();
-          console.log(gtspl.command().string());
-          binary = gtspl.command().binary();
-          break;
-        case 'cpcl':
-          const gcpcl = CommonUtil.cpclImageCmd();
-          console.log(gcpcl.command().string());
-          binary = gcpcl.command().binary();
-          break;
-        case 'esc':
-          const gesc = CommonUtil.escImageCmd();
-          console.log(gesc.command().string());
-          binary = gesc.command().binary();
-          break;
-        default:
-          break;
-      }
-      let writeData = Array.from(binary);
-      let parts = commonUtil.split(writeData, this.mtu);
-
-      for (const part of parts) {
-        const partBinary = new Uint8Array(part);
-        let characteristic: ble.BLECharacteristic = {
-          serviceUuid: serviceUuid,
-          characteristicUuid: writeCharacteristicUuid,
-          characteristicValue: partBinary.buffer,
-          descriptors: []
-        };
-        await device.writeCharacteristicValue(characteristic, ble.GattWriteType.WRITE);
-      }
+    if (this.connectedDevice === undefined) {
       promptAction.showToast({
-        message: '打印成功',
+        message: '请连接设备！！！',
         duration: 2000
       });
-    } catch (e) {
-      console.error(e);
-      promptAction.showToast({
-        message: '打印失败',
-        duration: 2000
-      });
+      return;
     }
+    let psdk: PSDK<GenericTSPL> |  PSDK<GenericCPCL> | PSDK<GenericESC>
+    switch (this.cmdType) {
+      case 'tspl':
+        psdk = CommonUtil.tsplImageCmd();
+        await this.safeWrite(psdk);
+        console.log(psdk.command().string());
+        break;
+      case 'cpcl':
+        psdk = CommonUtil.cpclImageCmd();
+        await this.safeWrite(psdk);
+        console.log(psdk.command().string());
+        break;
+      case 'esc':
+        psdk = CommonUtil.escImageCmd();
+        await this.safeWrite(psdk);
+        console.log(psdk.command().string());
+        break;
+      default:
+        break;
+    };
   }
 
   onDisconnect() {
     try {
-      device.disconnect();
+      if (this.connectedDevice === undefined) {
+        promptAction.showToast({
+          message: '请连接设备！！！',
+          duration: 1000
+        });
+        return;
+      }
+      this.connectedDevice.disconnect();
       this.connectionState = '未连接';
+      promptAction.showToast({
+        message: '断开成功',
+        duration: 2000
+      });
+      this.connectedDevice = undefined;
     } catch (err) {
       console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
     }
@@ -313,9 +278,9 @@ struct Ble {
         }
         .layoutWeight(1)
 
-        DevicesPage({
-          devices: $discoveredDevices, connect: (address) => {
-            this.onConnect(address)
+        DevicesPageBle({
+          devices: $discoveredDevices, connect: (device) => {
+            this.onConnect(device)
           }
         })
           .layoutWeight(1)

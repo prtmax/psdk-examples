@@ -12,7 +12,8 @@
     "@psdk/cpcl": "^0.5.17",
     "@psdk/esc": "^0.5.17",
     "@psdk/ohos-bluetooth-classic": "^0.5.17",
-    "@psdk/device-bluetooth-traits": "^0.5.17"
+    "@psdk/device-bluetooth-traits": "^0.5.17",
+    "@psdk/ohos-bluetooth-le": "^0.5.17"
   },
   "devDependencies": {
     "@ohos/hypium": "1.0.16",
