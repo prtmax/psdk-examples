@@ -7,13 +7,14 @@
   "author": "",
   "license": "",
   "dependencies": {
-    "@psdk/frame-father": "^0.5.17",
-    "@psdk/tspl": "^0.5.17",
-    "@psdk/cpcl": "^0.5.17",
-    "@psdk/esc": "^0.5.17",
-    "@psdk/ohos-bluetooth-classic": "^0.5.17",
-    "@psdk/device-bluetooth-traits": "^0.5.17",
-    "@psdk/ohos-bluetooth-le": "^0.5.17"
+    "@psdk/frame-father": "^0.5.18",
+    "@psdk/tspl": "^0.5.18",
+    "@psdk/cpcl": "^0.5.18",
+    "@psdk/esc": "^0.5.18",
+    "@psdk/ohos-bluetooth-classic": "^0.5.18",
+    "@psdk/device-bluetooth-traits": "^0.5.18",
+    "@psdk/ohos-bluetooth-le": "^0.5.18",
+    "@psdk/ohos-network": "^0.5.18"
   },
   "devDependencies": {
     "@ohos/hypium": "1.0.16",
