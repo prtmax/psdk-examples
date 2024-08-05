@@ -1,8 +1,11 @@
 import promptAction from '@ohos.promptAction'
-import { FakeConnectedDevice } from '@psdk/frame-father';
+import { GenericCPCL } from '@psdk/cpcl';
+import { GenericESC } from '@psdk/esc';
+import { ConnectedDevice, PSDK } from '@psdk/frame-father';
+import { OhosNetwork } from '@psdk/ohos-network';
+import { GenericTSPL } from '@psdk/tspl';
 import CommonUtil from '../common/CommonUtil';
 import { PrinterUtil } from '../common/PrinterUtil';
-import wifiUtil from '../common/WifiUtil';
 
 @Entry
 @Component
@@ -13,78 +16,95 @@ struct Wifi {
   private cmdType = 'tspl';
   addressController: TextInputController = new TextInputController()
   portController: TextInputController = new TextInputController()
+  private ohosNetwork = new OhosNetwork();
+  private connectedDevice?: ConnectedDevice = undefined;
+  private isPrint = false;
 
-  async onPrintTemplate() {
+  async safeWrite(psdk: PSDK<GenericTSPL> | PSDK<GenericCPCL> | PSDK<GenericESC>) {
     try {
-      let binary: Uint8Array = new Uint8Array();
-      switch (this.cmdType) {
-        case 'tspl':
-          const gtspl = CommonUtil.tsplTemplateCmd();
-          console.log(gtspl.command().string());
-          binary = gtspl.command().binary();
-          break;
-        case 'cpcl':
-          const gcpcl = CommonUtil.cpclTemplateCmd();
-          console.log(gcpcl.command().string());
-          binary = gcpcl.command().binary();
-          break;
-        case 'esc':
-          promptAction.showToast({
-            message: 'esc 仅支持图片打印！！！',
-            duration: 2000
-          });
-          return;
-        default:
-          break;
+      if (!this.isPrint) {
+        this.isPrint = true;
+        const report = await psdk.write(); //不分包发送，如果不会丢包可以不分包
+        // const report = await psdk.write({
+        // 	enableChunkWrite: true,
+        // 	chunkSize: 20
+        // });//分包发送，chunkSize:分包大小
+        console.log(`safeWrite report : ${report}`);
+        promptAction.showToast({
+          message: '打印成功',
+          duration: 1000
+        });
+        this.isPrint = false;
       }
-      await wifiUtil.send(binary);
-      promptAction.showToast({
-        message: '打印成功',
-        duration: 2000
-      });
     } catch (e) {
+      this.isPrint = false;
       console.error(e);
       promptAction.showToast({
         message: '打印失败',
-        duration: 2000
       });
     }
   }
 
-  async onPrintImage() {
-    try {
-      let binary: Uint8Array = new Uint8Array();
-      switch (this.cmdType) {
-        case 'tspl':
-          const gtspl = CommonUtil.tsplImageCmd();
-          console.log(gtspl.command().string());
-          binary = gtspl.command().binary();
-          break;
-        case 'cpcl':
-          const gcpcl = CommonUtil.cpclImageCmd();
-          console.log(gcpcl.command().string());
-          binary = gcpcl.command().binary();
-          break;
-        case 'esc':
-          const gesc = CommonUtil.escImageCmd();
-          console.log(gesc.command().string());
-          binary = gesc.command().binary();
-          break;
-        default:
-          break;
-      }
-      await wifiUtil.send(binary);
+  async onPrintTemplate() {
+    if (this.connectedDevice === undefined) {
       promptAction.showToast({
-        message: '打印成功',
-        duration: 2000
+        message: '请连接设备！！！',
+        duration: 1000
       });
-    } catch (e) {
-      console.error(e);
-      promptAction.showToast({
-        message: '打印失败',
-        duration: 2000
-      });
+      return;
     }
+    let psdk: PSDK<GenericTSPL> | PSDK<GenericCPCL> | PSDK<GenericESC>
+    switch (this.cmdType) {
+      case 'tspl':
+        psdk = CommonUtil.tsplTemplateCmd();
+        await this.safeWrite(psdk);
+        console.log(psdk.command().string());
+        break;
+      case 'cpcl':
+        psdk = CommonUtil.cpclTemplateCmd();
+        await this.safeWrite(psdk);
+        console.log(psdk.command().string());
+        break;
+      case 'esc':
+        promptAction.showToast({
+          message: 'esc 仅支持图片打印！！！',
+          duration: 2000
+        });
+        return;
+      default:
+        break;
+    }
+  }
+
+  async onPrintImage() {
+    if (this.connectedDevice === undefined) {
+      promptAction.showToast({
+        message: '请连接设备！！！',
+        duration: 2000
+      });
+      return;
+    }
+    let psdk: PSDK<GenericTSPL> | PSDK<GenericCPCL> | PSDK<GenericESC>
+    switch (this.cmdType) {
+      case 'tspl':
+        psdk = CommonUtil.tsplImageCmd();
+        await this.safeWrite(psdk);
+        console.log(psdk.command().string());
+        break;
+      case 'cpcl':
+        psdk = CommonUtil.cpclImageCmd();
+        await this.safeWrite(psdk);
+        console.log(psdk.command().string());
+        break;
+      case 'esc':
+        psdk = CommonUtil.escImageCmd();
+        await this.safeWrite(psdk);
+        console.log(psdk.command().string());
+        break;
+      default:
+        break;
+    }
+    ;
   }
 
   build() {
@@ -140,7 +160,8 @@ struct Wifi {
               })
           }
         }.padding({ top: 30 })
-        Row(){
+
+        Row() {
           Text('IP地址')
             .margin(10)
           TextInput({ text: this.address, placeholder: '输入IP地址...', controller: this.addressController })
@@ -153,7 +174,8 @@ struct Wifi {
               this.address = value
             })
         }
-        Row(){
+
+        Row() {
           Text('端口号')
             .margin(10)
           TextInput({ text: this.port.toString(), placeholder: '输入端口号...', controller: this.portController })
@@ -174,10 +196,10 @@ struct Wifi {
             if (this.address === '' || this.port.toString() === '') {
               CommonUtil.showMessage("请输入IP地址或端口号");
             }
-            this.isOpen = await wifiUtil.openSocket(this.address,this.port);
-            if (this.isOpen) {
+            this.connectedDevice = await this.ohosNetwork.connect(this.address, this.port);
+            if (this.connectedDevice) {
               CommonUtil.showMessage("打开成功");
-              PrinterUtil.getInstance().init(new FakeConnectedDevice());
+              PrinterUtil.getInstance().init(this.connectedDevice);
             } else {
               CommonUtil.showMessage("打开失败，检查地址或端口是否正确");
             }
@@ -185,9 +207,13 @@ struct Wifi {
         Button('关闭端口')
           .width('90%')
           .height(40)
-          .onClick(() => {
-            wifiUtil.closeSocket();
-            this.isOpen = false;
+          .onClick(async () => {
+            if (this.connectedDevice) {
+              await this.connectedDevice.disconnect();
+              this.connectedDevice = undefined;
+            } else {
+              CommonUtil.showMessage("没有可关闭端口");
+            }
           })
         Button('打印模版')
           .width('90%')
