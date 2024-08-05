@@ -62,6 +62,10 @@ struct Index {
       await this.ohosBluetoothClassic.startDiscovery();
     } catch (err) {
       console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+      promptAction.showToast({
+        message: `errCode: ${(err as BusinessError).code} , errMessage: ${(err as BusinessError).message}`,
+        duration: 2000
+      });
     }
   }
 
@@ -72,6 +76,10 @@ struct Index {
 
   async onConnect(device: JluetoothDevice<string>) {
     try {
+      promptAction.showToast({
+        message: `连接中。。。。`,
+        duration: 2000
+      });
       this.connectedDevice = await this.ohosBluetoothClassic.connect(device);
       PrinterUtil.getInstance().init(this.connectedDevice);
       this.connectionState = `${this.connectedDevice.deviceName()}已连接`;
