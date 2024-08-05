@@ -219,7 +219,7 @@ struct Wifi {
           .width('90%')
           .height(40)
           .onClick(() => {
-            if (!this.isOpen) {
+            if (!this.connectedDevice) {
               CommonUtil.showMessage("未打开端口");
               return
             }
@@ -229,7 +229,7 @@ struct Wifi {
           .width('90%')
           .height(40)
           .onClick(() => {
-            if (!this.isOpen) {
+            if (!this.connectedDevice) {
               CommonUtil.showMessage("未打开端口");
               return
             }
