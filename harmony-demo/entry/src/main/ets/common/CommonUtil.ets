@@ -35,6 +35,8 @@ import { LengthMetricsUnit } from '@ohos.arkui.node'
 import { EImage, GenericESC } from '@psdk/esc';
 import { promptAction } from '@kit.ArkUI';
 import { PrinterUtil } from './PrinterUtil';
+import { EscQueryType, EscSetType } from './EscTypes';
+import { util } from '@kit.ArkTS';
 
 export class CommonUtil {
   showMessage(text: string) {
@@ -686,6 +688,56 @@ export class CommonUtil {
       .stopJob();
   }
 
+  escQueryCmd(queryType: EscQueryType): GenericESC {
+    let esc = PrinterUtil.getInstance().esc().clear()
+    switch (queryType) {
+      case EscQueryType.Info:
+        esc.info()
+        break;
+      case EscQueryType.SN:
+        esc.sn()
+        break;
+      case EscQueryType.Mac:
+        esc.mac()
+        break;
+      case EscQueryType.State:
+        esc.state()
+        break;
+      case EscQueryType.Version:
+        esc.version()
+        break;
+      case EscQueryType.Model:
+        esc.model()
+        break;
+      case EscQueryType.BatteryVolume:
+        esc.batteryVolume()
+        break;
+      case EscQueryType.ShutTime:
+        esc.getShutdownTime()
+        break;
+      // case EscQueryType.PaperType:
+      //   esc.getPaperTypeQ3()
+      //   break;
+      case EscQueryType.BtName:
+        esc.name()
+        break;
+    }
+    return esc
+  }
+
+  escSetCmd(setType: EscSetType, value: number): GenericESC {
+    let esc = PrinterUtil.getInstance().esc().clear()
+    switch (setType) {
+      case EscSetType.Thickness:
+        esc.thickness(value)
+        break;
+      case EscSetType.ShutTime:
+        esc.setShutdownTime(value)
+        break;
+    }
+    return esc
+  }
+
   _createCanvas(imgPath: string, width: number, height: number,): OffscreenCanvas {
     const settings: RenderingContextSettings = new RenderingContextSettings(true)
     const offCanvas: OffscreenCanvas = new OffscreenCanvas(width, height, LengthMetricsUnit.PX);
@@ -695,6 +747,11 @@ export class CommonUtil {
     offContext.drawImage(img, 0, 0, width, height);
 
     return offCanvas;
+  }
+
+  uint8ArrayToString(uint8Array: Uint8Array): string {
+    const str = new util.TextDecoder().decodeWithStream(uint8Array);
+    return str;
   }
 }
 

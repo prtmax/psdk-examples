@@ -12,6 +12,7 @@ import { PrinterUtil } from '../common/PrinterUtil';
 import { GenericTSPL } from '@psdk/tspl';
 import { GenericCPCL } from '@psdk/cpcl';
 import { GenericESC } from '@psdk/esc/build/impls/generic';
+import { EscQueryType } from '../common/EscTypes';
 
 @Entry
 @Component
@@ -20,9 +21,10 @@ struct Index {
   @State connectionState: string = '未连接';
   @State connectedDevice?: ConnectedDevice = undefined;
   private suffix = ['_BLE', '-LE', '-BLE'];
-  private cmdType = 'tspl';
+  @State cmdType: string = 'tspl';
   private ohosBluetoothClassic = new OhosBluetoothClassic({ allowNoName: false });
   private isPrint = false
+  private escQueryType?: EscQueryType = undefined
 
   aboutToAppear() {
     this.ohosBluetoothClassic.discovered((devices) => {
@@ -40,12 +42,6 @@ struct Index {
       return Promise.resolve();
     });
     console.info('IndexComponent aboutToAppear');
-    try {
-      let a2dpSrc = a2dp.createA2dpSrcProfile();
-      a2dpSrc.on('connectionStateChange', this.onConnectionStateEvent);
-    } catch (err) {
-      console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
-    }
   }
 
   onConnectionStateEvent = (data: baseProfile.StateChangeParam) => {
@@ -88,6 +84,43 @@ struct Index {
         duration: 2000
       });
       console.log("this.connectedDevice: ", this.connectedDevice);
+      this.connectedDevice.notify(async (value: Uint8Array) => {
+        if (this.escQueryType !== undefined) {
+          switch (this.escQueryType) {
+            case EscQueryType.Info:
+              console.log('jdh')
+              break;
+            case EscQueryType.SN:
+              // esc.sn()
+              break;
+            case EscQueryType.Mac:
+              // esc.mac()
+              break;
+            case EscQueryType.State:
+              // esc.state()
+              break;
+            case EscQueryType.Version:
+              // esc.version()
+              break;
+            case EscQueryType.Model:
+              // esc.model()
+              break;
+            case EscQueryType.BatteryVolume:
+              // esc.batteryVolume()
+              break;
+            case EscQueryType.ShutTime:
+              // esc.getShutdownTime()
+              break;
+          // case EscQueryType.PaperType:
+          //   esc.getPaperTypeQ3()
+          //   break;
+            case EscQueryType.BtName:
+              // esc.name()
+              break;
+          }
+          this.escQueryType = undefined;
+        }
+      });
     } catch (err) {
       console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
       promptAction.showToast({
@@ -183,6 +216,12 @@ struct Index {
     };
   }
 
+  async onEscQuery(queryType: EscQueryType) {
+    this.escQueryType = queryType
+    const esc = CommonUtil.escQueryCmd(queryType);
+    await this.safeWrite(esc);
+  }
+
   onDisconnect() {
     try {
       if (this.connectedDevice === undefined) {
@@ -274,6 +313,77 @@ struct Index {
             .width('90%')
             .height(40)
             .onClick(() => this.onPrintImage())
+          // if (this.cmdType === 'esc') {
+          //   Row({space: FlexAlign.SpaceEvenly}) {
+          //     Button('查询')
+          //       .onClick(() => {
+          //         ActionSheet.show({
+          //           title: '查询',
+          //           message: '请选择查询内容', //弹窗内容
+          //           autoCancel: true, //点击遮障层时，是否关闭弹窗
+          //           alignment: DialogAlignment.Bottom, //弹窗位置
+          //           sheets: [ //操作选项列表
+          //             {
+          //               title: '打印机信息 ',
+          //               action: async () => {
+          //                 await this.onEscQuery(EscQueryType.Info)
+          //               }
+          //             },
+          //             {
+          //               title: '打印机 Sn',
+          //               action: async () => {
+          //                 await this.onEscQuery(EscQueryType.SN)
+          //               }
+          //             },
+          //             {
+          //               title: '打印机 Mac ',
+          //               action: async () => {
+          //                 await this.onEscQuery(EscQueryType.Mac)
+          //               }
+          //             },
+          //             {
+          //               title: '打印机状态 ',
+          //               action: async () => {
+          //                 await this.onEscQuery(EscQueryType.State)
+          //               }
+          //             },
+          //             {
+          //               title: '打印机固件版本',
+          //               action: async () => {
+          //                 await this.onEscQuery(EscQueryType.Version)
+          //               }
+          //             },
+          //             {
+          //               title: '打印机型号',
+          //               action: async () => {
+          //                 await this.onEscQuery(EscQueryType.Model)
+          //               }
+          //             },
+          //             {
+          //               title: '电量',
+          //               action: async () => {
+          //                 await this.onEscQuery(EscQueryType.BatteryVolume)
+          //               }
+          //             },
+          //             {
+          //               title: '关机时间',
+          //               action: async () => {
+          //                 await this.onEscQuery(EscQueryType.ShutTime)
+          //               }
+          //             },
+          //             {
+          //               title: '蓝牙名称',
+          //               action: async () => {
+          //                 await this.onEscQuery(EscQueryType.BtName)
+          //               }
+          //             },
+          //
+          //           ]
+          //         })
+          //       })
+          //     Button('设置')
+          //   }
+          // }
           Text(this.connectionState)
             .fontColor(Color.Red)
         }
