@@ -118,6 +118,10 @@ struct Usb {
         return;
       }
       this.switchText = "关闭USB";
+      promptAction.showToast({
+        message: '打开成功',
+        duration: 2000
+      });
       this.isOpen = true;
       PrinterUtil.getInstance().init(this.connectedDevice);
     } catch (err) {
@@ -131,7 +135,7 @@ struct Usb {
 
   onDisconnect() {
     try {
-      if (this.connectedDevice === undefined) {
+      if (this.connectedDevice === undefined || this.connectedDevice === null) {
         promptAction.showToast({
           message: '未打开USB端口',
           duration: 1000
@@ -139,6 +143,8 @@ struct Usb {
         return;
       }
       this.connectedDevice.disconnect();
+      this.isOpen = false;
+      this.switchText = "打开USB";
       promptAction.showToast({
         message: '关闭成功',
         duration: 2000
@@ -146,6 +152,10 @@ struct Usb {
       this.connectedDevice = undefined;
     } catch (err) {
       console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
+      promptAction.showToast({
+        message: '关闭失败'+ (err as BusinessError).message,
+        duration: 2000
+      });
     }
   }
 
