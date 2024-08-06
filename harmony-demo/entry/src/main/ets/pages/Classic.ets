@@ -1,5 +1,4 @@
 import DevicesPage from '../common/DevicesPage';
-import DeviceData from '../model/DeviceData';
 import { BusinessError } from '@ohos.base';
 import promptAction from '@ohos.promptAction';
 import a2dp from '@ohos.bluetooth.a2dp';
@@ -83,43 +82,43 @@ struct Index {
         duration: 2000
       });
       console.log("this.connectedDevice: ", this.connectedDevice);
-      this.connectedDevice.notify(async (value: Uint8Array) => {
-        if (this.escQueryType !== undefined) {
-          switch (this.escQueryType) {
-            case EscQueryType.Info:
-              console.log('jdh')
-              break;
-            case EscQueryType.SN:
-              // esc.sn()
-              break;
-            case EscQueryType.Mac:
-              // esc.mac()
-              break;
-            case EscQueryType.State:
-              // esc.state()
-              break;
-            case EscQueryType.Version:
-              // esc.version()
-              break;
-            case EscQueryType.Model:
-              // esc.model()
-              break;
-            case EscQueryType.BatteryVolume:
-              // esc.batteryVolume()
-              break;
-            case EscQueryType.ShutTime:
-              // esc.getShutdownTime()
-              break;
-          // case EscQueryType.PaperType:
-          //   esc.getPaperTypeQ3()
-          //   break;
-            case EscQueryType.BtName:
-              // esc.name()
-              break;
-          }
-          this.escQueryType = undefined;
-        }
-      });
+      // this.connectedDevice.notify(async (value: Uint8Array) => {
+      //   if (this.escQueryType !== undefined) {
+      //     switch (this.escQueryType) {
+      //       case EscQueryType.Info:
+      //         console.log('jdh')
+      //         break;
+      //       case EscQueryType.SN:
+      //         // esc.sn()
+      //         break;
+      //       case EscQueryType.Mac:
+      //         // esc.mac()
+      //         break;
+      //       case EscQueryType.State:
+      //         // esc.state()
+      //         break;
+      //       case EscQueryType.Version:
+      //         // esc.version()
+      //         break;
+      //       case EscQueryType.Model:
+      //         // esc.model()
+      //         break;
+      //       case EscQueryType.BatteryVolume:
+      //         // esc.batteryVolume()
+      //         break;
+      //       case EscQueryType.ShutTime:
+      //         // esc.getShutdownTime()
+      //         break;
+      //     // case EscQueryType.PaperType:
+      //     //   esc.getPaperTypeQ3()
+      //     //   break;
+      //       case EscQueryType.BtName:
+      //         // esc.name()
+      //         break;
+      //     }
+      //     this.escQueryType = undefined;
+      //   }
+      // });
     } catch (err) {
       console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
       promptAction.showToast({
