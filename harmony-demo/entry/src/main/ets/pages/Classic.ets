@@ -11,7 +11,7 @@ import { JluetoothDevice } from '@psdk/device-bluetooth-traits/build/index';
 import { PrinterUtil } from '../common/PrinterUtil';
 import { GenericTSPL } from '@psdk/tspl';
 import { GenericCPCL } from '@psdk/cpcl';
-import { GenericESC } from '@psdk/esc/build/impls/generic';
+import { GenericESC } from '@psdk/esc';
 import { EscQueryType } from '../common/EscTypes';
 
 @Entry
@@ -27,7 +27,7 @@ struct Index {
   private escQueryType?: EscQueryType = undefined
 
   aboutToAppear() {
-    this.ohosBluetoothClassic.discovered((devices) => {
+    this.ohosBluetoothClassic.discovered(async (devices) => {
       devices.forEach(device => {
         const isBle = this.suffix.find((item) => device.name.toUpperCase().endsWith(item));
         if (isBle) {
@@ -39,7 +39,6 @@ struct Index {
         }
         this.discoveredDevices.push(device);
       });
-      return Promise.resolve();
     });
     console.info('IndexComponent aboutToAppear');
   }
