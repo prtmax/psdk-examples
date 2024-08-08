@@ -15,12 +15,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.example.classic_bluetooth_demo.util.PrintUtil;
+import com.example.classic_bluetooth_demo.util.ReadMark;
 import com.printer.psdk.device.adapter.ConnectedDevice;
 import com.printer.psdk.device.adapter.types.WroteReporter;
 import com.printer.psdk.device.bluetooth.Bluetooth;
 import com.printer.psdk.device.bluetooth.ConnectListener;
 import com.printer.psdk.device.bluetooth.Connection;
-import com.printer.psdk.esc.ESC;
 import com.printer.psdk.esc.GenericESC;
 import com.printer.psdk.esc.args.EImage;
 import com.printer.psdk.esc.args.ELocation;
@@ -43,7 +44,6 @@ public class ESCActivity extends Activity {
   private static final String TAG = "MainActivity";
   private Connection connection;
   private TextView tv_connect_status;
-  private GenericESC esc;
   private Button continueButton;
   private Button labelButton;
   private Button statusButton;
@@ -105,7 +105,7 @@ public class ESCActivity extends Activity {
     connection = Bluetooth.getInstance().createConnectionClassic(device, new ConnectListener() {
       @Override
       public void onConnectSuccess(ConnectedDevice connectedDevice) {
-        esc = ESC.generic(connectedDevice);
+        PrintUtil.getInstance().init(connectedDevice);
         dataListen(connectedDevice);
       }
 
@@ -175,7 +175,7 @@ public class ESCActivity extends Activity {
               InputStream is = getResources().openRawResource(R.raw.dog);
               BitmapDrawable bmpDraw = new BitmapDrawable(is);
               Bitmap bitmap = bmpDraw.getBitmap();
-              GenericESC _gesc = esc.enable()
+              GenericESC _gesc = PrintUtil.getInstance().esc().enable()
                 .wakeup()
                 .location(ELocation.builder().location(Location.CENTER).build())
                 .lineDot(1)
@@ -209,7 +209,7 @@ public class ESCActivity extends Activity {
               InputStream is = getResources().openRawResource(R.raw.dog);
               BitmapDrawable bmpDraw = new BitmapDrawable(is);
               Bitmap bitmap = bmpDraw.getBitmap();
-              GenericESC _gesc = esc.enable()
+              GenericESC _gesc = PrintUtil.getInstance().esc().enable()
                 .wakeup()
                 .location(ELocation.builder().location(Location.CENTER).build())
                 .image(EImage.builder()
@@ -232,7 +232,7 @@ public class ESCActivity extends Activity {
         if (thickness.getText() != null && thickness.length() != 0) {
           String nongduzhi = thickness.getText().toString().trim();
           int thickness = Integer.valueOf(nongduzhi);
-          GenericESC _gesc = esc.thickness(thickness);
+          GenericESC _gesc = PrintUtil.getInstance().esc().thickness(thickness);
           safeWrite(_gesc);
         } else {
           show("请先输入浓度值");
@@ -243,7 +243,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         readMark = ReadMark.OPERATE_STATUS;
-        GenericESC _gesc = esc.state();
+        GenericESC _gesc = PrintUtil.getInstance().esc().state();
         safeWrite(_gesc);
       }
     });
@@ -251,7 +251,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         readMark = ReadMark.OPERATE_BATVOL;
-        GenericESC _gesc = esc.batteryVolume();
+        GenericESC _gesc = PrintUtil.getInstance().esc().batteryVolume();
         safeWrite(_gesc);
       }
     });
@@ -259,7 +259,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         readMark = ReadMark.OPERATE_PRINTERVER;
-        GenericESC _gesc = esc.printerVersion();
+        GenericESC _gesc = PrintUtil.getInstance().esc().printerVersion();
         safeWrite(_gesc);
       }
     });
@@ -267,7 +267,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         readMark = ReadMark.OPERATE_PRINTERSN;
-        GenericESC _gesc = esc.sn();
+        GenericESC _gesc = PrintUtil.getInstance().esc().sn();
         safeWrite(_gesc);
       }
     });
@@ -275,7 +275,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         readMark = ReadMark.OPERATE_PRINTERMODEL;
-        GenericESC _gesc = esc.model();
+        GenericESC _gesc = PrintUtil.getInstance().esc().model();
         safeWrite(_gesc);
       }
     });
@@ -283,7 +283,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         readMark = ReadMark.OPERATE_BTMAC;
-        GenericESC _gesc = esc.mac();
+        GenericESC _gesc = PrintUtil.getInstance().esc().mac();
         safeWrite(_gesc);
       }
     });
@@ -291,7 +291,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         readMark = ReadMark.OPERATE_BTNAME;
-        GenericESC _gesc = esc.name();
+        GenericESC _gesc = PrintUtil.getInstance().esc().name();
         safeWrite(_gesc);
       }
     });
@@ -299,7 +299,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         readMark = ReadMark.OPERATE_BTVER;
-        GenericESC _gesc = esc.version();
+        GenericESC _gesc = PrintUtil.getInstance().esc().version();
         safeWrite(_gesc);
       }
     });
@@ -307,7 +307,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         readMark = ReadMark.OPERATE_INFO;
-        GenericESC _gesc = esc.info();
+        GenericESC _gesc = PrintUtil.getInstance().esc().info();
         safeWrite(_gesc);
       }
     });
@@ -315,7 +315,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         readMark = ReadMark.NONE;
-        GenericESC _gesc = esc.setShutdownTime(60);
+        GenericESC _gesc = PrintUtil.getInstance().esc().setShutdownTime(60);
         safeWrite(_gesc);
       }
     });
@@ -323,7 +323,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         readMark = ReadMark.OPERATE_TIME;
-        GenericESC _gesc = esc.getShutdownTime();
+        GenericESC _gesc = PrintUtil.getInstance().esc().getShutdownTime();
         safeWrite(_gesc);
       }
     });
@@ -331,7 +331,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         readMark = ReadMark.OPERATE_PAPERTYPE;
-        GenericESC _gesc = esc.paperType(EPaperType.builder().type(EPaperType.Type.CONTINUOUS_REEL_PAPER).build());
+        GenericESC _gesc = PrintUtil.getInstance().esc().paperType(EPaperType.builder().type(EPaperType.Type.CONTINUOUS_REEL_PAPER).build());
         safeWrite(_gesc);
       }
     });
@@ -339,7 +339,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         readMark = ReadMark.OPERATE_PAPERTYPE;
-        GenericESC _gesc = esc.paperType(EPaperType.builder().type(EPaperType.Type.FOLDED_BLACK_LABEL_PAPER).build());
+        GenericESC _gesc = PrintUtil.getInstance().esc().paperType(EPaperType.builder().type(EPaperType.Type.FOLDED_BLACK_LABEL_PAPER).build());
         safeWrite(_gesc);
       }
     });
@@ -347,7 +347,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         readMark = ReadMark.OPERATE_NFC_PAPER;
-        GenericESC _gesc = esc.getNfcPaper();
+        GenericESC _gesc = PrintUtil.getInstance().esc().getNfcPaper();
         safeWrite(_gesc);
       }
     });
@@ -355,7 +355,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         readMark = ReadMark.OPERATE_NFC_UID;
-        GenericESC _gesc = esc.getNfcUID();
+        GenericESC _gesc = PrintUtil.getInstance().esc().getNfcUID();
         safeWrite(_gesc);
       }
     });
@@ -363,7 +363,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         readMark = ReadMark.OPERATE_NFC_USED_LENGTH;
-        GenericESC _gesc = esc.getNfcUsedLength();
+        GenericESC _gesc = PrintUtil.getInstance().esc().getNfcUsedLength();
         safeWrite(_gesc);
       }
     });
@@ -371,7 +371,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         readMark = ReadMark.OPERATE_NFC_REST_LENGTH;
-        GenericESC _gesc = esc.getNfcRestLength();
+        GenericESC _gesc = PrintUtil.getInstance().esc().getNfcRestLength();
         safeWrite(_gesc);
       }
     });
@@ -724,7 +724,7 @@ public class ESCActivity extends Activity {
                 InputStream is = getResources().openRawResource(R.raw.dog);
                 BitmapDrawable bmpDraw = new BitmapDrawable(is);
                 Bitmap bitmap = bmpDraw.getBitmap();
-                GenericESC _gesc = esc.enable()
+                GenericESC _gesc = PrintUtil.getInstance().esc().enable()
                   .wakeup()
                   .lineDot(10)
                   .image(EImage.builder()

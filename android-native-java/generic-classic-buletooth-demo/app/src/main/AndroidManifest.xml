@@ -33,6 +33,7 @@
         <activity android:name="com.example.classic_bluetooth_demo.TSPLActivity"/>
         <activity android:name="com.example.classic_bluetooth_demo.ESCActivity"/>
         <activity android:name="com.example.classic_bluetooth_demo.WIFIActivity"/>
+        <activity android:name="com.example.classic_bluetooth_demo.PDFActivity"/>
         <activity
           android:name=".zxing.activity.CaptureActivity"
           android:screenOrientation="portrait"

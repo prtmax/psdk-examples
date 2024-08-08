@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothDevice;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
+import com.example.classic_bluetooth_demo.util.ReadMark;
 import com.printer.psdk.device.adapter.ConnectedDevice;
 import com.printer.psdk.device.adapter.types.WroteReporter;
 import com.printer.psdk.device.bluetooth.Bluetooth;

@@ -1,0 +1,49 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\sangfor\\.ohos\\config\\default_bluetoothDemo_ttO9jvUQnqXkTFSf1fBmytQbZu_uBsBs_rtuK9CrOC0=.cer",
+          "storePassword": "0000001B256C1BC7B3415FED23FFF095330CB6F8C506DC8DE72EC077F45CB6556BE975E367263C1094D542",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001BBCDAAA700237D095B31BC1BBD785649B35F2C7D7ECA7ADE74FEE4639904B6BAB0F9D3B18E263E0",
+          "profile": "C:\\Users\\sangfor\\.ohos\\config\\default_bluetoothDemo_ttO9jvUQnqXkTFSf1fBmytQbZu_uBsBs_rtuK9CrOC0=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\sangfor\\.ohos\\config\\default_bluetoothDemo_ttO9jvUQnqXkTFSf1fBmytQbZu_uBsBs_rtuK9CrOC0=.p12"
+        }
+      }
+    ],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+        "compatibleSdkVersion": "5.0.0(12)",
+        "runtimeOS": "HarmonyOS"
+      }
+    ],
+    "buildModeSet": [
+      {
+        "name": "debug",
+      },
+      {
+        "name": "release"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    }
+  ]
+}

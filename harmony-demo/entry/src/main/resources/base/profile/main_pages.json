@@ -1,0 +1,9 @@
+{
+  "src": [
+    "pages/MainPage",
+    "pages/Classic",
+    "pages/Usb",
+    "pages/Ble",
+    "pages/Wifi"
+  ]
+}
