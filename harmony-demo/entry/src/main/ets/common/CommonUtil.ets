@@ -82,7 +82,8 @@ export class CommonUtil {
   }
 
   tsplTemplateCmd(): GenericTSPL {
-    return PrinterUtil.getInstance().tspl()
+    return PrinterUtil.getInstance()
+      .tspl()
       .clear()
       .page(new TPage({
         width: 76,
@@ -356,7 +357,8 @@ export class CommonUtil {
   }
 
   tsplImageCmd(): GenericTSPL {
-    return PrinterUtil.getInstance().tspl()
+    return PrinterUtil.getInstance()
+      .tspl()
       .clear()
       .page(new TPage({
         width: 76,
@@ -375,7 +377,8 @@ export class CommonUtil {
   }
 
   cpclTemplateCmd(): GenericCPCL {
-    return PrinterUtil.getInstance().cpcl()
+    return PrinterUtil.getInstance()
+      .cpcl()
       .clear()
       .page(new CPage({
         width: 608,
@@ -650,12 +653,16 @@ export class CommonUtil {
         content: "已验视",
         font: CFont.TSS24_MAX2
       }))
+      .mag(new CMag({
+        font: CFont.TSS24
+      }))
       .form(new CForm())//标签纸需要加定位指令
       .print()
   }
 
   cpclImageCmd(): GenericCPCL {
-    return PrinterUtil.getInstance().cpcl()
+    return PrinterUtil.getInstance()
+      .cpcl()
       .clear()
       .page(new CPage({
         width: 608,
@@ -673,7 +680,8 @@ export class CommonUtil {
   }
 
   escImageCmd(): GenericESC {
-    return PrinterUtil.getInstance().esc()
+    return PrinterUtil.getInstance()
+      .esc()
       .clear()
       .enable()
       .wakeup()
@@ -715,9 +723,9 @@ export class CommonUtil {
       case EscQueryType.ShutTime:
         esc.getShutdownTime()
         break;
-      // case EscQueryType.PaperType:
-      //   esc.getPaperTypeQ3()
-      //   break;
+    // case EscQueryType.PaperType:
+    //   esc.getPaperTypeQ3()
+    //   break;
       case EscQueryType.BtName:
         esc.name()
         break;
