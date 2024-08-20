@@ -44,9 +44,9 @@ public class ScanActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_scan);
     initViews();
-
-    Bluetooth.getInstance().setDiscoveryListener(discoveryListener);
+    //初始化sdk
     Bluetooth.getInstance().initialize(getApplication());
+    Bluetooth.getInstance().setDiscoveryListener(discoveryListener);
     checkPermissions();
   }
 

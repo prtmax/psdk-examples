@@ -15,9 +15,10 @@
 		<button @click="closeBluetooth" class="button">断开连接</button>
 		<button @click="writeModel" class="button">打印76*130模版</button>
 		<button @click="printImage" class="button">打印图片</button>
-		<button @click="writeTsplRibbonModel" class="button">打印热转印测试</button>
-		<!-- <button @click="downloadBmp" class="button">下载位图</button> -->
-
+<!--		<button @click="deleteBmp" class="button">删除位图</button>-->
+<!--		<button @click="downloadBmp" class="button">下载位图</button>-->
+<!--		<button @click="printBmp" class="button">打印位图</button>-->
+<!--		<button @click="printTest" class="button">打印测试</button>-->
 		<scroll-view class="canvas-buttons" scroll-y="true">
 			<block v-for="(item, index) in discoveredDevices" :key="item.deviceId">
 				<text class="status">设备名称:{{item.name}}</text>
@@ -34,7 +35,6 @@
 	import {
 		UniappBleBluetooth
 	} from "@psdk/device-ble-uniapp";
-	import Timeout from 'await-timeout';
 	import {
 		ConnectedDevice,
 		Lifecycle,
@@ -171,7 +171,6 @@
 					vm.connectedDevice = await vm.bluetooth.connect(device);
 					console.log(vm.connectedDevice);
 					vm.$printer.init(vm.connectedDevice);
-					await Timeout.set(500);
 					//监听打印机返回的数据
 					// vm.connectedDevice.notify((res) => {
 					// 	console.log(res.characteristicId);
@@ -185,7 +184,6 @@
 						title: '成功',
 					});
 					vm.connectedDeviceId = device.deviceId;
-					await Timeout.set(500);
 					uni.hideToast();
 				} catch (e) {
 					console.error(e);
@@ -201,8 +199,8 @@
 				// 把图片画到离屏 canvas 上
 				const canvas = uni.createOffscreenCanvas({
 					type: '2d',
-					width: 608,
-					height: 1040
+					width: 240,
+					height: 240
 				});
 				const ctx = canvas.getContext('2d');
 				// 创建一个图片
@@ -210,11 +208,11 @@
 				// 等待图片加载
 				await new Promise(resolve => {
 					image.onload = resolve;
-					image.src = "/static/yunda.png"; // 要加载的图片 url, 可以是base64
+					image.src = "/static/logo.png"; // 要加载的图片 url, 可以是base64
 				});
-				ctx.drawImage(image, 0, 0, 608, 1040);
+				ctx.drawImage(image, 0, 0, 240, 240);
 				console.log("toDataURL - ", ctx.canvas.toDataURL()) // 输出的图片
-				if (this.items[this.current].type == "tspl") {
+				if (this.items[this.current].type === "tspl") {
 					const tspl = await vm.$printer.tspl()
 						.page(new TPage({
 							width: 76,
@@ -231,7 +229,7 @@
 						)
 						.print();
 						await vm.safeWrite(tspl);
-				} else if (this.items[this.current].type == "cpcl") {
+				} else if (this.items[this.current].type === "cpcl") {
 					const cpcl = await vm.$printer.cpcl()
 						.page(new CPage({
 							width: 608,
@@ -296,51 +294,164 @@
 				uni.showLoading({
 					title: '正在下载中'
 				});
-				uni.request({
-					url: 'https://wisdom.jsc1319.com/uploads/20240628/9234f7cb54e2e9f0633de617d0a9a97c.bmp', // 在线图片文件的 URL
-					method: 'GET',
-					responseType: 'arraybuffer', // 设置响应类型为 arraybuffer，以获取二进制数据流
-					success: async (res) => {
-						console.log(res);
-						const arrayBufferData = res.data // 获取二进制数据流
-						console.log(this.ab2hex(arrayBufferData));
-						const data = new Uint8Array(arrayBufferData);
-						const vm = this;
-						try {
-							const psdk = await vm.$printer.tspl()
-								.downloadBmp('wx555.bmp',
-								data); //传入图片文件名(与后面要打印的时候传的文件名要保持一致)和图片文件数据流Uint8Array
-							await vm.safeWrite(psdk);
-						} catch (e) {
-							console.error(e);
-							uni.showToast({
-								title: '失败',
-							});
-						}
-					}
-				})
-				// const fs = uni.getFileSystemManager();
-				// const base64 = fs.readFileSync('static/wx.png', "base64"); //一定要是1位深的单色图bmp
-				// const arrayBufferData = uni.base64ToArrayBuffer(base64)
-				// const data = new Uint8Array(arrayBufferData);
-				// const vm = this;
-				// try {
-				// const psdk = await vm.$printer.tspl()
-				// 	.downloadBmp('wx222.bmp', data); //传入图片文件名(与后面要打印的时候传的文件名要保持一致)和图片文件数据流Uint8Array
-				// await vm.safeWrite(psdk);
-				// } catch (e) {
-				// 	console.error(e);
-				// 	uni.showToast({
-				// 		title: '失败',
-				// 	});
-				// }
+				// uni.request({
+				// 	url: 'https://wisdom.jsc1319.com/uploads/20240628/9234f7cb54e2e9f0633de617d0a9a97c.bmp', // 在线图片文件的 URL
+				// 	method: 'GET',
+				// 	responseType: 'arraybuffer', // 设置响应类型为 arraybuffer，以获取二进制数据流
+				// 	success: async (res) => {
+				// 		console.log(res);
+				// 		const arrayBufferData = res.data // 获取二进制数据流
+				// 		console.log(this.ab2hex(arrayBufferData));
+				// 		const data = new Uint8Array(arrayBufferData);
+				// 		const vm = this;
+				// 		try {
+				// 			const psdk = await vm.$printer.tspl()
+				// 				.downloadBmp('wx555.bmp',
+				// 				data); //传入图片文件名(与后面要打印的时候传的文件名要保持一致)和图片文件数据流Uint8Array
+				// 			await vm.safeWrite(psdk);
+				// 		} catch (e) {
+				// 			console.error(e);
+				// 			uni.showToast({
+				// 				title: '失败',
+				// 			});
+				// 		}
+				// 	}
+				// })
+				const fs = uni.getFileSystemManager();
+				const base64 = fs.readFileSync('static/wxz.png', "base64"); //一定要是1位深的单色图bmp
+				const arrayBufferData = uni.base64ToArrayBuffer(base64)
+				const data = new Uint8Array(arrayBufferData);
+				const vm = this;
+				try {
+					const psdk = await vm.$printer.tspl()
+						.downloadBmp('wx2222.bmp', data); //传入图片文件名(与后面要打印的时候传的文件名要保持一致)和图片文件数据流Uint8Array
+					await vm.safeWrite(psdk);
+				} catch (e) {
+					console.error(e);
+					uni.showToast({
+						title: '失败',
+					});
+				}
+			},
+			async printBmp() {
+				const vm = this;
+				try {
+					const tspl = await vm.$printer.tspl().clear()
+						.page(new TPage({
+							width: 76,
+							height: 130
+						}))
+						.putImage(new TPutImage({
+							x: 0,
+							y: 0,
+							filename: 'wx2222.bmp'
+						}))
+						.print();
+					await vm.safeWrite(tspl);
+				} catch (e) {
+					console.error(e);
+					uni.showToast({
+						title: '失败',
+					});
+				}
+			},
+			async deleteBmp() {
+				const vm = this;
+				try {
+					var fileName = 'wx2222.bmp'
+					const psdk = await vm.$printer.tspl()
+						.raw(Raw.text('KILL F,' + `"${fileName}"`));
+					console.log(psdk.command().string());
+					await vm.safeWrite(psdk);
+				} catch (e) {
+					console.error(e);
+					uni.showToast({
+						title: '失败',
+					});
+				}
+			},
+			async printTest() {
+				const vm = this;
+				try {
+					const psdk = await vm.$printer.tspl()
+						.raw(Raw.text("SIZE 100 mm,200 mm\n" +
+							"GAP 0 mm,0 mm\n" +
+							"TEXT 300,20,\"TSS32.BF2\",0,2,2,B1,\"软云\"\n" +
+							"TEXT 20,100,\"TSS32.BF2\",0,1,1,B1,\"客户:看看\"\n" +
+							"TEXT 350,100,\"TSS32.BF2\",0,1,1,B1,\"日期:2024-08-19\"\n" +
+							"TEXT 20,140,\"TSS32.BF2\",0,1,1,B1,\"电话:\"\n" +
+							"TEXT 350,140,\"TSS32.BF2\",0,1,1,B1,\"店员:22\"\n" +
+							"TEXT 20,180,\"TSS32.BF2\",0,1,1,B1,\"地址:\"\n" +
+							"TEXT 650,100,\"TSS16.BF2\",0,1,1,B1,\"扫码入库码\"\n" +
+							"QRCODE 650,120,L,4,A,0,M2,S7,\"B202408190912481724029968\"\n" +
+							"LINE 20,240,780,242,4,M3\n" +
+							"TEXT 20,300,\"TSS32.BF2\",0,1,1,B1,\"品名\"\n" +
+							"TEXT 720,300,\"TSS32.BF2\",0,1,1,B1,\"小计\"\n" +
+							"TEXT 650,300,\"TSS32.BF2\",0,1,1,B1,\"单价\"\n" +
+							"TEXT 580,300,\"TSS32.BF2\",0,1,1,B1,\"数量\"\n" +
+							"TEXT 170,300,\"TSS32.BF2\",0,1,1,B1,\"颜色\"\n" +
+							"TEXT 270,300,\"TSS32.BF2\",0,1,1,B1,\"m\"\n" +
+							"TEXT 330,300,\"TSS32.BF2\",0,1,1,B1,\"L\"\n" +
+							"LINE 20,340,780,342,4,M3\n" +
+							"TEXT 20,380,\"TSS32.BF2\",0,1,1,B1,\"目徒一下\"\n" +
+							"TEXT 20,440,\"TSS32.BF2\",0,1,1,B1,\"总数:4\"\n" +
+							"TEXT 170,380,\"TSS32.BF2\",0,1,1,B1,\"黑色\"\n" +
+							"TEXT 270,380,\"TSS32.BF2\",0,1,1,B1,\"1\"\n" +
+							"TEXT 320,380,\"TSS32.BF2\",0,1,1,B1,\"1\"\n" +
+							"TEXT 580,380,\"TSS32.BF2\",0,1,1,B1,\"2\"\n" +
+							"TEXT 650,380,\"TSS32.BF2\",0,1,1,B1,\"100\"\n" +
+							"TEXT 720,380,\"TSS32.BF2\",0,1,1,B1,\"200\"\n" +
+							"TEXT 170,440,\"TSS32.BF2\",0,1,1,B1,\"白色\"\n" +
+							"TEXT 270,440,\"TSS32.BF2\",0,1,1,B1,\"1\"\n" +
+							"TEXT 320,440,\"TSS32.BF2\",0,1,1,B1,\"1\"\n" +
+							"TEXT 580,440,\"TSS32.BF2\",0,1,1,B1,\"2\"\n" +
+							"TEXT 650,440,\"TSS32.BF2\",0,1,1,B1,\"100\"\n" +
+							"TEXT 720,440,\"TSS32.BF2\",0,1,1,B1,\"200\"\n" +
+							"TEXT 20,480,\"TSS32.BF2\",0,1,1,B1,\"总额:400\"\n" +
+							"LINE 20,540,780,542,4,M3\n" +
+							"TEXT 20,640,\"TSS32.BF2\",0,1,1,B1,\"付款方式:未付\"\n" +
+							"LINE 20,680,780,682,4,M3\n" +
+							"TEXT 20,720,\"TSS32.BF2\",0,1,1,B1,\"合计:\"\n" +
+							"TEXT 200,720,\"TSS32.BF2\",0,1,1,B1,\"总数:4\"\n" +
+							"TEXT 400,720,\"TSS32.BF2\",0,1,1,B1,\"总额:400.00\"\n" +
+							"TEXT 600,720,\"TSS32.BF2\",0,1,1,B1,\"实付:400\"\n" +
+							"LINE 20,760,780,762,4,M3\n" +
+							"TEXT 20,800,\"TSS24.BF2\",0,1,1,B1,\"上次欠款:0.00\"\n" +
+							"TEXT 250,800,\"TSS24.BF2\",0,1,1,B1,\"本单金额:400\"\n" +
+							"TEXT 450,800,\"TSS24.BF2\",0,1,1,B1,\"累计欠款:400.00\"\n" +
+							"TEXT 20,840,\"TSS24.BF2\",0,1,1,B1,\"上次余额:0\"\n" +
+							"TEXT 250,840,\"TSS24.BF2\",0,1,1,B1,\"本单金额:400\"\n" +
+							"TEXT 450,840,\"TSS24.BF2\",0,1,1,B1,\"剩下余额:0.00\"\n" +
+							"LINE 20,880,780,882,4,M3\n" +
+							"TEXT 20,920,\"TSS24.BF2\",0,1,1,B1,\"备注:\"\n" +
+							"TEXT 20,960,\"TSS24.BF2\",0,1,1,B1,\"经办人:22\"\n" +
+							"TEXT 20,1000,\"TSS24.BF2\",0,1,1,B1,\"电话:17305736725\"\n" +
+							"TEXT 20,1040,\"TSS24.BF2\",0,1,1,B1,\"地址:啊啊啊膜\"\n" +
+							"TEXT 20,1080,\"TSS24.BF2\",0,1,1,B1,\"开单时间:2024-08-19 09:12:48\"\n" +
+							"TEXT 20,1120,\"TSS24.BF2\",0,1,1,B1,\"温馨提醒:钱款、件数。请当面点清，离店概不负责\"\n" +
+							"TEXT 20,1160,\"TSS24.BF2\",0,1,1,B1,\"特别提醒：扫右上方二维码可一秒入库）\"\n" +
+							"TEXT 20,1200,\"TSS24.BF2\",0,1,1,B1,\"技术支持：hg3515（领使用）\"\n" +
+							"TEXT 20,1240,\"TSS24.BF2\",0,1,1,B1,\"店铺公告:兔子\"\n" +
+							"LINE 20,1320,780,1322,4,M3\n" +
+							"PUTBMP 20,1360,\"\"\n" +
+							"PUTBMP 270,1360,\"\"\n" +
+							"PUTBMP 520,1360,\"\"\n" +
+							"PRINT 1,1"));
+					console.log(psdk.command().string());
+					await vm.safeWrite(psdk);
+				} catch (e) {
+					console.error(e);
+					uni.showToast({
+						title: '失败',
+					});
+				}
 			},
 			async safeWrite(psdk) {
 				const vm = this;
 				try {
 					if (!vm.isPrint) {
 						vm.isPrint = true;
-						const report = await psdk.write();//不分包发送，如果不会丢包可以不分包
+						const report = await psdk.write(); //不分包发送，如果不会丢包可以不分包
 						// const report = await psdk.write({
 						// 	enableChunkWrite: true,
 						// 	chunkSize: 20
@@ -644,7 +755,10 @@
 							x: 598 - 56 - 16 - 120 + 17,
 							y: 696 + 80 + 136 + 11 + 6,
 							content: "已验视",
-							font: CFont.CFont.TSS24_MAX2
+							font: CFont.TSS24_MAX2
+						}))
+						.mag(new CMag({
+							font: CFont.TSS24
 						}))
 						.form(new CForm()) //标签纸需要加定位指令
 						.print();

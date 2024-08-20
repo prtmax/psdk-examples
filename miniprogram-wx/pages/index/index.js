@@ -19,6 +19,7 @@ import {
   CPage,
   CText,
   CFont,
+  CMag,
 } from "@psdk/cpcl";
 import {
   TSPL,
@@ -108,7 +109,7 @@ Page({
   //连接设备
   connectTO: async function (e) {
     let that = this;
-    
+
     console.log(e);
     wx.showLoading();
     // 连接设备
@@ -435,10 +436,16 @@ Page({
         bottomRightY: 968 - 11,
         lineWidth: 2
       }))
+      .mag(new CMag({
+        font: CFont.TSS24_MAX2
+      })) //字号有用到MAX的或者使用MAX后要恢复成没有MAX的需要加个mag指令
       .text(new CText({
         x: 598 - 56 - 16 - 120 + 17,
         y: 696 + 80 + 136 + 11 + 6,
         content: "已验视",
+        font: CFont.TSS24_MAX2
+      }))
+      .mag(new CMag({
         font: CFont.TSS24
       }))
       .form(new CForm())//定位指令
@@ -830,7 +837,7 @@ Page({
 
   },
   onLoad() {
-   
+
   },
   radioChange(e) {
     let that = this;
