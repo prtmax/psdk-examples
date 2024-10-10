@@ -2,12 +2,9 @@ package com.example.classic_bluetooth_demo;
 
 
 import android.app.Activity;
-import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.View;
 import android.widget.*;
 import com.printer.psdk.cpcl.CPCL;
@@ -18,8 +15,6 @@ import com.printer.psdk.device.adapter.ReadOptions;
 import com.printer.psdk.device.adapter.types.WroteReporter;
 import com.printer.psdk.device.net.NetConnectedDevice;
 import com.printer.psdk.device.net.Network;
-import com.printer.psdk.device.usb.USB;
-import com.printer.psdk.device.usb.USBConnectedDevice;
 import com.printer.psdk.frame.father.PSDK;
 import com.printer.psdk.imagep.android.AndroidSourceImage;
 import com.printer.psdk.tspl.GenericTSPL;
