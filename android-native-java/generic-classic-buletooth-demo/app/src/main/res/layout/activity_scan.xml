@@ -5,12 +5,28 @@
   android:layout_height="match_parent"
   android:background="#fff"
   android:orientation="vertical">
-  <Button
-    android:id="@+id/bt_usb"
+  <LinearLayout
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:text="USB打印">
-  </Button>
+    android:orientation="horizontal">
+    <Button
+      android:id="@+id/bt_usb"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:gravity="center"
+      android:text="USB打印">
+    </Button>
+    <Button
+      android:id="@+id/bt_net"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:gravity="center"
+      android:text="NET打印">
+    </Button>
+  </LinearLayout>
+
   <EditText
     android:id="@+id/edit_name"
     android:layout_width="match_parent"

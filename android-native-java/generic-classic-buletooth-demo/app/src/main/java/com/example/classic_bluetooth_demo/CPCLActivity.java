@@ -17,6 +17,7 @@ import com.printer.psdk.cpcl.GenericCPCL;
 import com.printer.psdk.cpcl.args.*;
 import com.printer.psdk.cpcl.mark.CodeRotation;
 import com.printer.psdk.cpcl.mark.CodeType;
+import com.printer.psdk.cpcl.mark.CorrectLevel;
 import com.printer.psdk.cpcl.mark.Font;
 import com.printer.psdk.device.adapter.ConnectedDevice;
 import com.printer.psdk.device.adapter.ReadOptions;
@@ -168,7 +169,7 @@ public class CPCLActivity extends Activity {
       @Override
       public void onClick(View v) {
         GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().page(CPage.builder().width(100).height(100).build())
-          .qrcode(CQRCode.builder().x(10).y(10).content("1236549879").width(100).build())
+          .qrcode(CQRCode.builder().x(10).y(10).content("1236549879").width(2).build())
           .print(CPrint.builder().build());
         String result = safeWriteAndRead(_gcpcl);
         show(result);
@@ -267,7 +268,9 @@ public class CPCLActivity extends Activity {
       .text(CText.builder().textX(598 - 56 - 5).textY(696 + 80 + 106).font(Font.TSS24).content("联").build())
       .text(CText.builder().textX(12 + 8).textY(696 + 80 + 136 + 22 - 5).font(Font.TSS24).content("物品：" + "几个快递" + " " + "12kg").build())
       .box(CBox.builder().topLeftX(598 - 56 - 16 - 120).topLeftY(696 + 80 + 136 + 11).bottomRightX(598 - 56 - 16 - 16).bottomRightY(968 - 11).lineWidth(2).build())
-      .text(CText.builder().textX(598 - 56 - 16 - 120 + 17).textY(696 + 80 + 136 + 11 + 6).font(Font.TSS24).content("已验视").build())
+      .mag(CMag.builder().font(Font.TSS24_MAX1).build())//放大倍数
+      .text(CText.builder().textX(598 - 56 - 16 - 120 + 17).textY(696 + 80 + 136 + 11 + 6).font(Font.TSS24_MAX1).bold(true).content("已验视").build())
+      .mag(CMag.builder().font(Font.TSS24).build())//还原
       .form()//标签定位指令
       .print(CPrint.builder().mode(CPrint.Mode.MIRROR).build());
     String result = safeWriteAndRead(_gcpcl);

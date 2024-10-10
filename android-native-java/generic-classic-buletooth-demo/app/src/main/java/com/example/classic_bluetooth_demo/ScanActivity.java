@@ -32,7 +32,7 @@ public class ScanActivity extends Activity {
 
   private myAdapter listAdapter;
   private TextView tvEmpty;
-  private Button bt_Scan,bt_usb;
+  private Button bt_Scan, bt_usb, bt_net;
   private EditText edit_name;
   private final List<Device> devList = new ArrayList<>();
   private final List<Device> searchList = new ArrayList<>();
@@ -132,6 +132,7 @@ public class ScanActivity extends Activity {
     tvEmpty = findViewById(R.id.tvEmpty);
     bt_Scan = findViewById(R.id.bt_Scan);
     bt_usb = findViewById(R.id.bt_usb);
+    bt_net = findViewById(R.id.bt_net);
     edit_name = findViewById(R.id.edit_name);
     listAdapter = new myAdapter(this, devList);
     lv.setAdapter(listAdapter);
@@ -140,6 +141,13 @@ public class ScanActivity extends Activity {
       @Override
       public void onClick(View view) {
         Intent intent = new Intent(ScanActivity.this, USBActivity.class);
+        startActivity(intent);
+      }
+    });
+    bt_net.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        Intent intent = new Intent(ScanActivity.this, NETActivity.class);
         startActivity(intent);
       }
     });

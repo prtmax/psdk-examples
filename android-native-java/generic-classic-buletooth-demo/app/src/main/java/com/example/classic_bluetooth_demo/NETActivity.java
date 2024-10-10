@@ -16,6 +16,8 @@ import com.printer.psdk.cpcl.args.*;
 import com.printer.psdk.cpcl.mark.CodeRotation;
 import com.printer.psdk.device.adapter.ReadOptions;
 import com.printer.psdk.device.adapter.types.WroteReporter;
+import com.printer.psdk.device.net.NetConnectedDevice;
+import com.printer.psdk.device.net.Network;
 import com.printer.psdk.device.usb.USB;
 import com.printer.psdk.device.usb.USBConnectedDevice;
 import com.printer.psdk.frame.father.PSDK;
@@ -32,36 +34,33 @@ import java.io.IOException;
 import java.io.InputStream;
 
 
-public class USBActivity extends Activity {
+public class NETActivity extends Activity {
   private GenericTSPL tspl;
   private GenericCPCL cpcl;
-  private USB usb;
-  private Button switch_Usb;
+  private Network network;
+  private Button switch_net;
   private Button printImage;
   private Button printModel;
-  private Button printPdf;
-  private Button status_btn;
+  private EditText et_address;
+  private EditText et_port;
   private CheckBox cb_compress;
   private CheckBox cb_cut;
   private CheckBox cb_position;
-  private Handler myHandler = new MyHandler();
   private boolean isOpen = false;
   private String curCmd = "tspl";
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
-    setContentView(R.layout.activity_usb);
-    switch_Usb = (Button) findViewById(R.id.switch_usb);
-    printImage = (Button) findViewById(R.id.printImage);
-    printModel = (Button) findViewById(R.id.printModel);
-    printPdf = (Button) findViewById(R.id.printPdf);
-    status_btn = (Button) findViewById(R.id.status);
-    cb_compress = (CheckBox) findViewById(R.id.cb_compress);
-    cb_cut = (CheckBox) findViewById(R.id.cb_cut);
-    cb_position = (CheckBox) findViewById(R.id.cb_position);
-    usb = new USB(this, myHandler);
-    usb.register_USB();
+    setContentView(R.layout.activity_net);
+    switch_net = findViewById(R.id.switch_net);
+    printImage = findViewById(R.id.printImage);
+    printModel = findViewById(R.id.printModel);
+    cb_compress = findViewById(R.id.cb_compress);
+    cb_cut = findViewById(R.id.cb_cut);
+    cb_position = findViewById(R.id.cb_position);
+    et_address = findViewById(R.id.et_address);
+    et_port = findViewById(R.id.et_port);
 
     RadioGroup radioGroup = findViewById(R.id.radioGroup);
     radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -71,44 +70,43 @@ public class USBActivity extends Activity {
         curCmd = radioButton.getText().toString();
       }
     });
-    switch_Usb.setOnClickListener(new View.OnClickListener() {
+    switch_net.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        if (isOpen) {
-          usb.closeUsb();
-          switch_Usb.setText("打开USB");
+        if (isOpen && network != null) {
+          try {
+            network.close();
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+          switch_net.setText("连接");
           isOpen = false;
         } else {
-          USBConnectedDevice usbConnectedDevice = usb.openUsb();
-          if (usbConnectedDevice != null) {
-            tspl = TSPL.generic(usbConnectedDevice);
-            cpcl = CPCL.generic(usbConnectedDevice);
-            switch_Usb.setText("关闭USB");
+          String address = et_address.getText().toString();
+          String port = et_port.getText().toString();
+          if (address.isEmpty() || port.isEmpty()) {
+            showMessage("地址或端口号为空");
+          }
+          network = new Network(address, Integer.parseInt(port));
+          NetConnectedDevice netConnectedDevice = network.connect();
+          if (netConnectedDevice != null) {
+            tspl = TSPL.generic(netConnectedDevice);
+            cpcl = CPCL.generic(netConnectedDevice);
+            switch_net.setText("断开");
             isOpen = true;
           } else {
-            showMessage("打开失败，检查是否有可用的USB端口");
+            showMessage("连接失败，检查地址是否可用");
           }
 
         }
       }
 
     });
-    printPdf.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        if (!isOpen) {
-          showMessage("未打开USB端口");
-          return;
-        }
-        Intent intent = new Intent(USBActivity.this, PDFActivity.class);
-        startActivity(intent);
-      }
-    });
     printImage.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
         if (!isOpen) {
-          showMessage("未打开USB端口");
+          showMessage("未连接");
           return;
         }
         imageTest(1);
@@ -118,7 +116,7 @@ public class USBActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isOpen) {
-          showMessage("未打开USB端口");
+          showMessage("未连接");
           return;
         }
         if (curCmd.equals("tspl")) {
@@ -206,35 +204,15 @@ public class USBActivity extends Activity {
       }
     });
 
-    status_btn.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        if (!isOpen) {
-          showMessage("未打开USB端口");
-          return;
-        }
-        GenericTSPL _gtspl = tspl.state();
-        String result = safeWriteAndRead(_gtspl);
-        showMessage(result);
-      }
-    });
-
   }
+
   @Override
   protected void onResume() {
     super.onResume();
-    if(!isOpen){
-      USBConnectedDevice usbConnectedDevice = usb.openUsb();
-      if (usbConnectedDevice != null) {
-        tspl = TSPL.generic(usbConnectedDevice);
-        cpcl = CPCL.generic(usbConnectedDevice);
-        switch_Usb.setText("关闭USB");
-        isOpen = true;
-      }
-    }
   }
+
   public void imageTest(int i) {
-    InputStream is = USBActivity.this.getResources().openRawResource(getImageID("p" + i));
+    InputStream is = NETActivity.this.getResources().openRawResource(getImageID("p" + i));
     BitmapDrawable bmpDraw = new BitmapDrawable(is);
     Bitmap rawBitmap = bmpDraw.getBitmap();
     rawBitmap = Bitmap.createScaledBitmap(rawBitmap, 800, 1200, true);
@@ -282,77 +260,12 @@ public class USBActivity extends Activity {
     }
   }
 
-//  public void cmdToBitmapWithPrint() {
-//    try {
-//      InputStream is = getResources().openRawResource(R.raw.logo);
-//      BitmapDrawable bmpDraw = new BitmapDrawable(is);
-//      Bitmap logoBitmap = bmpDraw.getBitmap();
-//      CommandToBitmap command = new CommandToBitmap();
-//      command.setPage(76 * 8, 130 * 8);
-//      command.drawImage(10, 10, logoBitmap, 50, 50);
-//      command.drawText(10, 80, "testtesttest", 2, true);
-//      command.drawQRCode(10, 200, "testtesttest", 100, CorrectLevel.L);
-//      command.drawBarCode(10, 350, 80, 150, "123456456", 0, 0);
-//      AndroidSourceImage printBitmap = command.render().getBitmap();
-//      GenericTSPL _gtspl = tspl.page(TPage.builder().width(76).height(130).build())
-//        .direction(
-//          TDirection.builder()
-//            .direction(TDirection.Direction.UP_OUT)
-//            .mirror(TDirection.Mirror.NO_MIRROR)
-//            .build()
-//        )
-//        .gap(true)
-//        .cut(true)
-//        .cls()
-//        .image(
-//          TImage.builder()
-//            .image(printBitmap)
-//            .compress(true)
-//            .build()
-//        )
-//        .print(1);
-//      safeWrite(_gtspl);
-//    } catch (Exception e) {
-//      e.printStackTrace();
-//    }
-//  }
-
 
   //第一个参数文件名称（不加后缀）， 第二个参数文件夹名称，第三个参数包名
   public int getImageID(String name) {
-    return getResources().getIdentifier(name, "raw",
-      getPackageName());
+    return getResources().getIdentifier(name, "raw", getPackageName());
   }
 
-  private class MyHandler extends Handler {
-    @Override
-    public void handleMessage(Message msg) {
-      switch (msg.what) {
-        case USB.OPEN:
-          showMessage("USB已打开！");
-          switch_Usb.setText("关闭USB");
-          isOpen = true;
-          break;
-        case USB.ATTACHED:
-          showMessage("监测到设备！");
-          USBConnectedDevice usbConnectedDevice = usb.openUsb();
-          if (usbConnectedDevice != null) {
-            tspl = TSPL.generic(usbConnectedDevice);
-            cpcl = CPCL.generic(usbConnectedDevice);
-            switch_Usb.setText("关闭USB");
-            isOpen = true;
-          }
-          break;
-        case USB.DETACHED:
-          showMessage("设备已移除！");
-          switch_Usb.setText("打开USB");
-          isOpen = false;
-          break;
-
-      }
-    }
-
-  }
 
   //    private void dataListen(ConnectedDevice connectedDevice) {
 //        DataListener.with(connectedDevice).listen(new ListenAction() {
@@ -395,8 +308,12 @@ public class USBActivity extends Activity {
   @Override
   protected void onDestroy() {
     super.onDestroy();
-    if (usb != null) {
-      usb.unregister_USB();
+    if (network != null) {
+      try {
+        network.close();
+      } catch (IOException e) {
+        e.printStackTrace();
+      }
     }
   }
 

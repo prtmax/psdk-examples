@@ -9,10 +9,11 @@
     <!-- 安卓6蓝牙权限，必须打开定位权限 -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN"/>
     <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
     <uses-permission android:name="android.permission.BLUETOOTH_PRIVILEGED"/>
+
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
             android:allowBackup="true"
             android:icon="@mipmap/ic_launcher"
@@ -34,6 +35,7 @@
         <activity android:name="com.example.classic_bluetooth_demo.ESCActivity"/>
         <activity android:name="com.example.classic_bluetooth_demo.WIFIActivity"/>
         <activity android:name="com.example.classic_bluetooth_demo.PDFActivity"/>
+        <activity android:name="com.example.classic_bluetooth_demo.NETActivity"/>
         <activity
           android:name=".zxing.activity.CaptureActivity"
           android:screenOrientation="portrait"
