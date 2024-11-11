@@ -39,6 +39,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 
 public class ESCActivity extends Activity {
   private static final String TAG = "MainActivity";
@@ -66,6 +67,7 @@ public class ESCActivity extends Activity {
   private final int StatusFLAG = 0x11;
   private final int PaperErrorFLAG = 0x12;
   private final int StartOrStopFLAG = 0x13;
+  private final int BatteryStatusFLAG = 0x14;
   private ReadMark readMark = ReadMark.NONE;
   private boolean isSending = false;
   private ProgressDialog progressDialog;
@@ -395,32 +397,67 @@ public class ESCActivity extends Activity {
       .listen(new ListenAction() {
         @Override
         public void action(byte[] received) {
+          if (received.length == 0) return;
           Log.e("action", ByteArrToHex(received));
-          if (received[0] == (byte) 0xFE) {
+          // 检查是否是粘包数据
+          if (received[0] == (byte) 0xFF || received[0] == (byte) 0xFB ||
+            received[0] == (byte) 0xFE || received[0] == (byte) 0xFD) {
+            int index = 0;
+            while (index < received.length) {
+              if (received.length - index >= 2) {
+                // 提取前两个字节
+                byte[] value = Arrays.copyOfRange(received, index, index + 2);
+                index += 2; // 移除前两位
+                // 根据数据类型处理
+                switch (value[0]) {
+                  case (byte) 0xFE:
+                    Message messagePaperError = new Message();
+                    messagePaperError.what = PaperErrorFLAG;
+                    messagePaperError.obj = value;
+                    myHandler.sendMessage(messagePaperError);
+                    break;
+                  case (byte) 0xFD:
+                    Message messageStartOrStop = new Message();
+                    messageStartOrStop.what = StartOrStopFLAG;
+                    messageStartOrStop.obj = value;
+                    myHandler.sendMessage(messageStartOrStop);
+                    break;
+                  case (byte) 0xFF:
+                    Message messageStatus = new Message();
+                    messageStatus.what = StatusFLAG;
+                    messageStatus.obj = value;
+                    myHandler.sendMessage(messageStatus);
+                    break;
+                  case (byte) 0xFB:
+                    Message messageBatteryStatus = new Message();
+                    messageBatteryStatus.what = BatteryStatusFLAG;
+                    messageBatteryStatus.obj = value;
+                    myHandler.sendMessage(messageBatteryStatus);
+                    break;
+                  default:
+                    Message message = new Message();
+                    message.what = ReceiveFLAG;
+                    message.obj = value;
+                    myHandler.sendMessage(message);
+                    break;
+                }
+              } else {
+                // 如果不足两个字节，直接处理剩余数据
+                byte[] value = Arrays.copyOfRange(received, index, received.length);
+                Message message = new Message();
+                message.what = ReceiveFLAG;
+                message.obj = value;
+                myHandler.sendMessage(message);
+                index = received.length; // 结束循环
+              }
+            }
+          } else {
+            // 如果不是粘包数据，直接处理
             Message message = new Message();
-            message.what = PaperErrorFLAG;
+            message.what = ReceiveFLAG;
             message.obj = received;
             myHandler.sendMessage(message);
-            return;
           }
-          if (received[0] == (byte) 0xFD) {
-            Message message = new Message();
-            message.what = StartOrStopFLAG;
-            message.obj = received;
-            myHandler.sendMessage(message);
-            return;
-          }
-          if (received.length == 2 && received[0] == (byte) 0xFF) {
-            Message message = new Message();
-            message.what = StatusFLAG;
-            message.obj = received;
-            myHandler.sendMessage(message);
-            return;
-          }
-          Message message = new Message();
-          message.what = ReceiveFLAG;
-          message.obj = received;
-          myHandler.sendMessage(message);
         }
       })
       .start();
@@ -481,6 +518,9 @@ public class ESCActivity extends Activity {
         case StartOrStopFLAG:
           onStartOrStopSend((byte[]) msg.obj);
           break;
+        case BatteryStatusFLAG:
+          onBatteryStatus((byte[]) msg.obj);
+          break;
       }
     }
   };
@@ -498,10 +538,14 @@ public class ESCActivity extends Activity {
     if ((bytes[1] & 0x02) == 0x02) {
       Log.e(TAG, "开盖");
       show("开盖");
+      //开盖 缺纸 固件会取消打印
+      onCancelPrint();
     }
     if ((bytes[1] & 0x04) == 0x04) {
       Log.e(TAG, "缺纸");
       show("缺纸");
+      //开盖 缺纸 固件会取消打印
+      onCancelPrint();
     }
     if ((bytes[1] & 0x08) == 0x08) {
       Log.e(TAG, "低压");
@@ -524,6 +568,7 @@ public class ESCActivity extends Activity {
         show("onPaperError: 不干胶缝隙纸");
         break;
     }
+    onCancelPrint();
   }
 
   public void onStartOrStopSend(byte[] bytes) {
@@ -531,11 +576,36 @@ public class ESCActivity extends Activity {
       case 0x01:
         Log.e(TAG, "onStartOrStopSend: 终止命令");
         show("终止命令:FD 01");
+        onCancelPrint();
         break;
       case 0x02:
         Log.e(TAG, "onStartOrStopSend: 继续开始命令");
         show("继续开始命令:FD 02");
         break;
+    }
+  }
+
+  public void onBatteryStatus(byte[] bytes) {
+    switch (bytes[1]) {
+      case 0x00:
+        show("电池状态:正常");
+        break;
+      case 0x01:
+        show("电池状态:低电");
+        break;
+      case 0x02:
+        show("电池状态:充电中");
+        break;
+      case 0x03:
+        show("电池状态:充电完成");
+        break;
+    }
+  }
+
+  public void onCancelPrint() {
+    Log.e(TAG, "取消打印");
+    if (readMark == ReadMark.OPERATE_PRINT) {
+      readMark = ReadMark.NONE;
     }
   }
 
@@ -716,7 +786,7 @@ public class ESCActivity extends Activity {
         break;
       case OPERATE_PRINT:
         readMark = ReadMark.NONE;
-        if (ByteArrToHex(bytes).equals("4F4B") || ByteArrToHex(bytes).equals("AA")) {//打印成功 比如标签纸打印完成会返回4F4B 连续纸打印完成会返回AA
+        if (ByteArrToHex(bytes).contains("4F4B") || ByteArrToHex(bytes).contains("AA")) {//打印成功 比如标签纸打印完成会返回4F4B 连续纸打印完成会返回AA
           if (connection.isConnected() && sampleNumber > 0) {
             new Thread(new Runnable() {
               @Override
