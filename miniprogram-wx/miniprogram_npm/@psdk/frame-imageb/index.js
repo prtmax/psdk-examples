@@ -4,7 +4,7 @@ var __DEFINE__ = function(modId, func, req) { var m = { exports: {}, _tempexport
 var __REQUIRE__ = function(modId, source) { if(!__MODS__[modId]) return require(source); if(!__MODS__[modId].status) { var m = __MODS__[modId].m; m._exports = m._tempexports; var desp = Object.getOwnPropertyDescriptor(m, "exports"); if (desp && desp.configurable) Object.defineProperty(m, "exports", { set: function (val) { if(typeof val === "object" && val !== m._exports) { m._exports.__proto__ = val.__proto__; Object.keys(val).forEach(function (k) { m._exports[k] = val[k]; }); } m._tempexports = val }, get: function () { return m._tempexports; } }); __MODS__[modId].status = 1; __MODS__[modId].func(__MODS__[modId].req, m, m.exports); } return __MODS__[modId].m.exports; };
 var __REQUIRE_WILDCARD__ = function(obj) { if(obj && obj.__esModule) { return obj; } else { var newObj = {}; if(obj != null) { for(var k in obj) { if (Object.prototype.hasOwnProperty.call(obj, k)) newObj[k] = obj[k]; } } newObj.default = obj; return newObj; } };
 var __REQUIRE_DEFAULT__ = function(obj) { return obj && obj.__esModule ? obj.default : obj; };
-__DEFINE__(1720570344625, function(require, module, exports) {
+__DEFINE__(1724665017873, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -23,8 +23,8 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./process"), exports);
 
-}, function(modId) {var map = {"./process":1720570344626}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1720570344626, function(require, module, exports) {
+}, function(modId) {var map = {"./process":1724665017874}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1724665017874, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -48,8 +48,8 @@ __exportStar(require("./impls/threshold"), exports);
 __exportStar(require("./pbit/pbita"), exports);
 __exportStar(require("./basic/threshold"), exports);
 
-}, function(modId) { var map = {"./process":1720570344627,"./impls/gray":1720570344628,"./impls/reverse":1720570344631,"./impls/threshold":1720570344632,"./pbit/pbita":1720570344634,"./basic/threshold":1720570344633}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1720570344627, function(require, module, exports) {
+}, function(modId) { var map = {"./process":1724665017875,"./impls/gray":1724665017876,"./impls/reverse":1724665017879,"./impls/threshold":1724665017880,"./pbit/pbita":1724665017882,"./basic/threshold":1724665017881}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1724665017875, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ImagebProcesser = void 0;
@@ -58,7 +58,7 @@ class ImagebProcesser {
 exports.ImagebProcesser = ImagebProcesser;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1720570344628, function(require, module, exports) {
+__DEFINE__(1724665017876, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GrayscaleImage = void 0;
@@ -83,8 +83,8 @@ class GrayscaleImage extends process_1.ImagebProcesser {
 }
 exports.GrayscaleImage = GrayscaleImage;
 
-}, function(modId) { var map = {"../process":1720570344627,"../../types":1720570344629,"../../tools":1720570344630}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1720570344629, function(require, module, exports) {
+}, function(modId) { var map = {"../process":1724665017875,"../../types":1724665017877,"../../tools":1724665017878}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1724665017877, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ThresholdValueMode = exports.ProcessedImage = exports.ProcessedResult = void 0;
@@ -117,7 +117,7 @@ var ThresholdValueMode;
 })(ThresholdValueMode = exports.ThresholdValueMode || (exports.ThresholdValueMode = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1720570344630, function(require, module, exports) {
+__DEFINE__(1724665017878, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ImagebTool = void 0;
@@ -177,7 +177,7 @@ class ImagebTool {
 exports.ImagebTool = ImagebTool;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1720570344631, function(require, module, exports) {
+__DEFINE__(1724665017879, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ReverseColorImage = void 0;
@@ -202,8 +202,8 @@ class ReverseColorImage extends process_1.ImagebProcesser {
 }
 exports.ReverseColorImage = ReverseColorImage;
 
-}, function(modId) { var map = {"../process":1720570344627,"../../types":1720570344629,"../../tools":1720570344630}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1720570344632, function(require, module, exports) {
+}, function(modId) { var map = {"../process":1724665017875,"../../types":1724665017877,"../../tools":1724665017878}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1724665017880, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.ThresholdImage = void 0;
@@ -215,8 +215,8 @@ class ThresholdImage extends threshold_1.AbstractThreshold {
 }
 exports.ThresholdImage = ThresholdImage;
 
-}, function(modId) { var map = {"../basic/threshold":1720570344633}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1720570344633, function(require, module, exports) {
+}, function(modId) { var map = {"../basic/threshold":1724665017881}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1724665017881, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PinedThresholdValue = exports.ThresholdValue = exports.AbstractThreshold = void 0;
@@ -252,8 +252,8 @@ class PinedThresholdValue extends ThresholdValue {
 }
 exports.PinedThresholdValue = PinedThresholdValue;
 
-}, function(modId) { var map = {"../process":1720570344627,"../../types":1720570344629,"../../tools":1720570344630}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1720570344634, function(require, module, exports) {
+}, function(modId) { var map = {"../process":1724665017875,"../../types":1724665017877,"../../tools":1724665017878}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1724665017882, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -289,6 +289,7 @@ class Pbita extends process_1.ImagebProcesser {
     constructor(options) {
         super();
         this.threshold = options.threshold;
+        this.command = options.command;
         this.compress = options.compress;
         this.reverse = options.reverse;
     }
@@ -326,7 +327,7 @@ class Pbita extends process_1.ImagebProcesser {
             });
         }
         if (this.compress) {
-            outputBytes = pako.deflate(outputBytes);
+            outputBytes = pako.deflate(outputBytes, { windowBits: 10 });
         }
         return new types_1.ProcessedResult({
             origin: input,
@@ -339,6 +340,14 @@ class Pbita extends process_1.ImagebProcesser {
         });
     }
     _topbitimg(canvas, width, height) {
+        if (this.command == 'tspl' && !this.compress) {
+            return this._topbitimgReverse(this._topbitimgRaw(canvas, width, height));
+        }
+        else {
+            return this._topbitimgRaw(canvas, width, height);
+        }
+    }
+    _topbitimgRaw(canvas, width, height) {
         var _a;
         const ctx = canvas.getContext('2d');
         let eWidth = Math.floor((width % 8 === 0) ? (width / 8) : (width / 8 + 1));
@@ -376,6 +385,16 @@ class Pbita extends process_1.ImagebProcesser {
         }
         return new Uint8Array(bytes);
     }
+    _topbitimgReverse(originBytes) {
+        if (originBytes == null) {
+            return null;
+        }
+        const bytes = [];
+        for (let i = 0; i < originBytes.length; i++) {
+            bytes[i] = ~originBytes[i];
+        }
+        return new Uint8Array(bytes);
+    }
     fastExtractPixel(imageData, x, y, w, h) {
         let i, j;
         let result = [];
@@ -397,8 +416,8 @@ class Pbita extends process_1.ImagebProcesser {
 }
 exports.Pbita = Pbita;
 
-}, function(modId) { var map = {"../process":1720570344627,"../../types":1720570344629,"../impls/gray":1720570344628,"../impls/reverse":1720570344631}; return __REQUIRE__(map[modId], modId); })
-return __REQUIRE__(1720570344625);
+}, function(modId) { var map = {"../process":1724665017875,"../../types":1724665017877,"../impls/gray":1724665017876,"../impls/reverse":1724665017879}; return __REQUIRE__(map[modId], modId); })
+return __REQUIRE__(1724665017873);
 })()
 //miniprogram-npm-outsideDeps=["pako"]
 //# sourceMappingURL=index.js.map
