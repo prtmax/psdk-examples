@@ -11,40 +11,21 @@
 				</label>
 			</radio-group>
 		</view>
-		<button @click="discovery" class="button">开始搜索</button>
-		<button @click="closeBluetooth" class="button">断开连接</button>
+		<button @click="openUSB" class="button">打开usb</button>
+		<button @click="closeUSB" class="button">关闭usb</button>
 		<button @click="writeModel" class="button">打印76*130模版</button>
-		<button @click="printImage" class="button">打印图片</button>
-		<button @click="writeTsplRibbonModel" class="button">热转印打印测试</button>
-		<!--		<button @click="deleteBmp" class="button">删除位图</button>-->
-		<!--		<button @click="downloadBmp" class="button">下载位图</button>-->
-		<!--		<button @click="printBmp" class="button">打印位图</button>-->
-		<!--    <button @click="printTest" class="button">打印测试</button> -->
-		<scroll-view class="canvas-buttons" scroll-y="true">
-			<block v-for="(item, index) in discoveredDevices" :key="item.deviceId">
-				<text class="status">设备名称:{{item.name}}</text>
-				<text class="status">设备ID:{{item.deviceId}}</text>
-				<text class="status">连接状态:{{connectedDeviceId == item.deviceId?"已连接":"未连接"}}</text>
-				<button type="warn" class="button" @click="connectDevice(item)">连接</button>
-			</block>
-		</scroll-view>
 	</view>
 
 </template>
 
 <script>
-	import {
-		UniappBleBluetooth
-	} from "@psdk/device-ble-uniapp";
+	import usbTool from '@/plugins/usbTool.js'
 	import {
 		ConnectedDevice,
 		Lifecycle,
 		Raw,
 		FakeConnectedDevice,
 		WriteOptions,
-		TSPLCommand,
-		TextAppendat,
-		Commander,
 	} from '@psdk/frame-father';
 	import {
 		CBar,
@@ -63,6 +44,8 @@
 		CMag,
 		CQRCode,
 		CCorrectLevel,
+		CSN,
+		CStatus,
 	} from "@psdk/cpcl";
 	import {
 		TBar,
@@ -77,44 +60,14 @@
 		TText,
 		TFont,
 		TTLine,
-		TPutImage,
-		TAlignment,
 	} from "@psdk/tspl";
 	import {
 		EImage
 	} from "@psdk/esc";
-	async function initState(vm) {
-		//uniapp自带的蓝牙方法只支持ble蓝牙(发送数据效率慢)，开发者如果只需要运行成安卓app可以参考classic.vue页面(是通过经典蓝牙的插件调用原生的方法实现的，打印速度比较快)
-		vm.bluetooth = new UniappBleBluetooth({
-			allowedWriteCharacteristic: '49535343-8841-43F4-A8D4-ECBE34729BB3',
-			allowedReadCharacteristic: '49535343-1e4d-4bd9-ba61-23c647249616',
-			allowNoName: false,
-		});
-		vm.bluetooth.discovered((devices) => {
-			devices.forEach(device => {
-				const isDuplicate = vm.discoveredDevices.find(item => item.deviceId === device
-					.deviceId);
-				if (isDuplicate) {
-					return;
-				}
-				vm.discoveredDevices.push(device);
-			});
-		});
-	}
-	async function discoveryDevices(vm) {
-		await vm.bluetooth.startDiscovery();
-	}
-
-
 	export default {
 		data() {
 			return {
-				discoveredDevices: [],
-				connectedDeviceId: "",
 				cpcl: null,
-				connectedDevice: null,
-				isPrint: false,
-				isAndroid: false,
 				items: [{
 						type: 'tspl',
 						checked: 'true',
@@ -130,9 +83,30 @@
 			}
 		},
 		async onLoad() {
-			const systemInfo = uni.getSystemInfoSync();
-			this.isAndroid = systemInfo.platform === 'android';
-			await initState(this);
+			//#ifdef APP-PLUS
+			usbTool.init({
+				listenUSBStatusCallback: (state) => {
+					if (state == 'ACTION_USB_DEVICE_ATTACHED') {
+						uni.showToast({
+							icon: 'none',
+							title: '监测到设备！'
+						})
+					}else if(state == 'ACTION_USB_DEVICE_DETACHED'){
+						uni.showToast({
+							icon: 'none',
+							title: '设备已移除！'
+						})
+					}
+				},
+				readDataCallback: function(dataByteArr) {
+					/* if(that.receiveDataArr.length >= 200) {
+						that.receiveDataArr = [];
+					}
+					that.receiveDataArr.push.apply(that.receiveDataArr, dataByteArr); */
+					console.log("读取完成"+dataByteArr);
+				},
+			});
+			//#endif
 		},
 		methods: {
 			radioChange(evt) {
@@ -145,129 +119,23 @@
 					}
 				}
 			},
-			async discovery() {
+			async openUSB() {
 				const vm = this;
-				try {
-					console.log('start discovery devices');
-					vm.discoveredDevices = [];
-					await discoveryDevices(vm);
-				} catch (e) {
-					console.error(e);
+				const usbOpen = await usbTool.openUsb();
+				if(usbOpen){
+					vm.$printer.init(new FakeConnectedDevice());
 				}
+				uni.showToast({
+					icon: 'none',
+					title: usbOpen ? '打开成功！' : '打开失败'
+				})
 			},
-			async closeBluetooth() {
-				const vm = this;
-				try {
-					console.log('closeBluetooth');
-					if (vm.connectedDevice != null) {
-						vm.connectedDevice.disconnect();
-						vm.connectedDevice = null;
-						vm.connectedDeviceId = "";
-					}
-
-				} catch (e) {
-					console.error(e);
-				}
-			},
-			async connectDevice(device) {
-				const vm = this;
-				try {
-					uni.showLoading({
-						title: '连接中'
-					});
-					vm.connectedDevice = await vm.bluetooth.connect(device);
-					console.log(vm.connectedDevice);
-					vm.$printer.init(vm.connectedDevice);
-					//监听打印机返回的数据
-					// vm.connectedDevice.notify((res) => {
-					// 	console.log(res.characteristicId);
-					// 	console.log(res);
-					// 	console.log("Length:" + res.value.byteLength)
-					// 	console.log("hexvalue:" + this.ab2hex(res.value))
-					// 	const hex = this.ab2hex(res.value)
-					// 	console.log("strvalue:" + this.hexCharCodeToStr(hex));
-					// });
-					uni.showToast({
-						title: '成功',
-					});
-					vm.connectedDeviceId = device.deviceId;
-					uni.hideToast();
-				} catch (e) {
-					console.error(e);
-					uni.showToast({
-						title: '失败',
-					});
-				}
-			},
-			async printImage() {
-				console.log("printImage")
-				const vm = this;
-				//运行成安卓app会报API `createOffscreenCanvas` is not yet implemented，所以安卓端不支持图片
-				// 把图片画到离屏 canvas 上
-				const canvas = uni.createOffscreenCanvas({
-					type: '2d',
-					width: 240,
-					height: 240
-				});
-				const ctx = canvas.getContext('2d');
-				// 创建一个图片
-				const image = canvas.createImage();
-				// 等待图片加载
-				await new Promise(resolve => {
-					image.onload = resolve;
-					image.src = "/static/logo.png"; // 要加载的图片 url, 可以是base64
-				});
-				ctx.drawImage(image, 0, 0, 240, 240);
-				console.log("toDataURL - ", ctx.canvas.toDataURL()) // 输出的图片
-				if (this.items[this.current].type === "tspl") {
-					const tspl = await vm.$printer.tspl()
-						.page(new TPage({
-							width: 76,
-							height: 130
-						}))
-						.gap(true)
-						.image(
-							new TImage({
-								x: 0,
-								y: 0,
-								compress: true,
-								image: canvas
-							})
-						)
-						.print();
-					await vm.safeWrite(tspl);
-				} else if (this.items[this.current].type === "cpcl") {
-					const cpcl = await vm.$printer.cpcl()
-						.page(new CPage({
-							width: 608,
-							height: 1040
-						}))
-						.image(
-							new CImage({
-								x: 0,
-								y: 0,
-								compress: true,
-								image: canvas
-							})
-						)
-						.print();
-					await vm.safeWrite(cpcl);
-				} else {
-					// vm.$printer.init(new FakeConnectedDevice());
-					const esc = await vm.$printer.esc()
-						.enable()
-						.wakeup()
-						.image(
-							new EImage({
-								image: canvas,
-								compress: true,
-							})
-						)
-						.lineDot(40)
-						.stopJob();
-					await vm.safeWrite(esc);
-				}
-
+			closeUSB() {
+				usbTool.closeUsb();
+				uni.showToast({
+					icon: 'none',
+					title: '关闭成功'
+				})
 			},
 			// ArrayBuffer转16进度字符串示例
 			ab2hex(buffer) {
@@ -297,149 +165,26 @@
 				}
 				return resultStr.join("");
 			},
-			async downloadBmp() {
-				uni.showLoading({
-					title: '正在下载中'
-				});
-				// uni.request({
-				// 	url: 'https://wisdom.jsc1319.com/uploads/20240628/9234f7cb54e2e9f0633de617d0a9a97c.bmp', // 在线图片文件的 URL
-				// 	method: 'GET',
-				// 	responseType: 'arraybuffer', // 设置响应类型为 arraybuffer，以获取二进制数据流
-				// 	success: async (res) => {
-				// 		console.log(res);
-				// 		const arrayBufferData = res.data // 获取二进制数据流
-				// 		console.log(this.ab2hex(arrayBufferData));
-				// 		const data = new Uint8Array(arrayBufferData);
-				// 		const vm = this;
-				// 		try {
-				// 			const psdk = await vm.$printer.tspl()
-				// 				.downloadBmp('wx555.bmp',
-				// 				data); //传入图片文件名(与后面要打印的时候传的文件名要保持一致)和图片文件数据流Uint8Array
-				// 			await vm.safeWrite(psdk);
-				// 		} catch (e) {
-				// 			console.error(e);
-				// 			uni.showToast({
-				// 				title: '失败',
-				// 			});
-				// 		}
-				// 	}
-				// })
-				const fs = uni.getFileSystemManager();
-				const base64 = fs.readFileSync('static/wxz.png', "base64"); //一定要是1位深的单色图bmp
-				const arrayBufferData = uni.base64ToArrayBuffer(base64)
-				const data = new Uint8Array(arrayBufferData);
-				const vm = this;
-				try {
-					const psdk = await vm.$printer.tspl()
-						.downloadBmp('wx2222.bmp', data); //传入图片文件名(与后面要打印的时候传的文件名要保持一致)和图片文件数据流Uint8Array
-					await vm.safeWrite(psdk);
-				} catch (e) {
-					console.error(e);
-					uni.showToast({
-						title: '失败',
-					});
-				}
+			async sendMessage(cmd) {
+				console.log(cmd);
+				const result = usbTool.sendByteData(cmd);
+				uni.showToast({
+					icon: 'none',
+					title: result ? '发送成功！' : '发送失败...'
+				})
 			},
-			async printBmp() {
+			async writeModel1() {
 				const vm = this;
-				try {
-					const tspl = await vm.$printer.tspl().clear()
-						.page(new TPage({
-							width: 76,
-							height: 130
-						}))
-						.putImage(new TPutImage({
-							x: 0,
-							y: 0,
-							filename: 'wx2222.bmp'
-						}))
-						.print();
-					await vm.safeWrite(tspl);
-				} catch (e) {
-					console.error(e);
-					uni.showToast({
-						title: '失败',
-					});
-				}
-			},
-			async deleteBmp() {
-				const vm = this;
-				try {
-					var fileName = 'wx2222.bmp'
-					const psdk = await vm.$printer.tspl()
-						.raw(Raw.text('KILL F,' + `"${fileName}"`));
-					console.log(psdk.command().string());
-					await vm.safeWrite(psdk);
-				} catch (e) {
-					console.error(e);
-					uni.showToast({
-						title: '失败',
-					});
-				}
-			},
-			async printTest() {
-				const vm = this;
-				try {
-					const psdk = await vm.$printer.tspl()
-						.raw(Raw.text("CLS\n" +
-            "SIZE 16 mm,250 mm\n" +
-            "GAP 3 mm,0 mm\n" +
-            "TEXT 12,12,\"simhei.ttf\",90,14,14,\"船\"\n" +
-            "TEXT 12,72,\"simhei.ttf\",90,14,14,\"号\"\n" +
-            "TEXT 12,132,\"simhei.ttf\",90,14,14,\"：\"\n" +
-            "TEXT 12,192,\"simhei.ttf\",90,14,14,\"H\"\n" +
-            "TEXT 12,252,\"simhei.ttf\",90,14,14,\"2\"\n" +
-            "TEXT 12,312,\"simhei.ttf\",90,14,14,\"0\"\n" +
-            "TEXT 12,372,\"simhei.ttf\",90,14,14,\"2\"\n" +
-            "TEXT 12,432,\"simhei.ttf\",90,14,14,\"4\"\n" +
-            "DENSITY 1\n" +
-            "PRINT 1,1"));
-					console.log(psdk.command().string());
-					await vm.safeWrite(psdk);
-				} catch (e) {
-					console.error(e);
-					uni.showToast({
-						title: '失败',
-					});
-				}
-			},
-			async safeWrite(psdk) {
-				const vm = this;
-				try {
-					if (!vm.isPrint) {
-						vm.isPrint = true;
-						let report;
-						if (this.isAndroid) {
-							//分包发送，chunkSize:分包大小
-							report = await psdk.write({
-								enableChunkWrite: true,
-								chunkSize: 20
-							});
-						} else {
-							report = await psdk.write(); //不分包发送，如果不会丢包可以不分包
-						}
-						vm.isPrint = false;
-						console.log(report);
-						uni.showToast({
-							title: '成功',
-						});
-						return true;
-					}
-				} catch (e) {
-					vm.isPrint = false;
-					console.error(e);
-					uni.showToast({
-						title: '失败',
-					});
-					return false;
+				for (let i = 0; i < 5; i++) {
+					await vm.writeCpclModel();
 				}
 			},
 			async writeModel() {
 				const vm = this;
 				if (this.items[this.current].type == "tspl") {
-					vm.writeTsplModel();
+					await vm.writeTsplModel();
 				} else if (this.items[this.current].type == "cpcl") {
-					vm.writeCpclModel();
+					await vm.writeCpclModel();
 				}
 			},
 			async writeCpclModel() {
@@ -718,28 +463,35 @@
 							bottomRightY: 968 - 11,
 							lineWidth: 2
 						}))
-						.mag(new CMag({
-							font: CFont.TSS24_MAX2
-						})) //字号有用到MAX的或者使用MAX后要恢复成没有MAX的需要加个mag指令
 						.text(new CText({
 							x: 598 - 56 - 16 - 120 + 17,
 							y: 696 + 80 + 136 + 11 + 6,
 							content: "已验视",
-							font: CFont.TSS24_MAX2
-						}))
-						.mag(new CMag({
 							font: CFont.TSS24
 						}))
 						.form(new CForm()) //标签纸需要加定位指令
 						.print();
 					console.log(cpcl.command().string());
-					await vm.safeWrite(cpcl);
+					var binary = cpcl.command().binary();
+					await this.sendMessage(Array.from(this.uint8ArrayToSignedArray(binary)));
 				} catch (e) {
 					console.error(e);
 					uni.showToast({
 						title: '失败',
 					});
 				}
+			},
+			///转成安卓有符号的
+			uint8ArrayToSignedArray(uint8Array) {
+			    let signedArray = new Array(uint8Array.length);
+			    for (let i = 0; i < uint8Array.length; i++) {
+			        if (uint8Array[i] >= 128) {
+			            signedArray[i] = uint8Array[i] - 256;
+			        } else {
+			            signedArray[i] = uint8Array[i];
+			        }
+			    }
+			    return signedArray;
 			},
 			async writeTsplModel() {
 				const vm = this;
@@ -1015,18 +767,20 @@
 						}))
 						.print();
 					console.log(tspl.command().string());
-					await vm.safeWrite(tspl);
+					var binary = tspl.command().binary();
+					await this.sendMessage(Array.from(this.uint8ArrayToSignedArray(binary)));
 				} catch (e) {
 					console.error(e);
-					uni.showToast({
-						title: '失败',
-					});
+					usbTool.shortToast(e+"")
+					// uni.showToast({
+					// 	title: e+"",
+					// });
 				}
 			},
 			async writeTsplRibbonModel() {
 				const vm = this;
 				try {
-					const tspl = await vm.$printer.tspl().clear()
+					const tspl = await vm.$printer.tspl()
 						.page(new TPage({
 							width: 76,
 							height: 130
@@ -1052,8 +806,7 @@
 							content: "发发发发发",
 							rawFont: "SIMHEI.TTF",
 							mulX: 14,
-							mulY: 14,
-							alignment: TAlignment.DEFAULT
+							mulY: 14
 						}))
 						.text(new TText({
 							x: 12,
@@ -1065,10 +818,8 @@
 						}))
 						.print();
 					console.log(tspl.command().string());
-					await vm.safeWrite(tspl);
-					uni.showToast({
-						title: '成功',
-					});
+					var binary = cpcl.command().binary();
+					await this.sendMessage(Array.from(this.uint8ArrayToSignedArray(binary)));
 				} catch (e) {
 					console.error(e);
 					uni.showToast({

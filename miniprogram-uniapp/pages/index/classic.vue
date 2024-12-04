@@ -58,6 +58,8 @@
 		CMag,
 		CQRCode,
 		CCorrectLevel,
+		CSN,
+		CStatus,
 	} from "@psdk/cpcl";
 	import {
 		TBar,
@@ -115,6 +117,7 @@
 						that.receiveDataArr = [];
 					}
 					that.receiveDataArr.push.apply(that.receiveDataArr, dataByteArr); */
+					console.log("读取完成"+dataByteArr);
 				},
 				connExceptionCallback: function(e) {
 					console.log(e);
@@ -123,9 +126,9 @@
 			//#endif
 		},
 		methods: {
-			async checkLocation() {
+			async checkPermission() {
 			  try {
-			    let checkResult = await permission.androidPermissionCheck("location");
+			    let checkResult = await permission.androidPermissionCheck("bluetooth");
 			    console.log("检测信息：", checkResult);
 			    if (checkResult.code == 1) {
 			      let result = checkResult.data;
@@ -158,7 +161,7 @@
 				// 使用openBluetoothAdapter 接口，免去主动申请权限的麻烦
 				uni.openBluetoothAdapter({
 					success: async (res) => {
-						await this.checkLocation();
+						await this.checkPermission();
 						console.log('start discovery devices');
 						this.discoveredDevices = [];
 						console.log(res)
@@ -282,7 +285,15 @@
 					const cpcl = await vm.$printer.cpcl().clear()
 						.page(new CPage({
 							width: 608,
-							height: 200
+							height: 1040
+						}))
+						.qrcode(new CQRCode({
+							x: 54,
+							y: 480,
+							width: 10,
+							content: "PDDZDA00017106",
+							codeRotation: CCodeRotation.ROTATION_0,
+							level: CCorrectLevel.L
 						}))
 						.box(new CBox({
 							topLeftX: 0,
@@ -860,7 +871,7 @@
 			async writeTsplRibbonModel() {
 				const vm = this;
 				try {
-					const tspl = await vm.$printer.tspl()
+					const tspl = await vm.$printer.tspl().clear()
 						.page(new TPage({
 							width: 76,
 							height: 130
@@ -898,7 +909,7 @@
 						}))
 						.print();
 					console.log(tspl.command().string());
-					var binary = cpcl.command().binary();
+					var binary = tspl.command().binary();
 					await this.sendMessage(Array.from(this.uint8ArrayToSignedArray(binary)));
 				} catch (e) {
 					console.error(e);
