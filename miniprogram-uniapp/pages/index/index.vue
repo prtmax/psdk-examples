@@ -37,6 +37,9 @@
 		UniappBleBluetooth
 	} from "@psdk/device-ble-uniapp";
 	import {
+		InputImage
+	} from '@psdk/frame-imageb';
+	import {
 		ConnectedDevice,
 		Lifecycle,
 		Raw,
@@ -202,7 +205,7 @@
 			async printImage() {
 				console.log("printImage")
 				const vm = this;
-				//运行成安卓app会报API `createOffscreenCanvas` is not yet implemented，所以安卓端不支持图片
+				//运行成安卓app会报API `createOffscreenCanvas` is not yet implemented，所以安卓端参考classic.vue里面的打印图片方法
 				// 把图片画到离屏 canvas 上
 				const canvas = uni.createOffscreenCanvas({
 					type: '2d',
@@ -218,6 +221,12 @@
 					image.src = "/static/logo.png"; // 要加载的图片 url, 可以是base64
 				});
 				ctx.drawImage(image, 0, 0, 240, 240);
+				const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+				const input = new InputImage({
+					data: imageData.data,
+					width: imageData.width,
+					height: imageData.height,
+				});
 				console.log("toDataURL - ", ctx.canvas.toDataURL()) // 输出的图片
 				if (this.items[this.current].type === "tspl") {
 					const tspl = await vm.$printer.tspl()
@@ -231,7 +240,7 @@
 								x: 0,
 								y: 0,
 								compress: true,
-								image: canvas
+								image: input
 							})
 						)
 						.print();
@@ -246,8 +255,8 @@
 							new CImage({
 								x: 0,
 								y: 0,
-								compress: true,
-								image: canvas
+								compress: false,
+								image: input
 							})
 						)
 						.print();
@@ -259,7 +268,7 @@
 						.wakeup()
 						.image(
 							new EImage({
-								image: canvas,
+								image: input,
 								compress: true,
 							})
 						)
@@ -267,7 +276,6 @@
 						.stopJob();
 					await vm.safeWrite(esc);
 				}
-
 			},
 			// ArrayBuffer转16进度字符串示例
 			ab2hex(buffer) {
@@ -382,18 +390,18 @@
 				try {
 					const psdk = await vm.$printer.tspl()
 						.raw(Raw.text("CLS\n" +
-            "SIZE 16 mm,250 mm\n" +
-            "GAP 3 mm,0 mm\n" +
-            "TEXT 12,12,\"simhei.ttf\",90,14,14,\"船\"\n" +
-            "TEXT 12,72,\"simhei.ttf\",90,14,14,\"号\"\n" +
-            "TEXT 12,132,\"simhei.ttf\",90,14,14,\"：\"\n" +
-            "TEXT 12,192,\"simhei.ttf\",90,14,14,\"H\"\n" +
-            "TEXT 12,252,\"simhei.ttf\",90,14,14,\"2\"\n" +
-            "TEXT 12,312,\"simhei.ttf\",90,14,14,\"0\"\n" +
-            "TEXT 12,372,\"simhei.ttf\",90,14,14,\"2\"\n" +
-            "TEXT 12,432,\"simhei.ttf\",90,14,14,\"4\"\n" +
-            "DENSITY 1\n" +
-            "PRINT 1,1"));
+							"SIZE 16 mm,250 mm\n" +
+							"GAP 3 mm,0 mm\n" +
+							"TEXT 12,12,\"simhei.ttf\",90,14,14,\"船\"\n" +
+							"TEXT 12,72,\"simhei.ttf\",90,14,14,\"号\"\n" +
+							"TEXT 12,132,\"simhei.ttf\",90,14,14,\"：\"\n" +
+							"TEXT 12,192,\"simhei.ttf\",90,14,14,\"H\"\n" +
+							"TEXT 12,252,\"simhei.ttf\",90,14,14,\"2\"\n" +
+							"TEXT 12,312,\"simhei.ttf\",90,14,14,\"0\"\n" +
+							"TEXT 12,372,\"simhei.ttf\",90,14,14,\"2\"\n" +
+							"TEXT 12,432,\"simhei.ttf\",90,14,14,\"4\"\n" +
+							"DENSITY 1\n" +
+							"PRINT 1,1"));
 					console.log(psdk.command().string());
 					await vm.safeWrite(psdk);
 				} catch (e) {
