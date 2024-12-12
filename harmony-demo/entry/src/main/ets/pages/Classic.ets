@@ -284,6 +284,60 @@ struct Index {
           default :
             break;
         }
+        this.escSettingType = undefined;
+      }
+      // 打印机主动上报
+      /// 主动上报纸张类型
+      if(data.length == 2 && data[0] === 0xFE){
+        switch (data[1]) {
+          case 1:
+            console.log("onPaperError: 折叠黑标纸")
+        break;
+          case 2:
+            console.log("onPaperError: 连续卷简纸")
+        break;
+          case 3:
+            console.log("onPaperError: 不干胶缝隙纸")
+        break;
+          default:
+            break;
+        }
+      }
+
+      /// 上报设备状态
+      if (data.length == 2 && data[0] === 0xFF) {
+        if ((data[1]) ==  0) {
+          console.log("打印机正常")
+        } else {
+          if ((data[1] & 0x01) ===  0x01) {
+            console.log("打印机过热")
+          }
+          if ((data[1] & 0x02) === 0x02) {
+            console.log("打印机开盖")
+          }
+          if ((data[1] & 0x04) === 0x04) {
+            console.log("打印机缺纸")
+          }
+          if ((data[1] & 0x08) ===  0x08) {
+            console.log("打印机低压")
+          }
+          if ((data[1] & 0x10) === 0x10) {
+            console.log("请使用PikDik品牌标签，获得更好的打印体验")
+          }
+        }
+      }
+      /// 上报中止打印机状态命令
+      if (data.length == 2 && data[0] === 0xFD) {
+        switch (data[1]) {
+          case 1:
+            console.log("开始清除当前页面打印任务（中止命令）")
+        break;
+          case 2:
+            console.log("清除当前打印任务结束")
+        break;
+          default:
+            break;
+        }
       }
     });
   }
