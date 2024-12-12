@@ -35,7 +35,7 @@ import { LengthMetricsUnit } from '@ohos.arkui.node'
 import { EImage, GenericESC } from '@psdk/esc';
 import { promptAction } from '@kit.ArkUI';
 import { PrinterUtil } from './PrinterUtil';
-import { EscQueryType, EscSetType } from './EscTypes';
+import { EscQueryType, EscSettingType } from './EscTypes';
 import { util } from '@kit.ArkTS';
 
 export class CommonUtil {
@@ -733,13 +733,13 @@ export class CommonUtil {
     return esc
   }
 
-  escSetCmd(setType: EscSetType, value: number): GenericESC {
+  escSettingCmd(setType: EscSettingType, value: number): GenericESC {
     let esc = PrinterUtil.getInstance().esc().clear()
     switch (setType) {
-      case EscSetType.Thickness:
+      case EscSettingType.Thickness:
         esc.thickness(value)
         break;
-      case EscSetType.ShutTime:
+      case EscSettingType.ShutTime:
         esc.setShutdownTime(value)
         break;
     }

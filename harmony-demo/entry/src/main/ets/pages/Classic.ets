@@ -11,7 +11,47 @@ import { PrinterUtil } from '../common/PrinterUtil';
 import { GenericTSPL } from '@psdk/tspl';
 import { GenericCPCL } from '@psdk/cpcl';
 import { GenericESC } from '@psdk/esc';
-import { EscQueryType } from '../common/EscTypes';
+import { EscQueryType, EscSettingType, ThicknessLevel } from '../common/EscTypes';
+import { util } from '@kit.ArkTS';
+
+@CustomDialog
+struct CustomDialogExample {
+  @State inputValue: string = ''
+  controller?: CustomDialogController
+  cancel: () => void = () => {
+  }
+  confirm: (value: string) => void = () => {
+  }
+  build() {
+    Column() {
+      Text('设置关机时间(单位：分钟，不关机传 0)').margin({top: 30})
+      TextInput({ placeholder: '', text: this.inputValue })
+        .margin({top: 20, bottom: 30})
+        .height(45)
+        .width('90%')
+        .type(InputType.Number)
+        .onChange((value: string) => {
+          this.inputValue = value
+        })
+      Flex({ justifyContent: FlexAlign.SpaceAround }) {
+        Button('取消')
+          .onClick(() => {
+            if (this.controller != undefined) {
+              this.cancel();
+              this.controller.close()
+            }
+          })
+        Button('确定')
+          .onClick(() => {
+            if (this.controller != undefined) {
+              this.confirm(this.inputValue);
+              this.controller.close()
+            }
+          })
+      }
+    }
+  }
+}
 
 @Entry
 @Component
@@ -24,6 +64,45 @@ struct Index {
   private ohosBluetoothClassic = new OhosBluetoothClassic({ allowNoName: false });
   private isPrint = false
   private escQueryType?: EscQueryType = undefined
+  private escSettingType?: EscSettingType = undefined
+  dialogController: CustomDialogController | null = new CustomDialogController({
+    builder: CustomDialogExample({
+      cancel: ()=> { this.onCancel() },
+      confirm: (value)=> { this.onConfirm(value) }
+    }),
+    cancel: this.onCancel,
+    autoCancel: true,
+    onWillDismiss:(dismissDialogAction: DismissDialogAction)=> {
+      console.info("reason=" + JSON.stringify(dismissDialogAction.reason))
+      console.log("dialog onWillDismiss")
+      if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
+        dismissDialogAction.dismiss()
+      }
+      if (dismissDialogAction.reason == DismissReason.TOUCH_OUTSIDE) {
+        dismissDialogAction.dismiss()
+      }
+    },
+    alignment: DialogAlignment.Center,
+    offset: { dx: 0, dy: -20 },
+    customStyle: false,
+    cornerRadius: 20,
+    width: 300,
+    height: 200,
+    backgroundColor: Color.White,
+    shadow: ({ radius: 20, color: Color.Grey, offsetX: 50, offsetY: 0}),
+  })
+  // 在自定义组件即将析构销毁时将dialogController置空
+  // aboutToDisappear() {
+  //   this.dialogController = null // 将dialogController置空
+  // }
+  onCancel() {
+    console.info('Callback when the Cancel button is clicked')
+  }
+
+  onConfirm(value: string) {
+    console.info('Callback when the Confirm button is clicked')
+    this.onEscSetting(EscSettingType.ShutTime, Number(value))
+  }
 
   aboutToAppear() {
     this.ohosBluetoothClassic.discovered(async (devices) => {
@@ -82,43 +161,7 @@ struct Index {
         duration: 2000
       });
       console.log("this.connectedDevice: ", this.connectedDevice);
-      // this.connectedDevice.notify(async (value: Uint8Array) => {
-      //   if (this.escQueryType !== undefined) {
-      //     switch (this.escQueryType) {
-      //       case EscQueryType.Info:
-      //         console.log('jdh')
-      //         break;
-      //       case EscQueryType.SN:
-      //         // esc.sn()
-      //         break;
-      //       case EscQueryType.Mac:
-      //         // esc.mac()
-      //         break;
-      //       case EscQueryType.State:
-      //         // esc.state()
-      //         break;
-      //       case EscQueryType.Version:
-      //         // esc.version()
-      //         break;
-      //       case EscQueryType.Model:
-      //         // esc.model()
-      //         break;
-      //       case EscQueryType.BatteryVolume:
-      //         // esc.batteryVolume()
-      //         break;
-      //       case EscQueryType.ShutTime:
-      //         // esc.getShutdownTime()
-      //         break;
-      //     // case EscQueryType.PaperType:
-      //     //   esc.getPaperTypeQ3()
-      //     //   break;
-      //       case EscQueryType.BtName:
-      //         // esc.name()
-      //         break;
-      //     }
-      //     this.escQueryType = undefined;
-      //   }
-      // });
+      this.listenNotify();
     } catch (err) {
       console.error('errCode: ' + (err as BusinessError).code + ', errMessage: ' + (err as BusinessError).message);
       promptAction.showToast({
@@ -126,6 +169,123 @@ struct Index {
         duration: 2000
       });
     }
+  }
+
+  listenNotify() {
+    if (!this.connectedDevice) return;
+    // listen printer data
+    this.connectedDevice.notify(async (data: Uint8Array) => {
+      const duration = 3000;
+      const str = new util.TextDecoder("utf-8", {ignoreBOM: true}).decodeWithStream(data)
+      // 主动查询
+      if (this.escQueryType !== undefined) {
+        switch (this.escQueryType) {
+          case EscQueryType.Info:
+            promptAction.showToast({
+              message: `打印机信息：${str}`,
+              duration: duration
+            });
+            break;
+          case EscQueryType.SN:
+            promptAction.showToast({
+              message: `打印机SN：${str}`,
+              duration: duration
+            });
+            break;
+          case EscQueryType.Mac:
+            promptAction.showToast({
+              message: `打印机Mac：${data.toString()}`,
+              duration: duration
+            });
+            break;
+          case EscQueryType.State:
+            let states = ['正常'];
+            if ((data[0] & 0x01) == 0x01) {
+              states.push("正在打印");
+              states = states.filter(item => item !== '正常');
+            }
+            if ((data[0] & 0x02) == 0x02) {
+              states.push("纸舱盖开");
+              states = states.filter(item => item !== '正常');
+            }
+            if ((data[0] & 0x04) == 0x04) {
+              states.push("缺纸");
+              states = states.filter(item => item !== '正常');
+            }
+            if ((data[0] & 0x08) == 0x08) {
+              states.push("电池电压低");
+              states = states.filter(item => item !== '正常');
+            }
+            if ((data[0] & 0x10) == 0x10) {
+              states.push("打印头过热");
+              states = states.filter(item => item !== '正常');
+            }
+            promptAction.showToast({
+              message: `打印机状态：${states.join('+')}`,
+              duration: duration
+            });
+            break;
+          case EscQueryType.Version:
+            promptAction.showToast({
+              message: `打印机固件版本：${str}`,
+              duration: duration
+            });
+            break;
+          case EscQueryType.Model:
+            promptAction.showToast({
+              message: `打印机型号：${data}`,
+              duration: duration
+            });
+            break;
+          case EscQueryType.BatteryVolume:
+            promptAction.showToast({
+              message: `打印机电量: ${data[1]}%`,
+              duration: duration
+            });
+            break;
+          case EscQueryType.ShutTime:
+            promptAction.showToast({
+              message: `关机时间: ${data[1]} 分钟`,
+              duration: duration
+            });
+            break;
+          case EscQueryType.BtName:
+            promptAction.showToast({
+              message: `蓝牙名称：${str}`,
+              duration: duration
+            });
+            break;
+        }
+        this.escQueryType = undefined;
+      }
+      // 设置
+      if (this.escSettingType !== undefined) {
+        switch (this.escSettingType) {
+          case EscSettingType.Thickness:
+            if (str === 'OK') {
+              promptAction.showToast({
+                message: `打印机浓度设置成功`,
+                duration: duration
+              });
+            } else {
+              console.log('设置失败')
+            }
+            break;
+          case EscSettingType.ShutTime:
+            if (str === 'OK') {
+              promptAction.showToast({
+                message: `设置关机时间成功`,
+                duration: duration
+              });
+            } else {
+              console.log('设置失败')
+            }
+            break;
+          default :
+            break;
+        }
+      }
+    });
   }
 
   async safeWrite(psdk: PSDK<GenericTSPL> |  PSDK<GenericCPCL> | PSDK<GenericESC>) {
@@ -139,7 +299,7 @@ struct Index {
         // });//分包发送，chunkSize:分包大小
         console.log(`safeWrite report : ${report}`);
         promptAction.showToast({
-          message: '打印成功',
+          message: '发送成功',
           duration: 1000
         });
         this.isPrint = false;
@@ -217,6 +377,12 @@ struct Index {
   async onEscQuery(queryType: EscQueryType) {
     this.escQueryType = queryType
     const esc = CommonUtil.escQueryCmd(queryType);
+    await this.safeWrite(esc);
+  }
+
+  async onEscSetting(settingType: EscSettingType, value: number) {
+    this.escSettingType = settingType
+    const esc = CommonUtil.escSettingCmd(settingType, value);
     await this.safeWrite(esc);
   }
 
@@ -311,77 +477,143 @@ struct Index {
             .width('90%')
             .height(40)
             .onClick(() => this.onPrintImage())
-          // if (this.cmdType === 'esc') {
-          //   Row({space: FlexAlign.SpaceEvenly}) {
-          //     Button('查询')
-          //       .onClick(() => {
-          //         ActionSheet.show({
-          //           title: '查询',
-          //           message: '请选择查询内容', //弹窗内容
-          //           autoCancel: true, //点击遮障层时，是否关闭弹窗
-          //           alignment: DialogAlignment.Bottom, //弹窗位置
-          //           sheets: [ //操作选项列表
-          //             {
-          //               title: '打印机信息 ',
-          //               action: async () => {
-          //                 await this.onEscQuery(EscQueryType.Info)
-          //               }
-          //             },
-          //             {
-          //               title: '打印机 Sn',
-          //               action: async () => {
-          //                 await this.onEscQuery(EscQueryType.SN)
-          //               }
-          //             },
-          //             {
-          //               title: '打印机 Mac ',
-          //               action: async () => {
-          //                 await this.onEscQuery(EscQueryType.Mac)
-          //               }
-          //             },
-          //             {
-          //               title: '打印机状态 ',
-          //               action: async () => {
-          //                 await this.onEscQuery(EscQueryType.State)
-          //               }
-          //             },
-          //             {
-          //               title: '打印机固件版本',
-          //               action: async () => {
-          //                 await this.onEscQuery(EscQueryType.Version)
-          //               }
-          //             },
-          //             {
-          //               title: '打印机型号',
-          //               action: async () => {
-          //                 await this.onEscQuery(EscQueryType.Model)
-          //               }
-          //             },
-          //             {
-          //               title: '电量',
-          //               action: async () => {
-          //                 await this.onEscQuery(EscQueryType.BatteryVolume)
-          //               }
-          //             },
-          //             {
-          //               title: '关机时间',
-          //               action: async () => {
-          //                 await this.onEscQuery(EscQueryType.ShutTime)
-          //               }
-          //             },
-          //             {
-          //               title: '蓝牙名称',
-          //               action: async () => {
-          //                 await this.onEscQuery(EscQueryType.BtName)
-          //               }
-          //             },
-          //
-          //           ]
-          //         })
-          //       })
-          //     Button('设置')
-          //   }
-          // }
+          if (this.cmdType === 'esc') {
+            Row({space: FlexAlign.SpaceEvenly}) {
+              Button('查询')
+                .onClick(() => {
+                  if (this.connectedDevice === undefined) {
+                    promptAction.showToast({
+                      message: '请连接设备！！！',
+                      duration: 1000
+                    });
+                    return;
+                  }
+                  ActionSheet.show({
+                    title: '查询',
+                    message: '请选择查询内容', //弹窗内容
+                    autoCancel: true, //点击遮障层时，是否关闭弹窗
+                    alignment: DialogAlignment.Bottom, //弹窗位置
+                    height: 300,
+                    sheets: [ //操作选项列表
+                      {
+                        title: '\n打印机信息\n',
+                        action: async () => {
+                          await this.onEscQuery(EscQueryType.Info)
+                        }
+                      },
+                      {
+                        title: '\n打印机 Sn\n',
+                        action: async () => {
+                          await this.onEscQuery(EscQueryType.SN)
+                        }
+                      },
+                      {
+                        title: '\n打印机 Mac\n',
+                        action: async () => {
+                          await this.onEscQuery(EscQueryType.Mac)
+                        }
+                      },
+                      {
+                        title: '\n打印机状态\n',
+                        action: async () => {
+                          await this.onEscQuery(EscQueryType.State)
+                        }
+                      },
+                      {
+                        title: '\n打印机固件版本\n',
+                        action: async () => {
+                          await this.onEscQuery(EscQueryType.Version)
+                        }
+                      },
+                      {
+                        title: '\n打印机型号\n',
+                        action: async () => {
+                          await this.onEscQuery(EscQueryType.Model)
+                        }
+                      },
+                      {
+                        title: '\n电量\n',
+                        action: async () => {
+                          await this.onEscQuery(EscQueryType.BatteryVolume)
+                        }
+                      },
+                      {
+                        title: '\n关机时间\n',
+                        action: async () => {
+                          await this.onEscQuery(EscQueryType.ShutTime)
+                        }
+                      },
+                      {
+                        title: '\n蓝牙名称\n',
+                        action: async () => {
+                          await this.onEscQuery(EscQueryType.BtName)
+                        }
+                      },
+
+                    ]
+                  })
+                })
+              Button('设置').onClick(
+                () => {
+                  // if (this.connectedDevice === undefined) {
+                  //   promptAction.showToast({
+                  //     message: '请连接设备！！！',
+                  //     duration: 1000
+                  //   });
+                  //   return;
+                  // }
+                  ActionSheet.show({
+                    title: '设置',
+                    message: '请选择设置内容', //弹窗内容
+                    autoCancel: true, //点击遮障层时，是否关闭弹窗
+                    alignment: DialogAlignment.Bottom, //弹窗位置
+                    sheets: [ //操作选项列表
+                      {
+                        title: '\n设置浓度\n',
+                        action: async () => {
+                          ActionSheet.show({
+                            title: '设置浓度',
+                            message: '请选择浓度等级',
+                            autoCancel: true,
+                            alignment: DialogAlignment.Center,
+                            sheets: [
+                              {
+                                title: '\n高浓度\n',
+                                action: async () => {
+                                  await this.onEscSetting(EscSettingType.Thickness, ThicknessLevel.High)
+                                }
+                              },
+                              {
+                                title: '\n中浓度\n',
+                                action: async () => {
+                                  await this.onEscSetting(EscSettingType.Thickness, ThicknessLevel.Medium)
+                                }
+                              },
+                              {
+                                title: '\n低浓度\n',
+                                action: async () => {
+                                  await this.onEscSetting(EscSettingType.Thickness, ThicknessLevel.Low)
+                                }
+                              }
+                            ]
+                          });
+                        }
+                      },
+                      {
+                        title: '\n设置关机时间\n',
+                        action: async () => {
+                          // await this.onEscQuery(EscQueryType.SN)
+                          if (this.dialogController != null) {
+                            this.dialogController.open()
+                          }
+                        }
+                      }
+                    ]
+                  })
+                }
+              )
+            }
+          }
           Text(this.connectionState)
             .fontColor(Color.Red)
         }

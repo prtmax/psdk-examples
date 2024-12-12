@@ -17,10 +17,16 @@ export enum EscQueryType {
   // NfcRestLength,    // 获取标签剩余长度
 }
 
-export enum EscSetType {
+export enum EscSettingType {
   Thickness,   // 设置浓度
   ShutTime,    // 设置关机时间
   // PaperType,   // 设置纸张类型
   // LabelGap,    // 设置学习标签缝隙
+}
+
+export enum ThicknessLevel {
+  Low,      // 低浓度
+  Medium,   // 中浓度
+  High      // 高浓度
 }
 
