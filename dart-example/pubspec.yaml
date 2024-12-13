@@ -35,13 +35,13 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.2
-  get: ^4.6.5
-  adaptive_dialog: ^1.8.0
-  geolocator: ^9.0.2
-  permission_handler: ^10.3.0
-  fluttertoast: ^8.0.9
-  flutter_smart_dialog: ^4.5.4+2
+  cupertino_icons: 1.0.2
+  get: 4.6.5
+  adaptive_dialog: 1.8.0
+  geolocator: 9.0.2
+  permission_handler: 10.3.0
+  fluttertoast: 8.0.9
+  flutter_smart_dialog: 4.5.4+2
   psdk_fruit_tspl: ^0.0.20
   psdk_fruit_esc: ^0.0.20
   psdk_fruit_cpcl: ^0.0.20

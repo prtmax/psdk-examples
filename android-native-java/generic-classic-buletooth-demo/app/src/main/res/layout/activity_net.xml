@@ -1,0 +1,149 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/sample_main_layout"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+    <RadioGroup
+      android:id="@+id/radioGroup"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="horizontal">
+
+      <RadioButton
+        android:id="@+id/radioButtonOption1"
+        android:layout_margin="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:checked="true"
+        android:text="tspl"/>
+
+      <RadioButton
+        android:id="@+id/radioButtonOption2"
+        android:layout_margin="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="cpcl"/>
+
+      <RadioButton
+        android:id="@+id/radioButtonOption3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:text="esc"/>
+
+    </RadioGroup>
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:layout_marginLeft="10dp"
+                  android:orientation="horizontal">
+      <CheckBox
+        android:id="@+id/cb_compress"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:checked="false"
+        android:text="压缩">
+
+      </CheckBox>
+      <CheckBox
+        android:id="@+id/cb_cut"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:checked="false"
+        android:text="切刀">
+
+      </CheckBox>
+      <CheckBox
+        android:id="@+id/cb_position"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:checked="false"
+        android:text="定位">
+
+      </CheckBox>
+    </LinearLayout>
+
+
+    <LinearLayout
+      android:gravity="center_vertical"
+      android:orientation="horizontal"
+      android:layout_width="fill_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="10dp">
+      <TextView
+        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="IP地址:"
+        android:layout_marginStart="10dp"/>
+      <EditText android:textSize="14sp"
+                android:textColor="@android:color/black"
+                android:id="@+id/et_address"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="192.168.1.1"
+                android:ems="10"
+                android:layout_marginStart="10dp"/>
+      <TextView
+        android:textColor="@color/black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="端口号:"
+        android:layout_marginStart="10dp"/>
+      <EditText android:textSize="14sp"
+                android:textColor="@android:color/black"
+                android:id="@+id/et_port"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:text="9100"
+                android:ems="10"
+                android:inputType="number"
+                android:layout_marginStart="10dp"/>
+    </LinearLayout>
+
+    <Button
+      android:id="@+id/switch_net"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="5dp"
+      android:text="连接"/>
+
+    <Button
+      android:id="@+id/printImage"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="5dp"
+      android:text="打印图片"/>
+    <Button
+      android:id="@+id/printModel"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="5dp"
+      android:text="打印模板"/>
+  </LinearLayout>
+
+  <ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+      android:id="@+id/logText"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginLeft="8dp"
+      android:layout_marginTop="15dp"
+      android:text=""
+      android:textColor="@android:color/black"
+      android:textSize="18sp"/>
+  </ScrollView>
+
+</LinearLayout>
+

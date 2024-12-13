@@ -15,6 +15,9 @@
 		<button @click="closeBluetooth" class="button">断开连接</button>
 		<button @click="writeModel" class="button">打印76*130模版</button>
 		<button @click="writeTsplRibbonModel" class="button">打印热转印测试</button>
+		<canvas :style="'width: '+1000+'px; height:'+1000+'px; position:fixed; left:8888px'"
+			:canvas-id="canvasId"></canvas>
+		<button @click="printImage" class="button">打印图片</button>
 		<scroll-view class="canvas-buttons" scroll-y="true">
 			<block v-for="(item, index) in discoveredDevices" :key="item.address">
 				<text class="status">设备名称:{{item.name}}</text>
@@ -31,9 +34,8 @@
 	import bluetoothTool from '@/plugins/BluetoothTool.js'
 	import permission from '@/plugins/permission.js'
 	import {
-		UniappBleBluetooth
-	} from "@psdk/device-ble-uniapp";
-	import Timeout from 'await-timeout';
+		InputImage
+	} from '@psdk/frame-imageb';
 	import {
 		ConnectedDevice,
 		Lifecycle,
@@ -58,6 +60,8 @@
 		CMag,
 		CQRCode,
 		CCorrectLevel,
+		CSN,
+		CStatus,
 	} from "@psdk/cpcl";
 	import {
 		TBar,
@@ -94,10 +98,11 @@
 					},
 				],
 				current: 0,
+				canvasId: 'myCanvas',
 			}
 		},
 		async onLoad() {
-			
+
 			//#ifdef APP-PLUS
 			// 蓝牙
 			bluetoothTool.init({
@@ -115,6 +120,7 @@
 						that.receiveDataArr = [];
 					}
 					that.receiveDataArr.push.apply(that.receiveDataArr, dataByteArr); */
+					console.log("读取完成" + dataByteArr);
 				},
 				connExceptionCallback: function(e) {
 					console.log(e);
@@ -123,25 +129,25 @@
 			//#endif
 		},
 		methods: {
-			async checkLocation() {
-			  try {
-			    let checkResult = await permission.androidPermissionCheck("location");
-			    console.log("检测信息：", checkResult);
-			    if (checkResult.code == 1) {
-			      let result = checkResult.data;
-			      if (result == 1) {
-			        console.log("授权成功!");
-			      }
-			      if (result == 0) {
-			        console.log("授权已拒绝!");
-			      }
-			      if (result == -1) {
-			        console.log("您已永久拒绝权限，请在应用设置中手动打开!");
-			      }
-			    }
-			  } catch (err) {
-			    console.log("授权失败：", err);
-			  }
+			async checkPermission() {
+				try {
+					let checkResult = await permission.androidPermissionCheck("bluetooth");
+					console.log("检测信息：", checkResult);
+					if (checkResult.code == 1) {
+						let result = checkResult.data;
+						if (result == 1) {
+							console.log("授权成功!");
+						}
+						if (result == 0) {
+							console.log("授权已拒绝!");
+						}
+						if (result == -1) {
+							console.log("您已永久拒绝权限，请在应用设置中手动打开!");
+						}
+					}
+				} catch (err) {
+					console.log("授权失败：", err);
+				}
 			},
 			radioChange(evt) {
 				console.log(evt.detail.value);
@@ -158,7 +164,7 @@
 				// 使用openBluetoothAdapter 接口，免去主动申请权限的麻烦
 				uni.openBluetoothAdapter({
 					success: async (res) => {
-						await this.checkLocation();
+						await this.checkPermission();
 						console.log('start discovery devices');
 						this.discoveredDevices = [];
 						console.log(res)
@@ -268,6 +274,83 @@
 					await vm.writeCpclModel();
 				}
 			},
+			async printImage() {
+				const vm = this;
+				const ctx = uni.createCanvasContext(vm.canvasId, this);
+				const imgWidth = 240; // 每张图片的宽度
+				const imgHeight = 240; // 每张图片的高度
+				ctx.drawImage('/static/logo.png', 0, 0, imgWidth, imgHeight);
+				await new Promise((resolve) => {
+					ctx.draw(false, resolve);
+				});
+				const res = await new Promise((resolve, reject) => {
+					uni.canvasGetImageData({
+						canvasId: vm.canvasId,
+						x: 0,
+						y: 0,
+						width: imgWidth,
+						height: imgHeight,
+						success: resolve,
+						fail: reject
+					});
+				});
+
+				const input = new InputImage({
+					data: res.data,
+					width: res.width,
+					height: res.height,
+				});
+				if (this.items[this.current].type === "tspl") {
+					const tspl = await vm.$printer.tspl().clear()
+						.page(new TPage({
+							width: 76,
+							height: 130
+						}))
+						.gap(true)
+						.image(
+							new TImage({
+								x: 0,
+								y: 0,
+								compress: true,
+								image: input
+							})
+						)
+						.print();
+					const binary = tspl.command().binary();
+					await vm.sendMessage(Array.from(vm.uint8ArrayToSignedArray(binary)));
+				} else if (this.items[this.current].type === "cpcl") {
+					const cpcl = await vm.$printer.cpcl().clear()
+						.page(new CPage({
+							width: 608,
+							height: 1040
+						}))
+						.image(
+							new CImage({
+								x: 0,
+								y: 0,
+								compress: false,
+								image: input
+							})
+						)
+						.print();
+					const binary = cpcl.command().binary();
+					await vm.sendMessage(Array.from(vm.uint8ArrayToSignedArray(binary)));
+				} else {
+					const esc = await vm.$printer.esc().clear()
+						.enable()
+						.wakeup()
+						.image(
+							new EImage({
+								image: input,
+								compress: true,
+							})
+						)
+						.lineDot(40)
+						.stopJob();
+					const binary = esc.command().binary();
+					await vm.sendMessage(Array.from(vm.uint8ArrayToSignedArray(binary)));
+				}
+			},
 			async writeModel() {
 				const vm = this;
 				if (this.items[this.current].type == "tspl") {
@@ -282,7 +365,15 @@
 					const cpcl = await vm.$printer.cpcl().clear()
 						.page(new CPage({
 							width: 608,
-							height: 200
+							height: 1040
+						}))
+						.qrcode(new CQRCode({
+							x: 54,
+							y: 480,
+							width: 10,
+							content: "PDDZDA00017106",
+							codeRotation: CCodeRotation.ROTATION_0,
+							level: CCorrectLevel.L
 						}))
 						.box(new CBox({
 							topLeftX: 0,
@@ -564,15 +655,15 @@
 			},
 			///转成安卓有符号的
 			uint8ArrayToSignedArray(uint8Array) {
-			    let signedArray = new Array(uint8Array.length);
-			    for (let i = 0; i < uint8Array.length; i++) {
-			        if (uint8Array[i] >= 128) {
-			            signedArray[i] = uint8Array[i] - 256;
-			        } else {
-			            signedArray[i] = uint8Array[i];
-			        }
-			    }
-			    return signedArray;
+				let signedArray = new Array(uint8Array.length);
+				for (let i = 0; i < uint8Array.length; i++) {
+					if (uint8Array[i] >= 128) {
+						signedArray[i] = uint8Array[i] - 256;
+					} else {
+						signedArray[i] = uint8Array[i];
+					}
+				}
+				return signedArray;
 			},
 			async writeTsplModel() {
 				const vm = this;
@@ -860,7 +951,7 @@
 			async writeTsplRibbonModel() {
 				const vm = this;
 				try {
-					const tspl = await vm.$printer.tspl()
+					const tspl = await vm.$printer.tspl().clear()
 						.page(new TPage({
 							width: 76,
 							height: 130
@@ -898,7 +989,7 @@
 						}))
 						.print();
 					console.log(tspl.command().string());
-					var binary = cpcl.command().binary();
+					var binary = tspl.command().binary();
 					await this.sendMessage(Array.from(this.uint8ArrayToSignedArray(binary)));
 				} catch (e) {
 					console.error(e);

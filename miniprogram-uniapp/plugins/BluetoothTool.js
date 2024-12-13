@@ -1,6 +1,3 @@
-/**
- * 初始化参数
- */ 
 //#ifdef APP-PLUS
 let BluetoothAdapter = plus.android.importClass("android.bluetooth.BluetoothAdapter");
 let Intent = plus.android.importClass("android.content.Intent");
@@ -412,7 +409,7 @@ var blueToothTool = {
 					let data = invoke(btInStream, "read");
 					dataArr.push(data);
 					let ct = new Date().getTime();
-					if(ct - t > 20) {
+					if(ct - t > 100) {
 						break;
 					}
 				}

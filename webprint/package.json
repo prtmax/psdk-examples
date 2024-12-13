@@ -9,10 +9,10 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@psdk/cpcl": "^0.2.63",
-    "@psdk/esc": "^0.2.63",
-    "@psdk/frame-father": "^0.2.63",
-    "@psdk/tspl": "^0.2.63",
+    "@psdk/cpcl": "^0.5.22",
+    "@psdk/esc": "^0.5.22",
+    "@psdk/frame-father": "^0.5.22",
+    "@psdk/tspl": "^0.5.22",
     "buffer": "^6.0.3",
     "string_decoder": "^1.3.0",
     "vue": "^3.3.10",

@@ -36,6 +36,6 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
     implementation 'com.journeyapps:zxing-android-embedded:4.3.0'
-    implementation files('libs/fat-generic-super-fat-sdk-0.1.17-GA.jar')
+    implementation files('libs/fat-generic-super-fat-sdk-0.1.18-GA.jar')
     implementation files('libs/pdf.jar')
 }

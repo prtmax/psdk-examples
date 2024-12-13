@@ -1,27 +1,16 @@
 const androidPermissions = {
   camera: "android.permission.CAMERA", // 摄像头权限
-  location: "android.permission.ACCESS_FINE_LOCATION", // 位置权限
-  calendar: {
-    read: "android.permission.READ_CALENDAR", // // 日历读取权限
-    write: "android.permission.WRITE_CALENDAR", // // 日历写入权限
+  bluetooth: {
+    coarse: "android.permission.ACCESS_COARSE_LOCATION", // 位置权限
+    fine: "android.permission.ACCESS_FINE_LOCATION",
+	extra: "android.permission.ACCESS_LOCATION_EXTRA_COMMANDS",
+	scan: "android.permission.BLUETOOTH_SCAN",
+	connect: "android.permission.BLUETOOTH_CONNECT",
   },
   storage: {
     read: "android.permission.READ_EXTERNAL_STORAGE", // 存储读取权限
     write: "android.permission.WRITE_EXTERNAL_STORAGE", // 存储写入权限
   },
-  record: "android.permission.RECORD_AUDIO", // 麦克风权限
-  contact: {
-    read: "android.permission.READ_CONTACTS", // 联系人读取权限
-    write: "android.permission.WRITE_CONTACTS", // 联系人写入权限
-  },
-  sms: {
-    read: "android.permission.READ_SMS", // 短信读取权限
-    send: "android.permission.SEND_SMS", //短信发送权限
-    receive: "android.permission.RECEIVE_SMS", // 短信接收权限
-  },
-  state: "android.permission.READ_PHONE_STATE", // 手机识别码权限
-  phone: "android.permission.CALL_PHONE", // 拨打电话权限
-  log: "android.permission.READ_CALL_LOG", // 通话记录权限
 };
 
 const permissionCheck = {

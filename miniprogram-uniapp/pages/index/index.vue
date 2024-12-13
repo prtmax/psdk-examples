@@ -15,10 +15,11 @@
 		<button @click="closeBluetooth" class="button">断开连接</button>
 		<button @click="writeModel" class="button">打印76*130模版</button>
 		<button @click="printImage" class="button">打印图片</button>
-<!--		<button @click="deleteBmp" class="button">删除位图</button>-->
-<!--		<button @click="downloadBmp" class="button">下载位图</button>-->
-<!--		<button @click="printBmp" class="button">打印位图</button>-->
-<!--		<button @click="printTest" class="button">打印测试</button>-->
+		<button @click="writeTsplRibbonModel" class="button">热转印打印测试</button>
+		<!--		<button @click="deleteBmp" class="button">删除位图</button>-->
+		<!--		<button @click="downloadBmp" class="button">下载位图</button>-->
+		<!--		<button @click="printBmp" class="button">打印位图</button>-->
+		<!--    <button @click="printTest" class="button">打印测试</button> -->
 		<scroll-view class="canvas-buttons" scroll-y="true">
 			<block v-for="(item, index) in discoveredDevices" :key="item.deviceId">
 				<text class="status">设备名称:{{item.name}}</text>
@@ -35,6 +36,9 @@
 	import {
 		UniappBleBluetooth
 	} from "@psdk/device-ble-uniapp";
+	import {
+		InputImage
+	} from '@psdk/frame-imageb';
 	import {
 		ConnectedDevice,
 		Lifecycle,
@@ -60,6 +64,8 @@
 		CRotation,
 		CInverse,
 		CMag,
+		CQRCode,
+		CCorrectLevel,
 	} from "@psdk/cpcl";
 	import {
 		TBar,
@@ -75,6 +81,7 @@
 		TFont,
 		TTLine,
 		TPutImage,
+		TAlignment,
 	} from "@psdk/tspl";
 	import {
 		EImage
@@ -110,6 +117,7 @@
 				cpcl: null,
 				connectedDevice: null,
 				isPrint: false,
+				isAndroid: false,
 				items: [{
 						type: 'tspl',
 						checked: 'true',
@@ -125,6 +133,8 @@
 			}
 		},
 		async onLoad() {
+			const systemInfo = uni.getSystemInfoSync();
+			this.isAndroid = systemInfo.platform === 'android';
 			await initState(this);
 		},
 		methods: {
@@ -195,7 +205,7 @@
 			async printImage() {
 				console.log("printImage")
 				const vm = this;
-				//运行成安卓app会报API `createOffscreenCanvas` is not yet implemented，所以安卓端不支持图片
+				//运行成安卓app会报API `createOffscreenCanvas` is not yet implemented，所以安卓端参考classic.vue里面的打印图片方法
 				// 把图片画到离屏 canvas 上
 				const canvas = uni.createOffscreenCanvas({
 					type: '2d',
@@ -211,6 +221,12 @@
 					image.src = "/static/logo.png"; // 要加载的图片 url, 可以是base64
 				});
 				ctx.drawImage(image, 0, 0, 240, 240);
+				const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+				const input = new InputImage({
+					data: imageData.data,
+					width: imageData.width,
+					height: imageData.height,
+				});
 				console.log("toDataURL - ", ctx.canvas.toDataURL()) // 输出的图片
 				if (this.items[this.current].type === "tspl") {
 					const tspl = await vm.$printer.tspl()
@@ -224,11 +240,11 @@
 								x: 0,
 								y: 0,
 								compress: true,
-								image: canvas
+								image: input
 							})
 						)
 						.print();
-						await vm.safeWrite(tspl);
+					await vm.safeWrite(tspl);
 				} else if (this.items[this.current].type === "cpcl") {
 					const cpcl = await vm.$printer.cpcl()
 						.page(new CPage({
@@ -239,12 +255,12 @@
 							new CImage({
 								x: 0,
 								y: 0,
-								compress: true,
-								image: canvas
+								compress: false,
+								image: input
 							})
 						)
 						.print();
-						await vm.safeWrite(cpcl);
+					await vm.safeWrite(cpcl);
 				} else {
 					// vm.$printer.init(new FakeConnectedDevice());
 					const esc = await vm.$printer.esc()
@@ -252,7 +268,7 @@
 						.wakeup()
 						.image(
 							new EImage({
-								image: canvas,
+								image: input,
 								compress: true,
 							})
 						)
@@ -260,7 +276,6 @@
 						.stopJob();
 					await vm.safeWrite(esc);
 				}
-
 			},
 			// ArrayBuffer转16进度字符串示例
 			ab2hex(buffer) {
@@ -374,68 +389,18 @@
 				const vm = this;
 				try {
 					const psdk = await vm.$printer.tspl()
-						.raw(Raw.text("SIZE 100 mm,200 mm\n" +
-							"GAP 0 mm,0 mm\n" +
-							"TEXT 300,20,\"TSS32.BF2\",0,2,2,B1,\"软云\"\n" +
-							"TEXT 20,100,\"TSS32.BF2\",0,1,1,B1,\"客户:看看\"\n" +
-							"TEXT 350,100,\"TSS32.BF2\",0,1,1,B1,\"日期:2024-08-19\"\n" +
-							"TEXT 20,140,\"TSS32.BF2\",0,1,1,B1,\"电话:\"\n" +
-							"TEXT 350,140,\"TSS32.BF2\",0,1,1,B1,\"店员:22\"\n" +
-							"TEXT 20,180,\"TSS32.BF2\",0,1,1,B1,\"地址:\"\n" +
-							"TEXT 650,100,\"TSS16.BF2\",0,1,1,B1,\"扫码入库码\"\n" +
-							"QRCODE 650,120,L,4,A,0,M2,S7,\"B202408190912481724029968\"\n" +
-							"LINE 20,240,780,242,4,M3\n" +
-							"TEXT 20,300,\"TSS32.BF2\",0,1,1,B1,\"品名\"\n" +
-							"TEXT 720,300,\"TSS32.BF2\",0,1,1,B1,\"小计\"\n" +
-							"TEXT 650,300,\"TSS32.BF2\",0,1,1,B1,\"单价\"\n" +
-							"TEXT 580,300,\"TSS32.BF2\",0,1,1,B1,\"数量\"\n" +
-							"TEXT 170,300,\"TSS32.BF2\",0,1,1,B1,\"颜色\"\n" +
-							"TEXT 270,300,\"TSS32.BF2\",0,1,1,B1,\"m\"\n" +
-							"TEXT 330,300,\"TSS32.BF2\",0,1,1,B1,\"L\"\n" +
-							"LINE 20,340,780,342,4,M3\n" +
-							"TEXT 20,380,\"TSS32.BF2\",0,1,1,B1,\"目徒一下\"\n" +
-							"TEXT 20,440,\"TSS32.BF2\",0,1,1,B1,\"总数:4\"\n" +
-							"TEXT 170,380,\"TSS32.BF2\",0,1,1,B1,\"黑色\"\n" +
-							"TEXT 270,380,\"TSS32.BF2\",0,1,1,B1,\"1\"\n" +
-							"TEXT 320,380,\"TSS32.BF2\",0,1,1,B1,\"1\"\n" +
-							"TEXT 580,380,\"TSS32.BF2\",0,1,1,B1,\"2\"\n" +
-							"TEXT 650,380,\"TSS32.BF2\",0,1,1,B1,\"100\"\n" +
-							"TEXT 720,380,\"TSS32.BF2\",0,1,1,B1,\"200\"\n" +
-							"TEXT 170,440,\"TSS32.BF2\",0,1,1,B1,\"白色\"\n" +
-							"TEXT 270,440,\"TSS32.BF2\",0,1,1,B1,\"1\"\n" +
-							"TEXT 320,440,\"TSS32.BF2\",0,1,1,B1,\"1\"\n" +
-							"TEXT 580,440,\"TSS32.BF2\",0,1,1,B1,\"2\"\n" +
-							"TEXT 650,440,\"TSS32.BF2\",0,1,1,B1,\"100\"\n" +
-							"TEXT 720,440,\"TSS32.BF2\",0,1,1,B1,\"200\"\n" +
-							"TEXT 20,480,\"TSS32.BF2\",0,1,1,B1,\"总额:400\"\n" +
-							"LINE 20,540,780,542,4,M3\n" +
-							"TEXT 20,640,\"TSS32.BF2\",0,1,1,B1,\"付款方式:未付\"\n" +
-							"LINE 20,680,780,682,4,M3\n" +
-							"TEXT 20,720,\"TSS32.BF2\",0,1,1,B1,\"合计:\"\n" +
-							"TEXT 200,720,\"TSS32.BF2\",0,1,1,B1,\"总数:4\"\n" +
-							"TEXT 400,720,\"TSS32.BF2\",0,1,1,B1,\"总额:400.00\"\n" +
-							"TEXT 600,720,\"TSS32.BF2\",0,1,1,B1,\"实付:400\"\n" +
-							"LINE 20,760,780,762,4,M3\n" +
-							"TEXT 20,800,\"TSS24.BF2\",0,1,1,B1,\"上次欠款:0.00\"\n" +
-							"TEXT 250,800,\"TSS24.BF2\",0,1,1,B1,\"本单金额:400\"\n" +
-							"TEXT 450,800,\"TSS24.BF2\",0,1,1,B1,\"累计欠款:400.00\"\n" +
-							"TEXT 20,840,\"TSS24.BF2\",0,1,1,B1,\"上次余额:0\"\n" +
-							"TEXT 250,840,\"TSS24.BF2\",0,1,1,B1,\"本单金额:400\"\n" +
-							"TEXT 450,840,\"TSS24.BF2\",0,1,1,B1,\"剩下余额:0.00\"\n" +
-							"LINE 20,880,780,882,4,M3\n" +
-							"TEXT 20,920,\"TSS24.BF2\",0,1,1,B1,\"备注:\"\n" +
-							"TEXT 20,960,\"TSS24.BF2\",0,1,1,B1,\"经办人:22\"\n" +
-							"TEXT 20,1000,\"TSS24.BF2\",0,1,1,B1,\"电话:17305736725\"\n" +
-							"TEXT 20,1040,\"TSS24.BF2\",0,1,1,B1,\"地址:啊啊啊膜\"\n" +
-							"TEXT 20,1080,\"TSS24.BF2\",0,1,1,B1,\"开单时间:2024-08-19 09:12:48\"\n" +
-							"TEXT 20,1120,\"TSS24.BF2\",0,1,1,B1,\"温馨提醒:钱款、件数。请当面点清，离店概不负责\"\n" +
-							"TEXT 20,1160,\"TSS24.BF2\",0,1,1,B1,\"特别提醒：扫右上方二维码可一秒入库）\"\n" +
-							"TEXT 20,1200,\"TSS24.BF2\",0,1,1,B1,\"技术支持：hg3515（领使用）\"\n" +
-							"TEXT 20,1240,\"TSS24.BF2\",0,1,1,B1,\"店铺公告:兔子\"\n" +
-							"LINE 20,1320,780,1322,4,M3\n" +
-							"PUTBMP 20,1360,\"\"\n" +
-							"PUTBMP 270,1360,\"\"\n" +
-							"PUTBMP 520,1360,\"\"\n" +
+						.raw(Raw.text("CLS\n" +
+							"SIZE 16 mm,250 mm\n" +
+							"GAP 3 mm,0 mm\n" +
+							"TEXT 12,12,\"simhei.ttf\",90,14,14,\"船\"\n" +
+							"TEXT 12,72,\"simhei.ttf\",90,14,14,\"号\"\n" +
+							"TEXT 12,132,\"simhei.ttf\",90,14,14,\"：\"\n" +
+							"TEXT 12,192,\"simhei.ttf\",90,14,14,\"H\"\n" +
+							"TEXT 12,252,\"simhei.ttf\",90,14,14,\"2\"\n" +
+							"TEXT 12,312,\"simhei.ttf\",90,14,14,\"0\"\n" +
+							"TEXT 12,372,\"simhei.ttf\",90,14,14,\"2\"\n" +
+							"TEXT 12,432,\"simhei.ttf\",90,14,14,\"4\"\n" +
+							"DENSITY 1\n" +
 							"PRINT 1,1"));
 					console.log(psdk.command().string());
 					await vm.safeWrite(psdk);
@@ -451,11 +416,16 @@
 				try {
 					if (!vm.isPrint) {
 						vm.isPrint = true;
-						const report = await psdk.write(); //不分包发送，如果不会丢包可以不分包
-						// const report = await psdk.write({
-						// 	enableChunkWrite: true,
-						// 	chunkSize: 20
-						// });//分包发送，chunkSize:分包大小
+						let report;
+						if (this.isAndroid) {
+							//分包发送，chunkSize:分包大小
+							report = await psdk.write({
+								enableChunkWrite: true,
+								chunkSize: 20
+							});
+						} else {
+							report = await psdk.write(); //不分包发送，如果不会丢包可以不分包
+						}
 						vm.isPrint = false;
 						console.log(report);
 						uni.showToast({
@@ -487,6 +457,14 @@
 						.page(new CPage({
 							width: 608,
 							height: 1040
+						}))
+						.qrcode(new CQRCode({
+							x: 54,
+							y: 480,
+							width: 10,
+							content: "PDDZDA00017106",
+							codeRotation: CCodeRotation.ROTATION_0,
+							level: CCorrectLevel.L
 						}))
 						.box(new CBox({
 							topLeftX: 0,
@@ -1082,7 +1060,8 @@
 							content: "发发发发发",
 							rawFont: "SIMHEI.TTF",
 							mulX: 14,
-							mulY: 14
+							mulY: 14,
+							alignment: TAlignment.DEFAULT
 						}))
 						.text(new TText({
 							x: 12,

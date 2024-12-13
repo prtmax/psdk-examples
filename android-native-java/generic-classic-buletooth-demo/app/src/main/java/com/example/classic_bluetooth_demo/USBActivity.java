@@ -10,7 +10,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.widget.*;
-import androidx.appcompat.app.AppCompatActivity;
 import com.printer.psdk.cpcl.CPCL;
 import com.printer.psdk.cpcl.GenericCPCL;
 import com.printer.psdk.cpcl.args.*;
