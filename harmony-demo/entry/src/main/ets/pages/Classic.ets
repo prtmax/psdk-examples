@@ -13,6 +13,7 @@ import { GenericCPCL } from '@psdk/cpcl';
 import { GenericESC } from '@psdk/esc';
 import { EscQueryType, EscSettingType, ThicknessLevel } from '../common/EscTypes';
 import { util } from '@kit.ArkTS';
+import { PaperType } from '@psdk/esc/build/types';
 
 @CustomDialog
 struct CustomDialogExample {
@@ -435,7 +436,9 @@ struct Index {
   }
 
   async onEscSetting(settingType: EscSettingType, value: number) {
-    this.escSettingType = settingType
+    if (settingType != EscSettingType.PaperType) {
+      this.escSettingType = settingType
+    }
     const esc = CommonUtil.escSettingCmd(settingType, value);
     await this.safeWrite(esc);
   }
@@ -660,6 +663,50 @@ struct Index {
                           if (this.dialogController != null) {
                             this.dialogController.open()
                           }
+                        }
+                      },
+                      {
+                        title: '\n设置纸张类型\n',
+                        action: async () => {
+                          ActionSheet.show({
+                            title: '设置浓度',
+                            message: '请选择浓度等级',
+                            autoCancel: true,
+                            alignment: DialogAlignment.Center,
+                            sheets: [
+                              {
+                                title: '\n折叠黑标纸\n',
+                                action: async () => {
+                                  await this.onEscSetting(EscSettingType.PaperType, PaperType.FOLDED_BLACK_LABEL_PAPER)
+                                }
+                              },
+                              {
+                                title: '\n连续卷筒纸\n',
+                                action: async () => {
+                                  await this.onEscSetting(EscSettingType.PaperType, PaperType.CONTINUOUS_REEL_PAPER)
+                                }
+                              },
+                              {
+                                title: '\n不干胶缝隙纸\n',
+                                action: async () => {
+                                  await this.onEscSetting(EscSettingType.PaperType, PaperType.NO_DRY_ADHESIVE_PAPER)
+                                }
+                              },
+                              {
+                                title: '\n打孔纸\n',
+                                action: async () => {
+                                  await this.onEscSetting(EscSettingType.PaperType, PaperType.HOLE_PAPER)
+                                }
+                              },
+                              {
+                                title: '\n纹身纸\n',
+                                action: async () => {
+                                  await this.onEscSetting(EscSettingType.PaperType, PaperType.TATTOO_PAPER)
+                                }
+                              }
+                            ]
+                          });
+
                         }
                       }
                     ]
