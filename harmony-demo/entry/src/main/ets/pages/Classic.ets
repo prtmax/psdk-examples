@@ -669,8 +669,8 @@ struct Index {
                         title: '\n设置纸张类型\n',
                         action: async () => {
                           ActionSheet.show({
-                            title: '设置浓度',
-                            message: '请选择浓度等级',
+                            title: '设置纸张类型',
+                            message: '请选择纸张类型',
                             autoCancel: true,
                             alignment: DialogAlignment.Center,
                             sheets: [
