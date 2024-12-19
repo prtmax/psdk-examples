@@ -180,7 +180,7 @@ public class ESCActivity extends Activity {
               GenericESC _gesc = PrintUtil.getInstance().esc().enable()
                 .wakeup()
                 .location(ELocation.builder().location(Location.CENTER).build())
-                .lineDot(1)
+                .lineDot(8)//走空白纸
                 .image(EImage.builder()
                   .image(new AndroidSourceImage(bitmap))
 //                  .compress(true)//支持压缩的打印机可以走压缩
