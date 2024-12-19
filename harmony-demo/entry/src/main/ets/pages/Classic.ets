@@ -612,13 +612,13 @@ struct Index {
                 })
               Button('设置').onClick(
                 () => {
-                  // if (this.connectedDevice === undefined) {
-                  //   promptAction.showToast({
-                  //     message: '请连接设备！！！',
-                  //     duration: 1000
-                  //   });
-                  //   return;
-                  // }
+                  if (this.connectedDevice === undefined) {
+                    promptAction.showToast({
+                      message: '请连接设备！！！',
+                      duration: 1000
+                    });
+                    return;
+                  }
                   ActionSheet.show({
                     title: '设置',
                     message: '请选择设置内容', //弹窗内容
