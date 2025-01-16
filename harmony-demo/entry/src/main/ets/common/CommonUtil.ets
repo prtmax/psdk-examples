@@ -30,13 +30,15 @@ import {
   CInverse,
   CMag,
 } from '@psdk/cpcl';
+import { InputImage } from '@psdk/frame-imageb';
 
 import { LengthMetricsUnit } from '@ohos.arkui.node'
-import { EImage, GenericESC } from '@psdk/esc';
+import { EImage, EPaperType, GenericESC } from '@psdk/esc';
 import { promptAction } from '@kit.ArkUI';
 import { PrinterUtil } from './PrinterUtil';
-import { EscQueryType, EscSetType } from './EscTypes';
+import { EscQueryType, EscSettingType } from './EscTypes';
 import { util } from '@kit.ArkTS';
+import { PaperType } from '@psdk/esc/build/types/papertype';
 
 export class CommonUtil {
   showMessage(text: string) {
@@ -687,7 +689,7 @@ export class CommonUtil {
       .wakeup()
       .image(
         new EImage({
-          image: this._createCanvas("common/images/test.jpg", 96, 189),
+          image: this._createCanvas("common/images/img.png", 1500, 2121),
           compress: false,
         })
       )
@@ -733,28 +735,38 @@ export class CommonUtil {
     return esc
   }
 
-  escSetCmd(setType: EscSetType, value: number): GenericESC {
+  escSettingCmd(setType: EscSettingType, value: number): GenericESC {
     let esc = PrinterUtil.getInstance().esc().clear()
     switch (setType) {
-      case EscSetType.Thickness:
+      case EscSettingType.Thickness:
         esc.thickness(value)
         break;
-      case EscSetType.ShutTime:
+      case EscSettingType.ShutTime:
         esc.setShutdownTime(value)
+        break;
+      case EscSettingType.PaperType:
+        esc.paperType(new EPaperType({
+          paperType: value
+        }));
         break;
     }
     return esc
   }
 
-  _createCanvas(imgPath: string, width: number, height: number,): OffscreenCanvas {
+  _createCanvas(imgPath: string, width: number, height: number,): InputImage {
     const settings: RenderingContextSettings = new RenderingContextSettings(true)
     const offCanvas: OffscreenCanvas = new OffscreenCanvas(width, height, LengthMetricsUnit.PX);
     const img: ImageBitmap = new ImageBitmap(imgPath)
 
     let offContext = offCanvas.getContext("2d", settings)
     offContext.drawImage(img, 0, 0, width, height);
-
-    return offCanvas;
+    const imageData = offContext.getImageData(0, 0, width, height);
+    const input = new InputImage({
+      data: imageData.data,
+      width: imageData.width,
+      height: imageData.height,
+    });
+    return input;
   }
 
   uint8ArrayToString(uint8Array: Uint8Array): string {
