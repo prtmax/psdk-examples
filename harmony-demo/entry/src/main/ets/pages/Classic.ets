@@ -5,14 +5,15 @@ import a2dp from '@ohos.bluetooth.a2dp';
 import { baseProfile } from '@kit.ConnectivityKit';
 import { ConnectedDevice, PSDK } from '@psdk/frame-father';
 import CommonUtil from '../common/CommonUtil';
-import { OhosBluetoothClassic } from '@psdk/ohos-bluetooth-classic/build/provider';
-import { JluetoothDevice } from '@psdk/device-bluetooth-traits/build/index';
+import { OhosBluetoothClassic } from '@psdk/ohos-bluetooth-classic';
+import { JluetoothDevice } from '@psdk/device-bluetooth-traits';
 import { PrinterUtil } from '../common/PrinterUtil';
 import { GenericTSPL } from '@psdk/tspl';
 import { GenericCPCL } from '@psdk/cpcl';
 import { GenericESC } from '@psdk/esc';
 import { EscQueryType, EscSettingType, ThicknessLevel } from '../common/EscTypes';
 import { util } from '@kit.ArkTS';
+
 
 @CustomDialog
 struct CustomDialogExample {
