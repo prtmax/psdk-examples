@@ -33,11 +33,12 @@ import {
 import { InputImage } from '@psdk/frame-imageb';
 
 import { LengthMetricsUnit } from '@ohos.arkui.node'
-import { EImage, GenericESC } from '@psdk/esc';
+import { EImage, EPaperType, GenericESC } from '@psdk/esc';
 import { promptAction } from '@kit.ArkUI';
 import { PrinterUtil } from './PrinterUtil';
 import { EscQueryType, EscSettingType } from './EscTypes';
 import { util } from '@kit.ArkTS';
+import { PaperType } from '@psdk/esc/build/types/papertype';
 
 export class CommonUtil {
   showMessage(text: string) {
@@ -742,6 +743,11 @@ export class CommonUtil {
         break;
       case EscSettingType.ShutTime:
         esc.setShutdownTime(value)
+        break;
+      case EscSettingType.PaperType:
+        esc.paperType(new EPaperType({
+          paperType: value
+        }));
         break;
     }
     return esc

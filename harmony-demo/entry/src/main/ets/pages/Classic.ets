@@ -13,6 +13,7 @@ import { GenericCPCL } from '@psdk/cpcl';
 import { GenericESC } from '@psdk/esc';
 import { EscQueryType, EscSettingType, ThicknessLevel } from '../common/EscTypes';
 import { util } from '@kit.ArkTS';
+import { PaperType } from '@psdk/esc/build/types';
 
 
 @CustomDialog
@@ -436,7 +437,9 @@ struct Index {
   }
 
   async onEscSetting(settingType: EscSettingType, value: number) {
-    this.escSettingType = settingType
+    if (settingType != EscSettingType.PaperType) {
+      this.escSettingType = settingType
+    }
     const esc = CommonUtil.escSettingCmd(settingType, value);
     await this.safeWrite(esc);
   }
@@ -610,13 +613,13 @@ struct Index {
                 })
               Button('设置').onClick(
                 () => {
-                  // if (this.connectedDevice === undefined) {
-                  //   promptAction.showToast({
-                  //     message: '请连接设备！！！',
-                  //     duration: 1000
-                  //   });
-                  //   return;
-                  // }
+                  if (this.connectedDevice === undefined) {
+                    promptAction.showToast({
+                      message: '请连接设备！！！',
+                      duration: 1000
+                    });
+                    return;
+                  }
                   ActionSheet.show({
                     title: '设置',
                     message: '请选择设置内容', //弹窗内容
@@ -661,6 +664,50 @@ struct Index {
                           if (this.dialogController != null) {
                             this.dialogController.open()
                           }
+                        }
+                      },
+                      {
+                        title: '\n设置纸张类型\n',
+                        action: async () => {
+                          ActionSheet.show({
+                            title: '设置纸张类型',
+                            message: '请选择纸张类型',
+                            autoCancel: true,
+                            alignment: DialogAlignment.Center,
+                            sheets: [
+                              {
+                                title: '\n折叠黑标纸\n',
+                                action: async () => {
+                                  await this.onEscSetting(EscSettingType.PaperType, PaperType.FOLDED_BLACK_LABEL_PAPER)
+                                }
+                              },
+                              {
+                                title: '\n连续卷筒纸\n',
+                                action: async () => {
+                                  await this.onEscSetting(EscSettingType.PaperType, PaperType.CONTINUOUS_REEL_PAPER)
+                                }
+                              },
+                              {
+                                title: '\n不干胶缝隙纸\n',
+                                action: async () => {
+                                  await this.onEscSetting(EscSettingType.PaperType, PaperType.NO_DRY_ADHESIVE_PAPER)
+                                }
+                              },
+                              {
+                                title: '\n打孔纸\n',
+                                action: async () => {
+                                  await this.onEscSetting(EscSettingType.PaperType, PaperType.HOLE_PAPER)
+                                }
+                              },
+                              {
+                                title: '\n纹身纸\n',
+                                action: async () => {
+                                  await this.onEscSetting(EscSettingType.PaperType, PaperType.TATTOO_PAPER)
+                                }
+                              }
+                            ]
+                          });
+
                         }
                       }
                     ]

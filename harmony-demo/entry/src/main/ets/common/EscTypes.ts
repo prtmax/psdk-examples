@@ -20,7 +20,7 @@ export enum EscQueryType {
 export enum EscSettingType {
   Thickness,   // 设置浓度
   ShutTime,    // 设置关机时间
-  // PaperType,   // 设置纸张类型
+  PaperType,   // 设置纸张类型
   // LabelGap,    // 设置学习标签缝隙
 }
 
