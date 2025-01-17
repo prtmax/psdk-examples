@@ -10,7 +10,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.View;
 import android.widget.*;
-import com.printer.psdk.cpcl.CPCL;
+import com.example.classic_bluetooth_demo.util.PrintUtil;
 import com.printer.psdk.cpcl.GenericCPCL;
 import com.printer.psdk.cpcl.args.*;
 import com.printer.psdk.cpcl.mark.CodeRotation;
@@ -21,7 +21,6 @@ import com.printer.psdk.device.usb.USBConnectedDevice;
 import com.printer.psdk.frame.father.PSDK;
 import com.printer.psdk.imagep.android.AndroidSourceImage;
 import com.printer.psdk.tspl.GenericTSPL;
-import com.printer.psdk.tspl.TSPL;
 import com.printer.psdk.tspl.args.*;
 import com.printer.psdk.tspl.mark.CodeType;
 import com.printer.psdk.tspl.mark.CorrectLevel;
@@ -33,8 +32,6 @@ import java.io.InputStream;
 
 
 public class USBActivity extends Activity {
-  private GenericTSPL tspl;
-  private GenericCPCL cpcl;
   private USB usb;
   private Button switch_Usb;
   private Button printImage;
@@ -81,8 +78,7 @@ public class USBActivity extends Activity {
         } else {
           USBConnectedDevice usbConnectedDevice = usb.openUsb();
           if (usbConnectedDevice != null) {
-            tspl = TSPL.generic(usbConnectedDevice);
-            cpcl = CPCL.generic(usbConnectedDevice);
+            PrintUtil.getInstance().init(usbConnectedDevice);
             switch_Usb.setText("关闭USB");
             isOpen = true;
           } else {
@@ -122,7 +118,7 @@ public class USBActivity extends Activity {
           return;
         }
         if (curCmd.equals("tspl")) {
-          GenericTSPL _gtspl = tspl.page(TPage.builder().width(100).height(150).build())
+          GenericTSPL _gtspl = PrintUtil.getInstance().tspl().clear().page(TPage.builder().width(100).height(150).build())
             .direction(TDirection.builder().direction(TDirection.Direction.UP_OUT).mirror(TDirection.Mirror.NO_MIRROR).build())
             .gap(cb_position.isChecked())
             .cut(cb_cut.isChecked())
@@ -154,7 +150,7 @@ public class USBActivity extends Activity {
             .print(1);
           safeWrite(_gtspl);
         } else {
-          GenericCPCL _gcpcl = cpcl.page(CPage.builder().width(608).height(1040).copies(1).build())
+          GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().clear().page(CPage.builder().width(608).height(1040).copies(1).build())
             .box(CBox.builder().topLeftX(0).topLeftY(1).bottomRightX(598).bottomRightY(664).lineWidth(2).build())
             .line(CLine.builder().startX(0).startY(88).endX(598).endY(88).lineWidth(2).build())
             .line(CLine.builder().startX(0).startY(88 + 128).endX(598).endY(88 + 128).lineWidth(2).build())
@@ -213,7 +209,7 @@ public class USBActivity extends Activity {
           showMessage("未打开USB端口");
           return;
         }
-        GenericTSPL _gtspl = tspl.state();
+        GenericTSPL _gtspl = PrintUtil.getInstance().tspl().clear().state();
         String result = safeWriteAndRead(_gtspl);
         showMessage(result);
       }
@@ -226,8 +222,7 @@ public class USBActivity extends Activity {
     if(!isOpen){
       USBConnectedDevice usbConnectedDevice = usb.openUsb();
       if (usbConnectedDevice != null) {
-        tspl = TSPL.generic(usbConnectedDevice);
-        cpcl = CPCL.generic(usbConnectedDevice);
+        PrintUtil.getInstance().init(usbConnectedDevice);
         switch_Usb.setText("关闭USB");
         isOpen = true;
       }
@@ -239,7 +234,7 @@ public class USBActivity extends Activity {
     Bitmap rawBitmap = bmpDraw.getBitmap();
     rawBitmap = Bitmap.createScaledBitmap(rawBitmap, 800, 1200, true);
     if (curCmd.equals("tspl")) {
-      GenericTSPL _gtspl = tspl.clear().page(TPage.builder().width(100).height(150).build())
+      GenericTSPL _gtspl = PrintUtil.getInstance().tspl().clear().page(TPage.builder().width(100).height(150).build())
         //注释的为热转印机器指令
 //                        .label()//标签纸打印 三种纸调用的时候根据打印机实际纸张选一种就可以了
 //                        .bline()//黑标纸打印
@@ -268,7 +263,7 @@ public class USBActivity extends Activity {
         .print(1);
       safeWrite(_gtspl);
     } else {
-      GenericCPCL _gcpcl = cpcl.page(CPage.builder().width(608).height(1040).build())
+      GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().clear().page(CPage.builder().width(608).height(1040).build())
         .image(CImage.builder()
           .image(new AndroidSourceImage(rawBitmap))
           .compress(cb_compress.isChecked())
@@ -337,8 +332,7 @@ public class USBActivity extends Activity {
           showMessage("监测到设备！");
           USBConnectedDevice usbConnectedDevice = usb.openUsb();
           if (usbConnectedDevice != null) {
-            tspl = TSPL.generic(usbConnectedDevice);
-            cpcl = CPCL.generic(usbConnectedDevice);
+            PrintUtil.getInstance().init(usbConnectedDevice);
             switch_Usb.setText("关闭USB");
             isOpen = true;
           }

@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.view.View;
 import android.widget.*;
 import androidx.viewpager.widget.ViewPager;
@@ -27,7 +28,7 @@ import java.io.IOException;
 
 
 public class PDFActivity extends Activity {
-  private Button bt_choose_pdf, bt_print_pdf;
+  private Button bt_choose_pdf, bt_choose_image,bt_print_pdf;
   private CheckBox cb_compress;
   private CheckBox cb_cut;
   private CheckBox cb_position;
@@ -36,6 +37,9 @@ public class PDFActivity extends Activity {
   private ViewPager viewPager;
   private String curCmd = "tspl";
   private Bitmap[] bitmaps;
+
+  private static final int PICK_IMAGE = 1;
+  private static final int PICK_PDF = 2;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -46,6 +50,7 @@ public class PDFActivity extends Activity {
     viewPager = findViewById(R.id.viewPager);
     tv_pdf = findViewById(R.id.tv_pdf);
     bt_choose_pdf = findViewById(R.id.bt_choose_pdf);
+    bt_choose_image = findViewById(R.id.bt_choose_image);
     bt_print_pdf = findViewById(R.id.bt_print_pdf);
     cb_compress = findViewById(R.id.cb_compress);
     cb_cut = findViewById(R.id.cb_cut);
@@ -64,7 +69,15 @@ public class PDFActivity extends Activity {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("*/*");//设置类型，这里是任意类型，任意后缀的可以这样写。
         intent.addCategory(Intent.CATEGORY_OPENABLE);
-        startActivityForResult(intent, 1);
+        startActivityForResult(intent, PICK_PDF);
+      }
+    });
+    bt_choose_image.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, PICK_IMAGE);
       }
     });
     bt_print_pdf.setOnClickListener(new View.OnClickListener() {
@@ -88,22 +101,43 @@ public class PDFActivity extends Activity {
     if (resultCode == Activity.RESULT_OK) {//是否选择，没选择就不会继续
       Uri uri = data.getData();//得到uri，后面就是将uri转化成file的过程。
       String file_path = FileChooseUtil.getFileAbsolutePath(this, uri);
-      if (!file_path.toLowerCase().contains("pdf")) {
-        showMessage("请选择后缀为pdf文件");
-        return;
+      switch (requestCode){
+        case PICK_PDF:
+          if (!file_path.toLowerCase().contains("pdf")) {
+            showMessage("请选择后缀为pdf文件");
+            return;
+          }
+          PdfUtil.showLoading(this, "加载中。。。");
+          new Thread(() -> {
+            bitmaps = PdfUtil.openFile(Uri.decode(file_path));
+            if (bitmaps != null) {
+              runOnUiThread(() -> {
+                tv_pdf.setText(file_path);
+                ImagePagerAdapter adapter = new ImagePagerAdapter(PDFActivity.this, bitmaps);
+                viewPager.setAdapter(adapter);
+                PdfUtil.dismissLoading();
+              });
+            }
+          }).start();
+          break;
+        case PICK_IMAGE:
+          try {
+            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
+            if (bitmap != null) {
+              runOnUiThread(() -> {
+                bitmaps = new Bitmap[1];
+                bitmaps[0] = bitmap;
+                tv_pdf.setText(file_path);
+                ImagePagerAdapter adapter = new ImagePagerAdapter(PDFActivity.this, bitmaps);
+                viewPager.setAdapter(adapter);
+                PdfUtil.dismissLoading();
+              });
+            }
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+          break;
       }
-      PdfUtil.showLoading(this, "加载中。。。");
-      new Thread(() -> {
-        bitmaps = PdfUtil.openFile(Uri.decode(file_path));
-        if (bitmaps != null) {
-          runOnUiThread(() -> {
-            tv_pdf.setText(file_path);
-            ImagePagerAdapter adapter = new ImagePagerAdapter(PDFActivity.this, bitmaps);
-            viewPager.setAdapter(adapter);
-            PdfUtil.dismissLoading();
-          });
-        }
-      }).start();
     } else {
       showMessage("未选择文件");
     }

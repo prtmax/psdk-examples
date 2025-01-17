@@ -17,9 +17,10 @@
     </LinearLayout>
     <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip">
       <Button android:id="@+id/bt_choose_pdf" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="选择pdf"/>
-      <Button android:id="@+id/bt_print_pdf" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="打印pdf"/>
-      <TextView android:id="@+id/tv_pdf" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:layout_marginRight="10.0dip" android:text="未选择"/>
+      <Button android:id="@+id/bt_choose_image" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="选择图片"/>
+      <Button android:id="@+id/bt_print_pdf" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="打印"/>
     </LinearLayout>
-    <androidx.viewpager.widget.ViewPager android:id="@+id/viewPager" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_margin="20.0dip"/>
+    <TextView android:id="@+id/tv_pdf" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip" android:layout_marginRight="10.0dip" android:text="未选择"/>
+    <androidx.viewpager.widget.ViewPager android:id="@+id/viewPager" android:layout_width="fill_parent" android:layout_height="fill_parent" android:layout_margin="10.0dip"/>
   </LinearLayout>
 </LinearLayout>
