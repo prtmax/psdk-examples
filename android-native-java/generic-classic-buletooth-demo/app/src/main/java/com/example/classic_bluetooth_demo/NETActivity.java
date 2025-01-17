@@ -2,12 +2,14 @@ package com.example.classic_bluetooth_demo;
 
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
-import com.printer.psdk.cpcl.CPCL;
+import com.example.classic_bluetooth_demo.util.PdfUtil;
+import com.example.classic_bluetooth_demo.util.PrintUtil;
 import com.printer.psdk.cpcl.GenericCPCL;
 import com.printer.psdk.cpcl.args.*;
 import com.printer.psdk.cpcl.mark.CodeRotation;
@@ -18,7 +20,6 @@ import com.printer.psdk.device.net.Network;
 import com.printer.psdk.frame.father.PSDK;
 import com.printer.psdk.imagep.android.AndroidSourceImage;
 import com.printer.psdk.tspl.GenericTSPL;
-import com.printer.psdk.tspl.TSPL;
 import com.printer.psdk.tspl.args.*;
 import com.printer.psdk.tspl.mark.CodeType;
 import com.printer.psdk.tspl.mark.CorrectLevel;
@@ -30,10 +31,9 @@ import java.io.InputStream;
 
 
 public class NETActivity extends Activity {
-  private GenericTSPL tspl;
-  private GenericCPCL cpcl;
   private Network network;
   private Button switch_net;
+  private Button printPdf;
   private Button printImage;
   private Button printModel;
   private EditText et_address;
@@ -49,6 +49,7 @@ public class NETActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_net);
     switch_net = findViewById(R.id.switch_net);
+    printPdf = findViewById(R.id.printPdf);
     printImage = findViewById(R.id.printImage);
     printModel = findViewById(R.id.printModel);
     cb_compress = findViewById(R.id.cb_compress);
@@ -81,22 +82,41 @@ public class NETActivity extends Activity {
           String port = et_port.getText().toString();
           if (address.isEmpty() || port.isEmpty()) {
             showMessage("地址或端口号为空");
+            return;
           }
           network = new Network(address, Integer.parseInt(port));
-          NetConnectedDevice netConnectedDevice = network.connect();
-          if (netConnectedDevice != null) {
-            tspl = TSPL.generic(netConnectedDevice);
-            cpcl = CPCL.generic(netConnectedDevice);
-            switch_net.setText("断开");
-            isOpen = true;
-          } else {
-            showMessage("连接失败，检查地址是否可用");
-          }
 
+          PdfUtil.showLoading(NETActivity.this, "连接中。。。");
+          new Thread(() -> {
+            NetConnectedDevice netConnectedDevice = network.connect();
+            runOnUiThread(() -> {
+              PdfUtil.dismissLoading();
+              if (netConnectedDevice != null) {
+                PrintUtil.getInstance().init(netConnectedDevice);
+                showMessage("连接成功");
+                switch_net.setText("断开");
+                isOpen = true;
+              } else {
+                showMessage("连接失败，检查地址是否可用");
+              }
+            });
+          }).start();
         }
       }
 
     });
+    printPdf.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (!isOpen) {
+          showMessage("未连接");
+          return;
+        }
+        Intent intent = new Intent(NETActivity.this, PDFActivity.class);
+        startActivity(intent);
+      }
+    });
+
     printImage.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -115,7 +135,7 @@ public class NETActivity extends Activity {
           return;
         }
         if (curCmd.equals("tspl")) {
-          GenericTSPL _gtspl = tspl.page(TPage.builder().width(100).height(150).build())
+          GenericTSPL _gtspl = PrintUtil.getInstance().tspl().clear().page(TPage.builder().width(100).height(150).build())
             .direction(TDirection.builder().direction(TDirection.Direction.UP_OUT).mirror(TDirection.Mirror.NO_MIRROR).build())
             .gap(cb_position.isChecked())
             .cut(cb_cut.isChecked())
@@ -147,7 +167,7 @@ public class NETActivity extends Activity {
             .print(1);
           safeWrite(_gtspl);
         } else {
-          GenericCPCL _gcpcl = cpcl.page(CPage.builder().width(608).height(1040).copies(1).build())
+          GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().clear().page(CPage.builder().width(608).height(1040).copies(1).build())
             .box(CBox.builder().topLeftX(0).topLeftY(1).bottomRightX(598).bottomRightY(664).lineWidth(2).build())
             .line(CLine.builder().startX(0).startY(88).endX(598).endY(88).lineWidth(2).build())
             .line(CLine.builder().startX(0).startY(88 + 128).endX(598).endY(88 + 128).lineWidth(2).build())
@@ -212,7 +232,7 @@ public class NETActivity extends Activity {
     Bitmap rawBitmap = bmpDraw.getBitmap();
     rawBitmap = Bitmap.createScaledBitmap(rawBitmap, 800, 1200, true);
     if (curCmd.equals("tspl")) {
-      GenericTSPL _gtspl = tspl.clear().page(TPage.builder().width(100).height(150).build())
+      GenericTSPL _gtspl = PrintUtil.getInstance().tspl().clear().page(TPage.builder().width(100).height(150).build())
         //注释的为热转印机器指令
 //                        .label()//标签纸打印 三种纸调用的时候根据打印机实际纸张选一种就可以了
 //                        .bline()//黑标纸打印
@@ -241,7 +261,7 @@ public class NETActivity extends Activity {
         .print(1);
       safeWrite(_gtspl);
     } else {
-      GenericCPCL _gcpcl = cpcl.page(CPage.builder().width(608).height(1040).build())
+      GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().clear().page(CPage.builder().width(608).height(1040).build())
         .image(CImage.builder()
           .image(new AndroidSourceImage(rawBitmap))
           .compress(cb_compress.isChecked())
