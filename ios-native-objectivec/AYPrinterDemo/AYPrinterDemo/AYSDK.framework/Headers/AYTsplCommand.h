@@ -1,5 +1,5 @@
 //
-//  TsplCommand.h
+//  AYWifiCommand.h
 //  AYSDK
 //
 //  Created by aiyin on 2023/9/12.
@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface TsplCommand : Command
+@interface AYTsplCommand : Command
 
 #pragma mark - command
 

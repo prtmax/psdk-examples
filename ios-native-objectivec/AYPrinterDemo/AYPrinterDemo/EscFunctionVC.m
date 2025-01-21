@@ -14,7 +14,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *displayLabel;
 @property (weak, nonatomic) IBOutlet UIProgressView *otaProgressView;
 @property (strong, nonatomic) AYOtaHelper *ota;
-@property (strong, nonatomic) EscCommand *esc;
+@property (strong, nonatomic) AYEscCommand *esc;
 @property (assign, nonatomic) int copies;
 @property (assign, nonatomic) bool isLabel;
 @property (assign, nonatomic) bool isPrinting;
@@ -27,7 +27,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     self.copies = _copiesLabel.text.intValue;
-    self.esc = [EscCommand new];
+    self.esc = [AYEscCommand new];
     [self initCallBack];
 }
 
@@ -40,18 +40,20 @@
     __weak typeof(self) weakSelf = self;
     // 所以打印机数据接收
     self.bleHelper.onDataReceived = ^(NSData *data) {
-        
+        NSLog(@"收到数据: %@", data);
     };
     // 查询回调
     self.bleHelper.escQueryChange = ^(EQuery type, NSData *data) {
         Byte *bytes = (Byte *)[data bytes];
+      NSLog(@"查询数据: %@", data);
         switch (type) {
             case QueryInfo:
                 // 对应信息： 蓝牙名称 | 经典蓝牙 mac | ble mac | 打印机固件版本 | sn号 | 电量
                 NSLog(@"打印机信息：%@", data);
                 weakSelf.displayLabel.text = [NSString stringWithFormat:@"打印机信息：%@", [data toRawString]];
                 break;
-            case QueryState:
+          case QueryState:{
+            
                 // * 0:打印机正常
                 // * 其他（根据"位"判断打印机状态）
                 // * 第0位：1：正在打印
@@ -60,7 +62,34 @@
                 // * 第3位：1：电池电压低
                 // * 第4位：1：打印头过热
                 NSLog(@"打印机状态：%@", data);
-                weakSelf.displayLabel.text = [NSString stringWithFormat:@"打印机状态：%@", data];
+                bool isOK = YES;
+                NSMutableArray *states = [NSMutableArray array];
+                if ((bytes[0] & 0x01) == 0x01) {
+                  [states addObject:@"正在打印"];
+                  isOK = NO;
+                }
+                if ((bytes[0] & 0x02) == 0x02) {
+                  [states addObject:@"纸舱盖开"];
+                  isOK = NO;
+                }
+                if ((bytes[0] & 0x04) == 0x04) {
+                  [states addObject:@"缺纸"];
+                  isOK = NO;
+                }
+                if ((bytes[0] & 0x08) == 0x08) {
+                  [states addObject:@"电池电压低"];
+                  isOK = NO;
+                }
+                if ((bytes[0] & 0x10) == 0x10) {
+                  [states addObject:@"打印头过热"];
+                  isOK = NO;
+                }
+                if (isOK) {
+                  [states addObject:@"良好"];
+                }
+            NSLog(@"states: %@", states);
+            weakSelf.displayLabel.text = [NSString stringWithFormat:@"打印机状态：%@", [states componentsJoinedByString: @"+"]];
+          }
                 break;
             case QueryBatteryVol:
                 NSLog(@"电量: %d ",  bytes[1]);
@@ -136,7 +165,7 @@
         if (!weakSelf.isPrinting) {
             return;
         }
-        NSLog(@"打印成功： %@, 剩余份数： %d", data, weakSelf.copies);
+        // NSLog(@"打印成功： %@, 剩余份数： %d", data, weakSelf.copies);
         if (weakSelf.copies <= 0) {
             weakSelf.isPrinting = NO;
             weakSelf.displayLabel.text = @"打印完成";
@@ -221,8 +250,8 @@
     [self.esc clean];
     [self.esc wake];
     [self.esc enable];
-    [self.esc contentPosition:EPositionCenter];
-    [self.esc image:[UIImage imageNamed:@"蚊香液.png"] compress:self.isCompress mode:Normal];
+//    [self.esc contentPosition:EPositionCenter];
+    [self.esc image:[UIImage imageNamed:@"shouji.png"] compress:self.isCompress mode:Normal];
     [self.esc position];
     [self.esc stopPrintJob];
 
@@ -235,11 +264,17 @@
 
 /// 连续纸
 - (IBAction)continuousPrint {
+//    Xnip2024-09-07_08-24-20.png
+    UIImage *image = [UIImage imageNamed:@"7021733365744_.pic.jpg"];
+//    image = [image dither];
+
+  image = [AYImageEnhance ditheringByFloydSteinberg:image];
+    
     [self.esc clean];
     [self.esc wake];
     [self.esc enable];
     [self.esc linedots:80];
-    [self.esc image:[UIImage imageNamed:@"dog.jpg"] compress:self.isCompress mode:Normal];
+    [self.esc image:image compress:self.isCompress mode:Normal];
     [self.esc linedots:80];
     [self.esc stopPrintJob];
     
@@ -331,9 +366,33 @@
 
 - (IBAction)setThickness:(id)sender {
     if (self.isPrinting) return;
+   
+  
+  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"设置溶度" message:nil preferredStyle:UIAlertControllerStyleAlert];
+  UIAlertAction *tsplAction = [UIAlertAction actionWithTitle:@"高" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
     [self.esc clean];
     [self.esc thickness:EThicknessHigh];
     [self.bleHelper writeCommands:self.esc.commands];
+  }];
+  UIAlertAction *escAction = [UIAlertAction actionWithTitle:@"中" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    [self.esc clean];
+    [self.esc thickness:EThicknessMedium];
+    [self.bleHelper writeCommands:self.esc.commands];
+  }];
+  UIAlertAction *cpclAction = [UIAlertAction actionWithTitle:@"低" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+    [self.esc clean];
+    [self.esc thickness:EThicknessLow];
+    [self.bleHelper writeCommands:self.esc.commands];
+  }];
+  UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
+      [self.bleHelper disconnect];
+  }];
+  
+  [alertController addAction:tsplAction];
+  [alertController addAction:escAction];
+  [alertController addAction:cpclAction];
+  [alertController addAction:cancelAction];
+  [self presentViewController:alertController animated:YES completion:nil];
 }
 
 - (IBAction)learnLabelGap:(id)sender {
@@ -365,6 +424,7 @@
                 NSLog(@"升级成功");
                 weakSelf.displayLabel.text = @"升级成功";
                 [weakSelf.navigationController popViewControllerAnimated:YES];
+                weakSelf.ota = nil;
                 break;
                 
             default:

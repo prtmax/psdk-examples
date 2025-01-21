@@ -16,7 +16,7 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.bleHelper = [BleHelper shareInstance];
+    self.bleHelper = [AYBleHelper shareInstance];
 }
 
 @end

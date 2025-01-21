@@ -12,7 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface BaseVC : UIViewController
 
-@property (strong, nonatomic) BleHelper *bleHelper;
+@property (strong, nonatomic) AYBleHelper *bleHelper;
 
 @end
 

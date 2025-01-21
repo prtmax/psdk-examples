@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EscCommand : Command
+@interface AYEscCommand : Command
 
 #pragma mark - 打印指令/print command
 /**

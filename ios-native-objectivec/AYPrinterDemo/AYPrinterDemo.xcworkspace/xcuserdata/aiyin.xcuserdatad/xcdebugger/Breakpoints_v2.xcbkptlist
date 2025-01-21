@@ -7,16 +7,32 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "429FDF20-0857-48C7-BCE2-5BC5F3663E0E"
+            uuid = "9A338163-08D1-4150-AE79-04F60ADEDDE2"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "AYPrinterDemo/EscFunctionVC.m"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "279"
+            endingLineNumber = "279"
+            landmarkName = "-continuousPrint"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "83A1574F-AF64-4449-A1A0-B4551BD9CBC1"
             shouldBeEnabled = "Yes"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "AYPrinterDemo/EscFunctionVC.m"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "225"
-            endingLineNumber = "225"
-            landmarkName = "-labelPrint"
+            startingLineNumber = "90"
+            endingLineNumber = "90"
+            landmarkName = "-initCallBack"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

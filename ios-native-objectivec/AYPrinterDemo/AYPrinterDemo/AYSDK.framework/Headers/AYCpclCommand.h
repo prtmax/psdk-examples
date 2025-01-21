@@ -1,5 +1,5 @@
 //
-//  CpclCommand.h
+//  AYCpclCommand.h
 //  AYSDK
 //
 //  Created by aiyin on 2023/9/14.
@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface CpclCommand : Command
+@interface AYCpclCommand : Command
 
 /**
  * 设置标签宽度与高度及打印份数

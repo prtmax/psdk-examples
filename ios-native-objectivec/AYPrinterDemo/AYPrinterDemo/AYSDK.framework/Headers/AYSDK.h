@@ -6,16 +6,16 @@
 //
 
 #import <Foundation/Foundation.h>
-#import <AYSDK/BleHelper.h>
+#import <AYSDK/AYBleHelper.h>
 #import <AYSDK/AYPrinter.h>
 #import <AYSDK/Command.h>
 #import <AYSDK/ETypes.h>
-#import <AYSDK/EscCommand.h>
-#import <AYSDK/CpclCommand.h>
+#import <AYSDK/AYEscCommand.h>
+#import <AYSDK/AYCpclCommand.h>
 #import <AYSDK/CTypes.h>
-#import <AYSDK/TsplCommand.h>
+#import <AYSDK/AYTsplCommand.h>
 #import <AYSDK/TTypes.h>
-#import <AYSDK/WifiCommand.h>
+#import <AYSDK/AYWifiCommand.h>
 #import <AYSDK/AYOtaHelper.h>
 #import <AYSDK/NSString+AY.h>
 #import <AYSDK/NSData+AY.h>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="32700.99.1234" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23094" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="22685"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23084"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -27,19 +27,19 @@
                     <rect key="frame" x="0.0" y="65" width="393" height="36.333333333333343"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="份数:" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Eqd-zs-1QG">
-                            <rect key="frame" x="10" y="7.9999999999999982" width="39.333333333333329" height="20.333333333333329"/>
+                            <rect key="frame" x="10" y="7.9999999999999982" width="38.333333333333336" height="20.333333333333329"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="1" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Fk8-jJ-h4s">
-                            <rect key="frame" x="59.333333333333336" y="7.9999999999999982" width="7.6666666666666643" height="20.333333333333329"/>
+                            <rect key="frame" x="58.333333333333336" y="7.9999999999999982" width="7.6666666666666643" height="20.333333333333329"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
                         </label>
                         <stepper opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="1" minimumValue="1" maximumValue="20" translatesAutoresizingMaskIntoConstraints="NO" id="vTa-wE-CQJ">
-                            <rect key="frame" x="82" y="2.3333333333333286" width="94" height="32"/>
+                            <rect key="frame" x="81" y="2.3333333333333286" width="94" height="32"/>
                             <connections>
                                 <action selector="stepperValueChanged:" destination="-1" eventType="valueChanged" id="A75-CH-hXm"/>
                             </connections>
@@ -51,7 +51,7 @@
                             </connections>
                         </switch>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="压缩" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="I2z-yo-9J6">
-                            <rect key="frame" x="289.33333333333331" y="7.9999999999999982" width="34.666666666666686" height="20.333333333333329"/>
+                            <rect key="frame" x="290" y="7.9999999999999982" width="34" height="20.333333333333329"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
@@ -73,7 +73,7 @@
                     </constraints>
                 </view>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="Ufd-up-xBL">
-                    <rect key="frame" x="0.0" y="107.33333333333334" width="196.66666666666666" height="344.66666666666663"/>
+                    <rect key="frame" x="0.0" y="107.33333333333331" width="196.66666666666666" height="389"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Ipf-b4-pLf">
                             <rect key="frame" x="0.0" y="0.0" width="196.66666666666666" height="34.333333333333336"/>
@@ -137,6 +137,14 @@
                             <buttonConfiguration key="configuration" style="plain" title="OTA"/>
                             <connections>
                                 <action selector="ota:" destination="-1" eventType="touchUpInside" id="bvD-eR-hnu"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Aqk-tF-Vgj">
+                            <rect key="frame" x="0.0" y="354.66666666666669" width="196.66666666666666" height="34.333333333333314"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="OTA2"/>
+                            <connections>
+                                <action selector="ota2:" destination="-1" eventType="touchUpInside" id="U5U-rc-yR7"/>
                             </connections>
                         </button>
                     </subviews>
@@ -211,13 +219,13 @@
                     </subviews>
                 </stackView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="vbQ-qV-f7M">
-                    <rect key="frame" x="10" y="472" width="373" height="0.0"/>
+                    <rect key="frame" x="10" y="516.33333333333337" width="373" height="0.0"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <color key="textColor" red="0.33333333333333331" green="0.63921568627450975" blue="0.30196078431372547" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                     <nil key="highlightedColor"/>
                 </label>
                 <progressView hidden="YES" opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="Lq3-Wj-MlN">
-                    <rect key="frame" x="10" y="482" width="373" height="4"/>
+                    <rect key="frame" x="10" y="526.33333333333337" width="373" height="4"/>
                     <constraints>
                         <constraint firstAttribute="height" constant="4" id="dYa-07-b4B"/>
                     </constraints>

@@ -23,9 +23,9 @@
 
 - (IBAction)printImage:(id)sender {
     UIImage *image = [UIImage imageNamed:@"handsomeMan.jpeg"];
-    CpclCommand *cpcl = [CpclCommand new];
+    AYCpclCommand *cpcl = [AYCpclCommand new];
     [cpcl pageWidth:76 * 8 height:76 * 8 copies:1];
-    [cpcl image:image x:0 y:0 compress:YES];
+    [cpcl image:image x:0 y:0 compress:NO];
     [cpcl print:NO];
     
     [self.bleHelper writeCommands:cpcl.commands];
@@ -33,20 +33,22 @@
 
 
 - (IBAction)printTemplate:(id)sender {
-    CpclCommand *cpcl = [CpclCommand new];
+    AYCpclCommand *cpcl = [AYCpclCommand new];
+    [cpcl pageWidth:76 * 8 height:76 * 8 copies:1];
+    [cpcl qrCodeX:20 y:30 width:4 ecc:CEccLevelM rotate:CCodeRotation_0 content:@"你好中国"];
 
     [self.bleHelper writeCommands:cpcl.commands];
 }
 
 - (IBAction)sn:(id)sender {
-    CpclCommand *cpcl = [CpclCommand new];
+    AYCpclCommand *cpcl = [AYCpclCommand new];
     [cpcl readSn];
 
     [self.bleHelper writeCommands:cpcl.commands];
 }
 
 - (IBAction)state:(id)sender {
-    CpclCommand *cpcl = [CpclCommand new];
+  AYCpclCommand *cpcl = [AYCpclCommand new];
     [cpcl readState];
 
     [self.bleHelper writeCommands:cpcl.commands];
@@ -54,7 +56,7 @@
 
 #warning 仅适用于部分机型
 - (IBAction)selfTest:(id)sender {
-    CpclCommand *cpcl = [CpclCommand new];
+    AYCpclCommand *cpcl = [AYCpclCommand new];
     [cpcl selfTest];
 
     [self.bleHelper writeCommands:cpcl.commands];

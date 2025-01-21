@@ -85,7 +85,7 @@
 
 - (IBAction)imagePtint:(id)sender {
     UIImage *image = [UIImage imageNamed:@"unititled.jpg"];
-    TsplCommand *tspl = [TsplCommand new];
+    AYTsplCommand *tspl = [AYTsplCommand new];
     [tspl pageWidth:76 height:130];
     [tspl direction:0 mirror:0];
     [tspl speed:5];
@@ -100,7 +100,7 @@
 }
 
 - (IBAction)commandPrint:(id)sender {
-    TsplCommand *tspl = [TsplCommand new];
+    AYTsplCommand *tspl = [AYTsplCommand new];
     [tspl pageWidth:76 height:130];
     [tspl cls];
     [tspl density:10];
@@ -111,42 +111,43 @@
     [tspl lineX:0 y:83 endX:480 endY:83 width:2 lineType:3];
     [tspl lineX:0 y:107 endX:480 endY:107 width:2 lineType:4];
     [tspl qrCodeX:50 y:350 ecc:TECCLevelM cellwidth:6 rotation:TRotation_0 content:@"28938928"];
-    [tspl textX:100 y:100 font:TFontTSS12 rotation:TRotation_0 xMulti:3 yMulti:3 bold:YES content:@"hello world, 你好"];
+    [tspl textX:100 y:120 font:TFontTSS24 rotation:TRotation_0 xMulti:1 yMulti:1 bold:YES content:@"hello world, 你好"];
+    [tspl textX:100 y:150 font:TFontTSS24 rotation:TRotation_0 xMulti:1 yMulti:1 bold:NO content:@"hello world, 你好"];
     [tspl print:1];
     
     [self.bleHelper writeCommands:tspl.commands];
 }
 
 - (IBAction)selfTest:(id)sender {
-    TsplCommand *tspl = [TsplCommand new];
+  AYTsplCommand *tspl = [AYTsplCommand new];
     [tspl selfTest];
     
     [self.bleHelper writeCommands:tspl.commands];
 }
 
 - (IBAction)sn:(id)sender {
-    TsplCommand *tspl = [TsplCommand new];
+  AYTsplCommand *tspl = [AYTsplCommand new];
     [tspl readSN];
     
     [self.bleHelper writeCommands:tspl.commands];
 }
 
 - (IBAction)version:(id)sender {
-    TsplCommand *tspl = [TsplCommand new];
+  AYTsplCommand *tspl = [AYTsplCommand new];
     [tspl readVersion];
     
     [self.bleHelper writeCommands:tspl.commands];
 }
 
 - (IBAction)state:(id)sender {
-    TsplCommand *tspl = [TsplCommand new];
+  AYTsplCommand *tspl = [AYTsplCommand new];
     [tspl readPrinterState];
     
     [self.bleHelper writeCommands:tspl.commands];
 }
 
 - (IBAction)batteryLevel:(id)sender {
-    TsplCommand *tspl = [TsplCommand new];
+  AYTsplCommand *tspl = [AYTsplCommand new];
     [tspl readBatteryLevel];
     
     [self.bleHelper writeCommands:tspl.commands];

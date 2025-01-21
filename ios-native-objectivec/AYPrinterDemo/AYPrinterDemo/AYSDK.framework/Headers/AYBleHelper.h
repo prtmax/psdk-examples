@@ -12,7 +12,7 @@
 #import <AYSDK/TTypes.h>
 #import <AYSDK/CTypes.h>
 
-#define BlueManager [BleHelper shareInstance]
+#define BlueManager [AYBleHelper shareInstance]
 
 typedef NS_ENUM(NSInteger, BleState) {
     BleStateDisconnected,
@@ -37,7 +37,7 @@ typedef void(^OnDataReceived)(NSData *data);
 
 @end
 
-@interface BleHelper : NSObject
+@interface AYBleHelper : NSObject
 
 @property(assign, nonatomic) BleState state;
 @property(weak, nonatomic) id<BleHelperDelegate> delegate;
