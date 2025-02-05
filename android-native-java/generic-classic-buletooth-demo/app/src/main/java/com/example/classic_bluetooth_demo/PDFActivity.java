@@ -28,10 +28,10 @@ import java.io.IOException;
 
 
 public class PDFActivity extends Activity {
-  private Button bt_choose_pdf, bt_choose_image,bt_print_pdf;
+  private Button bt_choose_pdf, bt_choose_image, bt_print_pdf;
+  private RadioButton rb_label, rb_continue, rb_black_label;
   private CheckBox cb_compress;
   private CheckBox cb_cut;
-  private CheckBox cb_position;
   private EditText et_width, et_height;
   private TextView tv_pdf;
   private ViewPager viewPager;
@@ -54,7 +54,9 @@ public class PDFActivity extends Activity {
     bt_print_pdf = findViewById(R.id.bt_print_pdf);
     cb_compress = findViewById(R.id.cb_compress);
     cb_cut = findViewById(R.id.cb_cut);
-    cb_position = findViewById(R.id.cb_position);
+    rb_label = findViewById(R.id.rb_label);
+    rb_continue = findViewById(R.id.rb_continue);
+    rb_black_label = findViewById(R.id.rb_black_label);
     RadioGroup radioGroup = findViewById(R.id.radioGroup);
     radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
       @Override
@@ -101,7 +103,7 @@ public class PDFActivity extends Activity {
     if (resultCode == Activity.RESULT_OK) {//是否选择，没选择就不会继续
       Uri uri = data.getData();//得到uri，后面就是将uri转化成file的过程。
       String file_path = FileChooseUtil.getFileAbsolutePath(this, uri);
-      switch (requestCode){
+      switch (requestCode) {
         case PICK_PDF:
           if (!file_path.toLowerCase().contains("pdf")) {
             showMessage("请选择后缀为pdf文件");
@@ -156,10 +158,32 @@ public class PDFActivity extends Activity {
     int pageWidth = Integer.parseInt(et_width.getText().toString());
     int pageHeight = Integer.parseInt(et_height.getText().toString());
 
-    rawBitmap = Bitmap.createScaledBitmap(rawBitmap, pageWidth * 8, pageHeight * 8, true);
+    // 目标宽度
+    int targetWidth = pageWidth * 8;
+
+    // 获取原始 Bitmap 的宽度和高度
+    int originalWidth = rawBitmap.getWidth();
+    int originalHeight = rawBitmap.getHeight();
+
+    // 计算新的高度，保持纵横比
+    int targetHeight = (int) ((float) originalHeight * targetWidth / originalWidth);
+
+    // 按宽度和计算出的高度进行缩放
+    rawBitmap = Bitmap.createScaledBitmap(rawBitmap, targetWidth, targetHeight, true);
+
+    pageHeight = targetHeight / 8;
+
+//    rawBitmap = Bitmap.createScaledBitmap(rawBitmap, pageWidth * 8, pageHeight * 8, true);
     if (curCmd.equals("tspl")) {
-      GenericTSPL _gtspl = PrintUtil.getInstance().tspl().clear().page(TPage.builder().width(pageWidth).height(pageHeight).build())//单位是mm 1mm=8dot
-        //注释的为热转印机器指令
+      GenericTSPL _gtspl = PrintUtil.getInstance().tspl().clear().page(TPage.builder().width(pageWidth).height(pageHeight).build());//单位是mm 200dpi:1mm=8dot 300dpi:1mm=12dot
+      if (rb_label.isChecked()) {
+        _gtspl.label();
+      } else if (rb_continue.isChecked()) {
+        _gtspl.continuous();
+      } else if (rb_black_label.isChecked()) {
+        _gtspl.bline();
+      }
+      //注释的为热转印机器指令
 //                        .label()//标签纸打印 三种纸调用的时候根据打印机实际纸张选一种就可以了
 //                        .bline()//黑标纸打印
 //                        .continuous()//连续纸打印
@@ -167,13 +191,12 @@ public class PDFActivity extends Activity {
 //                        .ribbon(false)//热敏模式
 //                        .shift(0)//垂直偏移
 //                        .reference(0,0)//相对偏移
-        .direction(
+      _gtspl.direction(
           TDirection.builder()
             .direction(TDirection.Direction.UP_OUT)
             .mirror(TDirection.Mirror.NO_MIRROR)
             .build()
         )
-        .gap(cb_position.isChecked())
         .cut(cb_cut.isChecked())
         .cls()
         .image(
@@ -193,7 +216,7 @@ public class PDFActivity extends Activity {
           .compress(cb_compress.isChecked())
           .build()
         );
-      if (cb_position.isChecked()) {
+      if (!rb_continue.isChecked()) {//不是连续纸都要发定位指令
         _gcpcl.form();
       }
       _gcpcl.print(CPrint.builder().build());
@@ -205,7 +228,7 @@ public class PDFActivity extends Activity {
           .compress(cb_compress.isChecked())
           .build())
         .lineDot(250);
-      if (cb_position.isChecked()) {
+      if (!rb_continue.isChecked()) {//不是连续纸都要发定位指令
         _gesc.position();
       }
       safeWrite(_gesc);
@@ -218,8 +241,10 @@ public class PDFActivity extends Activity {
       if (!reporter.isOk()) {
         throw new IOException("写入数据失败", reporter.getException());
       }
+      showMessage("发送成功");
     } catch (Exception e) {
       e.printStackTrace();
+      showMessage("发送失败,请尝试重新连接");
     }
   }
 

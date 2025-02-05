@@ -35,15 +35,19 @@ public class PrintUtil {
     return this._esc;
   }
 
+  public GenericTSPL tspl() {
+    return this._tspl;
+  }
+
+  public GenericTSPL rawTspl() {
+    return TSPL.generic(ConnectedDevice.NONE);
+  }
+
   public void init(ConnectedDevice paramConnectedDevice) {
     this._connectedDevice = paramConnectedDevice;
     this._cpcl = CPCL.generic(paramConnectedDevice);
     this._tspl = TSPL.generic(paramConnectedDevice);
     this._esc = ESC.generic(paramConnectedDevice);
-  }
-
-  public GenericTSPL tspl() {
-    return this._tspl;
   }
 
   private static final class InstanceHolder {

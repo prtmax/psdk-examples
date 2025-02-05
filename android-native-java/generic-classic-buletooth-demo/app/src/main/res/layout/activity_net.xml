@@ -110,6 +110,13 @@
     </LinearLayout>
 
     <Button
+      android:id="@+id/save_address"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:layout_marginTop="5dp"
+      android:text="保存IP地址"/>
+
+    <Button
       android:id="@+id/switch_net"
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
