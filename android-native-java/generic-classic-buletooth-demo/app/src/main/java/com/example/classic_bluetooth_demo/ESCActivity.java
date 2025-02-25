@@ -42,7 +42,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 
 public class ESCActivity extends Activity {
-  private static final String TAG = "MainActivity";
+  private static final String TAG = "ESCActivity";
   private Connection connection;
   private TextView tv_connect_status;
   private Button continueButton;

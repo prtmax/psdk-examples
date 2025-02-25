@@ -1,0 +1,180 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+  <ScrollView android:layout_width="match_parent" android:layout_height="match_parent">
+    <RelativeLayout android:layout_width="match_parent" android:layout_height="match_parent">
+      <TableLayout
+        android:id="@+id/table1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+      >
+
+        <TableLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:layout_marginTop="15dp">
+
+          <TableRow
+            android:id="@+id/tableRow1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <TextView
+              android:id="@+id/txtViewPrintNum"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_marginLeft="5dp"
+              android:text="样单数"
+              android:textColor="@android:color/black"
+              android:textSize="20sp"/>
+
+            <EditText
+              android:id="@+id/sampleEdit"
+              android:layout_width="100dp"
+              android:layout_height="wrap_content"
+              android:ems="10"
+              android:gravity="top"
+              android:inputType="none|number"
+              android:textColor="@android:color/black"
+              android:textSize="20sp"
+            />
+          </TableRow>
+
+        </TableLayout>
+
+      </TableLayout>
+
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/table1"
+        android:orientation="vertical">
+
+        <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal">
+
+          <Button
+            android:id="@+id/print_continue"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="连续纸打印"
+            android:textSize="25sp"/>
+          <Button
+            android:id="@+id/printer_label"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="标签纸打印"
+            android:textSize="25sp"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal">
+
+          <Button
+            android:id="@+id/printer_BatteryVol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="电池电量"
+            android:textSize="25sp"/>
+          <Button
+            android:id="@+id/printer_status"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="打印机状态"
+            android:textSize="25sp"/>
+
+        </LinearLayout>
+
+
+
+        <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal">
+
+          <Button
+            android:id="@+id/set_off_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="设置关机时间"
+            android:textSize="25sp"/>
+          <Button
+            android:id="@+id/printer_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="打印机所有信息"
+            android:textSize="25sp"/>
+
+        </LinearLayout>
+        <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal">
+          <Button
+            android:id="@+id/ink_box_info"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="墨盒信息"
+            android:textSize="25sp"/>
+          <Button
+            android:id="@+id/updatePrinter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="升级打印机"
+            android:textSize="25sp"/>
+        </LinearLayout>
+      </LinearLayout>
+    </RelativeLayout>
+  </ScrollView>
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="30dp"
+    android:layout_alignParentBottom="true"
+    android:background="@android:color/holo_red_light"
+    android:orientation="horizontal">
+
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:layout_marginLeft="10dp"
+      android:gravity="center_vertical"
+      android:singleLine="true"
+      android:text="连接状态："
+      android:textColor="@android:color/white"
+      android:textSize="18sp"/>
+
+    <TextView
+      android:id="@+id/tv_connect_status"
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:layout_marginLeft="10dp"
+      android:gravity="center_vertical"
+      android:singleLine="true"
+      android:textColor="@android:color/white"
+      android:textSize="18sp"/>
+  </LinearLayout>
+</RelativeLayout>
