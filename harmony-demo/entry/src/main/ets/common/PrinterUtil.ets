@@ -1,6 +1,6 @@
 import { CPCL, GenericCPCL } from '@psdk/cpcl';
 import { ESC, GenericESC } from '@psdk/esc';
-import { ConnectedDevice, Lifecycle } from '@psdk/frame-father';
+import { ConnectedDevice, FakeConnectedDevice, Lifecycle } from '@psdk/frame-father';
 import { GenericTSPL, TSPL } from '@psdk/tspl';
 
 export class PrinterUtil {
@@ -51,6 +51,18 @@ export class PrinterUtil {
     if (!this._connectedDevice)
       throw Error('The device is not connected');
     return this._esc!;
+  }
+  rawEsc() : GenericESC {
+    const lifecycle = new Lifecycle(new FakeConnectedDevice());
+    return ESC.generic(lifecycle);
+  }
+  rawTspl() : GenericTSPL {
+    const lifecycle = new Lifecycle(new FakeConnectedDevice());
+    return TSPL.generic(lifecycle);
+  }
+  rawCpcl() : GenericCPCL {
+    const lifecycle = new Lifecycle(new FakeConnectedDevice());
+    return CPCL.generic(lifecycle);
   }
 }
 

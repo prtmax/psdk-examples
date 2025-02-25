@@ -37,7 +37,7 @@ import { EImage, EPaperType, GenericESC } from '@psdk/esc';
 import { promptAction } from '@kit.ArkUI';
 import { PrinterUtil } from './PrinterUtil';
 import { EscQueryType, EscSettingType } from './EscTypes';
-import { util } from '@kit.ArkTS';
+import { taskpool, util } from '@kit.ArkTS';
 import { PaperType } from '@psdk/esc/build/types/papertype';
 
 export class CommonUtil {
@@ -358,26 +358,6 @@ export class CommonUtil {
       .print();
   }
 
-  tsplImageCmd(): GenericTSPL {
-    return PrinterUtil.getInstance()
-      .tspl()
-      .clear()
-      .page(new TPage({
-        width: 76,
-        height: 130
-      }))
-      .gap(true)
-      .image(
-        new TImage({
-          x: 0,
-          y: 0,
-          compress: true,
-          image: this._createCanvas("common/images/dog.jpg", 384, 582)
-        })
-      )
-      .print();
-  }
-
   cpclTemplateCmd(): GenericCPCL {
     return PrinterUtil.getInstance()
       .cpcl()
@@ -662,40 +642,19 @@ export class CommonUtil {
       .print()
   }
 
-  cpclImageCmd(): GenericCPCL {
-    return PrinterUtil.getInstance()
-      .cpcl()
-      .clear()
-      .page(new CPage({
-        width: 608,
-        height: 1040
-      }))
-      .image(
-        new CImage({
-          x: 0,
-          y: 0,
-          compress: false,
-          image: this._createCanvas("common/images/dog.jpg", 384, 582)
-        })
-      )
-      .print();
+  async tsplImageCmd(): Promise<Uint8Array> {
+    const inputImage = this._createCanvas("common/images/dog.jpg", 384, 582);
+    return await taskpool.execute(generateImage, "tspl", inputImage) as Uint8Array;
   }
 
-  escImageCmd(): GenericESC {
-    return PrinterUtil.getInstance()
-      .esc()
-      .clear()
-      .enable()
-      .wakeup()
-      .image(
-        new EImage({
-          image: this._createCanvas("common/images/img.png", 150, 212),
-          compress: false,
-        })
-      )
-      .lineDot(40)
-      .position()
-      .stopJob();
+  async cpclImageCmd(): Promise<Uint8Array> {
+    const inputImage = this._createCanvas("common/images/dog.jpg", 384, 582);
+    return await taskpool.execute(generateImage, "cpcl", inputImage) as Uint8Array;
+  }
+
+  async escImageCmd(): Promise<Uint8Array> {
+    const inputImage = this._createCanvas("common/images/dog.jpg", 384, 582);
+    return await taskpool.execute(generateImage, "esc", inputImage) as Uint8Array;
   }
 
   escQueryCmd(queryType: EscQueryType): GenericESC {
@@ -778,3 +737,66 @@ export class CommonUtil {
 let commonUtil = new CommonUtil()
 
 export default commonUtil as CommonUtil
+
+@Concurrent
+function generateImage(cmdType: string, inputImage: InputImage): Uint8Array{
+  let binary = new Uint8Array(0);
+  switch (cmdType) {
+    case 'tspl':
+      binary = PrinterUtil.getInstance()
+        .rawTspl()
+        .clear()
+        .page(new TPage({
+          width: 76,
+          height: 130
+        }))
+        .gap(true)
+        .image(
+          new TImage({
+            x: 0,
+            y: 0,
+            compress: true,
+            image: inputImage
+          })
+        )
+        .print().command().binary();
+      break;
+    case 'cpcl':
+      binary = PrinterUtil.getInstance()
+        .rawCpcl()
+        .clear()
+        .page(new CPage({
+          width: 608,
+          height: 1040
+        }))
+        .image(
+          new CImage({
+            x: 0,
+            y: 0,
+            compress: false,
+            image: inputImage
+          })
+        )
+        .print().command().binary();
+      break;
+    case 'esc':
+      binary = PrinterUtil.getInstance()
+        .rawEsc()
+        .clear()
+        .enable()
+        .wakeup()
+        .image(
+          new EImage({
+            image: inputImage,
+            compress: true,
+          })
+        )
+        .lineDot(40)
+        .position()
+        .stopJob().command().binary();
+      break;
+    default:
+      break;
+  };
+  return binary;
+}

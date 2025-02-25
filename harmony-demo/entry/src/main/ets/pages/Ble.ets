@@ -4,7 +4,7 @@ import ble from '@ohos.bluetooth.ble';
 import CommonUtil from '../common/CommonUtil';
 import { OhosBluetoothLe } from '@psdk/ohos-bluetooth-le';
 import { JluetoothDevice } from '@psdk/device-bluetooth-traits';
-import { ConnectedDevice, PSDK } from '@psdk/frame-father';
+import { ConnectedDevice, PSDK, Raw } from '@psdk/frame-father';
 import { PrinterUtil } from '../common/PrinterUtil';
 import DevicesPageBle from '../common/DevicesPageBle';
 import { GenericTSPL } from '@psdk/tspl';
@@ -87,15 +87,37 @@ struct Ble {
     }
   }
 
-  async safeWrite(psdk: PSDK<GenericTSPL> |  PSDK<GenericCPCL> | PSDK<GenericESC>) {
+  async safeWrite(psdk: PSDK<GenericTSPL> | PSDK<GenericCPCL> | PSDK<GenericESC>) {
     try {
       if (!this.isPrint) {
         this.isPrint = true;
-        const report = await psdk.write();//不分包发送，如果不会丢包可以不分包
+        const report = await psdk.write(); //不分包发送，如果不会丢包可以不分包
         // const report = await psdk.write({
         // 	enableChunkWrite: true,
         // 	chunkSize: 20
         // });//分包发送，chunkSize:分包大小
+        console.log(`safeWrite report : ${report}`);
+        promptAction.showToast({
+          message: '打印成功',
+          duration: 1000
+        });
+        this.isPrint = false;
+      }
+    } catch (e) {
+      this.isPrint = false;
+      console.error(e);
+      promptAction.showToast({
+        message: '打印失败',
+      });
+    }
+  }
+
+  async safeWriteByBinary(value: Uint8Array) {
+    try {
+      if (!this.isPrint) {
+        this.isPrint = true;
+        const report = await PrinterUtil.getInstance()
+          .esc().raw(Raw.binary(value, { newline: false })).write();
         console.log(`safeWrite report : ${report}`);
         promptAction.showToast({
           message: '打印成功',
@@ -120,7 +142,7 @@ struct Ble {
       });
       return;
     }
-    let psdk: PSDK<GenericTSPL> |  PSDK<GenericCPCL> | PSDK<GenericESC>
+    let psdk: PSDK<GenericTSPL> | PSDK<GenericCPCL> | PSDK<GenericESC>
     switch (this.cmdType) {
       case 'tspl':
         psdk = CommonUtil.tsplTemplateCmd();
@@ -151,26 +173,23 @@ struct Ble {
       });
       return;
     }
-    let psdk: PSDK<GenericTSPL> |  PSDK<GenericCPCL> | PSDK<GenericESC>
+    let value: Uint8Array;
     switch (this.cmdType) {
       case 'tspl':
-        psdk = CommonUtil.tsplImageCmd();
-        await this.safeWrite(psdk);
-        console.log(psdk.command().string());
+        value = await CommonUtil.tsplImageCmd();
+        await this.safeWriteByBinary(value);
         break;
       case 'cpcl':
-        psdk = CommonUtil.cpclImageCmd();
-        await this.safeWrite(psdk);
-        console.log(psdk.command().string());
+        value = await CommonUtil.cpclImageCmd();
+        await this.safeWriteByBinary(value);
         break;
       case 'esc':
-        psdk = CommonUtil.escImageCmd();
-        await this.safeWrite(psdk);
-        console.log(psdk.command().string());
+        value = await CommonUtil.escImageCmd();
+        await this.safeWriteByBinary(value);
         break;
       default:
         break;
-    };
+    }
   }
 
   onDisconnect() {

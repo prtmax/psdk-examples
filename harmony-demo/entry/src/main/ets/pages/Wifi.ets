@@ -1,7 +1,7 @@
 import promptAction from '@ohos.promptAction'
 import { GenericCPCL } from '@psdk/cpcl';
 import { GenericESC } from '@psdk/esc';
-import { ConnectedDevice, PSDK } from '@psdk/frame-father';
+import { ConnectedDevice, PSDK, Raw } from '@psdk/frame-father';
 import { OhosNetwork } from '@psdk/ohos-network';
 import { GenericTSPL } from '@psdk/tspl';
 import CommonUtil from '../common/CommonUtil';
@@ -29,6 +29,28 @@ struct Wifi {
         // 	enableChunkWrite: true,
         // 	chunkSize: 20
         // });//分包发送，chunkSize:分包大小
+        console.log(`safeWrite report : ${report}`);
+        promptAction.showToast({
+          message: '打印成功',
+          duration: 1000
+        });
+        this.isPrint = false;
+      }
+    } catch (e) {
+      this.isPrint = false;
+      console.error(e);
+      promptAction.showToast({
+        message: '打印失败',
+      });
+    }
+  }
+
+  async safeWriteByBinary(value: Uint8Array) {
+    try {
+      if (!this.isPrint) {
+        this.isPrint = true;
+        const report = await PrinterUtil.getInstance()
+          .esc().raw(Raw.binary(value, { newline: false })).write();
         console.log(`safeWrite report : ${report}`);
         promptAction.showToast({
           message: '打印成功',
@@ -84,27 +106,23 @@ struct Wifi {
       });
       return;
     }
-    let psdk: PSDK<GenericTSPL> | PSDK<GenericCPCL> | PSDK<GenericESC>
+    let value: Uint8Array;
     switch (this.cmdType) {
       case 'tspl':
-        psdk = CommonUtil.tsplImageCmd();
-        await this.safeWrite(psdk);
-        console.log(psdk.command().string());
+        value = await CommonUtil.tsplImageCmd();
+        await this.safeWriteByBinary(value);
         break;
       case 'cpcl':
-        psdk = CommonUtil.cpclImageCmd();
-        await this.safeWrite(psdk);
-        console.log(psdk.command().string());
+        value = await CommonUtil.cpclImageCmd();
+        await this.safeWriteByBinary(value);
         break;
       case 'esc':
-        psdk = CommonUtil.escImageCmd();
-        await this.safeWrite(psdk);
-        console.log(psdk.command().string());
+        value = await CommonUtil.escImageCmd();
+        await this.safeWriteByBinary(value);
         break;
       default:
         break;
     }
-    ;
   }
 
   build() {

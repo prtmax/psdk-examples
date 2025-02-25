@@ -3,7 +3,7 @@ import { BusinessError } from '@ohos.base';
 import promptAction from '@ohos.promptAction';
 import a2dp from '@ohos.bluetooth.a2dp';
 import { baseProfile } from '@kit.ConnectivityKit';
-import { ConnectedDevice, PSDK } from '@psdk/frame-father';
+import { ConnectedDevice, PSDK, Raw } from '@psdk/frame-father';
 import CommonUtil from '../common/CommonUtil';
 import { OhosBluetoothClassic } from '@psdk/ohos-bluetooth-classic';
 import { JluetoothDevice } from '@psdk/device-bluetooth-traits';
@@ -24,11 +24,12 @@ struct CustomDialogExample {
   }
   confirm: (value: string) => void = () => {
   }
+
   build() {
     Column() {
-      Text('设置关机时间(单位：分钟，不关机传 0)').margin({top: 30})
+      Text('设置关机时间(单位：分钟，不关机传 0)').margin({ top: 30 })
       TextInput({ placeholder: '', text: this.inputValue })
-        .margin({top: 20, bottom: 30})
+        .margin({ top: 20, bottom: 30 })
         .height(45)
         .width('90%')
         .type(InputType.Number)
@@ -69,12 +70,16 @@ struct Index {
   private escSettingType?: EscSettingType = undefined
   dialogController: CustomDialogController | null = new CustomDialogController({
     builder: CustomDialogExample({
-      cancel: ()=> { this.onCancel() },
-      confirm: (value)=> { this.onConfirm(value) }
+      cancel: () => {
+        this.onCancel()
+      },
+      confirm: (value) => {
+        this.onConfirm(value)
+      }
     }),
     cancel: this.onCancel,
     autoCancel: true,
-    onWillDismiss:(dismissDialogAction: DismissDialogAction)=> {
+    onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
       console.info("reason=" + JSON.stringify(dismissDialogAction.reason))
       console.log("dialog onWillDismiss")
       if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
@@ -91,8 +96,14 @@ struct Index {
     width: 300,
     height: 200,
     backgroundColor: Color.White,
-    shadow: ({ radius: 20, color: Color.Grey, offsetX: 50, offsetY: 0}),
+    shadow: ({
+      radius: 20,
+      color: Color.Grey,
+      offsetX: 50,
+      offsetY: 0
+    }),
   })
+
   // 在自定义组件即将析构销毁时将dialogController置空
   // aboutToDisappear() {
   //   this.dialogController = null // 将dialogController置空
@@ -174,11 +185,13 @@ struct Index {
   }
 
   listenNotify() {
-    if (!this.connectedDevice) return;
+    if (!this.connectedDevice) {
+      return;
+    }
     // listen printer data
     this.connectedDevice.notify(async (data: Uint8Array) => {
       const duration = 3000;
-      const str = new util.TextDecoder("utf-8", {ignoreBOM: true}).decodeWithStream(data)
+      const str = new util.TextDecoder("utf-8", { ignoreBOM: true }).decodeWithStream(data)
       console.log("this.connectedDevice.noti", data, str)
       promptAction.showToast({
         message: `notify：${data}`,
@@ -288,24 +301,24 @@ struct Index {
               console.log('设置失败')
             }
             break;
-          default :
+          default:
             break;
         }
         this.escSettingType = undefined;
       }
       // 打印机主动上报
       /// 主动上报纸张类型
-      if(data.length == 2 && data[0] === 0xFE){
+      if (data.length == 2 && data[0] === 0xFE) {
         switch (data[1]) {
           case 1:
             console.log("onPaperError: 折叠黑标纸")
-        break;
+            break;
           case 2:
             console.log("onPaperError: 连续卷简纸")
-        break;
+            break;
           case 3:
             console.log("onPaperError: 不干胶缝隙纸")
-        break;
+            break;
           default:
             break;
         }
@@ -313,25 +326,25 @@ struct Index {
 
       /// 上报设备状态
       if (data.length == 2 && data[0] === 0xFF) {
-        if ((data[1]) ==  0) {
+        if ((data[1]) == 0) {
           console.log("打印机正常")
         }
-        if ((data[1]) ==  0x01) {
+        if ((data[1]) == 0x01) {
           console.log("打印机缺纸")
         }
-        if ((data[1]) ==  0x02) {
+        if ((data[1]) == 0x02) {
           console.log("打印机开盖")
         }
-        if ((data[1]) ==  0x03) {
+        if ((data[1]) == 0x03) {
           console.log("打印机过热")
         }
-        if ((data[1]) ==  0x04) {
+        if ((data[1]) == 0x04) {
           console.log("打印机低电量")
         }
-        if ((data[1]) ==  0x05) {
+        if ((data[1]) == 0x05) {
           console.log("打印机自动返回合盖，前提要打印机支持此功能")
         }
-        if ((data[1]) ==  0x06) {
+        if ((data[1]) == 0x06) {
           console.log("打印机自动返回低里程")
         }
       }
@@ -357,11 +370,11 @@ struct Index {
     });
   }
 
-  async safeWrite(psdk: PSDK<GenericTSPL> |  PSDK<GenericCPCL> | PSDK<GenericESC>) {
+  async safeWrite(psdk: PSDK<GenericTSPL> | PSDK<GenericCPCL> | PSDK<GenericESC>) {
     try {
       if (!this.isPrint) {
         this.isPrint = true;
-        const report = await psdk.write();//不分包发送，如果不会丢包可以不分包
+        const report = await psdk.write(); //不分包发送，如果不会丢包可以不分包
         // const report = await psdk.write({
         // 	enableChunkWrite: true,
         // 	chunkSize: 20
@@ -369,6 +382,28 @@ struct Index {
         console.log(`safeWrite report : ${report}`);
         promptAction.showToast({
           message: '发送成功',
+          duration: 1000
+        });
+        this.isPrint = false;
+      }
+    } catch (e) {
+      this.isPrint = false;
+      console.error(e);
+      promptAction.showToast({
+        message: '打印失败',
+      });
+    }
+  }
+
+  async safeWriteByBinary(value: Uint8Array) {
+    try {
+      if (!this.isPrint) {
+        this.isPrint = true;
+        const report = await PrinterUtil.getInstance()
+          .esc().raw(Raw.binary(value, { newline: false })).write();
+        console.log(`safeWrite report : ${report}`);
+        promptAction.showToast({
+          message: '打印成功',
           duration: 1000
         });
         this.isPrint = false;
@@ -390,7 +425,7 @@ struct Index {
       });
       return;
     }
-    let psdk: PSDK<GenericTSPL> |  PSDK<GenericCPCL> | PSDK<GenericESC>
+    let psdk: PSDK<GenericTSPL> | PSDK<GenericCPCL> | PSDK<GenericESC>
     switch (this.cmdType) {
       case 'tspl':
         psdk = CommonUtil.tsplTemplateCmd();
@@ -421,26 +456,23 @@ struct Index {
       });
       return;
     }
-    let psdk: PSDK<GenericTSPL> |  PSDK<GenericCPCL> | PSDK<GenericESC>
+    let value: Uint8Array;
     switch (this.cmdType) {
       case 'tspl':
-        psdk = CommonUtil.tsplImageCmd();
-        await this.safeWrite(psdk);
-        console.log(psdk.command().string());
+        value = await CommonUtil.tsplImageCmd();
+        await this.safeWriteByBinary(value);
         break;
       case 'cpcl':
-        psdk = CommonUtil.cpclImageCmd();
-        await this.safeWrite(psdk);
-        console.log(psdk.command().string());
+        value = await CommonUtil.cpclImageCmd();
+        await this.safeWriteByBinary(value);
         break;
       case 'esc':
-        psdk = CommonUtil.escImageCmd();
-        await this.safeWrite(psdk);
-        console.log(psdk.command().string());
+        value = await CommonUtil.escImageCmd();
+        await this.safeWriteByBinary(value);
         break;
       default:
         break;
-    };
+    }
   }
 
   async onEscQuery(queryType: EscQueryType) {
@@ -499,6 +531,7 @@ struct Index {
                   }
                 })
             }
+
             Column() {
               Text('cpcl')
               Radio({ value: 'cpcl', group: 'radioGroup' })
@@ -549,7 +582,7 @@ struct Index {
             .height(40)
             .onClick(() => this.onPrintImage())
           if (this.cmdType === 'esc') {
-            Row({space: FlexAlign.SpaceEvenly}) {
+            Row({ space: FlexAlign.SpaceEvenly }) {
               Button('查询')
                 .onClick(() => {
                   if (this.connectedDevice === undefined) {
@@ -565,7 +598,7 @@ struct Index {
                     autoCancel: true, //点击遮障层时，是否关闭弹窗
                     alignment: DialogAlignment.Bottom, //弹窗位置
                     height: 300,
-                    sheets: [ //操作选项列表
+                    sheets: [//操作选项列表
                       {
                         title: '\n打印机信息\n',
                         action: async () => {
@@ -638,7 +671,7 @@ struct Index {
                     message: '请选择设置内容', //弹窗内容
                     autoCancel: true, //点击遮障层时，是否关闭弹窗
                     alignment: DialogAlignment.Bottom, //弹窗位置
-                    sheets: [ //操作选项列表
+                    sheets: [//操作选项列表
                       {
                         title: '\n设置浓度\n',
                         action: async () => {
