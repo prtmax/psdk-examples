@@ -179,6 +179,11 @@ struct Index {
     this.connectedDevice.notify(async (data: Uint8Array) => {
       const duration = 3000;
       const str = new util.TextDecoder("utf-8", {ignoreBOM: true}).decodeWithStream(data)
+      console.log("this.connectedDevice.noti", data, str)
+      promptAction.showToast({
+        message: `notify：${data}`,
+        duration: duration
+      });
       // 主动查询
       if (this.escQueryType !== undefined) {
         switch (this.escQueryType) {
@@ -310,22 +315,24 @@ struct Index {
       if (data.length == 2 && data[0] === 0xFF) {
         if ((data[1]) ==  0) {
           console.log("打印机正常")
-        } else {
-          if ((data[1] & 0x01) ===  0x01) {
-            console.log("打印机过热")
-          }
-          if ((data[1] & 0x02) === 0x02) {
-            console.log("打印机开盖")
-          }
-          if ((data[1] & 0x04) === 0x04) {
-            console.log("打印机缺纸")
-          }
-          if ((data[1] & 0x08) ===  0x08) {
-            console.log("打印机低压")
-          }
-          if ((data[1] & 0x10) === 0x10) {
-            console.log("请使用PikDik品牌标签，获得更好的打印体验")
-          }
+        }
+        if ((data[1]) ==  0x01) {
+          console.log("打印机缺纸")
+        }
+        if ((data[1]) ==  0x02) {
+          console.log("打印机开盖")
+        }
+        if ((data[1]) ==  0x03) {
+          console.log("打印机过热")
+        }
+        if ((data[1]) ==  0x04) {
+          console.log("打印机低电量")
+        }
+        if ((data[1]) ==  0x05) {
+          console.log("打印机自动返回合盖，前提要打印机支持此功能")
+        }
+        if ((data[1]) ==  0x06) {
+          console.log("打印机自动返回低里程")
         }
       }
       /// 上报中止打印机状态命令
@@ -333,10 +340,16 @@ struct Index {
         switch (data[1]) {
           case 1:
             console.log("开始清除当前页面打印任务（中止命令）")
-        break;
+            break;
           case 2:
             console.log("清除当前打印任务结束")
-        break;
+            break;
+          case 3:
+            console.log("打印机忙")
+            break;
+          case 4:
+            console.log("打印机空闲")
+            break;
           default:
             break;
         }

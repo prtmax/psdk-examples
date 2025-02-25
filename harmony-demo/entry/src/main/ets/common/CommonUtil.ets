@@ -689,7 +689,7 @@ export class CommonUtil {
       .wakeup()
       .image(
         new EImage({
-          image: this._createCanvas("common/images/img.png", 1500, 2121),
+          image: this._createCanvas("common/images/img.png", 150, 212),
           compress: false,
         })
       )
