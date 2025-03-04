@@ -305,6 +305,14 @@
           android:layout_height="wrap_content"
           android:orientation="horizontal">
           <Button
+            android:id="@+id/printGray"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="灰阶打印"
+            android:textSize="25sp"/>
+          <Button
             android:id="@+id/updatePrinter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

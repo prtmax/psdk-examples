@@ -4,6 +4,7 @@ package com.example.classic_bluetooth_demo;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -24,10 +25,12 @@ import com.printer.psdk.device.bluetooth.ConnectListener;
 import com.printer.psdk.device.bluetooth.Connection;
 import com.printer.psdk.esc.GenericESC;
 import com.printer.psdk.esc.args.EImage;
+import com.printer.psdk.esc.args.EImageGray;
 import com.printer.psdk.esc.args.ELocation;
 import com.printer.psdk.esc.args.EPaperType;
 import com.printer.psdk.esc.mark.Location;
 import com.printer.psdk.frame.father.PSDK;
+import com.printer.psdk.frame.father.args.common.Raw;
 import com.printer.psdk.frame.father.listener.DataListener;
 import com.printer.psdk.frame.father.listener.DataListenerRunner;
 import com.printer.psdk.frame.father.listener.ListenAction;
@@ -35,14 +38,18 @@ import com.printer.psdk.imagep.android.AndroidSourceImage;
 import comprinter.psdk.frame.ota.types.esc.UpdatePrinterESC;
 import comprinter.psdk.frame.ota.types.mark.UpgradeMarker;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class ESCActivity extends Activity {
-  private static final String TAG = "ESCActivity";
+  private static final String TAG = "MainActivity";
   private Connection connection;
   private TextView tv_connect_status;
   private Button continueButton;
@@ -60,7 +67,7 @@ public class ESCActivity extends Activity {
   private Button get_off_time;
   private Button bottom_stock;
   private Button bottom_label;
-  private Button paper_info, paper_uid, paper_used_length, paper_rest_length, setThickness, updatePrinterButton;
+  private Button paper_info, paper_uid, paper_used_length, paper_rest_length, setThickness, updatePrinterButton, printGray;
   private EditText sampleEdit, thickness;
   private int sampleNumber;
   private final int ReceiveFLAG = 0x10;
@@ -102,6 +109,7 @@ public class ESCActivity extends Activity {
     paper_used_length = (Button) findViewById(R.id.paper_used_length);
     paper_rest_length = (Button) findViewById(R.id.paper_rest_length);
     updatePrinterButton = (Button) findViewById(R.id.updatePrinter);
+    printGray = (Button) findViewById(R.id.printGray);
     BluetoothDevice device = getIntent().getParcelableExtra("device");
 
     connection = Bluetooth.getInstance().createConnectionClassic(device, new ConnectListener() {
@@ -220,6 +228,41 @@ public class ESCActivity extends Activity {
                   .build())
                 .lineDot(10)
                 .position()//缝隙标签纸打印就是打印结束后多执行了这个指令
+                .stopJob();
+              safeWrite(_gesc);
+              sampleNumber--;
+            }
+          }
+        }).start();
+      }
+    });
+    printGray.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (sampleEdit.getText().toString().trim().equals("")) {
+          sampleNumber = 1;
+        } else {
+          sampleNumber = Integer.parseInt(sampleEdit.getText().toString().trim());
+        }
+        new Thread(new Runnable() {
+          @Override
+          public void run() {
+            if (connection.isConnected()) {
+              readMark = ReadMark.OPERATE_PRINT;
+              //打印图片指令
+              InputStream is = getResources().openRawResource(R.raw.reba);
+              BitmapDrawable bmpDraw = new BitmapDrawable(is);
+              Bitmap bitmap = bmpDraw.getBitmap();
+              GenericESC _gesc = PrintUtil.getInstance().esc()
+                .enable()
+                .wakeup()
+                .location(ELocation.builder().location(Location.CENTER).build())
+                .lineDot(8)//走空白纸
+                .enableGray()
+                .imageGray(EImageGray.builder()
+                  .image(new AndroidSourceImage(bitmap))
+                  .build())
+                .lineDot(10)
                 .stopJob();
               safeWrite(_gesc);
               sampleNumber--;
@@ -386,7 +429,7 @@ public class ESCActivity extends Activity {
         //调用更新方法前一定要先调用该方法停止
         dataListenerRunner.stop();
         UpdatePrinterESC updatePrinter = new UpdatePrinterESC(connection, readResources(R.raw.x8prov1099hd2024423), otaHandler);
-//        updatePrinter.setStartAddress(0x1020000);
+        updatePrinter.setStartAddress(0x1020000);
         updatePrinter.startUpdate();
       }
     });
