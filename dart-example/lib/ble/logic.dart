@@ -42,7 +42,7 @@ class BleLogic extends GetxController {
     });
 
     state.streamBleDiscovered = BLEBluetooth().discovered().listen((event) {
-      state.results.addAll(event);
+      state.results.add(event);
       super.update();
     });
 

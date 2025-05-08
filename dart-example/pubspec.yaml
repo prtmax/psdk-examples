@@ -42,14 +42,15 @@ dependencies:
   permission_handler: 10.3.0
   fluttertoast: 8.0.9
   flutter_smart_dialog: 4.5.4+2
-  psdk_fruit_tspl: ^0.0.20
-  psdk_fruit_esc: ^0.0.20
-  psdk_fruit_cpcl: ^0.0.20
-  psdk_bluetooth_classic: ^0.0.20
-  psdk_bluetooth_ble: ^0.0.20
-  psdk_bluetooth_traits: ^0.0.20
-  psdk_device_adapter: ^0.0.20
-  psdk_frame_father: ^0.0.20
+  psdk_fruit_tspl: ^0.1.1
+  psdk_fruit_esc: ^0.1.1
+  psdk_fruit_cpcl: ^0.1.1
+  psdk_bluetooth_classic: ^0.1.1
+  psdk_bluetooth_ble: ^0.1.1
+  psdk_bluetooth_traits: ^0.1.1
+  psdk_device_adapter: ^0.1.1
+  psdk_frame_father: ^0.1.1
+  psdk_network: ^0.1.1
 dependency_overrides:
   macos_ui:
     git:

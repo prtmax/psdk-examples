@@ -21,10 +21,10 @@ packages:
     dependency: transitive
     description:
       name: archive
-      sha256: cb6a278ef2dbb298455e1a713bda08524a175630ec643a242c399c932a0a1f7d
+      sha256: "2fde1607386ab523f7a36bb3e7edb43bd58e6edaf2ffb29d8a6d578b297fdbbd"
       url: "https://pub.dev"
     source: hosted
-    version: "3.6.1"
+    version: "4.0.7"
   async:
     dependency: transitive
     description:
@@ -33,6 +33,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
+  ble_plugin:
+    dependency: transitive
+    description:
+      name: ble_plugin
+      sha256: d2a50b0e2b0f8c23043aab5916d39efac9bbb717a4d0b141952f58b1aadf847e
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.2"
   boolean_selector:
     dependency: transitive
     description:
@@ -105,19 +113,19 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.3.1"
+  ffi:
+    dependency: transitive
+    description:
+      name: ffi
+      sha256: "7bf0adc28a23d395f19f3f1eb21dd7cfd1dd9f8e1c50051c069122e6853bc878"
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.1.0"
   flutter:
     dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_blue_plus:
-    dependency: transitive
-    description:
-      name: flutter_blue_plus
-      sha256: "042da5457a9e4eeceb4177f8baa0ccaa1a3a24ab311f84c417b167bfcc58563d"
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.14.9"
   flutter_bluetooth_serial:
     dependency: transitive
     description:
@@ -180,10 +188,10 @@ packages:
     dependency: transitive
     description:
       name: geolocator_apple
-      sha256: "6154ea2682563f69fc0125762ed7e91e7ed85d0b9776595653be33918e064807"
+      sha256: c4ecead17985ede9634f21500072edfcb3dba0ef7b97f8d7bc556d2d722b3ba3
       url: "https://pub.dev"
     source: hosted
-    version: "2.3.8+1"
+    version: "2.3.9"
   geolocator_platform_interface:
     dependency: transitive
     description:
@@ -228,10 +236,10 @@ packages:
     dependency: transitive
     description:
       name: image
-      sha256: f31d52537dc417fdcde36088fdf11d191026fd5e4fae742491ebd40e5a8bea7d
+      sha256: "4e973fcf4caae1a4be2fa0a13157aa38a8f9cb049db6529aa00b4d71abc4d928"
       url: "https://pub.dev"
     source: hosted
-    version: "4.3.0"
+    version: "4.5.4"
   intersperse:
     dependency: transitive
     description:
@@ -269,10 +277,10 @@ packages:
     dependency: transitive
     description:
       name: macos_window_utils
-      sha256: "3534f2af024f2f24112ca28789a44e6750083f8c0065414546c6593ee48a5009"
+      sha256: "28ebb4e6d5cbaa1330b5f78d13cf9693779830d0ffc64b471f8d384dd73b7b21"
       url: "https://pub.dev"
     source: hosted
-    version: "1.6.1"
+    version: "1.7.1"
   matcher:
     dependency: transitive
     description:
@@ -361,78 +369,94 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+  posix:
+    dependency: transitive
+    description:
+      name: posix
+      sha256: f0d7856b6ca1887cfa6d1d394056a296ae33489db914e365e2044fdada449e62
+      url: "https://pub.dev"
+    source: hosted
+    version: "6.0.2"
   psdk_bluetooth_ble:
     dependency: "direct main"
     description:
       name: psdk_bluetooth_ble
-      sha256: cc69b805ccfab63f2a78ef59e83c6a25eb6c98fd887321ac5503ea42b897fb98
+      sha256: "8a89b4e4f1ff583588319929a2ee98fd9b924fff6910c3bfa70a44259623653a"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.20"
+    version: "0.1.1"
   psdk_bluetooth_classic:
     dependency: "direct main"
     description:
       name: psdk_bluetooth_classic
-      sha256: fdef597c18b7c80541ca9faf48187430d9bc1278de867597e519bd504253cb54
+      sha256: "13045ddf78c0d8c07aef75de756de5efff38e2d5f2e8250a00f5db235ba2901d"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.20"
+    version: "0.1.1"
   psdk_bluetooth_traits:
     dependency: "direct main"
     description:
       name: psdk_bluetooth_traits
-      sha256: "8b93baebbf245e953baecfc5c3fc859e3b9fd25198ea886e834273a40f04dc15"
+      sha256: "10bb01c7fd61c0786dfc5178cd9a5730f7f582597a552db527edba8fbb4b94f0"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.20"
+    version: "0.1.1"
   psdk_device_adapter:
     dependency: "direct main"
     description:
       name: psdk_device_adapter
-      sha256: dd95bc23733936d7880b0ce366bcdf92db2a7bc581d0428d4bda9a4fcb2411ff
+      sha256: "13b25792fdfde8056652d8689ac63c1da3a13ae3cbf4451756b606393ab30156"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.20"
+    version: "0.1.1"
   psdk_frame_father:
     dependency: "direct main"
     description:
       name: psdk_frame_father
-      sha256: "3f1ac7e3e8ee343b2cad4ef7c6c7a8c7ef617d3307600839bcd20dbc3b53e0ff"
+      sha256: cbf5eac1b5a4b110764db5037a9e67e839b94fa7de76879e37dddc15363d0e17
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.20"
+    version: "0.1.1"
   psdk_fruit_cpcl:
     dependency: "direct main"
     description:
       name: psdk_fruit_cpcl
-      sha256: "8cffe27c4aff60412932144a61cd64f9cd06b2f12eb3a1255d82d435ddb61cb1"
+      sha256: "70412fad4555a893cf4ac268f5479e5b143f7d24dd49e8e36c69d69498d4f9ca"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.20"
+    version: "0.1.1"
   psdk_fruit_esc:
     dependency: "direct main"
     description:
       name: psdk_fruit_esc
-      sha256: "73761ab83a9fb55da2e7d39b074790f5627e5d5a3fe401a0f15ebe8fd42b4fde"
+      sha256: "354a9a2bf5a03190ad6dcc11831f5448ce2ac996dfefba2c4df015e35dbb8a6a"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.20"
+    version: "0.1.1"
   psdk_fruit_tspl:
     dependency: "direct main"
     description:
       name: psdk_fruit_tspl
-      sha256: d5c28a6f2b572069f5092a98cba0f64ffa475a75ff7e1713c3af10ab62d08d74
+      sha256: "682aa0bc822019374f27351afd6fd595b8569f6fa5e6dc0edf3302876c17be13"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.20"
+    version: "0.1.1"
   psdk_imageb:
     dependency: transitive
     description:
       name: psdk_imageb
-      sha256: "8c5d1245a8aa6007ac7828a6df2d257ee7673fe1a9911b329de9f62ecc534b93"
+      sha256: "4c4e3b1e0a15df9b0faf05049d4530a8bd280d4768d2d7418a737e8151b9a7d8"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.20"
+    version: "0.1.1"
+  psdk_network:
+    dependency: "direct main"
+    description:
+      name: psdk_network
+      sha256: "93dcc0b55bb67c5b47a5e5d8659ab44f49b692bcbdf5773346335ecfbd0759f5"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.1"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -527,5 +551,5 @@ packages:
     source: hosted
     version: "6.3.0"
 sdks:
-  dart: ">=3.0.0 <4.0.0"
+  dart: ">=3.0.6 <4.0.0"
   flutter: ">=3.7.0"
