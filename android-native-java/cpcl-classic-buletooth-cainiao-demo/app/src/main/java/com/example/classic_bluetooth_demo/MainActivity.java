@@ -191,6 +191,9 @@ public class MainActivity extends AppCompatActivity {
       case StatusFLAG:
         stopTimer();
         byte[] bytes = (byte[]) msg.obj;
+        if (ByteArrToHex(bytes).equals("AAFF01FF55")) {
+          show("正常");
+        }
         if (ByteArrToHex(bytes).equals("AAFF010155")) {
           show("纸舱盖打开");
         }
@@ -204,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
           show("低电压");
         }
         if (ByteArrToHex(bytes).equals("AAFF010555")) {
-          show("打印头异常");
+          show("打印头过热");
         }
         break;
     }
