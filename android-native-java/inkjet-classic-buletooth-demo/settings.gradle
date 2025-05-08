@@ -1,0 +1,11 @@
+dependencyResolutionManagement {
+    repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+    repositories {
+        google()
+        mavenCentral()
+        jcenter() // Warning: this repository is going to shut down soon
+        maven {url 'https://gitlab.com/api/v4/projects/35052067/packages/maven' }
+    }
+}
+rootProject.name = "inkjet-classic-buletooth-demo"
+include ':app'

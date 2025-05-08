@@ -5,6 +5,43 @@
       <RadioButton android:id="@+id/radioButtonOption2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="10.0dip" android:text="cpcl"/>
       <RadioButton android:id="@+id/radioButtonOption3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="10.0dip" android:text="esc"/>
     </RadioGroup>
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:gravity="center_vertical"
+                  android:orientation="horizontal"
+                  android:layout_marginStart="10.0dip">
+      <TextView android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10.0dip"
+                android:textColor="@color/black"
+                android:text="纸张类型:">
+      </TextView>
+      <RadioGroup
+        android:id="@+id/Rg_paperType"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <RadioButton
+          android:id="@+id/rb_label"
+          android:layout_margin="10dp"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:checked="true"
+          android:text="标签纸"/>
+        <RadioButton
+          android:id="@+id/rb_continue"
+          android:layout_margin="10dp"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="连续纸"/>
+        <RadioButton
+          android:id="@+id/rb_black_label"
+          android:layout_margin="10dp"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="黑标纸"/>
+      </RadioGroup>
+    </LinearLayout>
     <LinearLayout android:gravity="center_vertical" android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip">
       <TextView android:textColor="@color/black" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="纸张大小:" android:layout_marginStart="10.0dip"/>
       <EditText android:textSize="14.0sp" android:textColor="@android:color/black" android:id="@+id/et_width" android:layout_width="100.0dip" android:layout_height="wrap_content" android:text="100" android:hint="宽度(mm)" android:ems="10" android:inputType="number" android:layout_marginStart="10.0dip"/>
@@ -13,7 +50,6 @@
     <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip">
       <CheckBox android:id="@+id/cb_compress" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="10.0dip" android:checked="false" android:text="压缩"/>
       <CheckBox android:id="@+id/cb_cut" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="10.0dip" android:checked="false" android:text="切刀"/>
-      <CheckBox android:id="@+id/cb_position" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_margin="10.0dip" android:checked="false" android:text="定位"/>
     </LinearLayout>
     <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent" android:layout_height="wrap_content" android:layout_marginLeft="10.0dip">
       <Button android:id="@+id/bt_choose_pdf" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="选择pdf"/>

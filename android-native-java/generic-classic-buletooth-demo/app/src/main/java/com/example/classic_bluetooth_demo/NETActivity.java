@@ -8,6 +8,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
+import com.example.classic_bluetooth_demo.util.Config;
+import com.example.classic_bluetooth_demo.util.MSharedPreferences;
 import com.example.classic_bluetooth_demo.util.PdfUtil;
 import com.example.classic_bluetooth_demo.util.PrintUtil;
 import com.printer.psdk.cpcl.GenericCPCL;
@@ -33,6 +35,7 @@ import java.io.InputStream;
 public class NETActivity extends Activity {
   private Network network;
   private Button switch_net;
+  private Button save_address;
   private Button printPdf;
   private Button printImage;
   private Button printModel;
@@ -48,6 +51,7 @@ public class NETActivity extends Activity {
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_net);
+    save_address = findViewById(R.id.save_address);
     switch_net = findViewById(R.id.switch_net);
     printPdf = findViewById(R.id.printPdf);
     printImage = findViewById(R.id.printImage);
@@ -64,6 +68,22 @@ public class NETActivity extends Activity {
       public void onCheckedChanged(RadioGroup group, int checkedId) {
         RadioButton radioButton = findViewById(checkedId);
         curCmd = radioButton.getText().toString();
+      }
+    });
+
+    save_address.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        String address = et_address.getText().toString();
+        if (address.isEmpty()) {
+          showMessage("地址或为空");
+          return;
+        }
+        MSharedPreferences mSharedPreferences = MSharedPreferences.getmSharedPreferences();
+        mSharedPreferences.init(NETActivity.this);
+        mSharedPreferences.putString(Config.KEY_IP_ADDRESS, address);
+        mSharedPreferences.commit();
+        showMessage("保存成功");
       }
     });
     switch_net.setOnClickListener(new View.OnClickListener() {
@@ -224,6 +244,12 @@ public class NETActivity extends Activity {
   @Override
   protected void onResume() {
     super.onResume();
+    MSharedPreferences mSharedPreferences = MSharedPreferences.getmSharedPreferences();
+    mSharedPreferences.init(this);
+    String ipAddress = mSharedPreferences.getString(Config.KEY_IP_ADDRESS);
+    if(!ipAddress.isEmpty()){
+      et_address.setText(ipAddress);
+    }
   }
 
   public void imageTest(int i) {
@@ -311,8 +337,10 @@ public class NETActivity extends Activity {
       if (!reporter.isOk()) {
         throw new IOException("写入数据失败", reporter.getException());
       }
+      showMessage("发送成功");
     } catch (Exception e) {
       e.printStackTrace();
+      showMessage("发送失败,请尝试重新连接");
     }
   }
 

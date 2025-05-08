@@ -6,7 +6,7 @@
   <uses-permission android:name="android.permission.BLUETOOTH_ADVERTISE" />
   <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
   <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-
+  <uses-permission android:name="android.permission.INTERNET" />
   <application
         android:label="printer_demo"
         android:name="${applicationName}"

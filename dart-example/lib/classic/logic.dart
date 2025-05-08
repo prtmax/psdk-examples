@@ -46,7 +46,7 @@ class ClassicLogic extends GetxController {
     });
     state.streamClassicDiscovered?.cancel();
     state.streamClassicDiscovered = ClassicBluetooth().discovered().listen((event) {
-      state.results.addAll(event);
+      state.results.add(event);
 
       super.update();
     });
