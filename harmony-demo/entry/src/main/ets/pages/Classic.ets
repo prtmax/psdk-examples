@@ -1,7 +1,6 @@
 import DevicesPage from '../common/DevicesPage';
 import { BusinessError } from '@ohos.base';
 import promptAction from '@ohos.promptAction';
-import a2dp from '@ohos.bluetooth.a2dp';
 import { baseProfile } from '@kit.ConnectivityKit';
 import { ConnectedDevice, PSDK } from '@psdk/frame-father';
 import CommonUtil from '../common/CommonUtil';
@@ -11,9 +10,9 @@ import { PrinterUtil } from '../common/PrinterUtil';
 import { GenericTSPL } from '@psdk/tspl';
 import { GenericCPCL } from '@psdk/cpcl';
 import { GenericESC } from '@psdk/esc';
-import { EscQueryType, EscSettingType, ThicknessLevel } from '../common/EscTypes';
 import { util } from '@kit.ArkTS';
 import { PaperType } from '@psdk/esc/build/types';
+import { ReadMark, ThicknessLevel } from '../common/ReadMark';
 
 
 @CustomDialog
@@ -24,11 +23,12 @@ struct CustomDialogExample {
   }
   confirm: (value: string) => void = () => {
   }
+
   build() {
     Column() {
-      Text('设置关机时间(单位：分钟，不关机传 0)').margin({top: 30})
+      Text('设置关机时间(单位：分钟，不关机传 0)').margin({ top: 30 })
       TextInput({ placeholder: '', text: this.inputValue })
-        .margin({top: 20, bottom: 30})
+        .margin({ top: 20, bottom: 30 })
         .height(45)
         .width('90%')
         .type(InputType.Number)
@@ -65,16 +65,19 @@ struct Index {
   @State cmdType: string = 'tspl';
   private ohosBluetoothClassic = new OhosBluetoothClassic({ allowNoName: false });
   private isPrint = false
-  private escQueryType?: EscQueryType = undefined
-  private escSettingType?: EscSettingType = undefined
+  private readMark?: ReadMark = undefined
   dialogController: CustomDialogController | null = new CustomDialogController({
     builder: CustomDialogExample({
-      cancel: ()=> { this.onCancel() },
-      confirm: (value)=> { this.onConfirm(value) }
+      cancel: () => {
+        this.onCancel()
+      },
+      confirm: (value) => {
+        this.onConfirm(value)
+      }
     }),
     cancel: this.onCancel,
     autoCancel: true,
-    onWillDismiss:(dismissDialogAction: DismissDialogAction)=> {
+    onWillDismiss: (dismissDialogAction: DismissDialogAction) => {
       console.info("reason=" + JSON.stringify(dismissDialogAction.reason))
       console.log("dialog onWillDismiss")
       if (dismissDialogAction.reason == DismissReason.PRESS_BACK) {
@@ -91,8 +94,14 @@ struct Index {
     width: 300,
     height: 200,
     backgroundColor: Color.White,
-    shadow: ({ radius: 20, color: Color.Grey, offsetX: 50, offsetY: 0}),
+    shadow: ({
+      radius: 20,
+      color: Color.Grey,
+      offsetX: 50,
+      offsetY: 0
+    }),
   })
+
   // 在自定义组件即将析构销毁时将dialogController置空
   // aboutToDisappear() {
   //   this.dialogController = null // 将dialogController置空
@@ -103,7 +112,7 @@ struct Index {
 
   onConfirm(value: string) {
     console.info('Callback when the Confirm button is clicked')
-    this.onEscSetting(EscSettingType.ShutTime, Number(value))
+    this.onEscSetting(ReadMark.SetShutTime, Number(value))
   }
 
   aboutToAppear() {
@@ -174,96 +183,80 @@ struct Index {
   }
 
   listenNotify() {
-    if (!this.connectedDevice) return;
+    if (!this.connectedDevice) {
+      return;
+    }
     // listen printer data
     this.connectedDevice.notify(async (data: Uint8Array) => {
       const duration = 3000;
-      const str = new util.TextDecoder("utf-8", {ignoreBOM: true}).decodeWithStream(data)
+      const str = new util.TextDecoder("utf-8", { ignoreBOM: true }).decodeWithStream(data)
       // 主动查询
-      if (this.escQueryType !== undefined) {
-        switch (this.escQueryType) {
-          case EscQueryType.Info:
+      if (this.readMark !== undefined) {
+        switch (this.readMark) {
+          case ReadMark.Info:
             promptAction.showToast({
               message: `打印机信息：${str}`,
               duration: duration
             });
             break;
-          case EscQueryType.SN:
+          case ReadMark.SN:
             promptAction.showToast({
               message: `打印机SN：${str}`,
               duration: duration
             });
             break;
-          case EscQueryType.Mac:
+          case ReadMark.Mac:
             promptAction.showToast({
               message: `打印机Mac：${data.toString()}`,
               duration: duration
             });
             break;
-          case EscQueryType.State:
-            let states = ['正常'];
-            if ((data[0] & 0x01) == 0x01) {
-              states.push("正在打印");
-              states = states.filter(item => item !== '正常');
+          case ReadMark.State:
+            switch (this.cmdType) {
+              case 'tspl':
+                this.handleTSPLStatus(data);
+                break;
+              case 'cpcl':
+                this.handleCPCLStatus(data);
+                break;
+              case 'esc':
+                this.handleESCStatus(data);
+                break;
+              default:
+                break;
             }
-            if ((data[0] & 0x02) == 0x02) {
-              states.push("纸舱盖开");
-              states = states.filter(item => item !== '正常');
-            }
-            if ((data[0] & 0x04) == 0x04) {
-              states.push("缺纸");
-              states = states.filter(item => item !== '正常');
-            }
-            if ((data[0] & 0x08) == 0x08) {
-              states.push("电池电压低");
-              states = states.filter(item => item !== '正常');
-            }
-            if ((data[0] & 0x10) == 0x10) {
-              states.push("打印头过热");
-              states = states.filter(item => item !== '正常');
-            }
-            promptAction.showToast({
-              message: `打印机状态：${states.join('+')}`,
-              duration: duration
-            });
             break;
-          case EscQueryType.Version:
+          case ReadMark.Version:
             promptAction.showToast({
               message: `打印机固件版本：${str}`,
               duration: duration
             });
             break;
-          case EscQueryType.Model:
+          case ReadMark.Model:
             promptAction.showToast({
               message: `打印机型号：${data}`,
               duration: duration
             });
             break;
-          case EscQueryType.BatteryVolume:
+          case ReadMark.BatteryVolume:
             promptAction.showToast({
               message: `打印机电量: ${data[1]}%`,
               duration: duration
             });
             break;
-          case EscQueryType.ShutTime:
+          case ReadMark.GetShutTime:
             promptAction.showToast({
               message: `关机时间: ${data[1]} 分钟`,
               duration: duration
             });
             break;
-          case EscQueryType.BtName:
+          case ReadMark.BtName:
             promptAction.showToast({
               message: `蓝牙名称：${str}`,
               duration: duration
             });
             break;
-        }
-        this.escQueryType = undefined;
-      }
-      // 设置
-      if (this.escSettingType !== undefined) {
-        switch (this.escSettingType) {
-          case EscSettingType.Thickness:
+          case ReadMark.Thickness:
             if (str === 'OK') {
               promptAction.showToast({
                 message: `打印机浓度设置成功`,
@@ -273,7 +266,7 @@ struct Index {
               console.log('设置失败')
             }
             break;
-          case EscSettingType.ShutTime:
+          case ReadMark.SetShutTime:
             if (str === 'OK') {
               promptAction.showToast({
                 message: `设置关机时间成功`,
@@ -283,24 +276,22 @@ struct Index {
               console.log('设置失败')
             }
             break;
-          default :
-            break;
         }
-        this.escSettingType = undefined;
+        this.readMark = undefined;
       }
       // 打印机主动上报
       /// 主动上报纸张类型
-      if(data.length == 2 && data[0] === 0xFE){
+      if (data.length == 2 && data[0] === 0xFE) {
         switch (data[1]) {
           case 1:
             console.log("onPaperError: 折叠黑标纸")
-        break;
+            break;
           case 2:
             console.log("onPaperError: 连续卷简纸")
-        break;
+            break;
           case 3:
             console.log("onPaperError: 不干胶缝隙纸")
-        break;
+            break;
           default:
             break;
         }
@@ -308,10 +299,10 @@ struct Index {
 
       /// 上报设备状态
       if (data.length == 2 && data[0] === 0xFF) {
-        if ((data[1]) ==  0) {
+        if ((data[1]) == 0) {
           console.log("打印机正常")
         } else {
-          if ((data[1] & 0x01) ===  0x01) {
+          if ((data[1] & 0x01) === 0x01) {
             console.log("打印机过热")
           }
           if ((data[1] & 0x02) === 0x02) {
@@ -320,7 +311,7 @@ struct Index {
           if ((data[1] & 0x04) === 0x04) {
             console.log("打印机缺纸")
           }
-          if ((data[1] & 0x08) ===  0x08) {
+          if ((data[1] & 0x08) === 0x08) {
             console.log("打印机低压")
           }
           if ((data[1] & 0x10) === 0x10) {
@@ -333,10 +324,10 @@ struct Index {
         switch (data[1]) {
           case 1:
             console.log("开始清除当前页面打印任务（中止命令）")
-        break;
+            break;
           case 2:
             console.log("清除当前打印任务结束")
-        break;
+            break;
           default:
             break;
         }
@@ -344,11 +335,186 @@ struct Index {
     });
   }
 
-  async safeWrite(psdk: PSDK<GenericTSPL> |  PSDK<GenericCPCL> | PSDK<GenericESC>) {
+  async doTSPLStatus(data: Uint8Array) {
+    const duration = 3000;
+    if (data.length == 1) {
+      if (data[0] == 0x00) {
+        promptAction.showToast({
+          message: '状态：打印机正常',
+          duration: duration
+        });
+      }
+      if ((data[0] & 0x01) == 0x01) {
+        promptAction.showToast({
+          message: '状态：打印机开盖',
+          duration: duration
+        });
+      }
+      if ((data[0] & 0x02) == 0x02) {
+        promptAction.showToast({
+          message: '状态：纸张错误',
+          duration: duration
+        });
+      }
+      if ((data[0] & 0x04) == 0x04) {
+        promptAction.showToast({
+          message: '状态：打印机缺纸',
+          duration: duration
+        });
+      }
+      if ((data[0] & 0x20) == 0x20) {
+        promptAction.showToast({
+          message: '状态：打印机打印中',
+          duration: duration
+        });
+      }
+      if ((data[0] & 0x10) == 0x10) {
+        promptAction.showToast({
+          message: '状态：打印机暂停',
+          duration: duration
+        });
+      }
+      if ((data[0] & 0x80) == 0x80) {
+        promptAction.showToast({
+          message: '状态：打印机过热',
+          duration: duration
+        });
+      }
+    }
+  }
+
+  async handleTSPLStatus(data: Uint8Array) {
+    const duration = 3000;
+    if (data.length == 1) {
+      if (data[0] == 0x00) {
+        promptAction.showToast({
+          message: '状态：打印机正常',
+          duration: duration
+        });
+      }
+      if ((data[0] & 0x01) == 0x01) {
+        promptAction.showToast({
+          message: '状态：打印机开盖',
+          duration: duration
+        });
+      }
+      if ((data[0] & 0x02) == 0x02) {
+        promptAction.showToast({
+          message: '状态：纸张错误',
+          duration: duration
+        });
+      }
+      if ((data[0] & 0x04) == 0x04) {
+        promptAction.showToast({
+          message: '状态：打印机缺纸',
+          duration: duration
+        });
+      }
+      if ((data[0] & 0x20) == 0x20) {
+        promptAction.showToast({
+          message: '状态：打印机打印中',
+          duration: duration
+        });
+      }
+      if ((data[0] & 0x10) == 0x10) {
+        promptAction.showToast({
+          message: '状态：打印机暂停',
+          duration: duration
+        });
+      }
+      if ((data[0] & 0x80) == 0x80) {
+        promptAction.showToast({
+          message: '状态：打印机过热',
+          duration: duration
+        });
+      }
+    }
+  }
+
+  async handleCPCLStatus(data: Uint8Array) {
+    const duration = 3000;
+    if (data[0] == 0x00) {
+      promptAction.showToast({
+        message: '状态：正常',
+        duration: duration
+      });
+      return;
+    }
+    if (data.length > 1 && data[0] == 0x4f && data[1] == 0x4b) {
+      promptAction.showToast({
+        message: '状态：正常',
+        duration: duration
+      });
+      return;
+    }
+    if ((data[0] & 16) != 0) {
+      promptAction.showToast({
+        message: '状态：开盖',
+        duration: duration
+      });
+      return;
+    }
+    if ((data[0] & 1) != 0) {
+      promptAction.showToast({
+        message: '状态：缺纸',
+        duration: duration
+      });
+      return;
+    }
+    if ((data[0] & 8) != 0) {
+      promptAction.showToast({
+        message: '状态：打印中',
+        duration: duration
+      });
+      return;
+    }
+    if ((data[0] & 4) != 0) {
+      promptAction.showToast({
+        message: '状态：低电',
+        duration: duration
+      });
+      return;
+    }
+    promptAction.showToast({
+      message: '状态：正常',
+      duration: duration
+    });
+  }
+
+  async handleESCStatus(data: Uint8Array) {
+    const duration = 3000;
+    let states = ['正常'];
+    if ((data[0] & 0x01) == 0x01) {
+      states.push("正在打印");
+      states = states.filter(item => item !== '正常');
+    }
+    if ((data[0] & 0x02) == 0x02) {
+      states.push("纸舱盖开");
+      states = states.filter(item => item !== '正常');
+    }
+    if ((data[0] & 0x04) == 0x04) {
+      states.push("缺纸");
+      states = states.filter(item => item !== '正常');
+    }
+    if ((data[0] & 0x08) == 0x08) {
+      states.push("电池电压低");
+      states = states.filter(item => item !== '正常');
+    }
+    if ((data[0] & 0x10) == 0x10) {
+      states.push("打印头过热");
+      states = states.filter(item => item !== '正常');
+    }
+    promptAction.showToast({
+      message: `打印机状态：${states.join('+')}`,
+      duration: duration
+    });
+  }
+
+  async safeWrite(psdk: PSDK<GenericTSPL> | PSDK<GenericCPCL> | PSDK<GenericESC>) {
     try {
       if (!this.isPrint) {
         this.isPrint = true;
-        const report = await psdk.write();//不分包发送，如果不会丢包可以不分包
+        const report = await psdk.write(); //不分包发送，如果不会丢包可以不分包
         // const report = await psdk.write({
         // 	enableChunkWrite: true,
         // 	chunkSize: 20
@@ -377,7 +543,7 @@ struct Index {
       });
       return;
     }
-    let psdk: PSDK<GenericTSPL> |  PSDK<GenericCPCL> | PSDK<GenericESC>
+    let psdk: PSDK<GenericTSPL> | PSDK<GenericCPCL> | PSDK<GenericESC>
     switch (this.cmdType) {
       case 'tspl':
         psdk = CommonUtil.tsplTemplateCmd();
@@ -408,7 +574,7 @@ struct Index {
       });
       return;
     }
-    let psdk: PSDK<GenericTSPL> |  PSDK<GenericCPCL> | PSDK<GenericESC>
+    let psdk: PSDK<GenericTSPL> | PSDK<GenericCPCL> | PSDK<GenericESC>
     switch (this.cmdType) {
       case 'tspl':
         psdk = CommonUtil.tsplImageCmd();
@@ -427,18 +593,54 @@ struct Index {
         break;
       default:
         break;
-    };
+    }
+    ;
   }
 
-  async onEscQuery(queryType: EscQueryType) {
-    this.escQueryType = queryType
+  async onQueryStatus() {
+    if (this.connectedDevice === undefined) {
+      promptAction.showToast({
+        message: '请连接设备！！！',
+        duration: 2000
+      });
+      return;
+    }
+    switch (this.cmdType) {
+      case 'tspl':
+        await this.onTsplQuery(ReadMark.State)
+        break;
+      case 'cpcl':
+        await this.onCpclQuery(ReadMark.State)
+        break;
+      case 'esc':
+        await this.onEscQuery(ReadMark.State)
+        break;
+      default:
+        break;
+    }
+  }
+
+  async onTsplQuery(queryType: ReadMark) {
+    this.readMark = queryType
+    const tspl = CommonUtil.tsplQueryCmd(queryType);
+    await this.safeWrite(tspl);
+  }
+
+  async onCpclQuery(queryType: ReadMark) {
+    this.readMark = queryType
+    const cpcl = CommonUtil.cpclQueryCmd(queryType);
+    await this.safeWrite(cpcl);
+  }
+
+  async onEscQuery(queryType: ReadMark) {
+    this.readMark = queryType
     const esc = CommonUtil.escQueryCmd(queryType);
     await this.safeWrite(esc);
   }
 
-  async onEscSetting(settingType: EscSettingType, value: number) {
-    if (settingType != EscSettingType.PaperType) {
-      this.escSettingType = settingType
+  async onEscSetting(settingType: ReadMark, value: number) {
+    if (settingType != ReadMark.PaperType) {
+      this.readMark = settingType
     }
     const esc = CommonUtil.escSettingCmd(settingType, value);
     await this.safeWrite(esc);
@@ -486,6 +688,7 @@ struct Index {
                   }
                 })
             }
+
             Column() {
               Text('cpcl')
               Radio({ value: 'cpcl', group: 'radioGroup' })
@@ -535,8 +738,12 @@ struct Index {
             .width('90%')
             .height(40)
             .onClick(() => this.onPrintImage())
+          Button('查询状态')
+            .width('90%')
+            .height(40)
+            .onClick(() => this.onQueryStatus())
           if (this.cmdType === 'esc') {
-            Row({space: FlexAlign.SpaceEvenly}) {
+            Row({ space: FlexAlign.SpaceEvenly }) {
               Button('查询')
                 .onClick(() => {
                   if (this.connectedDevice === undefined) {
@@ -552,59 +759,59 @@ struct Index {
                     autoCancel: true, //点击遮障层时，是否关闭弹窗
                     alignment: DialogAlignment.Bottom, //弹窗位置
                     height: 300,
-                    sheets: [ //操作选项列表
+                    sheets: [//操作选项列表
                       {
                         title: '\n打印机信息\n',
                         action: async () => {
-                          await this.onEscQuery(EscQueryType.Info)
+                          await this.onEscQuery(ReadMark.Info)
                         }
                       },
                       {
                         title: '\n打印机 Sn\n',
                         action: async () => {
-                          await this.onEscQuery(EscQueryType.SN)
+                          await this.onEscQuery(ReadMark.SN)
                         }
                       },
                       {
                         title: '\n打印机 Mac\n',
                         action: async () => {
-                          await this.onEscQuery(EscQueryType.Mac)
+                          await this.onEscQuery(ReadMark.Mac)
                         }
                       },
                       {
                         title: '\n打印机状态\n',
                         action: async () => {
-                          await this.onEscQuery(EscQueryType.State)
+                          await this.onEscQuery(ReadMark.State)
                         }
                       },
                       {
                         title: '\n打印机固件版本\n',
                         action: async () => {
-                          await this.onEscQuery(EscQueryType.Version)
+                          await this.onEscQuery(ReadMark.Version)
                         }
                       },
                       {
                         title: '\n打印机型号\n',
                         action: async () => {
-                          await this.onEscQuery(EscQueryType.Model)
+                          await this.onEscQuery(ReadMark.Model)
                         }
                       },
                       {
                         title: '\n电量\n',
                         action: async () => {
-                          await this.onEscQuery(EscQueryType.BatteryVolume)
+                          await this.onEscQuery(ReadMark.BatteryVolume)
                         }
                       },
                       {
                         title: '\n关机时间\n',
                         action: async () => {
-                          await this.onEscQuery(EscQueryType.ShutTime)
+                          await this.onEscQuery(ReadMark.GetShutTime)
                         }
                       },
                       {
                         title: '\n蓝牙名称\n',
                         action: async () => {
-                          await this.onEscQuery(EscQueryType.BtName)
+                          await this.onEscQuery(ReadMark.BtName)
                         }
                       },
 
@@ -625,7 +832,7 @@ struct Index {
                     message: '请选择设置内容', //弹窗内容
                     autoCancel: true, //点击遮障层时，是否关闭弹窗
                     alignment: DialogAlignment.Bottom, //弹窗位置
-                    sheets: [ //操作选项列表
+                    sheets: [//操作选项列表
                       {
                         title: '\n设置浓度\n',
                         action: async () => {
@@ -638,19 +845,19 @@ struct Index {
                               {
                                 title: '\n高浓度\n',
                                 action: async () => {
-                                  await this.onEscSetting(EscSettingType.Thickness, ThicknessLevel.High)
+                                  await this.onEscSetting(ReadMark.Thickness, ThicknessLevel.High)
                                 }
                               },
                               {
                                 title: '\n中浓度\n',
                                 action: async () => {
-                                  await this.onEscSetting(EscSettingType.Thickness, ThicknessLevel.Medium)
+                                  await this.onEscSetting(ReadMark.Thickness, ThicknessLevel.Medium)
                                 }
                               },
                               {
                                 title: '\n低浓度\n',
                                 action: async () => {
-                                  await this.onEscSetting(EscSettingType.Thickness, ThicknessLevel.Low)
+                                  await this.onEscSetting(ReadMark.Thickness, ThicknessLevel.Low)
                                 }
                               }
                             ]
@@ -678,31 +885,31 @@ struct Index {
                               {
                                 title: '\n折叠黑标纸\n',
                                 action: async () => {
-                                  await this.onEscSetting(EscSettingType.PaperType, PaperType.FOLDED_BLACK_LABEL_PAPER)
+                                  await this.onEscSetting(ReadMark.PaperType, PaperType.FOLDED_BLACK_LABEL_PAPER)
                                 }
                               },
                               {
                                 title: '\n连续卷筒纸\n',
                                 action: async () => {
-                                  await this.onEscSetting(EscSettingType.PaperType, PaperType.CONTINUOUS_REEL_PAPER)
+                                  await this.onEscSetting(ReadMark.PaperType, PaperType.CONTINUOUS_REEL_PAPER)
                                 }
                               },
                               {
                                 title: '\n不干胶缝隙纸\n',
                                 action: async () => {
-                                  await this.onEscSetting(EscSettingType.PaperType, PaperType.NO_DRY_ADHESIVE_PAPER)
+                                  await this.onEscSetting(ReadMark.PaperType, PaperType.NO_DRY_ADHESIVE_PAPER)
                                 }
                               },
                               {
                                 title: '\n打孔纸\n',
                                 action: async () => {
-                                  await this.onEscSetting(EscSettingType.PaperType, PaperType.HOLE_PAPER)
+                                  await this.onEscSetting(ReadMark.PaperType, PaperType.HOLE_PAPER)
                                 }
                               },
                               {
                                 title: '\n纹身纸\n',
                                 action: async () => {
-                                  await this.onEscSetting(EscSettingType.PaperType, PaperType.TATTOO_PAPER)
+                                  await this.onEscSetting(ReadMark.PaperType, PaperType.TATTOO_PAPER)
                                 }
                               }
                             ]

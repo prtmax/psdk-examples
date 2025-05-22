@@ -29,6 +29,7 @@ import {
   CRotation,
   CInverse,
   CMag,
+  CStatus,
 } from '@psdk/cpcl';
 import { InputImage } from '@psdk/frame-imageb';
 
@@ -36,9 +37,8 @@ import { LengthMetricsUnit } from '@ohos.arkui.node'
 import { EImage, EPaperType, GenericESC } from '@psdk/esc';
 import { promptAction } from '@kit.ArkUI';
 import { PrinterUtil } from './PrinterUtil';
-import { EscQueryType, EscSettingType } from './EscTypes';
 import { util } from '@kit.ArkTS';
-import { PaperType } from '@psdk/esc/build/types/papertype';
+import {ReadMark} from './ReadMark';
 
 export class CommonUtil {
   showMessage(text: string) {
@@ -698,53 +698,73 @@ export class CommonUtil {
       .stopJob();
   }
 
-  escQueryCmd(queryType: EscQueryType): GenericESC {
+  tsplQueryCmd(queryType: ReadMark): GenericTSPL {
+    let tspl = PrinterUtil.getInstance().tspl().clear()
+    switch (queryType) {
+      case ReadMark.State:
+        tspl.status();
+        break;
+    }
+    return tspl
+  }
+
+  cpclQueryCmd(queryType: ReadMark): GenericCPCL {
+    let cpcl = PrinterUtil.getInstance().cpcl().clear()
+    switch (queryType) {
+      case ReadMark.State:
+        cpcl.status(new CStatus());
+        break;
+    }
+    return cpcl
+  }
+
+  escQueryCmd(queryType: ReadMark): GenericESC {
     let esc = PrinterUtil.getInstance().esc().clear()
     switch (queryType) {
-      case EscQueryType.Info:
+      case ReadMark.Info:
         esc.info()
         break;
-      case EscQueryType.SN:
+      case ReadMark.SN:
         esc.sn()
         break;
-      case EscQueryType.Mac:
+      case ReadMark.Mac:
         esc.mac()
         break;
-      case EscQueryType.State:
+      case ReadMark.State:
         esc.state()
         break;
-      case EscQueryType.Version:
+      case ReadMark.Version:
         esc.version()
         break;
-      case EscQueryType.Model:
+      case ReadMark.Model:
         esc.model()
         break;
-      case EscQueryType.BatteryVolume:
+      case ReadMark.BatteryVolume:
         esc.batteryVolume()
         break;
-      case EscQueryType.ShutTime:
+      case ReadMark.GetShutTime:
         esc.getShutdownTime()
         break;
-    // case EscQueryType.PaperType:
+    // case ReadMark.PaperType:
     //   esc.getPaperTypeQ3()
     //   break;
-      case EscQueryType.BtName:
+      case ReadMark.BtName:
         esc.name()
         break;
     }
     return esc
   }
 
-  escSettingCmd(setType: EscSettingType, value: number): GenericESC {
+  escSettingCmd(setType: ReadMark, value: number): GenericESC {
     let esc = PrinterUtil.getInstance().esc().clear()
     switch (setType) {
-      case EscSettingType.Thickness:
+      case ReadMark.Thickness:
         esc.thickness(value)
         break;
-      case EscSettingType.ShutTime:
+      case ReadMark.SetShutTime:
         esc.setShutdownTime(value)
         break;
-      case EscSettingType.PaperType:
+      case ReadMark.PaperType:
         esc.paperType(new EPaperType({
           paperType: value
         }));
