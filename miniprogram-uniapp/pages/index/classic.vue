@@ -15,8 +15,7 @@
 		<button @click="closeBluetooth" class="button">断开连接</button>
 		<button @click="writeModel" class="button">打印76*130模版</button>
 		<button @click="writeTsplRibbonModel" class="button">打印热转印测试</button>
-		<canvas :style="'width: '+1000+'px; height:'+1000+'px; position:fixed; left:8888px'"
-			:canvas-id="canvasId"></canvas>
+		<canvas :style="'width: ' + canvasWidth + 'px; height: ' + canvasHeight + 'px; position: fixed; left: 8888px'":canvas-id="canvasId"></canvas>
 		<button @click="printImage" class="button">打印图片</button>
 		<scroll-view class="canvas-buttons" scroll-y="true">
 			<block v-for="(item, index) in discoveredDevices" :key="item.address">
@@ -99,6 +98,8 @@
 				],
 				current: 0,
 				canvasId: 'myCanvas',
+				canvasWidth: 240,
+				canvasHeight: 240
 			}
 		},
 		async onLoad() {
@@ -277,8 +278,8 @@
 			async printImage() {
 				const vm = this;
 				const ctx = uni.createCanvasContext(vm.canvasId, this);
-				const imgWidth = 240; // 每张图片的宽度
-				const imgHeight = 240; // 每张图片的高度
+				const imgWidth = vm.canvasWidth; // 每张图片的宽度跟画布宽度一样
+				const imgHeight = vm.canvasWidth; // 每张图片的高度跟画布高度一样
 				ctx.drawImage('/static/logo.png', 0, 0, imgWidth, imgHeight);
 				await new Promise((resolve) => {
 					ctx.draw(false, resolve);

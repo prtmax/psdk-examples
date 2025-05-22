@@ -10,10 +10,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@psdk/cpcl": "^0.6.1",
-    "@psdk/device-ble-uniapp": "^0.6.1",
-    "@psdk/esc": "^0.6.1",
-    "@psdk/tspl": "^0.6.1",
+    "@psdk/cpcl": "^0.7.7",
+    "@psdk/device-ble-uniapp": "^0.7.7",
+    "@psdk/esc": "^0.7.7",
+    "@psdk/tspl": "^0.7.7",
     "i": "^0.3.7",
     "npm": "^9.5.1"
   }
