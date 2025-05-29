@@ -1,7 +1,7 @@
 import 'package:adaptive_dialog/adaptive_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:psdk_bluetooth_ble/psdk_bluetooth_ble.dart';
+import 'package:printer_demo/bluetooth/widgets/bluetooth_widgets.dart';
 import 'package:psdk_bluetooth_traits/psdk_bluetooth_traits.dart';
 
 import '../toolkit/custom_separator_widget.dart';
@@ -9,19 +9,18 @@ import '../toolkit/printer.dart';
 import '../toolkit/tip_icon_generic.dart';
 import 'logic.dart';
 import 'state.dart';
-import 'widgets/ble_widgets.dart';
 
-class BlePage extends StatelessWidget {
-  final BleLogic logic = Get.put(BleLogic());
-  final BleState state = Get.find<BleLogic>().state;
+class BluetoothPage extends StatelessWidget {
+  final BluetoothLogic logic = Get.put(BluetoothLogic());
+  final BluetoothState state = Get.find<BluetoothLogic>().state;
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<BleLogic>(builder: (logic) {
+    return GetBuilder<BluetoothLogic>(builder: (logic) {
       return Scaffold(
         appBar: AppBar(title: const Text('打印机')),
         body: StreamBuilder<bool>(
-          stream: BLEBluetooth().listenBluetoothState.stream,
+          stream: state.bluetooth.listenBluetoothState.stream,
           initialData: false,
           builder: (c, snapshot) {
             final bluetooth_state = snapshot.data;
@@ -126,12 +125,12 @@ class BlePage extends StatelessWidget {
 
   Widget _refreshView(BuildContext context) {
     return StreamBuilder<bool>(
-      stream: BLEBluetooth().listenDiscovery.stream,
+      stream: state.bluetooth.listenDiscovery.stream,
       initialData: false,
       builder: (c, snapshot) {
         var isScanning = snapshot.data ?? false;
         return Container(
-          color:  const Color(0XFFEFEFEF),
+          color: const Color(0XFFEFEFEF),
           child: Container(
               height: 40,
               margin: const EdgeInsets.only(left: 30, right: 30, bottom: 30, top: 10),
@@ -144,22 +143,23 @@ class BlePage extends StatelessWidget {
                     backgroundColor: const Color(0XFF0085FF)),
                 child: isScanning
                     ? FittedBox(
-                        child: Container(
-                          margin: const EdgeInsets.all(16.0),
-                          child: CircularProgressIndicator(
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                                Theme.of(context).primaryColorLight),
-                          ),
-                        ),
-                      )
+                  child: Container(
+                    margin: const EdgeInsets.all(16.0),
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                          Theme.of(context).primaryColorLight),
+                    ),
+                  ),
+                )
                     : const Text(
-                        '刷新',
-                        style: TextStyle(
-                            color: Colors.white, fontSize: 16),
-                      ),
+                  '刷新',
+                  style: TextStyle(
+                      color: Colors.white, fontSize: 16),
+                ),
               )),
         );
       },
     );
   }
 }
+

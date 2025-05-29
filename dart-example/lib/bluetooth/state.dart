@@ -1,15 +1,15 @@
 import 'dart:async';
 
-class BleState {
+class BluetoothState {
   bool isConnected = false;
 
   /// bluetooth state
   bool bluetoothState = false;
-  bool isEnabledLocation = false;
-
+  var bluetooth;
+  var notifiedDevices = [];
   var results = [];
   StreamSubscription? streamBluetoothState;
   StreamSubscription? streamBleDiscovered;
 
-  BleState() {}
+  BluetoothState() {}
 }

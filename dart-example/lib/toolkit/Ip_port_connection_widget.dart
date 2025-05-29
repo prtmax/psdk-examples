@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:printer_demo/toolkit/printer.dart';
-import 'dart:io';
 
 import 'package:psdk_network/psdk_network.dart';
 
-// 封装的 IP 端口连接组件
 class IpPortConnectionWidget extends StatefulWidget {
   final Widget? ipTextField;
   final Widget? portTextField;
@@ -41,14 +40,17 @@ class _IpPortConnectionWidgetState extends State<IpPortConnectionWidget> {
     try {
       int port = int.parse(portStr);
       Network network = Network();
+      SmartDialog.showLoading(msg: '正在连接');
       var connectedDevice = await network.connect(ip, port);
       Printer().init(connectedDevice: connectedDevice);
       setState(() {
         _statusMessage = '连接成功！';
+        SmartDialog.dismiss();
       });
     } catch (e) {
       setState(() {
         _statusMessage = '连接失败: $e';
+        SmartDialog.dismiss();
       });
     }
   }
