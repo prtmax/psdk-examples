@@ -1,105 +1,228 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+>
+  <LinearLayout android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+    <EditText
+      android:id="@+id/wifi_name"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:hint="请输入wifi名称"
+      android:maxLength="20"
+      android:gravity="top"
+      android:textColor="@android:color/black"
+      android:textSize="20sp" android:layout_marginTop="10dp" android:layout_marginStart="10dp"
+      android:layout_marginEnd="10dp" android:layout_marginBottom="10dp"
+    />
+    <EditText
+      android:id="@+id/wifi_pwd"
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:hint="请输入wifi密码"
+      android:maxLength="20"
+      android:gravity="top"
+      android:inputType="textVisiblePassword"
+      android:textColor="@android:color/black"
+      android:textSize="20sp" android:layout_marginTop="10dp" android:layout_marginStart="10dp"
+      android:layout_marginEnd="10dp" android:layout_marginBottom="10dp"
+    />
+
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="horizontal">
+      <Button
+        android:id="@+id/button_send"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="设置wifi名称密码"
+        android:textSize="18sp"/>
+      <Button
+        android:id="@+id/button_search_name"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="查询wifi名称"
+        android:textSize="18sp"/>
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="horizontal">
+      <Button
+        android:id="@+id/button_search_pwd"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="查询wifi密码"
+        android:textSize="18sp"/>
+      <Button
+        android:id="@+id/button_status"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="查询wifi连接状态"
+        android:textSize="18sp"/>
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="horizontal">
+      <Button
+        android:id="@+id/button_search_dhcp"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="查询DHCP"
+        android:textSize="18sp"/>
+    </LinearLayout>
+
+    <!-- IP设置部分 (新增) -->
+    <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="wrap_content"
+      android:orientation="vertical"
+      android:padding="10dp"
+      android:layout_marginTop="20dp"
+      android:background="#f0f0f0">
+
+      <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="IP设置"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="10dp"/>
+
+      <!-- 动态/静态IP选择 -->
+      <RadioGroup
+        android:id="@+id/ip_type_radio_group"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginBottom="10dp">
+
+        <RadioButton
+          android:id="@+id/dhcp_radio"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="动态IP (DHCP)"
+          android:textSize="18sp"
+          android:checked="true"/>
+
+        <RadioButton
+          android:id="@+id/static_ip_radio"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:text="静态IP"
+          android:textSize="18sp"
+          android:layout_marginLeft="20dp"/>
+      </RadioGroup>
+
+      <!-- 静态IP设置项 (默认隐藏) -->
+      <LinearLayout
+        android:id="@+id/static_ip_settings"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
-        >
+        android:visibility="gone">
 
-    <EditText
-            android:id="@+id/wifi_name"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="请输入wifi名称"
-            android:maxLength="20"
-            android:gravity="top"
-            android:textColor="@android:color/black"
-            android:textSize="20sp" android:layout_marginTop="10dp" android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp" android:layout_marginBottom="10dp"
-    />
-    <EditText
-            android:layout_below="@+id/wifi_name"
-            android:id="@+id/wifi_pwd"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="请输入wifi密码"
-            android:maxLength="20"
-            android:gravity="top"
-            android:inputType="textVisiblePassword"
-            android:textColor="@android:color/black"
-            android:textSize="20sp" android:layout_marginTop="10dp" android:layout_marginStart="10dp"
-            android:layout_marginEnd="10dp" android:layout_marginBottom="10dp"
-    />
-    <Button
-            android:layout_below="@+id/wifi_pwd"
-            android:id="@+id/button_send"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:text="设置wifi名称密码"
-            android:textSize="25sp"/>
+        <EditText
+          android:id="@+id/ip_address"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:hint="IP地址"
+          android:inputType="numberDecimal"
+          android:textSize="18sp"
+          android:layout_marginBottom="10dp"/>
 
-    <Button
-            android:layout_below="@+id/button_send"
-            android:id="@+id/button_search_name"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:text="查询wifi名称"
-            android:textSize="25sp"/>
-    <Button
-            android:layout_below="@+id/button_search_name"
-            android:id="@+id/button_search_pwd"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:text="查询wifi密码"
-            android:textSize="25sp"/>
-    <Button
-            android:layout_below="@+id/button_search_pwd"
-            android:id="@+id/button_status"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
-            android:text="查询wifi连接状态"
-            android:textSize="25sp"/>
+        <EditText
+          android:id="@+id/gateway"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:hint="网关"
+          android:inputType="numberDecimal"
+          android:textSize="18sp"
+          android:layout_marginBottom="10dp"/>
+
+        <EditText
+          android:id="@+id/netmask"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:hint="子网掩码"
+          android:inputType="numberDecimal"
+          android:textSize="18sp"
+          android:layout_marginBottom="10dp"/>
+      </LinearLayout>
+
+      <!-- IP操作按钮 -->
+      <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingTop="10dp">
+
+        <Button
+          android:id="@+id/button_set_ip"
+          android:layout_weight="1"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:text="设置IP信息"
+          android:textSize="18sp"
+          android:layout_marginRight="5dp"/>
+
+        <Button
+          android:id="@+id/button_get_ip"
+          android:layout_weight="1"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:text="查询IP信息"
+          android:textSize="18sp"
+          android:layout_marginLeft="5dp"/>
+      </LinearLayout>
+    </LinearLayout>
     <TextView
-            android:layout_below="@+id/button_status"
-            android:id="@+id/tv_content"
-            android:layout_margin="10dp"
-            android:textSize="18sp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+      android:layout_below="@+id/button_status"
+      android:id="@+id/tv_content"
+      android:layout_margin="10dp"
+      android:textSize="18sp"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content">
 
     </TextView>
+  </LinearLayout>
 
 
-    <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_alignParentBottom="true"
-            android:background="@android:color/holo_red_light"
-            android:orientation="horizontal">
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="30dp"
+    android:layout_alignParentBottom="true"
+    android:background="@android:color/holo_red_light"
+    android:orientation="horizontal">
 
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="10dp"
-                android:gravity="center_vertical"
-                android:singleLine="true"
-                android:text="连接状态："
-                android:textColor="@android:color/white"
-                android:textSize="18sp"/>
+    <TextView
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:layout_marginLeft="10dp"
+      android:gravity="center_vertical"
+      android:singleLine="true"
+      android:text="连接状态："
+      android:textColor="@android:color/white"
+      android:textSize="18sp"/>
 
-        <TextView
-                android:id="@+id/title_right_text"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:layout_marginLeft="10dp"
-                android:gravity="center_vertical"
-                android:singleLine="true"
-                android:textColor="@android:color/white"
-                android:textSize="18sp"/>
-    </LinearLayout>
+    <TextView
+      android:id="@+id/title_right_text"
+      android:layout_width="wrap_content"
+      android:layout_height="match_parent"
+      android:layout_marginLeft="10dp"
+      android:gravity="center_vertical"
+      android:singleLine="true"
+      android:textColor="@android:color/white"
+      android:textSize="18sp"/>
+  </LinearLayout>
 
 </RelativeLayout>
