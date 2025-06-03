@@ -15,6 +15,8 @@
 
 - (NSString *)toHexString;
 
+- (int)toInt;
+
 @end
 
 //NS_ASSUME_NONNULL_END

@@ -1,0 +1,281 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23504" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23506"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="WifiFunctionVC">
+            <connections>
+                <outlet property="displayLabel" destination="yVh-Aq-hrL" id="7sf-01-jte"/>
+                <outlet property="gatewayTextF" destination="AJz-0V-ltx" id="rUf-89-1WS"/>
+                <outlet property="ipTextF" destination="lf7-2n-BEE" id="PVs-0t-oGi"/>
+                <outlet property="maskTextF" destination="51j-nv-gAK" id="Gn1-au-9nY"/>
+                <outlet property="nameTextF" destination="Nn3-wm-e6K" id="JXR-Ek-B8w"/>
+                <outlet property="pwdTextF" destination="Saz-c9-k4x" id="iVK-qY-Hc4"/>
+                <outlet property="setIpHeight" destination="Ysl-Mo-Srd" id="stk-ya-Ee4"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="POu-wS-9Hk">
+                    <rect key="frame" x="0.0" y="59" width="393" height="211"/>
+                    <subviews>
+                        <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="AIYIN8" borderStyle="roundedRect" placeholder="请输入wifi名称" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Nn3-wm-e6K">
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="34"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                        </textField>
+                        <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="xmiprt8888" borderStyle="roundedRect" placeholder="请输入wifi密码" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="Saz-c9-k4x">
+                            <rect key="frame" x="0.0" y="44" width="393" height="34"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                        </textField>
+                        <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="d3g-Rl-iBJ">
+                            <rect key="frame" x="0.0" y="88" width="393" height="34.333333333333343"/>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Wem-lE-3nc">
+                                    <rect key="frame" x="0.0" y="0.0" width="191.66666666666666" height="34.333333333333336"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="设置wifi"/>
+                                    <connections>
+                                        <action selector="setWifi:" destination="-1" eventType="touchUpInside" id="wOd-IU-ljR"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="p3E-Y7-OAd">
+                                    <rect key="frame" x="201.66666666666663" y="0.0" width="191.33333333333337" height="34.333333333333336"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="查询wifi名称"/>
+                                    <connections>
+                                        <action selector="wifiName:" destination="-1" eventType="touchUpInside" id="S4u-tM-90c"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                            <constraints>
+                                <constraint firstAttribute="trailing" secondItem="p3E-Y7-OAd" secondAttribute="trailing" id="2kl-0U-d1X"/>
+                                <constraint firstAttribute="bottom" secondItem="Wem-lE-3nc" secondAttribute="bottom" id="4S4-ff-bRo"/>
+                                <constraint firstAttribute="bottom" secondItem="p3E-Y7-OAd" secondAttribute="bottom" id="7iZ-eB-h9i"/>
+                                <constraint firstItem="Wem-lE-3nc" firstAttribute="leading" secondItem="d3g-Rl-iBJ" secondAttribute="leading" id="MaO-hy-irC"/>
+                                <constraint firstItem="Wem-lE-3nc" firstAttribute="top" secondItem="d3g-Rl-iBJ" secondAttribute="top" id="qEv-cb-giT"/>
+                                <constraint firstItem="p3E-Y7-OAd" firstAttribute="top" secondItem="d3g-Rl-iBJ" secondAttribute="top" id="rIl-NI-WjM"/>
+                                <constraint firstItem="Wem-lE-3nc" firstAttribute="width" secondItem="p3E-Y7-OAd" secondAttribute="width" multiplier="1.00174" id="uuI-Xf-MMR"/>
+                            </constraints>
+                        </stackView>
+                        <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="gPe-XP-4df">
+                            <rect key="frame" x="0.0" y="132.33333333333334" width="393" height="34.333333333333343"/>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="u2r-Te-WPN">
+                                    <rect key="frame" x="0.0" y="0.0" width="191.66666666666666" height="34.333333333333336"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="查询wifi密码"/>
+                                    <connections>
+                                        <action selector="wifiPasswd:" destination="-1" eventType="touchUpInside" id="KuG-su-QI5"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SyU-Bj-W23">
+                                    <rect key="frame" x="201.66666666666663" y="0.0" width="191.33333333333337" height="34.333333333333336"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="查询wifi连接状态"/>
+                                    <connections>
+                                        <action selector="wifiState:" destination="-1" eventType="touchUpInside" id="wFg-0f-XFJ"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                            <constraints>
+                                <constraint firstAttribute="bottom" secondItem="u2r-Te-WPN" secondAttribute="bottom" id="7Be-fX-DkH"/>
+                                <constraint firstItem="u2r-Te-WPN" firstAttribute="width" secondItem="SyU-Bj-W23" secondAttribute="width" multiplier="1.00174" id="Gog-ps-ecL"/>
+                                <constraint firstAttribute="bottom" secondItem="SyU-Bj-W23" secondAttribute="bottom" id="U7w-MV-2YS"/>
+                                <constraint firstItem="SyU-Bj-W23" firstAttribute="top" secondItem="gPe-XP-4df" secondAttribute="top" id="ikj-8l-RjV"/>
+                                <constraint firstItem="u2r-Te-WPN" firstAttribute="leading" secondItem="gPe-XP-4df" secondAttribute="leading" id="t13-en-ql2"/>
+                                <constraint firstAttribute="trailing" secondItem="SyU-Bj-W23" secondAttribute="trailing" id="xQd-fJ-RQ5"/>
+                                <constraint firstItem="u2r-Te-WPN" firstAttribute="top" secondItem="gPe-XP-4df" secondAttribute="top" id="yyz-rH-o5e"/>
+                            </constraints>
+                        </stackView>
+                        <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="22f-uM-Oj9">
+                            <rect key="frame" x="0.0" y="176.66666666666666" width="393" height="34.333333333333343"/>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="10M-tC-E7y">
+                                    <rect key="frame" x="0.0" y="0.0" width="393" height="34.333333333333336"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="查询DHCP"/>
+                                    <connections>
+                                        <action selector="wifiDHCP:" destination="-1" eventType="touchUpInside" id="G6v-jv-d26"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </stackView>
+                    </subviews>
+                    <constraints>
+                        <constraint firstItem="d3g-Rl-iBJ" firstAttribute="top" secondItem="Saz-c9-k4x" secondAttribute="bottom" constant="10" id="BgS-R9-l11"/>
+                        <constraint firstItem="gPe-XP-4df" firstAttribute="top" secondItem="d3g-Rl-iBJ" secondAttribute="bottom" constant="10" id="RGp-pb-jCa"/>
+                        <constraint firstItem="d3g-Rl-iBJ" firstAttribute="leading" secondItem="POu-wS-9Hk" secondAttribute="leading" id="Tgy-Vd-30z"/>
+                        <constraint firstAttribute="trailing" secondItem="d3g-Rl-iBJ" secondAttribute="trailing" id="TzA-AM-pdQ"/>
+                        <constraint firstItem="gPe-XP-4df" firstAttribute="leading" secondItem="POu-wS-9Hk" secondAttribute="leading" id="wSn-Gb-lec"/>
+                        <constraint firstAttribute="trailing" secondItem="gPe-XP-4df" secondAttribute="trailing" id="yIv-m3-VYF"/>
+                    </constraints>
+                </stackView>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="lP2-yF-Si4">
+                    <rect key="frame" x="0.0" y="270" width="393" height="105.66666666666669"/>
+                    <subviews>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ip设置" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y2n-EM-dXM">
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="20.333333333333332"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <nil key="textColor"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="1Al-vZ-mzg">
+                            <rect key="frame" x="0.0" y="30.333333333333314" width="393" height="32"/>
+                            <segments>
+                                <segment title="动态ip(DHCP)"/>
+                                <segment title="静态ip"/>
+                            </segments>
+                            <connections>
+                                <action selector="ipModeChange:" destination="-1" eventType="valueChanged" id="ttp-e0-lIj"/>
+                            </connections>
+                        </segmentedControl>
+                        <stackView opaque="NO" contentMode="scaleToFill" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="JHi-BX-K7Q">
+                            <rect key="frame" x="0.0" y="71.333333333333314" width="393" height="34.333333333333343"/>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="O1d-hj-prK">
+                                    <rect key="frame" x="0.0" y="0.0" width="191.66666666666666" height="34.333333333333336"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="设置ip信息"/>
+                                    <connections>
+                                        <action selector="setIP:" destination="-1" eventType="touchUpInside" id="5S0-VE-DKX"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dMQ-YM-COj">
+                                    <rect key="frame" x="201.66666666666663" y="0.0" width="191.33333333333337" height="34.333333333333336"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="查询ip信息"/>
+                                    <connections>
+                                        <action selector="getIP:" destination="-1" eventType="touchUpInside" id="RZW-F1-VrK"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                            <constraints>
+                                <constraint firstItem="O1d-hj-prK" firstAttribute="leading" secondItem="JHi-BX-K7Q" secondAttribute="leading" id="8cL-Fn-go6"/>
+                                <constraint firstItem="O1d-hj-prK" firstAttribute="top" secondItem="JHi-BX-K7Q" secondAttribute="top" id="DM1-aO-rff"/>
+                                <constraint firstAttribute="bottom" secondItem="O1d-hj-prK" secondAttribute="bottom" id="EGK-b5-dC6"/>
+                                <constraint firstAttribute="bottom" secondItem="dMQ-YM-COj" secondAttribute="bottom" id="UUi-l6-zmo"/>
+                                <constraint firstAttribute="trailing" secondItem="dMQ-YM-COj" secondAttribute="trailing" id="rhh-qd-OfS"/>
+                                <constraint firstItem="dMQ-YM-COj" firstAttribute="top" secondItem="JHi-BX-K7Q" secondAttribute="top" id="spH-dM-ljE"/>
+                                <constraint firstItem="dMQ-YM-COj" firstAttribute="leading" secondItem="O1d-hj-prK" secondAttribute="trailing" constant="10" id="vuf-B6-Op4"/>
+                                <constraint firstItem="dMQ-YM-COj" firstAttribute="leading" secondItem="O1d-hj-prK" secondAttribute="trailing" constant="10" id="whg-Hz-LcX"/>
+                                <constraint firstItem="O1d-hj-prK" firstAttribute="width" secondItem="dMQ-YM-COj" secondAttribute="width" multiplier="1.00174" id="zNY-ev-FLU"/>
+                            </constraints>
+                        </stackView>
+                    </subviews>
+                </stackView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yVh-Aq-hrL">
+                    <rect key="frame" x="0.0" y="477.66666666666669" width="393" height="0.0"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" red="0.33333333333333331" green="0.63921568627450975" blue="0.30196078431372547" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                    <nil key="highlightedColor"/>
+                </label>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="sr2-7g-bo1">
+                    <rect key="frame" x="0.0" y="375.66666666666669" width="393" height="102"/>
+                    <subviews>
+                        <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="WhG-1X-iHG">
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="34"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="ip:" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="YFD-yo-AE4">
+                                    <rect key="frame" x="0.0" y="0.0" width="70" height="34"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="70" id="FnX-iH-7lK"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="192.168.100.195" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="lf7-2n-BEE">
+                                    <rect key="frame" x="70" y="0.0" width="323" height="34"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                                </textField>
+                            </subviews>
+                            <constraints>
+                                <constraint firstItem="YFD-yo-AE4" firstAttribute="top" secondItem="WhG-1X-iHG" secondAttribute="top" id="9Ih-U7-fL4"/>
+                                <constraint firstAttribute="bottom" secondItem="YFD-yo-AE4" secondAttribute="bottom" id="QrO-l5-Jgn"/>
+                            </constraints>
+                        </stackView>
+                        <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="0cF-nP-qdL">
+                            <rect key="frame" x="0.0" y="34" width="393" height="34"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="子网掩码:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KjY-Ta-XjZ">
+                                    <rect key="frame" x="0.0" y="0.0" width="72.333333333333329" height="34"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="255.255.255.0" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="51j-nv-gAK">
+                                    <rect key="frame" x="72.333333333333343" y="0.0" width="320.66666666666663" height="34"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                                </textField>
+                            </subviews>
+                        </stackView>
+                        <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="1z5-2p-lxu">
+                            <rect key="frame" x="0.0" y="68" width="393" height="34"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="网关:" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="d8u-9Y-kl0">
+                                    <rect key="frame" x="0.0" y="0.0" width="70" height="34"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" constant="70" id="xMV-uv-aaV"/>
+                                    </constraints>
+                                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                    <nil key="textColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                                <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" text="192.168.100.1" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="AJz-0V-ltx">
+                                    <rect key="frame" x="70" y="0.0" width="323" height="34"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <textInputTraits key="textInputTraits" returnKeyType="done" enablesReturnKeyAutomatically="YES"/>
+                                </textField>
+                            </subviews>
+                            <constraints>
+                                <constraint firstItem="d8u-9Y-kl0" firstAttribute="top" secondItem="1z5-2p-lxu" secondAttribute="top" id="5Zb-QS-ZGB"/>
+                                <constraint firstAttribute="bottom" secondItem="d8u-9Y-kl0" secondAttribute="bottom" id="Zzi-H3-SOu"/>
+                            </constraints>
+                        </stackView>
+                    </subviews>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="102" id="Ysl-Mo-Srd"/>
+                    </constraints>
+                </stackView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="Q5M-cg-NOt"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="lP2-yF-Si4" firstAttribute="leading" secondItem="Q5M-cg-NOt" secondAttribute="leading" id="2Bm-lD-BhS"/>
+                <constraint firstItem="sr2-7g-bo1" firstAttribute="top" secondItem="lP2-yF-Si4" secondAttribute="bottom" id="AX9-f9-pP7"/>
+                <constraint firstItem="Q5M-cg-NOt" firstAttribute="trailing" secondItem="POu-wS-9Hk" secondAttribute="trailing" id="MfK-ud-J5b"/>
+                <constraint firstItem="lP2-yF-Si4" firstAttribute="trailing" secondItem="Q5M-cg-NOt" secondAttribute="trailing" id="Q0j-QK-xX0"/>
+                <constraint firstItem="yVh-Aq-hrL" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="TpO-sg-Sc3"/>
+                <constraint firstItem="Q5M-cg-NOt" firstAttribute="trailing" secondItem="yVh-Aq-hrL" secondAttribute="trailing" id="Xjl-vU-UCL"/>
+                <constraint firstItem="Q5M-cg-NOt" firstAttribute="trailing" secondItem="sr2-7g-bo1" secondAttribute="trailing" id="aul-wp-rZt"/>
+                <constraint firstItem="lP2-yF-Si4" firstAttribute="leading" secondItem="Q5M-cg-NOt" secondAttribute="leading" id="jly-DC-feb"/>
+                <constraint firstItem="lP2-yF-Si4" firstAttribute="top" secondItem="POu-wS-9Hk" secondAttribute="bottom" id="lb8-nf-5Pc"/>
+                <constraint firstItem="POu-wS-9Hk" firstAttribute="leading" secondItem="Q5M-cg-NOt" secondAttribute="leading" id="mhI-ve-URV"/>
+                <constraint firstItem="sr2-7g-bo1" firstAttribute="leading" secondItem="Q5M-cg-NOt" secondAttribute="leading" id="rie-he-dqZ"/>
+                <constraint firstItem="yVh-Aq-hrL" firstAttribute="top" secondItem="sr2-7g-bo1" secondAttribute="bottom" id="sQe-QE-LqB"/>
+                <constraint firstItem="Q5M-cg-NOt" firstAttribute="trailing" secondItem="lP2-yF-Si4" secondAttribute="trailing" id="tJw-na-CEU"/>
+                <constraint firstItem="POu-wS-9Hk" firstAttribute="top" secondItem="Q5M-cg-NOt" secondAttribute="top" id="ub1-y4-v4E"/>
+            </constraints>
+            <point key="canvasLocation" x="-560" y="-241"/>
+        </view>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
