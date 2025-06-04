@@ -24,7 +24,7 @@
     };
     self.bleHelper.onTsplDataReceived = ^(TReceivedType type, NSData *data) {
         NSLog(@"onTsplDataReceived: %@ - %@", data, data.toRawString);
-        
+        const Byte *bytes = data.bytes;
         switch (type) {
             case TReceivedTypeSN:
                 weakSelf.displayLabel.text = [NSString stringWithFormat:@"SN: %@", data.toRawString];
@@ -68,7 +68,6 @@
             }
                 break;
             case TReceivedBatteryLevel: {
-                const Byte *bytes = data.bytes;
                 weakSelf.displayLabel.text = [NSString stringWithFormat:@"打印机电量: %d", bytes[3]];
             }
                 break;
@@ -77,6 +76,49 @@
                 weakSelf.displayLabel.text = @"打印成功";
             }
                 break;
+            case TReceivedGetOffTime: {
+              int time = [data toInt];
+              NSLog(@"获取关机时间: %d", time);
+              if (time == 0) {
+                weakSelf.displayLabel.text = @"永不自动关机";
+              } else {
+                weakSelf.displayLabel.text = [NSString stringWithFormat:@"关机时间: %d 分钟", time];
+              }
+            }
+                break;
+            case TReceivedSetOffTime: {
+              if ([data.toRawString isEqualToString:@"WRITEC OFFTIME OK\r\n"]) {
+                weakSelf.displayLabel.text = @"设置关机时间成功";
+              }
+            }
+              break;
+          case TReceivedStatus: {
+            int flag = bytes[3];
+            switch (flag) {
+              case 1:
+                NSLog(@"纸舱盖打开");
+                break;
+              case 2:
+                NSLog(@"缺纸");
+                break;
+              case 3:
+                NSLog(@"卡纸");
+                break;
+              case 4:
+                NSLog(@"低电压");
+                break;
+              case 5:
+                NSLog(@"打印机过热");
+                break;
+              case 0xff:
+                NSLog(@"打印机正常");
+                break;
+              default:
+                break;
+            }
+          }
+            break;
+            
             default:
                 break;
         }
@@ -84,17 +126,21 @@
 }
 
 - (IBAction)imagePtint:(id)sender {
-    UIImage *image = [UIImage imageNamed:@"unititled.jpg"];
+    UIImage *image = [UIImage imageNamed:@"image.png"];
     AYTsplCommand *tspl = [AYTsplCommand new];
     [tspl pageWidth:76 height:130];
     [tspl direction:0 mirror:0];
-    [tspl speed:5];
-    [tspl density:5];
-    [tspl enableCut:YES];
-    [tspl enableGap:YES];
+//    [tspl speed:5];
+//    [tspl density:5];
+//    [tspl enableCut:YES];
+//    [tspl enableGap:YES];
     [tspl cls];
-    [tspl image:image x:0 y:0 compress:YES];
+  [tspl image:image x:0 y:0 compress:YES];
     [tspl print:1];
+  NSMutableData *da = [NSMutableData data];
+  for (NSData *d in tspl.commands) {
+    [da appendData:d];
+  }
     
     [self.bleHelper writeCommands:tspl.commands];
 }
@@ -151,6 +197,36 @@
     [tspl readBatteryLevel];
     
     [self.bleHelper writeCommands:tspl.commands];
+}
+
+- (IBAction)setOffTime:(UIButton *)sender {
+  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:@"请输入关机时间(分钟)" preferredStyle:UIAlertControllerStyleAlert];
+
+  [alertController addAction:[UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:nil]];
+
+  [alertController addAction:[UIAlertAction actionWithTitle:@"确定" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+
+      UITextField *tf = alertController.textFields.firstObject;
+      AYTsplCommand *tspl = [AYTsplCommand new];
+      [tspl setOffTime:tf.text.intValue];
+      [self.bleHelper writeCommands:tspl.commands];
+  }]];
+
+  [alertController addTextFieldWithConfigurationHandler:^(UITextField*_Nonnull textField) {
+
+      textField.placeholder=@"请输入关机时间";
+      textField.keyboardType = UIKeyboardTypeNumberPad;
+
+  }];
+
+  [self presentViewController:alertController animated:YES completion:nil];
+}
+
+
+- (IBAction)getOffTime:(UIButton *)sender {
+  AYTsplCommand *tspl = [AYTsplCommand new];
+  [tspl getOffTime];
+  [self.bleHelper writeCommands:tspl.commands];
 }
 
 #warning 仅适用于部分机型，请勿随意升级

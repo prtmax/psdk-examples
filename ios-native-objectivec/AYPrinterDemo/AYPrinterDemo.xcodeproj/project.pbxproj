@@ -11,13 +11,19 @@
 		218EFB1EB88D79718DCF932D /* Pods_AYPrinterDemo_AYPrinterDemoUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D4EF962A242669BF50CD3CA5 /* Pods_AYPrinterDemo_AYPrinterDemoUITests.framework */; };
 		B502DDB62AB9840700B74A2F /* CpclFunctionVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B502DDB42AB9840700B74A2F /* CpclFunctionVC.m */; };
 		B502DDB72AB9840700B74A2F /* CpclFunctionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = B502DDB52AB9840700B74A2F /* CpclFunctionVC.xib */; };
+		B50821452DE981470008138F /* NetPrintVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B50821432DE981470008138F /* NetPrintVC.m */; };
+		B50821462DE981470008138F /* NetPrintVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = B50821442DE981470008138F /* NetPrintVC.xib */; };
 		B50C1AE02BC78C2C00292025 /* a4.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B50C1ADF2BC78C2C00292025 /* a4.jpg */; };
 		B5101EF12C12D0AC001B38E0 /* one.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = B5101EF02C12D0AC001B38E0 /* one.jpeg */; };
 		B5175E362C2FB34500E533FF /* dithered-image (1).png in Resources */ = {isa = PBXBuildFile; fileRef = B5175E352C2FB34500E533FF /* dithered-image (1).png */; };
 		B5175E382C2FB55B00E533FF /* dithered-image (2).png in Resources */ = {isa = PBXBuildFile; fileRef = B5175E372C2FB55B00E533FF /* dithered-image (2).png */; };
+		B5185D472DE83D7B0029E94E /* WifiFunctionVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B5185D452DE83D7B0029E94E /* WifiFunctionVC.m */; };
+		B5185D482DE83D7B0029E94E /* WifiFunctionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5185D462DE83D7B0029E94E /* WifiFunctionVC.xib */; };
 		B543E16B2AB85A3100713B63 /* BaseVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B543E16A2AB85A3100713B63 /* BaseVC.m */; };
 		B543E17A2AB85C0900713B63 /* EscFunctionVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B543E1782AB85C0900713B63 /* EscFunctionVC.m */; };
 		B543E17B2AB85C0900713B63 /* EscFunctionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = B543E1792AB85C0900713B63 /* EscFunctionVC.xib */; };
+		B56396282DAFB628008EBC12 /* dithered-image3.png in Resources */ = {isa = PBXBuildFile; fileRef = B56396272DAFB628008EBC12 /* dithered-image3.png */; };
+		B563962A2DAFB6FA008EBC12 /* dithered-image4.png in Resources */ = {isa = PBXBuildFile; fileRef = B56396292DAFB6FA008EBC12 /* dithered-image4.png */; };
 		B56455F32BC38C9F0076C82F /* DL-Q2 V1.12.PRTU in Resources */ = {isa = PBXBuildFile; fileRef = B56455DD2BC38C9F0076C82F /* DL-Q2 V1.12.PRTU */; };
 		B56455F42BC38C9F0076C82F /* DL-Q2 V1.12MH.PRTU in Resources */ = {isa = PBXBuildFile; fileRef = B56455DE2BC38C9F0076C82F /* DL-Q2 V1.12MH.PRTU */; };
 		B56455F52BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240201.ALLAY in Resources */ = {isa = PBXBuildFile; fileRef = B56455DF2BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240201.ALLAY */; };
@@ -48,6 +54,8 @@
 		B581BA202BDA071D00D25CF6 /* A4主动上报信息释义.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B581BA1F2BDA071D00D25CF6 /* A4主动上报信息释义.pdf */; };
 		B590F1F82AB19A6E0012CEE5 /* TsplFunctionVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B590F1F62AB19A6E0012CEE5 /* TsplFunctionVC.m */; };
 		B590F1F92AB19A6E0012CEE5 /* TsplFunctionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = B590F1F72AB19A6E0012CEE5 /* TsplFunctionVC.xib */; };
+		B5C147902DCD825A00AD5CC6 /* image.png in Resources */ = {isa = PBXBuildFile; fileRef = B5C1478F2DCD825A00AD5CC6 /* image.png */; };
+		B5DE4ABA2DC0ACEF00AFAE0F /* base64-to-image.png in Resources */ = {isa = PBXBuildFile; fileRef = B5DE4AB92DC0ACEF00AFAE0F /* base64-to-image.png */; };
 		FECAFD37AFE582C13790ACA8 /* Pods_AYPrinterDemoTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6377182B2AED9CEC5B942E6F /* Pods_AYPrinterDemoTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -89,16 +97,24 @@
 		B502DDB32AB9840700B74A2F /* CpclFunctionVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CpclFunctionVC.h; sourceTree = "<group>"; };
 		B502DDB42AB9840700B74A2F /* CpclFunctionVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = CpclFunctionVC.m; sourceTree = "<group>"; };
 		B502DDB52AB9840700B74A2F /* CpclFunctionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = CpclFunctionVC.xib; sourceTree = "<group>"; };
+		B50821422DE981470008138F /* NetPrintVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NetPrintVC.h; sourceTree = "<group>"; };
+		B50821432DE981470008138F /* NetPrintVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = NetPrintVC.m; sourceTree = "<group>"; };
+		B50821442DE981470008138F /* NetPrintVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NetPrintVC.xib; sourceTree = "<group>"; };
 		B50C1ADF2BC78C2C00292025 /* a4.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = a4.jpg; sourceTree = "<group>"; };
 		B5101EF02C12D0AC001B38E0 /* one.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = one.jpeg; sourceTree = "<group>"; };
 		B5175E352C2FB34500E533FF /* dithered-image (1).png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dithered-image (1).png"; sourceTree = "<group>"; };
 		B5175E372C2FB55B00E533FF /* dithered-image (2).png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dithered-image (2).png"; sourceTree = "<group>"; };
+		B5185D442DE83D7B0029E94E /* WifiFunctionVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WifiFunctionVC.h; sourceTree = "<group>"; };
+		B5185D452DE83D7B0029E94E /* WifiFunctionVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = WifiFunctionVC.m; sourceTree = "<group>"; };
+		B5185D462DE83D7B0029E94E /* WifiFunctionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = WifiFunctionVC.xib; sourceTree = "<group>"; };
 		B543E1692AB85A3100713B63 /* BaseVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = BaseVC.h; sourceTree = "<group>"; };
 		B543E16A2AB85A3100713B63 /* BaseVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = BaseVC.m; sourceTree = "<group>"; };
 		B543E1772AB85C0900713B63 /* EscFunctionVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EscFunctionVC.h; sourceTree = "<group>"; };
 		B543E1782AB85C0900713B63 /* EscFunctionVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EscFunctionVC.m; sourceTree = "<group>"; };
 		B543E1792AB85C0900713B63 /* EscFunctionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EscFunctionVC.xib; sourceTree = "<group>"; };
 		B55449952ADF783C005F8C2C /* XPrinter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = XPrinter.framework; path = "../XPrinter/build/Debug-iphoneos/XPrinter.framework"; sourceTree = "<group>"; };
+		B56396272DAFB628008EBC12 /* dithered-image3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dithered-image3.png"; sourceTree = "<group>"; };
+		B56396292DAFB6FA008EBC12 /* dithered-image4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dithered-image4.png"; sourceTree = "<group>"; };
 		B56455DD2BC38C9F0076C82F /* DL-Q2 V1.12.PRTU */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DL-Q2 V1.12.PRTU"; sourceTree = "<group>"; };
 		B56455DE2BC38C9F0076C82F /* DL-Q2 V1.12MH.PRTU */ = {isa = PBXFileReference; lastKnownFileType = file; path = "DL-Q2 V1.12MH.PRTU"; sourceTree = "<group>"; };
 		B56455DF2BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240201.ALLAY */ = {isa = PBXFileReference; lastKnownFileType = file; path = "QR-888 FWQR_SFUBE_BQ_VER_01_240201.ALLAY"; sourceTree = "<group>"; };
@@ -137,6 +153,8 @@
 		B590F1F52AB19A6E0012CEE5 /* TsplFunctionVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TsplFunctionVC.h; sourceTree = "<group>"; };
 		B590F1F62AB19A6E0012CEE5 /* TsplFunctionVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TsplFunctionVC.m; sourceTree = "<group>"; };
 		B590F1F72AB19A6E0012CEE5 /* TsplFunctionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TsplFunctionVC.xib; sourceTree = "<group>"; };
+		B5C1478F2DCD825A00AD5CC6 /* image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image.png; sourceTree = "<group>"; };
+		B5DE4AB92DC0ACEF00AFAE0F /* base64-to-image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "base64-to-image.png"; sourceTree = "<group>"; };
 		C1904A8930F63CD7D33C217B /* Pods-AYPrinterDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AYPrinterDemo.debug.xcconfig"; path = "Target Support Files/Pods-AYPrinterDemo/Pods-AYPrinterDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		CD7E3EEB09CAA511CE409ADA /* Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig"; path = "Target Support Files/Pods-AYPrinterDemo-AYPrinterDemoUITests/Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig"; sourceTree = "<group>"; };
 		D4EF962A242669BF50CD3CA5 /* Pods_AYPrinterDemo_AYPrinterDemoUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AYPrinterDemo_AYPrinterDemoUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -211,6 +229,10 @@
 		B56455E12BC38C9F0076C82F /* image */ = {
 			isa = PBXGroup;
 			children = (
+				B5C1478F2DCD825A00AD5CC6 /* image.png */,
+				B5DE4AB92DC0ACEF00AFAE0F /* base64-to-image.png */,
+				B56396292DAFB6FA008EBC12 /* dithered-image4.png */,
+				B56396272DAFB628008EBC12 /* dithered-image3.png */,
 				B5175E372C2FB55B00E533FF /* dithered-image (2).png */,
 				B5175E352C2FB34500E533FF /* dithered-image (1).png */,
 				B5101EF02C12D0AC001B38E0 /* one.jpeg */,
@@ -281,6 +303,12 @@
 				B574586D2AB067E700DF9716 /* LaunchScreen.storyboard */,
 				B57458702AB067E700DF9716 /* Info.plist */,
 				B57458712AB067E700DF9716 /* main.m */,
+				B5185D442DE83D7B0029E94E /* WifiFunctionVC.h */,
+				B5185D452DE83D7B0029E94E /* WifiFunctionVC.m */,
+				B5185D462DE83D7B0029E94E /* WifiFunctionVC.xib */,
+				B50821422DE981470008138F /* NetPrintVC.h */,
+				B50821432DE981470008138F /* NetPrintVC.m */,
+				B50821442DE981470008138F /* NetPrintVC.xib */,
 			);
 			path = AYPrinterDemo;
 			sourceTree = "<group>";
@@ -424,16 +452,20 @@
 				B56455F82BC38C9F0076C82F /* unititled.jpg in Resources */,
 				B543E17B2AB85C0900713B63 /* EscFunctionVC.xib in Resources */,
 				B5175E382C2FB55B00E533FF /* dithered-image (2).png in Resources */,
+				B56396282DAFB628008EBC12 /* dithered-image3.png in Resources */,
 				B574586F2AB067E700DF9716 /* LaunchScreen.storyboard in Resources */,
 				B56456002BC38C9F0076C82F /* qmsht.jpg in Resources */,
 				B581BA202BDA071D00D25CF6 /* A4主动上报信息释义.pdf in Resources */,
 				B56456072BC38C9F0076C82F /* dithered-image.png in Resources */,
 				B590F1F92AB19A6E0012CEE5 /* TsplFunctionVC.xib in Resources */,
 				B5175E362C2FB34500E533FF /* dithered-image (1).png in Resources */,
+				B563962A2DAFB6FA008EBC12 /* dithered-image4.png in Resources */,
 				B502DDB72AB9840700B74A2F /* CpclFunctionVC.xib in Resources */,
 				B574586C2AB067E700DF9716 /* Assets.xcassets in Resources */,
 				B56455F62BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240119.ALLAY in Resources */,
+				B5185D482DE83D7B0029E94E /* WifiFunctionVC.xib in Resources */,
 				B574586A2AB067E600DF9716 /* Main.storyboard in Resources */,
+				B50821462DE981470008138F /* NetPrintVC.xib in Resources */,
 				B56456042BC38C9F0076C82F /* 蚊香液.png in Resources */,
 				B56455F72BC38C9F0076C82F /* dog.jpg in Resources */,
 				B50C1AE02BC78C2C00292025 /* a4.jpg in Resources */,
@@ -443,7 +475,9 @@
 				B5101EF12C12D0AC001B38E0 /* one.jpeg in Resources */,
 				B56456052BC38C9F0076C82F /* handsomeMan.jpeg in Resources */,
 				B56455FB2BC38C9F0076C82F /* 66671697191774.jpg in Resources */,
+				B5DE4ABA2DC0ACEF00AFAE0F /* base64-to-image.png in Resources */,
 				B56455F52BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240201.ALLAY in Resources */,
+				B5C147902DCD825A00AD5CC6 /* image.png in Resources */,
 				B56455FD2BC38C9F0076C82F /* dessert.jpg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -538,7 +572,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B5185D472DE83D7B0029E94E /* WifiFunctionVC.m in Sources */,
 				B57458672AB067E600DF9716 /* DeviceListVC.m in Sources */,
+				B50821452DE981470008138F /* NetPrintVC.m in Sources */,
 				B57458612AB067E600DF9716 /* AppDelegate.m in Sources */,
 				B590F1F82AB19A6E0012CEE5 /* TsplFunctionVC.m in Sources */,
 				B543E17A2AB85C0900713B63 /* EscFunctionVC.m in Sources */,
@@ -732,6 +768,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AYPrinterDemo/Info.plist;
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "是否允许使用蓝牙";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "访问网络";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -743,7 +780,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.iprt.BleDemo-OC";
+				PRODUCT_BUNDLE_IDENTIFIER = com.iprt.BleDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -767,6 +804,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = AYPrinterDemo/Info.plist;
 				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "是否允许使用蓝牙";
+				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "访问网络";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = Main;
@@ -778,7 +816,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "com.iprt.BleDemo-OC";
+				PRODUCT_BUNDLE_IDENTIFIER = com.iprt.BleDemo;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				TARGETED_DEVICE_FAMILY = "1,2";

@@ -22,10 +22,10 @@
 }
 
 - (IBAction)printImage:(id)sender {
-    UIImage *image = [UIImage imageNamed:@"handsomeMan.jpeg"];
+    UIImage *image = [UIImage imageNamed:@"base64-to-image.png"];
     AYCpclCommand *cpcl = [AYCpclCommand new];
-    [cpcl pageWidth:76 * 8 height:76 * 8 copies:1];
-    [cpcl image:image x:0 y:0 compress:NO];
+    [cpcl pageWidth:76 * 8 height:100 * 8 copies:1];
+    [cpcl image:image x:0 y:0 compress:true];
     [cpcl print:NO];
     
     [self.bleHelper writeCommands:cpcl.commands];
