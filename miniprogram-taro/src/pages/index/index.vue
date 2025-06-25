@@ -62,6 +62,8 @@ export default {
         showBluetoothError: null,
       },
       bluetooth: new TaroBleBluetooth({
+        allowedWriteCharacteristic: '49535343-8841-43F4-A8D4-ECBE34729BB3',
+        allowedReadCharacteristic: '49535343-1e4d-4bd9-ba61-23c647249616', 
         allowNoName: false
       }),
       showRound: false,
