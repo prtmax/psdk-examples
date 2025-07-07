@@ -5,14 +5,10 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothDevice;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -20,6 +16,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.printer.psdk.compatible.external.inkjet.*;
+import com.printer.psdk.compatible.external.inkjet.mark.ImageMode;
 import com.printer.psdk.compatible.external.inkjet.mark.ShutdownTime;
 import com.printer.psdk.device.adapter.ConnectedDevice;
 import com.printer.psdk.device.adapter.types.WroteReporter;
@@ -33,12 +30,9 @@ import com.printer.psdk.frame.father.listener.ListenAction;
 import com.printer.psdk.frame.father.types.lifecycle.Lifecycle;
 import com.printer.psdk.imagep.android.AndroidSourceImage;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
 import java.util.*;
 
 public class MainActivity extends Activity {
@@ -57,24 +51,12 @@ public class MainActivity extends Activity {
   private int sampleNumber;
   private final int ReceiveFLAG = 0x10;
   private final int StatusFLAG = 0x11;
-  private final int PaperErrorFLAG = 0x12;
-  private final int StartOrStopFLAG = 0x13;
-  private final int BatteryStatusFLAG = 0x14;
+  private final int PrintProcessFLAG = 0x12;
   private ReadMark readMark = ReadMark.NONE;
   private boolean isSending = false;
   private ProgressDialog progressDialog;
   private DataListenerRunner dataListenerRunner;
   private CompatibleInkJet compatibleInkJet;
-  private static final int[] STATUS_MASKS = {
-    0x00000001, 0x00000002, 0x00000004, 0x00000008,
-    0x00000040, 0x00000100, 0x00000200, 0x00000400,
-    0x00000800, 0x00001000
-  };
-  private static final String[] STATUS_DESCRIPTIONS = {
-    "开盖", "卡纸", "缺纸", "缺墨",
-    "低压", "正在取消", "数据异常", "机电错误",
-    "纸道有纸", "无墨盒"
-  };
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -161,14 +143,27 @@ public class MainActivity extends Activity {
           public void run() {
             if (connection.isConnected()) {
               //打印图片指令
-              InputStream is = getResources().openRawResource(R.raw.logo);
+              InputStream is = getResources().openRawResource(R.raw.caomei);
               BitmapDrawable bmpDraw = new BitmapDrawable(is);
-              Bitmap bitmap = bmpDraw.getBitmap();
+              Bitmap rawBitmap = bmpDraw.getBitmap();
+              // 目标宽度
+              int targetWidth = 1052;
+
+              // 获取原始 Bitmap 的宽度和高度
+              int originalWidth = rawBitmap.getWidth();
+              int originalHeight = rawBitmap.getHeight();
+
+              // 计算新的高度，保持纵横比
+              int targetHeight = (int) ((float) originalHeight * targetWidth / originalWidth);
+
+              // 按宽度和计算出的高度进行缩放
+              rawBitmap = Bitmap.createScaledBitmap(rawBitmap, targetWidth, targetHeight, true);
               readMark = ReadMark.OPERATE_PRINT;
-              CompatibleInkJet _compatibleInkJet = compatibleInkJet.page(IPage.builder().width(100).height(100).build())
+              CompatibleInkJet _compatibleInkJet = compatibleInkJet.page(IPage.builder().width(44).height(60).build())
                 .cls()
-                .image(IImage.builder().image(new AndroidSourceImage(bitmap)).build())
+                .image(IImage.builder().image(new AndroidSourceImage(rawBitmap)).mode(ImageMode.JPG).build())
                 .print(1);
+//              Log.e(TAG, "下发的hex: " + _compatibleInkJet.command().hex());
               safeWrite(_compatibleInkJet);
               sampleNumber--;
             }
@@ -235,7 +230,7 @@ public class MainActivity extends Activity {
         @Override
         public void action(byte[] received) {
           if (received.length == 0) return;
-          Log.e("action", ByteArrToHex(received));
+          Log.e(TAG, ByteArrToHex(received));
           // 根据数据类型处理
           switch (received[0]) {
             case (byte) 0xFF:
@@ -246,7 +241,7 @@ public class MainActivity extends Activity {
               break;
             case (byte) 0xFD:
               Message messageBatteryStatus = new Message();
-              messageBatteryStatus.what = BatteryStatusFLAG;
+              messageBatteryStatus.what = PrintProcessFLAG;
               messageBatteryStatus.obj = received;
               myHandler.sendMessage(messageBatteryStatus);
               break;
@@ -270,83 +265,266 @@ public class MainActivity extends Activity {
           onReceive((byte[]) msg.obj);
           break;
         case StatusFLAG:
-          onPrintStatus((byte[]) msg.obj);
+          parseStatus((byte[]) msg.obj);
           break;
-        case PaperErrorFLAG:
-          onPaperError((byte[]) msg.obj);
-          break;
-        case StartOrStopFLAG:
-          onStartOrStopSend((byte[]) msg.obj);
-          break;
-        case BatteryStatusFLAG:
-          onBatteryStatus((byte[]) msg.obj);
+        case PrintProcessFLAG:
+          onPrintProcess((byte[]) msg.obj);
           break;
       }
     }
   };
 
-  public void onPrintStatus(byte[] data) {
-    Log.e("onPrintStatus", ByteArrToHex(data));
-    byte[] statusBytes = Arrays.copyOfRange(data, 1, 5);
-    int status = ByteBuffer.wrap(statusBytes)
-      .order(ByteOrder.BIG_ENDIAN)
-      .getInt();
+  // 状态掩码映射表
+  private static final Map<Integer, String> STATUS_MASKS = new LinkedHashMap<Integer, String>() {{
+    put(0x00000001, "开盖");
+    put(0x00000002, "卡纸");
+    put(0x00000004, "缺纸");
+    put(0x00000008, "缺墨");
+    put(0x00000020, "繁忙");
+    put(0x00000040, "低压");
+    put(0x00000100, "正在取消");
+    put(0x00000200, "数据异常");
+    put(0x00000400, "机电错误");
+    put(0x00000800, "纸道有纸");
+    put(0x00001000, "无墨盒");
+  }};
 
-    List<String> statusList = new ArrayList<>();
-    for (int i = 0; i < STATUS_MASKS.length; i++) {
-      if ((status & STATUS_MASKS[i]) != 0) {
-        statusList.add(STATUS_DESCRIPTIONS[i]);
+  /**
+   * 解析打印机状态 (直接接收字节数组)
+   * @param bytes 四字节数组
+   * @return 状态列表，如果正常则返回包含"正常"的列表
+   */
+  public static List<String> parsePrinterStatus(byte[] bytes) {
+    List<String> statuses = new ArrayList<>();
+
+    // 检查输入长度
+    if (bytes == null || bytes.length != 4) {
+      statuses.add("错误: 输入必须是四个字节");
+      return statuses;
+    }
+
+    // 将字节数组转换为小端序的整数值
+    int value = (bytes[0] & 0xFF) |
+      ((bytes[1] & 0xFF) << 8) |
+      ((bytes[2] & 0xFF) << 16) |
+      ((bytes[3] & 0xFF) << 24);
+
+    // 检查正常状态
+    if (value == 0) {
+      statuses.add("正常");
+      return statuses;
+    }
+
+    // 检查每个状态掩码
+    for (Map.Entry<Integer, String> entry : STATUS_MASKS.entrySet()) {
+      int mask = entry.getKey();
+      if ((value & mask) != 0) {
+        statuses.add(entry.getValue());
       }
     }
-    show(TextUtils.join(", ", statusList));
-  }
 
-  public void onPaperError(byte[] bytes) {
-    switch (bytes[1]) {
-      case 0x01:
-        Log.e(TAG, "onPaperError: 折叠黑标纸");
-        show("onPaperError: 折叠黑标纸");
-        break;
-      case 0x02:
-        Log.e(TAG, "onPaperError: 连续卷筒纸");
-        show("onPaperError: 连续卷筒纸");
-        break;
-      case 0x03:
-        Log.e(TAG, "onPaperError: 不干胶缝隙纸");
-        show("onPaperError: 不干胶缝隙纸");
-        break;
+    // 如果没有匹配的状态
+    if (statuses.isEmpty()) {
+      statuses.add("未知状态 (0x" + Integer.toHexString(value) + ")");
     }
-    onCancelPrint();
+
+    return statuses;
   }
 
-  public void onStartOrStopSend(byte[] bytes) {
-    switch (bytes[1]) {
-      case 0x01:
-        Log.e(TAG, "onStartOrStopSend: 终止命令");
-        show("终止命令:FD 01");
-        onCancelPrint();
-        break;
-      case 0x02:
-        Log.e(TAG, "onStartOrStopSend: 继续开始命令");
-        show("继续开始命令:FD 02");
-        break;
+  // 解析打印机状态数据
+  public static String parseStatus(byte[] data) {
+    if (data == null || data.length != 5) {
+      return "无效数据: 数据长度错误";
+    }
+
+    // 验证数据头
+    if (data[0] != (byte) 0xFF) {
+      return "无效数据: 数据头不匹配";
+    }
+
+    // 提取状态类型标识（4个字节）
+    int statusType = ((data[1] & 0xFF) << 24) |
+      ((data[2] & 0xFF) << 16) |
+      ((data[3] & 0xFF) << 8) |
+      (data[4] & 0xFF);
+
+    // 根据状态类型标识映射到对应的状态描述
+    String status = mapStatusToString(statusType);
+    Log.e(TAG, "主动上报状态: " + status);
+    return status;
+  }
+
+  // 将状态码映射为字符串描述
+  private static String mapStatusToString(int statusType) {
+    switch (statusType) {
+      case 0x00000000: return "正常";
+      case 0x00000001: return "开盖";
+      case 0x00000003: return "卡纸";
+      case 0x00000004: return "缺纸";
+      case 0x00000008: return "缺墨";
+      case 0x00000040: return "低压";
+      case 0x00000100: return "正在取消";
+      case 0x00000200: return "数据异常";
+      case 0x00000400: return "机电错误";
+      case 0x00000800: return "纸道有纸";
+      case 0x00001000: return "无墨盒";
+      default: return "未知状态: " + String.format("0x%08X", statusType);
     }
   }
 
-  public void onBatteryStatus(byte[] bytes) {
-    switch (bytes[1]) {
-      case 0x00:
-        show("电池状态:正常");
-        break;
-      case 0x01:
-        show("电池状态:低电");
-        break;
-      case 0x02:
-        show("电池状态:充电中");
-        break;
-      case 0x03:
-        show("电池状态:充电完成");
-        break;
+  public int onPrintProcess(byte[] data) {
+    // 验证数据长度
+    if (data == null || data.length != 5) {
+      return -1;
+    }
+
+    // 验证数据头 (0xFD)
+    if (data[0] != (byte) 0xFD) {
+      return -1;
+    }
+
+    // 解析进度值
+    int progress = data[4] & 0xFF;
+
+    // 验证进度范围 (0-100)
+    if (progress > 100) {
+      return -1;
+    }
+    Log.e(TAG, "打印进度: " + progress);
+    return progress;
+  }
+  /**
+   * 解析墨盒状态
+   * @param data 墨盒状态字节数组
+   * @return 墨水量
+   */
+  public int parseInkStatus(byte[] data) {
+    // 验证数据长度
+    if (data == null || data.length < 11) {
+      return 0;
+    }
+
+    // 验证数据头 "INK " (4字节)
+    byte[] header = new byte[]{'I', 'N', 'K', ' '};
+    for (int i = 0; i < header.length; i++) {
+      if (data[i] != header[i]) {
+        return 0;
+      }
+    }
+
+    try {
+
+      // 解析墨水量 (第5个字节)
+      int inkLevel = data[4] & 0xFF; // 转换为无符号整数
+      Log.e(TAG, "墨水量: " + inkLevel);
+      show("墨水量: " + inkLevel);
+      // 解析四位唯一标识 (第6-9字节)
+      String uniqueId = String.format("%02X%02X%02X%02X",
+        data[5] & 0xFF,
+        data[6] & 0xFF,
+        data[7] & 0xFF,
+        data[8] & 0xFF);
+      Log.e(TAG, "墨盒四位唯一标识: " + uniqueId);
+      return inkLevel;
+    } catch (Exception e) {
+      return 0;
+    }
+  }
+  /**
+   * 解析打印机配置响应
+   * @param data 配置响应的字节数组
+   * @return 包含所有配置信息的 Config 对象，解析失败返回 null
+   */
+  public Config parseConfigResponse(byte[] data) {
+    // 验证数据长度
+    if (data == null || data.length < 18) { // 最小长度: 7(CONFIG) + 2(res) + 3(hw) + 3(fw) + 2(shutdown+beep) + 2(\r\n) = 19?
+      return null;
+    }
+
+    // 验证数据头 "CONFIG " (7字节)
+    byte[] header = new byte[]{'C', 'O', 'N', 'F', 'I', 'G', ' '};
+    for (int i = 0; i < header.length; i++) {
+      if (data[i] != header[i]) {
+        return null;
+      }
+    }
+
+    Config config = new Config();
+
+    try {
+      int offset = 7; // 跳过 "CONFIG " 头
+
+      // 1. 解析分辨率 (2字节，大端序)
+      config.resolution = ((data[offset] & 0xFF) << 8) | (data[offset + 1] & 0xFF);
+      offset += 2;
+
+      // 2. 解析硬件版本 (3字节)
+      config.hardwareVersion = String.format("%d.%d.%d",
+        data[offset] & 0xFF,
+        data[offset + 1] & 0xFF,
+        data[offset + 2] & 0xFF);
+      offset += 3;
+
+      // 3. 解析固件版本 (3字节)
+      byte fwByte1 = data[offset];
+      int major = (fwByte1 >> 4) & 0x0F; // 高4位
+      int minor = fwByte1 & 0x0F;         // 低4位
+      int build = ((data[offset + 1] & 0xFF) << 8) | (data[offset + 2] & 0xFF); // 后2字节
+
+      config.firmwareVersion = String.format("%d.%d.%d", major, minor, build);
+      offset += 3;
+
+      // 4. 解析定时关机 (1字节)
+      config.autoShutdown = data[offset] & 0xFF;
+      offset++;
+
+      // 5. 解析提示音 (1字节)
+      config.beepEnabled = data[offset] & 0xFF;
+      offset++;
+
+      // 验证结束符 (可选)
+      // 理论上最后两个字节应为 0x0D 0x0A (\r\n)
+      Log.e(TAG, "打印机所有信息: " + config);
+      show("打印机所有信息: " + config);
+      return config;
+
+    } catch (Exception e) {
+      return null;
+    }
+  }
+
+  /**
+   * 解析电池状态
+   * @param data 电池状态字节数组
+   * @return 电量和充电状态
+   */
+  public int parseBatteryStatus(byte[] data) {
+    // 验证数据长度
+    if (data == null || data.length < 12) {
+      return 0;
+    }
+
+    // 验证数据头 "BATTERY " (8字节)
+    byte[] header = new byte[]{'B', 'A', 'T', 'T', 'E', 'R', 'Y', ' '};
+    for (int i = 0; i < header.length; i++) {
+      if (data[i] != header[i]) {
+        return 0;
+      }
+    }
+
+    try {
+
+      // 解析电量百分比 (第9个字节)
+      int batteryLevel = data[8] & 0xFF; // 转换为无符号整数
+      Log.e(TAG, "电量: " + batteryLevel);
+      show("电量: " + batteryLevel);
+      // 解析充电状态 (第10个字节)
+      boolean isCharging = (data[9] & 0xFF) == 0x01;
+      Log.e(TAG, "充电状态: " + (isCharging?"充电中":"未充电"));
+      show("充电状态: " + (isCharging?"充电中":"未充电"));
+      return batteryLevel;
+    } catch (Exception e) {
+      return 0;
     }
   }
 
@@ -362,55 +540,21 @@ public class MainActivity extends Activity {
     switch (readMark) {
       case OPERATE_STATUS://主动查询状态的时候走这里
         readMark = ReadMark.NONE;
-        if (bytes.length == 1) {
-          String s = "状态：";
-          boolean isok = true;
-          if ((bytes[0] & 0x01) == 0x01) {
-            s += "正在打印 ";
-            isok = false;
-          }
-          if ((bytes[0] & 0x02) == 0x02) {
-            s += "纸舱盖开 ";
-            isok = false;
-          }
-          if ((bytes[0] & 0x04) == 0x04) {
-            s += "缺纸 ";
-            isok = false;
-          }
-          if ((bytes[0] & 0x08) == 0x08) {
-            s += "电池电压低 ";
-            isok = false;
-          }
-          if ((bytes[0] & 0x10) == 0x10) {
-            s += "打印头过热 ";
-            isok = false;
-          }
-          if (isok) {
-            s += "良好";
-          }
-          show(s);
-        }
-
+        List<String> status = parsePrinterStatus(bytes);
+        Log.e(TAG, "主动查询状态: " + status);
+        show("主动查询状态: " + status);
         break;
       case OPERATE_BATVOL:
         readMark = ReadMark.NONE;
-        if (bytes.length == 2) {
-          String s = "电量：" + (int) bytes[1];
-          show(s);
-          Log.e(TAG, "电量: " + s);
-        }
+        parseBatteryStatus(bytes);
         break;
-
       case OPERATE_INFO:
         readMark = ReadMark.NONE;
-        String info = null;
-        try {
-          info = new String(bytes, "GB2312");
-        } catch (UnsupportedEncodingException e) {
-          e.printStackTrace();
-        }
-        show(info);
-        Log.e(TAG, "设备信息: " + info);
+        parseConfigResponse(bytes);
+        break;
+      case OPERATE_INK_BOX_INFO:
+        readMark = ReadMark.NONE;
+        parseInkStatus(bytes);
         break;
       case OPERATE_OTA:
         readMark = ReadMark.NONE;
@@ -478,12 +622,6 @@ public class MainActivity extends Activity {
     return strBuilder.toString();
   }
 
-  private byte[] bitmap2Bytes(Bitmap bm) {
-    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    bm.compress(Bitmap.CompressFormat.PNG, 100, baos);
-    return baos.toByteArray();
-  }
-
   private void safeWrite(PSDK psdk) {
     try {
       WroteReporter reporter = psdk.write();
@@ -510,20 +648,6 @@ public class MainActivity extends Activity {
     progressDialog.setTitle("提示");
     progressDialog.setMax(100);
     progressDialog.show();
-  }
-
-  private byte[] readResources(int ID) {
-    try {
-      InputStream in = getResources().openRawResource(ID);
-      int length = in.available();
-      byte[] buffer = new byte[length];
-      in.read(buffer);
-      in.close();
-      return buffer;
-    } catch (Exception e) {
-      e.printStackTrace();
-    }
-    return null;
   }
 
   @Override
