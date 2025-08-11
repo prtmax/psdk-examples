@@ -9,7 +9,7 @@
 <script>
 import Taro, { getCurrentInstance } from '@tarojs/taro'
 import { Raw } from '@psdk/frame-father'
-import { CPage, CImage, CText, Font } from '@psdk/cpcl'
+import { CPage, CImage, CText, CFont as Font } from '@psdk/cpcl'
 
 definePageConfig({
   navigationBarTitleText: "打印机"
