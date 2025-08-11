@@ -1,6 +1,6 @@
 package com.aiyin.psdk.demo.bluetooth;
 
-import com.aiyin.psdk.demo.util.PrinterStatus;
+import com.aiyin.psdk.demo.util.CommandItem;
 import com.aiyin.psdk.demo.util.PrinterUtil;
 import com.printer.psdk.device.adapter.ConnectedDevice;
 import com.printer.psdk.device.bluetooth.java.ClassicBluetooth;
@@ -11,6 +11,7 @@ import javax.bluetooth.*;
 import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
@@ -20,30 +21,37 @@ import java.util.List;
 public class BluetoothPrint extends JFrame {
   private static final String TAG = "BluetoothPrint";
 
-  private List<RemoteDevice> foundDevices;
+  private final List<RemoteDevice> foundDevices;
   private JTextArea logArea;
   private JComboBox<String> deviceComboBox;
   private JButton searchButton, stopButton, connectButton, printButton, statusButton;
   private JProgressBar progressBar;
   private boolean isScanning = false;
   private boolean isConnected = false;
+  private ButtonGroup commandGroup;
+  private List<CommandItem> items;
+  private String currentType = "tspl";
 
   public BluetoothPrint() {
     foundDevices = new ArrayList<>();
+    initData();
     initUI();
   }
 
   private void initUI() {
     setTitle("蓝牙打印机");
-    setSize(600, 500);
+    setSize(800, 600);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setLocationRelativeTo(null);
 
     JPanel mainPanel = new JPanel(new BorderLayout(10, 10));
     mainPanel.setBorder(new EmptyBorder(10, 10, 10, 10));
 
-    // 设备选择面板
+    JPanel topPanel = new JPanel();
+    topPanel.setLayout(new BoxLayout(topPanel, BoxLayout.Y_AXIS));
+
     JPanel devicePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    devicePanel.setBorder(BorderFactory.createTitledBorder("设备管理"));
     JLabel deviceLabel = new JLabel("选择设备:");
     deviceComboBox = new JComboBox<>();
     deviceComboBox.setPreferredSize(new Dimension(200, 25));
@@ -58,46 +66,64 @@ public class BluetoothPrint extends JFrame {
     devicePanel.add(searchButton);
     devicePanel.add(stopButton);
     devicePanel.add(connectButton);
+    topPanel.add(devicePanel);
+    topPanel.add(Box.createVerticalStrut(10));
 
-    // 打印内容面板
-    JPanel printPanel = new JPanel(new BorderLayout(10, 10));
+    JPanel commandPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    commandPanel.setBorder(BorderFactory.createTitledBorder("指令选择"));
+    commandGroup = new ButtonGroup();
+
+    JPanel radioContainer = new JPanel(new GridLayout(0, 4, 15, 5));
+    for (CommandItem item : items) {
+      JRadioButton radio = new JRadioButton(item.type);
+      radio.setActionCommand(item.type);
+      radio.setSelected(item.checked);
+      radio.setFont(new Font("宋体", Font.PLAIN, 12));
+      radio.addActionListener(this::radioChange);
+      commandGroup.add(radio);
+      radioContainer.add(radio);
+    }
+    commandPanel.add(radioContainer);
+    topPanel.add(commandPanel);
+
+    mainPanel.add(topPanel, BorderLayout.NORTH);
+
+    JPanel logPanel = new JPanel(new BorderLayout());
+    logPanel.setBorder(BorderFactory.createTitledBorder("操作日志"));
+    logArea = new JTextArea();
+    logArea.setEditable(false);
+    JScrollPane scrollPane = new JScrollPane(logArea);
+    logPanel.add(scrollPane, BorderLayout.CENTER);
+    mainPanel.add(logPanel, BorderLayout.CENTER);
+
+    JPanel bottomPanel = new JPanel(new BorderLayout(10, 5));
+
+    JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
     printButton = new JButton("打印");
     printButton.setEnabled(false);
     statusButton = new JButton("状态");
     statusButton.setEnabled(false);
+    buttonPanel.add(printButton);
+    buttonPanel.add(statusButton);
+    bottomPanel.add(buttonPanel, BorderLayout.NORTH);
 
-    printPanel.add(printButton, BorderLayout.WEST);
-    printPanel.add(statusButton, BorderLayout.EAST);
-
-    // 日志面板
-    logArea = new JTextArea(15, 50);
-    logArea.setEditable(false);
-    JScrollPane scrollPane = new JScrollPane(logArea);
-
-    // 进度条
     progressBar = new JProgressBar();
     progressBar.setStringPainted(true);
     progressBar.setVisible(false);
-
-    mainPanel.add(devicePanel, BorderLayout.NORTH);
-    mainPanel.add(scrollPane, BorderLayout.CENTER);
-
-    JPanel bottomPanel = new JPanel(new BorderLayout());
-    bottomPanel.add(printPanel, BorderLayout.NORTH);
+    progressBar.setPreferredSize(new Dimension(Integer.MAX_VALUE, 20));
     bottomPanel.add(progressBar, BorderLayout.SOUTH);
 
     mainPanel.add(bottomPanel, BorderLayout.SOUTH);
 
     add(mainPanel);
 
-    // 添加按钮事件监听器
     searchButton.addActionListener(e -> searchDevices());
     stopButton.addActionListener(e -> stopSearch());
     connectButton.addActionListener(e -> connectToSelectedDevice());
-    printButton.addActionListener(e -> PrinterUtil.getInstance().safeWrite(PrinterUtil.getInstance().generateCmd()));
+    printButton.addActionListener(e -> PrinterUtil.getInstance().printModel(currentType));
     statusButton.addActionListener(e -> {
-      PrinterStatus status= PrinterUtil.getInstance().status();
-      log(status.name());
+      String status = PrinterUtil.getInstance().printerStatus(currentType);
+      log(status);
     });
     // 添加窗口关闭事件
     addWindowListener(new WindowAdapter() {
@@ -110,6 +136,26 @@ public class BluetoothPrint extends JFrame {
         System.exit(0);
       }
     });
+  }
+
+  private void initData() {
+    items = new ArrayList<>();
+    items.add(new CommandItem("tspl", true));
+    items.add(new CommandItem("cpcl", false));
+    items.add(new CommandItem("esc", false));
+  }
+
+  private void radioChange(ActionEvent evt) {
+    currentType = evt.getActionCommand();
+    log("选中的值: " + currentType);
+    for (int i = 0; i < items.size(); i++) {
+      if (items.get(i).type.equals(currentType)) {
+        for (int j = 0; j < items.size(); j++) {
+          items.get(j).checked = (j == i);
+        }
+        break;
+      }
+    }
   }
 
   private void searchDevices() {
@@ -158,6 +204,7 @@ public class BluetoothPrint extends JFrame {
           });
         }
       }
+
       @Override
       public void onDiscoveryError(String s) {
         SwingUtilities.invokeLater(() -> {
@@ -193,7 +240,7 @@ public class BluetoothPrint extends JFrame {
   }
 
   private void connectToSelectedDevice() {
-    if(isConnected){
+    if (isConnected) {
       disconnect();
       return;
     }

@@ -1,23 +1,31 @@
 package com.aiyin.psdk.demo.usb;
 
-import com.aiyin.psdk.demo.util.PrinterStatus;
+import com.aiyin.psdk.demo.util.CommandItem;
 import com.aiyin.psdk.demo.util.PrinterUtil;
 import com.printer.psdk.device.usb.java.USBConnectedDevice;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.util.ArrayList;
+import java.util.List;
 import javax.print.*;
 
 public class USBPrinter extends JFrame {
   private static String curPrinter;
 
   private JComboBox<String> comboBoxPrinter;
-  private JButton button1;
-  private JButton button2;
+  private JButton printButton;
+  private JButton statusButton;
   private JButton clearLogButton;
   private JTextArea logArea;
+
+  private ButtonGroup commandGroup;
+  private List<CommandItem> items;
+  private String currentType = "tspl";
   public USBPrinter() {
-    setTitle("标签打印机");
+    initData();
+    setTitle("USB打印机");
     setSize(600, 400);
     setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     setLayout(new BorderLayout());
@@ -26,14 +34,30 @@ public class USBPrinter extends JFrame {
     JPanel topPanel = new JPanel(new FlowLayout());
     JLabel labelPrinter = new JLabel("选择打印机:");
     comboBoxPrinter = new JComboBox<>();
-    button1 = new JButton("TSPL指令打印");
-    button2 = new JButton("打印机状态");
+    JPanel commandPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    commandPanel.setBorder(BorderFactory.createTitledBorder("指令选择"));
+    commandGroup = new ButtonGroup();
+
+    JPanel radioContainer = new JPanel(new GridLayout(0, 4, 15, 5));
+    for (CommandItem item : items) {
+      JRadioButton radio = new JRadioButton(item.type);
+      radio.setActionCommand(item.type);
+      radio.setSelected(item.checked);
+      radio.setFont(new Font("宋体", Font.PLAIN, 12));
+      radio.addActionListener(this::radioChange);
+      commandGroup.add(radio);
+      radioContainer.add(radio);
+    }
+    commandPanel.add(radioContainer);
+    topPanel.add(commandPanel);
+    printButton = new JButton("打印");
+    statusButton = new JButton("打印机状态");
     clearLogButton = new JButton("清除日志");
 
 //    topPanel.add(labelPrinter);
 //    topPanel.add(comboBoxPrinter);
-    topPanel.add(button1);
-    topPanel.add(button2);
+    topPanel.add(printButton);
+    topPanel.add(statusButton);
     topPanel.add(clearLogButton);
 
     // 创建日志区域
@@ -54,19 +78,10 @@ public class USBPrinter extends JFrame {
       log("已选择打印机: " + curPrinter);
     });
 
-    button1.addActionListener(e -> {
-      log("开始TSPL指令打印...");
-      try {
-        PrinterUtil.getInstance().safeWrite(PrinterUtil.getInstance().generateCmd());
-        log("TSPL指令打印完成");
-      } catch (Exception ex) {
-        log("TSPL指令打印错误: " + ex.getMessage());
-        ex.printStackTrace();
-      }
-    });
-    button2.addActionListener(e -> {
-      PrinterStatus status= PrinterUtil.getInstance().status();
-      log(status.name());
+    printButton.addActionListener(e -> PrinterUtil.getInstance().printModel(currentType));
+    statusButton.addActionListener(e -> {
+      String status = PrinterUtil.getInstance().printerStatus(currentType);
+      log(status);
     });
 
     // 添加清除日志按钮事件监听器
@@ -76,8 +91,25 @@ public class USBPrinter extends JFrame {
     });
   }
 
+  private void initData() {
+    items = new ArrayList<>();
+    items.add(new CommandItem("tspl", true));
+    items.add(new CommandItem("cpcl", false));
+    items.add(new CommandItem("esc", false));
+  }
 
-
+  private void radioChange(ActionEvent evt) {
+    currentType = evt.getActionCommand();
+    log("选中的值: " + currentType);
+    for (int i = 0; i < items.size(); i++) {
+      if (items.get(i).type.equals(currentType)) {
+        for (int j = 0; j < items.size(); j++) {
+          items.get(j).checked = (j == i);
+        }
+        break;
+      }
+    }
+  }
 
   private void updatePrinterList(String defaultPrinter) {
     log("更新打印机列表...");

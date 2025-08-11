@@ -1,6 +1,7 @@
 package com.aiyin.psdk.demo;
 
 import com.aiyin.psdk.demo.bluetooth.BluetoothPrint;
+import com.aiyin.psdk.demo.cloud.CloudPrinter;
 import com.aiyin.psdk.demo.tcp.NetPrinter;
 import com.aiyin.psdk.demo.usb.USBPrinter;
 
@@ -12,13 +13,17 @@ public class App {
 //    NetPrinter netPrinter = new NetPrinter();
 //    netPrinter.test();
     //USB打印
-    SwingUtilities.invokeLater(() -> {
-      new USBPrinter().setVisible(true);
-    });
+//    SwingUtilities.invokeLater(() -> {
+//      new USBPrinter().setVisible(true);
+//    });
     //蓝牙打印
 //    SwingUtilities.invokeLater(() -> {
 //      new BluetoothPrint().setVisible(true);
 //    });
+    //云打印
+    SwingUtilities.invokeLater(() -> {
+      new CloudPrinter().setVisible(true);
+    });
   }
 
 }
