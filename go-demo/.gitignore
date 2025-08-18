@@ -1,0 +1,29 @@
+# Go 编译输出
+go-demo
+go-demo.exe
+*.exe
+*.out
+
+# Go 依赖文件
+go.sum
+
+# IDE 文件
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 操作系统文件
+.DS_Store
+Thumbs.db
+
+# 测试覆盖率文件
+*.out
+*.test
+
+# 临时文件
+*.tmp
+*.temp
+
+# 日志文件
+*.log
