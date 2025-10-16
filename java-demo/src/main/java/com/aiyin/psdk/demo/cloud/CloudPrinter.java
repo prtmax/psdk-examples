@@ -3,6 +3,7 @@ package com.aiyin.psdk.demo.cloud;
 import com.aiyin.psdk.demo.util.CloudUtil;
 import com.aiyin.psdk.demo.util.CommandItem;
 import com.aiyin.psdk.demo.util.PrinterUtil;
+import com.aiyin.psdk.demo.util.UploadResult;
 
 import javax.swing.*;
 import java.awt.*;
@@ -19,6 +20,7 @@ public class CloudPrinter extends JFrame {
   private final JTextField deviceIDField;
   private List<CommandItem> items;
   private String currentType = "tspl";
+
   public CloudPrinter() {
     initData();
     setTitle("云打印机");
@@ -85,11 +87,8 @@ public class CloudPrinter extends JFrame {
       }
       log("开始打印，机器码: " + deviceID + "，指令类型: " + currentType);
       byte[] data = PrinterUtil.getInstance().getPrintData(currentType);
-      try {
-        CloudUtil.sendMessage(data, deviceID);
-      } catch (Exception ex) {
-        log("发送失败: "+ ex.getMessage());
-      }
+        UploadResult result = CloudUtil.sendMessage(data, deviceID);
+        log(result.isSuccess() ? "发送成功: " + result.getMessage() : "发送失败: " + result.getMessage());
     });
 
     // 清除日志按钮事件

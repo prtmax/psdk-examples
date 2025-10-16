@@ -226,11 +226,13 @@ public class PrinterUtil {
     try {
       return rawEsc()
         .clear()
+        .enable()
         .image(
           EImage.builder()
             .image(new JavaSourceImage(getImage()))
             .compress(false)
             .build())
+        .stopJob()
        .command().binary();
     } catch (Exception e) {
       System.err.println("构建失败: " + e.getMessage());
