@@ -312,7 +312,18 @@ class _MyHomePageState extends State<MyHomePage> {
         .text(arg: CText(textX: 52 + 20, textY: 88 + 128 + 80 + 24, content: "收姓名13777777777", font: CFont.tss24))
         .text(arg: CText(textX: 52 + 20, textY: 88 + 128 + 80 + 24 + 32, content: "南京市浦口区威尼斯水城七街区七街区", font: CFont.tss24))
         .text(arg: CText(textX: 52 + 20, textY: 88 + 128 + 80 + 144 + 24, content: "名字13777777777", font: CFont.tss24))
-        .text(arg: CText(textX: 52 + 20, textY: 88 + 128 + 80 + 144 + 24 + 32, content: "南京市浦口区威尼斯水城七街区七街区", font: CFont.tss24))
+        // .text(arg: CText(textX: 52 + 20, textY: 88 + 128 + 80 + 144 + 24 + 32, content: "南京市浦口区威尼斯水城七街区七街区", font: CFont.tss24))
+        .text(
+            arg: CTextCanvas(
+                textX: 52 + 20,
+                textY: 88 + 128 + 80 + 144 + 24 + 32,
+                imageBytes: await CTextCanvas.generateImageBytes(
+                  content: "南京市浦口区威尼斯水城七街区七街区",
+                  font: CFont.tss24,
+                  rotation: CRotation.rotation_90,
+                  bold: true,
+                  alpha: 255,
+                )))//图片形式的text 支持外国语种
         .text(arg: CText(textX: 598 - 56 - 5, textY: 88 + 128 + 80 + 104, content: "派", font: CFont.tss24))
         .text(arg: CText(textX: 598 - 56 - 5, textY: 88 + 128 + 80 + 160, content: "件", font: CFont.tss24))
         .text(arg: CText(textX: 598 - 56 - 5, textY: 88 + 128 + 80 + 208, content: "联", font: CFont.tss24))

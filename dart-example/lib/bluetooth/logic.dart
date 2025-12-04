@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:psdk_bluetooth_ble/psdk_bluetooth_ble.dart';
 import 'package:psdk_bluetooth_classic/psdk_bluetooth_classic.dart';
 import 'package:psdk_bluetooth_windows/psdk_bluetooth_windows.dart';
@@ -66,6 +67,20 @@ class BluetoothLogic extends GetxController {
   }
 
   Future<void> restartDiscovery() async {
+    final permissions = Platform.isAndroid
+        ? await [
+            Permission.location,
+            Permission.bluetoothScan,
+            Permission.bluetoothConnect,
+          ].request()
+        : await [
+            Permission.bluetooth,
+          ].request();
+    final allGranted = permissions.values.every((status) => status.isGranted);
+    if (!allGranted) {
+      print('部分权限未授予');
+      return;
+    }
     state.notifiedDevices.clear();
     state.results.clear();
     super.update();
