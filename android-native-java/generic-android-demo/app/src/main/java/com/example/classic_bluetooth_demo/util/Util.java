@@ -1,6 +1,7 @@
 package com.example.classic_bluetooth_demo.util;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.widget.Toast;
 
 import java.io.InputStream;
@@ -39,5 +40,23 @@ public class Util {
       strBuilder.append(Byte2Hex(inBytArr[i]));
     }
     return strBuilder.toString();
+  }
+
+  /// 缩放
+  public static Bitmap resize(Bitmap bitmap, int width, int height) {
+    if (width == 0 && height == 0) {
+      return bitmap;
+    }
+    int originalWidth = bitmap.getWidth();
+    int originalHeight = bitmap.getHeight();
+
+    if (width == 0) {
+      float scaleRatio = (float) height / originalHeight;
+      width = (int) (originalWidth * scaleRatio);
+    } else if (height == 0) {
+      float scaleRatio = (float) width / originalWidth;
+      height = (int) (originalHeight * scaleRatio);
+    }
+    return Bitmap.createScaledBitmap(bitmap, width, height, true);
   }
 }

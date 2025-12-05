@@ -27,7 +27,7 @@ import java.util.regex.Pattern;
 public class WIFIActivity extends Activity {
   private EditText wifi_name, wifi_pwd;
   private EditText etIpAddress, etGateway, etNetmask;
-  private Button button_send, button_search_name, button_search_pwd, button_status, button_search_dhcp;
+  private Button button_send, button_search_name, button_search_pwd, button_status, button_search_dhcp, button_reset;
   private Button btnSetIp, btnGetIp;
   private RadioGroup rgIpType;
   private RadioButton dhcp_radio, static_ip_radio;
@@ -49,6 +49,7 @@ public class WIFIActivity extends Activity {
     button_search_name = (Button) findViewById(R.id.button_search_name);
     button_search_pwd = (Button) findViewById(R.id.button_search_pwd);
     button_status = (Button) findViewById(R.id.button_status);
+    button_reset = (Button) findViewById(R.id.button_reset);
     tv_content = (TextView) findViewById(R.id.tv_content);
     button_search_dhcp = (Button) findViewById(R.id.button_search_dhcp);
     rgIpType = findViewById(R.id.ip_type_radio_group);
@@ -140,6 +141,13 @@ public class WIFIActivity extends Activity {
       public void onClick(View view) {
         readMark = ReadMark.OPERATE_WIFI_LINK_STATE;
         GenericWIFI _gesc = wifi.state();
+        safeWrite(_gesc);
+      }
+    });
+    button_reset.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        GenericWIFI _gesc = wifi.reset();
         safeWrite(_gesc);
       }
     });

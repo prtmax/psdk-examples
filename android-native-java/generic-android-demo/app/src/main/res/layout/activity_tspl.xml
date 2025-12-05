@@ -132,6 +132,13 @@
         android:layout_weight="1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+      <Button
+              android:id="@+id/btnDoubleColor"
+              android:layout_margin="5dp"
+              android:text="双色打印"
+              android:layout_weight="1"
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"/>
     </LinearLayout>
     <LinearLayout
       android:orientation="horizontal"

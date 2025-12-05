@@ -20,7 +20,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
 import androidx.core.app.ActivityCompat;
+import com.example.classic_bluetooth_demo.util.Util;
 import com.printer.psdk.device.bluetooth.Bluetooth;
+import com.printer.psdk.device.bluetooth.BluetoothStateListen;
 import com.printer.psdk.device.bluetooth.DiscoveryListen;
 
 
@@ -47,6 +49,7 @@ public class ScanActivity extends Activity {
     //初始化sdk
     Bluetooth.getInstance().initialize(getApplication());
     Bluetooth.getInstance().setDiscoveryListener(discoveryListener);
+    Bluetooth.getInstance().setBluetoothStateListener(bluetoothStateListen);
     checkPermissions();
   }
 
@@ -207,6 +210,17 @@ public class ScanActivity extends Activity {
     super.onDestroy();
     Process.killProcess(Process.myPid());
   }
+
+  private final BluetoothStateListen bluetoothStateListen = i -> {
+    switch (i) {
+      case BluetoothAdapter.STATE_OFF:
+        Util.show(ScanActivity.this, "蓝牙关闭");
+        break;
+      case BluetoothAdapter.STATE_ON:
+        Util.show(ScanActivity.this, "蓝牙打开");
+        break;
+    }
+  };
 
   private final DiscoveryListen discoveryListener = new DiscoveryListen() {
     @Override

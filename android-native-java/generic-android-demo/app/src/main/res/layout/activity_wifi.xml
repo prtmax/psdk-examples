@@ -79,6 +79,14 @@
         android:layout_height="wrap_content"
         android:text="查询DHCP"
         android:textSize="18sp"/>
+      <Button
+              android:id="@+id/button_reset"
+              android:layout_weight="1"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_centerHorizontal="true"
+              android:text="重置配网信息"
+              android:textSize="18sp"/>
     </LinearLayout>
 
     <!-- IP设置部分 (新增) -->

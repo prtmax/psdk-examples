@@ -5,8 +5,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.*;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -20,11 +19,13 @@ import android.widget.Toast;
 import com.example.classic_bluetooth_demo.util.PrintUtil;
 import com.example.classic_bluetooth_demo.util.ReadMark;
 import com.example.classic_bluetooth_demo.util.Util;
+import com.printer.psdk.compatible.cpcl.CTextCanvas;
 import com.printer.psdk.cpcl.GenericCPCL;
 import com.printer.psdk.cpcl.args.*;
 import com.printer.psdk.cpcl.mark.CodeRotation;
 import com.printer.psdk.cpcl.mark.CodeType;
 import com.printer.psdk.cpcl.mark.Font;
+import com.printer.psdk.cpcl.mark.Rotation;
 import com.printer.psdk.device.adapter.ConnectedDevice;
 import com.printer.psdk.device.adapter.types.WroteReporter;
 import com.printer.psdk.device.bluetooth.Bluetooth;
@@ -275,7 +276,7 @@ public class CPCLActivity extends Activity {
       .text(CText.builder().textX(430).textY(88 + 128 + 80 + 144 + 128 + 36).font(Font.TSS24).content("月").build())
       .text(CText.builder().textX(490).textY(88 + 128 + 80 + 144 + 128 + 36).font(Font.TSS24).content("日").build())
       .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 24).font(Font.TSS24).content("收姓名" + " " + "13777777777").build())
-      .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 24 + 32).font(Font.TSS24).content("南京市浦口区威尼斯水城七街区七街区").build())
+      .text(CTextCanvas.builder().textX(52 + 20).textY(88 + 128 + 80 + 24 + 32).font(Font.TSS24_MAX1).bold(true).content("南京市浦口区威尼斯水城七街区七街区").alpha(255).build())//文字用canvas画 支持各国语言
       .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 144 + 24).font(Font.TSS24).content("名字" + " " + "13777777777").build())
       .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 144 + 24 + 32).font(Font.TSS24).content("南京市浦口区威尼斯水城七街区七街区").build())
       .text(CText.builder().textX(598 - 56 - 5).textY(88 + 128 + 80 + 104).font(Font.TSS24).content("派").build())
