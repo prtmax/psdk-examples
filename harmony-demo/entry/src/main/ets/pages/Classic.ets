@@ -1,7 +1,6 @@
 import DevicesPage from '../common/DevicesPage';
 import { BusinessError } from '@ohos.base';
 import promptAction from '@ohos.promptAction';
-import { baseProfile } from '@kit.ConnectivityKit';
 import { ConnectedDevice, PSDK } from '@psdk/frame-father';
 import CommonUtil from '../common/CommonUtil';
 import { OhosBluetoothClassic } from '@psdk/ohos-bluetooth-classic';
@@ -13,6 +12,7 @@ import { GenericESC } from '@psdk/esc';
 import { util } from '@kit.ArkTS';
 import { PaperType } from '@psdk/esc/build/types';
 import { ReadMark, ThicknessLevel } from '../common/ReadMark';
+import { socket } from '@kit.ConnectivityKit';
 
 
 @CustomDialog
@@ -66,6 +66,7 @@ struct Index {
   private ohosBluetoothClassic = new OhosBluetoothClassic({ allowNoName: false });
   private isPrint = false
   private readMark?: ReadMark = undefined
+  private checkConnectionTimer: number = 0;
   dialogController: CustomDialogController | null = new CustomDialogController({
     builder: CustomDialogExample({
       cancel: () => {
@@ -130,10 +131,15 @@ struct Index {
       });
     });
     console.info('IndexComponent aboutToAppear');
+    //监听SPP蓝牙连接状态
+    this.startConnectionCheck();
   }
 
-  onConnectionStateEvent = (data: baseProfile.StateChangeParam) => {
-    console.info('a2dp state = ' + JSON.stringify(data));
+  startConnectionCheck() {
+    this.checkConnectionTimer = setInterval(() => {
+      const isConnected = this.ohosBluetoothClassic.isConnected();
+      console.log(`当前连接状态：${isConnected}`);
+    }, 100);
   }
 
   aboutToDisappear() {

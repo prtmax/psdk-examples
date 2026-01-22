@@ -355,6 +355,14 @@ export class CommonUtil {
         content: "已验视",
         font: TFont.TSS24
       }))
+      .text(new TText({
+        x: 320 + 8,
+        y: 696 + 54,
+        content: "发发发发发",
+        rawFont: "SIMHEI.TTF",
+        mulX: 14,
+        mulY: 14
+      }))
       .print();
   }
 
