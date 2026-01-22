@@ -254,8 +254,10 @@ public class TSPLActivity extends Activity {
     btnDoubleColor.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        Bitmap redBitmap = BitmapFactory.decodeResource(getResources(), R.raw.red);
-        Bitmap blackBitmap = BitmapFactory.decodeResource(getResources(), R.raw.black);
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inScaled = false;
+        Bitmap redBitmap = BitmapFactory.decodeResource(getResources(), R.raw.red, options);
+        Bitmap blackBitmap = BitmapFactory.decodeResource(getResources(), R.raw.black, options);
         GenericTSPL _gtspl = PrintUtil.getInstance().tspl().page(TPage.builder().width(50).height(40).build())
                 .direction(
                         TDirection.builder()

@@ -28,7 +28,7 @@ public class WIFIActivity extends Activity {
   private EditText wifi_name, wifi_pwd;
   private EditText etIpAddress, etGateway, etNetmask;
   private Button button_send, button_search_name, button_search_pwd, button_status, button_search_dhcp, button_reset;
-  private Button btnSetIp, btnGetIp;
+  private Button btnSetIp, btnGetIp, btnInfo;
   private RadioGroup rgIpType;
   private RadioButton dhcp_radio, static_ip_radio;
   private View staticIpSettings;
@@ -61,6 +61,7 @@ public class WIFIActivity extends Activity {
     etNetmask = findViewById(R.id.netmask);
     btnSetIp = findViewById(R.id.button_set_ip);
     btnGetIp = findViewById(R.id.button_get_ip);
+    btnInfo = findViewById(R.id.button_get_info);
     BluetoothDevice device = getIntent().getParcelableExtra("device");
     connection = Bluetooth.getInstance().createConnectionClassic(device, new ConnectListener() {
       @Override
@@ -209,6 +210,14 @@ public class WIFIActivity extends Activity {
         safeWrite(_gesc);
       }
     });
+    btnInfo.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        readMark = ReadMark.OPERATE_ALL_WIFI_INFO;
+        GenericWIFI _gesc = wifi.getWifiInfo();//查询wifi相关信息
+        safeWrite(_gesc);
+      }
+    });
     rgIpType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
       @Override
       public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -313,6 +322,17 @@ public class WIFIActivity extends Activity {
                   etGateway.setText(gateway);
                 });
               }
+              break;
+            case OPERATE_ALL_WIFI_INFO:
+              readMark = ReadMark.NONE;
+              String wifiInfo = "";
+              try {
+                wifiInfo = new String(received, "GB2312");
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+              String contentWifiInfo = "WIFI相关信息:" + wifiInfo;
+              runOnUiThread(() -> tv_content.setText(contentWifiInfo));
               break;
             default:
               break;

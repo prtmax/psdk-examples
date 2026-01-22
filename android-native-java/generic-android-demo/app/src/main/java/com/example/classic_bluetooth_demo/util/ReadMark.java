@@ -25,4 +25,5 @@ public enum ReadMark {
   OPERATE_WIFI_LINK_STATE,//WIFI连接状态
   OPERATE_WIFI_DHCP,//查询DHCP
   OPERATE_ALL_IP_INFO, //查询IP所有信息
+  OPERATE_ALL_WIFI_INFO,//查询WIFI所有信息
 }

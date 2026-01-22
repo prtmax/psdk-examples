@@ -8,10 +8,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
-import com.example.classic_bluetooth_demo.util.Config;
-import com.example.classic_bluetooth_demo.util.MSharedPreferences;
-import com.example.classic_bluetooth_demo.util.PdfUtil;
-import com.example.classic_bluetooth_demo.util.PrintUtil;
+import com.example.classic_bluetooth_demo.util.*;
 import com.printer.psdk.cpcl.GenericCPCL;
 import com.printer.psdk.cpcl.args.*;
 import com.printer.psdk.cpcl.mark.CodeRotation;
@@ -76,14 +73,14 @@ public class NETActivity extends Activity {
       public void onClick(View v) {
         String address = et_address.getText().toString();
         if (address.isEmpty()) {
-          showMessage("地址或为空");
+          Util.show(NETActivity.this,"地址或为空");
           return;
         }
         MSharedPreferences mSharedPreferences = MSharedPreferences.getmSharedPreferences();
         mSharedPreferences.init(NETActivity.this);
         mSharedPreferences.putString(Config.KEY_IP_ADDRESS, address);
         mSharedPreferences.commit();
-        showMessage("保存成功");
+        Util.show(NETActivity.this,"保存成功");
       }
     });
     switch_net.setOnClickListener(new View.OnClickListener() {
@@ -101,7 +98,7 @@ public class NETActivity extends Activity {
           String address = et_address.getText().toString();
           String port = et_port.getText().toString();
           if (address.isEmpty() || port.isEmpty()) {
-            showMessage("地址或端口号为空");
+            Util.show(NETActivity.this,"地址或端口号为空");
             return;
           }
           network = new Network(address, Integer.parseInt(port));
@@ -113,11 +110,11 @@ public class NETActivity extends Activity {
               PdfUtil.dismissLoading();
               if (netConnectedDevice != null) {
                 PrintUtil.getInstance().init(netConnectedDevice);
-                showMessage("连接成功");
+                Util.show(NETActivity.this,"连接成功");
                 switch_net.setText("断开");
                 isOpen = true;
               } else {
-                showMessage("连接失败，检查地址是否可用");
+                Util.show(NETActivity.this,"连接失败，检查地址是否可用");
               }
             });
           }).start();
@@ -129,7 +126,7 @@ public class NETActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isOpen) {
-          showMessage("未连接");
+          Util.show(NETActivity.this,"未连接");
           return;
         }
         Intent intent = new Intent(NETActivity.this, PDFActivity.class);
@@ -141,7 +138,7 @@ public class NETActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isOpen) {
-          showMessage("未连接");
+          Util.show(NETActivity.this,"未连接");
           return;
         }
         imageTest(1);
@@ -151,7 +148,7 @@ public class NETActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isOpen) {
-          showMessage("未连接");
+          Util.show(NETActivity.this,"未连接");
           return;
         }
         if (curCmd.equals("tspl")) {
@@ -337,15 +334,11 @@ public class NETActivity extends Activity {
       if (!reporter.isOk()) {
         throw new IOException("写入数据失败", reporter.getException());
       }
-      showMessage("发送成功");
+      Util.show(NETActivity.this,"发送成功");
     } catch (Exception e) {
       e.printStackTrace();
-      showMessage("发送失败,请尝试重新连接");
+      Util.show(NETActivity.this,"发送失败,请尝试重新连接");
     }
-  }
-
-  private void showMessage(String s) {
-    Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
   }
 
   @Override

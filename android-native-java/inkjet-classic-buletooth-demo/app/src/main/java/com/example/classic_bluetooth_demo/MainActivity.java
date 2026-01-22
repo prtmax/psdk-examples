@@ -4,6 +4,7 @@ package com.example.classic_bluetooth_demo;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -218,8 +219,8 @@ public class MainActivity extends Activity {
         progressDialog.setMessage("打印机正在进入升级模式，此过程可能需要几分钟，请耐心等待......");
         showprogress();
         readMark = ReadMark.OPERATE_OTA;
-//        CompatibleInkJet _compatibleInkJet = compatibleInkJet.ota(IOta.builder().data(readResources(R.raw.x8prov1099hd2024423)).build());
-//        safeWrite(_compatibleInkJet);
+        CompatibleInkJet _compatibleInkJet = compatibleInkJet.ota(IOta.builder().data(readResources(getApplication(),R.raw.v138885)).build());
+        safeWrite(_compatibleInkJet);
       }
     });
   }
@@ -515,7 +516,10 @@ public class MainActivity extends Activity {
     try {
 
       // 解析电量百分比 (第9个字节)
-      int batteryLevel = data[8] & 0xFF; // 转换为无符号整数
+      int batteryByte = data[8] & 0xFF;
+      int high = (batteryByte >> 4) & 0x0F;
+      int low = batteryByte & 0x0F;
+      int batteryLevel = high * 10 + low;
       Log.e(TAG, "电量: " + batteryLevel);
       show("电量: " + batteryLevel);
       // 解析充电状态 (第10个字节)
@@ -638,6 +642,20 @@ public class MainActivity extends Activity {
       return;
     }
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+  }
+
+  public static byte[] readResources(Context context, int ID) {
+    try {
+      InputStream in = context.getResources().openRawResource(ID);
+      int length = in.available();
+      byte[] buffer = new byte[length];
+      in.read(buffer);
+      in.close();
+      return buffer;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
   }
 
   private void showprogress() {

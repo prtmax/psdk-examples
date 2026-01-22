@@ -189,6 +189,22 @@
           android:textSize="18sp"
           android:layout_marginLeft="5dp"/>
       </LinearLayout>
+      <LinearLayout
+              android:layout_width="match_parent"
+              android:layout_height="wrap_content"
+              android:orientation="horizontal"
+              android:paddingTop="10dp">
+
+        <Button
+                android:id="@+id/button_get_info"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="查询所有wifi信息"
+                android:textSize="18sp"
+                android:layout_marginRight="5dp"/>
+
+      </LinearLayout>
     </LinearLayout>
     <TextView
       android:layout_below="@+id/button_status"

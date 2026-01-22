@@ -3,7 +3,9 @@ package com.example.classic_bluetooth_demo;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothGatt;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -28,7 +30,6 @@ import com.printer.psdk.esc.GenericESC;
 import com.printer.psdk.esc.args.*;
 import com.printer.psdk.esc.mark.Location;
 import com.printer.psdk.frame.father.PSDK;
-import com.printer.psdk.frame.father.args.common.Raw;
 import com.printer.psdk.frame.father.listener.DataListener;
 import com.printer.psdk.frame.father.listener.DataListenerRunner;
 import com.printer.psdk.frame.father.listener.ListenAction;
@@ -37,14 +38,7 @@ import comprinter.psdk.frame.ota.types.esc.UpdatePrinterESC;
 import comprinter.psdk.frame.ota.types.mark.UpgradeMarker;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 public class ESCActivity extends Activity {
   private static final String TAG = "ESCActivity";
@@ -832,6 +826,7 @@ public class ESCActivity extends Activity {
             new Thread(new Runnable() {
               @Override
               public void run() {
+                readMark = ReadMark.OPERATE_PRINT;
                 InputStream is = getResources().openRawResource(R.raw.dog);
                 BitmapDrawable bmpDraw = new BitmapDrawable(is);
                 Bitmap bitmap = bmpDraw.getBitmap();
