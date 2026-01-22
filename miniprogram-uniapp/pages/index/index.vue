@@ -15,7 +15,7 @@
 		<button @click="closeBluetooth" class="button">断开连接</button>
 		<button @click="writeModel" class="button">打印76*130模版</button>
 		<button @click="printImage" class="button">打印图片</button>
-		<button @click="writeTsplRibbonModel" class="button">热转印打印测试</button>
+		<button @click="writeTsplRibbonModel" class="button" v-show="items[current].type === 'tspl'">打印热转印测试</button>
 		<!--		<button @click="deleteBmp" class="button">删除位图</button>-->
 		<!--		<button @click="downloadBmp" class="button">下载位图</button>-->
 		<!--		<button @click="printBmp" class="button">打印位图</button>-->
@@ -183,12 +183,7 @@
 					vm.$printer.init(vm.connectedDevice);
 					//监听打印机返回的数据
 					// vm.connectedDevice.notify((res) => {
-					// 	console.log(res.characteristicId);
 					// 	console.log(res);
-					// 	console.log("Length:" + res.value.byteLength)
-					// 	console.log("hexvalue:" + this.ab2hex(res.value))
-					// 	const hex = this.ab2hex(res.value)
-					// 	console.log("strvalue:" + this.hexCharCodeToStr(hex));
 					// });
 					uni.showToast({
 						title: '成功',
@@ -269,7 +264,7 @@
 						.image(
 							new EImage({
 								image: input,
-								compress: true,
+								compress: false,
 							})
 						)
 						.lineDot(40)
@@ -757,6 +752,7 @@
 							width: 76,
 							height: 130
 						}))
+						.cls()
 						.box(new TBox({
 							startX: 0,
 							startY: 1,
@@ -1039,7 +1035,6 @@
 							width: 76,
 							height: 130
 						}))
-						//注释的为热转印机器指令
 						.label() //标签纸打印 三种纸调用的时候根据打印机实际纸张选一种就可以了
 						// .bline() //黑标纸打印
 						// .continuous() //连续纸打印

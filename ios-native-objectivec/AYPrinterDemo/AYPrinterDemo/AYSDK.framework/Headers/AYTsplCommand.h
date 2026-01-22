@@ -209,6 +209,17 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)readPrinterState;
 
+/**
+  * 设置关机时间
+  * @param time 关机时间（分钟）    设置成功回复："WRITEC OFFTIME OK\r\n"
+  */
+- (void)setOffTime:(uint)time;
+
+/**
+  * 获取关机时间 , 回复分钟数：XXXX（unsigned int，00表示永不自动关机）
+  */
+- (void)getOffTime;
+
 @end
 
 NS_ASSUME_NONNULL_END

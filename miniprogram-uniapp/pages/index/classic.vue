@@ -14,10 +14,11 @@
 		<button @click="discovery" class="button">开始搜索</button>
 		<button @click="closeBluetooth" class="button">断开连接</button>
 		<button @click="writeModel" class="button">打印76*130模版</button>
-		<button @click="writeTsplRibbonModel" class="button">打印热转印测试</button>
-		<canvas :style="'width: '+1000+'px; height:'+1000+'px; position:fixed; left:8888px'"
+		<button @click="writeTsplRibbonModel" class="button" v-show="items[current].type === 'tspl'">打印热转印测试</button>
+		<canvas :style="'width: ' + canvasWidth + 'px; height: ' + canvasHeight + 'px; position: fixed; left: 8888px'"
 			:canvas-id="canvasId"></canvas>
 		<button @click="printImage" class="button">打印图片</button>
+		<button @click="learnPaper" class="button" v-show="items[current].type === 'esc'">校准纸张</button>
 		<scroll-view class="canvas-buttons" scroll-y="true">
 			<block v-for="(item, index) in discoveredDevices" :key="item.address">
 				<text class="status">设备名称:{{item.name}}</text>
@@ -33,6 +34,9 @@
 <script>
 	import bluetoothTool from '@/plugins/BluetoothTool.js'
 	import permission from '@/plugins/permission.js'
+	import {
+		ReadMark
+	} from '@/plugins/readmark.ts';
 	import {
 		InputImage
 	} from '@psdk/frame-imageb';
@@ -78,8 +82,14 @@
 		TTLine,
 	} from "@psdk/tspl";
 	import {
-		EImage
+		EImage,
+		EPaperTypeQ3,
+		PaperTypeQ3
 	} from "@psdk/esc";
+	import {
+		PaperType
+	} from '@psdk/esc/build/types';
+
 	export default {
 		data() {
 			return {
@@ -99,10 +109,12 @@
 				],
 				current: 0,
 				canvasId: 'myCanvas',
+				canvasWidth: 240,
+				canvasHeight: 240,
+				readMark: ReadMark.NONE,
 			}
 		},
 		async onLoad() {
-
 			//#ifdef APP-PLUS
 			// 蓝牙
 			bluetoothTool.init({
@@ -115,11 +127,22 @@
 				discoveryFinishedCallback: function() {
 					console.log("搜索完成");
 				},
-				readDataCallback: function(dataByteArr) {
-					/* if(that.receiveDataArr.length >= 200) {
-						that.receiveDataArr = [];
+				readDataCallback: async (dataByteArr) => {
+					const vm = this;
+					if (vm.readMark === ReadMark.OPERATE_LEARN_GAP) {
+						vm.readMark = ReadMark.NONE;
+						console.log(vm.ab2hex(dataByteArr).toLowerCase);
+						if (vm.ab2hex(dataByteArr).toLowerCase() === '4f4b') {
+							console.log("校准成功");
+							//校准成功后发送定指令
+							const positionCmd = await vm.$printer.esc().clear().enable().lineDot(10)
+								.position().stopJob();
+							const positionBinary = positionCmd.command().binary();
+							await vm.sendMessage(positionBinary);
+						} else {
+							console.log("校准失败");
+						}
 					}
-					that.receiveDataArr.push.apply(that.receiveDataArr, dataByteArr); */
 					console.log("读取完成" + dataByteArr);
 				},
 				connExceptionCallback: function(e) {
@@ -261,8 +284,9 @@
 				return resultStr.join("");
 			},
 			async sendMessage(cmd) {
+				const vm = this;
 				console.log(cmd);
-				const result = bluetoothTool.sendByteData(cmd);
+				const result = bluetoothTool.sendByteData(Array.from(vm.uint8ArrayToSignedArray(cmd)));
 				uni.showToast({
 					icon: 'none',
 					title: result ? '发送成功！' : '发送失败...'
@@ -274,11 +298,21 @@
 					await vm.writeCpclModel();
 				}
 			},
+			async learnPaper() {
+				const vm = this;
+        if (this.items[this.current].type === "esc") {
+					//学习纸张
+					vm.readMark = ReadMark.OPERATE_LEARN_GAP;
+					const learnCmd = await vm.$printer.esc().clear().learnLabelGap();
+					const learnBinary = learnCmd.command().binary();
+					await vm.sendMessage(learnBinary);
+				}
+			},
 			async printImage() {
 				const vm = this;
 				const ctx = uni.createCanvasContext(vm.canvasId, this);
-				const imgWidth = 240; // 每张图片的宽度
-				const imgHeight = 240; // 每张图片的高度
+				const imgWidth = vm.canvasWidth; // 每张图片的宽度跟画布宽度一样
+				const imgHeight = vm.canvasWidth; // 每张图片的高度跟画布高度一样
 				ctx.drawImage('/static/logo.png', 0, 0, imgWidth, imgHeight);
 				await new Promise((resolve) => {
 					ctx.draw(false, resolve);
@@ -317,7 +351,7 @@
 						)
 						.print();
 					const binary = tspl.command().binary();
-					await vm.sendMessage(Array.from(vm.uint8ArrayToSignedArray(binary)));
+					await vm.sendMessage(binary);
 				} else if (this.items[this.current].type === "cpcl") {
 					const cpcl = await vm.$printer.cpcl().clear()
 						.page(new CPage({
@@ -334,8 +368,12 @@
 						)
 						.print();
 					const binary = cpcl.command().binary();
-					await vm.sendMessage(Array.from(vm.uint8ArrayToSignedArray(binary)));
+					await vm.sendMessage(binary);
 				} else {
+					//打印前可以下发设置纸张类型
+					// const paperTypeCmd = await vm.$printer.esc().clear().paperTypeQ3(new EPaperTypeQ3({paperType:PaperTypeQ3.NO_DRY_ADHESIVE_PAPER}));
+					// const paperTypeBinary = paperTypeCmd.command().binary();
+					// await vm.sendMessage(paperTypeBinary);
 					const esc = await vm.$printer.esc().clear()
 						.enable()
 						.wakeup()
@@ -348,7 +386,7 @@
 						.lineDot(40)
 						.stopJob();
 					const binary = esc.command().binary();
-					await vm.sendMessage(Array.from(vm.uint8ArrayToSignedArray(binary)));
+					await vm.sendMessage(binary);
 				}
 			},
 			async writeModel() {
@@ -645,7 +683,7 @@
 						.print();
 					console.log(cpcl.command().string());
 					var binary = cpcl.command().binary();
-					await this.sendMessage(Array.from(this.uint8ArrayToSignedArray(binary)));
+					await this.sendMessage(binary);
 				} catch (e) {
 					console.error(e);
 					uni.showToast({
@@ -673,6 +711,7 @@
 							width: 76,
 							height: 130
 						}))
+						.cls()
 						.box(new TBox({
 							startX: 0,
 							startY: 1,
@@ -940,7 +979,7 @@
 						.print();
 					console.log(tspl.command().string());
 					var binary = tspl.command().binary();
-					await this.sendMessage(Array.from(this.uint8ArrayToSignedArray(binary)));
+					await this.sendMessage(binary);
 				} catch (e) {
 					console.error(e);
 					uni.showToast({
@@ -956,10 +995,11 @@
 							width: 76,
 							height: 130
 						}))
+						// .raw(Raw.text('CODEPAGE UTF-8'))
 						//注释的为热转印机器指令
-						.label() //标签纸打印 三种纸调用的时候根据打印机实际纸张选一种就可以了
+						// .label() //标签纸打印 三种纸调用的时候根据打印机实际纸张选一种就可以了
 						// .bline() //黑标纸打印
-						// .continuous() //连续纸打印
+						.continuous() //连续纸打印
 						// .offset(0) //进纸
 						// .ribbon(false) //热敏模式
 						// .shift(0) //垂直偏移
@@ -970,6 +1010,18 @@
 							content: "发发发发发",
 							cellWidth: 2
 						}))
+						// .text(
+						// 	new TText({
+						// 		x: 250,
+						// 		y: 50,
+						// 		mulX: 20,
+						// 		mulY: 20,
+						// 		rotation: 90,
+						// 		content: '收货人姓名,总件数,电话',
+						// 		rawFont: 'SIMHEI.TTF',
+						// 		charset: 'utf-8'
+						// 	})
+						// )
 						///使用自定义矢量字体SIMHEI.TTF放大倍数mulX,mulY计算方式想打多大(mm)/0.35取整，例如想打5mm字体：5/0.35=14
 						.text(new TText({
 							x: 320 + 8,
@@ -990,7 +1042,7 @@
 						.print();
 					console.log(tspl.command().string());
 					var binary = tspl.command().binary();
-					await this.sendMessage(Array.from(this.uint8ArrayToSignedArray(binary)));
+					await this.sendMessage(binary);
 				} catch (e) {
 					console.error(e);
 					uni.showToast({

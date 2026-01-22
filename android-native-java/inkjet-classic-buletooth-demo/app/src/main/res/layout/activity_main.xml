@@ -64,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:gravity="center"
-            android:text="连续纸打印"
+            android:text="打印"
             android:textSize="25sp"/>
           <Button
             android:id="@+id/printer_label"
@@ -73,6 +73,7 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="标签纸打印"
+            android:visibility="gone"
             android:textSize="25sp"/>
 
         </LinearLayout>

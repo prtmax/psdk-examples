@@ -36,26 +36,27 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: 1.0.2
-  get: 4.6.5
-  adaptive_dialog: 1.8.0
+  get: ^4.6.6
+  adaptive_dialog: ^1.9.0
   geolocator: 9.0.2
-  permission_handler: 10.3.0
-  fluttertoast: 8.0.9
+  permission_handler: ^12.0.1
+  fluttertoast: ^9.0.0
   flutter_smart_dialog: 4.5.4+2
-  psdk_fruit_tspl: ^0.1.1
-  psdk_fruit_esc: ^0.1.1
-  psdk_fruit_cpcl: ^0.1.1
-  psdk_bluetooth_classic: ^0.1.1
-  psdk_bluetooth_ble: ^0.1.1
-  psdk_bluetooth_traits: ^0.1.1
-  psdk_device_adapter: ^0.1.1
-  psdk_frame_father: ^0.1.1
-  psdk_network: ^0.1.1
+  psdk_fruit_tspl: ^0.1.4
+  psdk_fruit_esc: ^0.1.4
+  psdk_fruit_cpcl: ^0.1.4
+  psdk_bluetooth_classic: ^0.1.4
+  psdk_bluetooth_ble: ^0.1.4
+  psdk_bluetooth_windows: ^0.1.4
+  psdk_bluetooth_traits: ^0.1.4
+  psdk_device_adapter: ^0.1.4
+  psdk_frame_father: ^0.1.4
+  psdk_network: ^0.1.4
+  psdk_usb_android: ^0.1.4
+  psdk_usb_windows: ^0.1.4
 dependency_overrides:
-  macos_ui:
-    git:
-      url: https://github.com/Mayb3Nots/macos_ui.git
-      ref: dev
+  win32: ^5.5.0
+  permission_handler: ^12.0.1
 
 dev_dependencies:
   flutter_test:

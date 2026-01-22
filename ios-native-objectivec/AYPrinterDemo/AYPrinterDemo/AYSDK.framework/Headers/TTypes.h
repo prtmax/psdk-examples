@@ -12,6 +12,9 @@ typedef NS_ENUM(NSInteger, TReceivedType) {
     TReceivedBatteryLevel,
     TReceivedPrinterState,
     TReceivedPrintSuccess,
+    TReceivedSetOffTime,  // 设置关机时间
+    TReceivedGetOffTime,  // 获取关机时间
+    TReceivedStatus,      // 状态上报
     TReceivedNone,
 };
 

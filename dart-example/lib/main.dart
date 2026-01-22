@@ -3,20 +3,19 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:get/get.dart';
+import 'package:printer_demo/tcp/view.dart';
 import 'package:printer_demo/toolkit/custom_loading_widget.dart';
 import 'package:printer_demo/toolkit/custom_toast_widget.dart';
 import 'package:printer_demo/toolkit/printer.dart';
+import 'package:printer_demo/usb/view.dart';
 import 'package:psdk_device_adapter/psdk_device_adapter.dart';
 import 'package:psdk_frame_father/father/args/common/raw.dart';
 import 'package:psdk_frame_father/father/types/write.dart';
 import 'package:psdk_fruit_cpcl/psdk_fruit_cpcl.dart';
 import 'package:psdk_fruit_esc/psdk_fruit_esc.dart';
 import 'package:psdk_fruit_tspl/psdk_fruit_tspl.dart';
-
-import 'ble/view.dart';
-import 'classic/view.dart';
-import 'classic/widgets/Ip_port_connection_widget.dart';
-
+import 'bluetooth/view.dart';
 void main() {
   runApp(const MyApp());
 }
@@ -27,7 +26,7 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return GetMaterialApp(
       title: 'Printer Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
@@ -46,11 +45,12 @@ class MyApp extends StatelessWidget {
         // builder: _builder,
       ),
       home: const MyHomePage(title: 'Printer Demo'),
-      routes: {
-        'MyHomePage': (_) => const MyHomePage(title: 'Home'),
-        'ClassicPage': (_) => ClassicPage(),
-        'BlePage': (_) => BlePage(),
-      },
+      getPages: [
+        GetPage(name: '/', page: () => const MyHomePage(title: 'Printer Demo')),
+        GetPage(name: '/bluetooth', page: () => BluetoothPage()),
+        GetPage(name: '/tcp', page: () => TcpPage()),
+        GetPage(name: '/usb', page: () => UsbPage()),
+      ],
     );
   }
 }
@@ -97,11 +97,45 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: <Widget>[
-            const Padding(
-              padding: EdgeInsets.only(left: 20, right: 20),
-              child: IpPortConnectionWidget(),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () => Get.toNamed('/bluetooth'),
+                        child: const Text('蓝牙连接'),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: SizedBox(
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () => Get.toNamed('/tcp'),
+                        child: const Text('tcp连接'),
+                      ),
+                    ),
+                  ),
+                  if (Platform.isAndroid || Platform.isWindows) const SizedBox(width: 20),
+                  if (Platform.isAndroid || Platform.isWindows)
+                    Expanded(
+                      child: SizedBox(
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: () => Get.toNamed('/usb'),
+                          child: const Text('usb连接'),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
             buildChoiceClip(),
+            const SizedBox(height: 20),
             SizedBox.fromSize(
                 size: const Size(145, 50),
                 child: ElevatedButton(
@@ -159,14 +193,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> doPrintPic() async {
-    if (Printer().connectedDevice() == null) {
-      if (Platform.isAndroid) {
-        Navigator.of(context).pushNamed("ClassicPage");
-      } else {
-        Navigator.of(context).pushNamed("BlePage");
-      }
-      return;
-    }
     try {
       if (Printer().connectedDevice() == null) {
         SmartDialog.showToast('未连接打印机');
@@ -213,11 +239,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> doPrintModel() async {
     if (connectedDevice == null) {
-      if (Platform.isAndroid) {
-        Navigator.of(context).pushNamed("ClassicPage");
-      } else {
-        Navigator.of(context).pushNamed("BlePage");
-      }
+      SmartDialog.showToast('未连接打印机');
       return;
     }
     try {
@@ -261,7 +283,7 @@ class _MyHomePageState extends State<MyHomePage> {
           await safeWrite(value);
           break;
       }
-    }finally {
+    } finally {
       SmartDialog.dismiss();
     }
   }
@@ -290,7 +312,18 @@ class _MyHomePageState extends State<MyHomePage> {
         .text(arg: CText(textX: 52 + 20, textY: 88 + 128 + 80 + 24, content: "收姓名13777777777", font: CFont.tss24))
         .text(arg: CText(textX: 52 + 20, textY: 88 + 128 + 80 + 24 + 32, content: "南京市浦口区威尼斯水城七街区七街区", font: CFont.tss24))
         .text(arg: CText(textX: 52 + 20, textY: 88 + 128 + 80 + 144 + 24, content: "名字13777777777", font: CFont.tss24))
-        .text(arg: CText(textX: 52 + 20, textY: 88 + 128 + 80 + 144 + 24 + 32, content: "南京市浦口区威尼斯水城七街区七街区", font: CFont.tss24))
+        // .text(arg: CText(textX: 52 + 20, textY: 88 + 128 + 80 + 144 + 24 + 32, content: "南京市浦口区威尼斯水城七街区七街区", font: CFont.tss24))
+        .text(
+            arg: CTextCanvas(
+                textX: 52 + 20,
+                textY: 88 + 128 + 80 + 144 + 24 + 32,
+                imageBytes: await CTextCanvas.generateImageBytes(
+                  content: "南京市浦口区威尼斯水城七街区七街区",
+                  font: CFont.tss24,
+                  rotation: CRotation.rotation_90,
+                  bold: true,
+                  alpha: 255,
+                )))//图片形式的text 支持外国语种
         .text(arg: CText(textX: 598 - 56 - 5, textY: 88 + 128 + 80 + 104, content: "派", font: CFont.tss24))
         .text(arg: CText(textX: 598 - 56 - 5, textY: 88 + 128 + 80 + 160, content: "件", font: CFont.tss24))
         .text(arg: CText(textX: 598 - 56 - 5, textY: 88 + 128 + 80 + 208, content: "联", font: CFont.tss24))
@@ -413,13 +446,7 @@ class _MyHomePageState extends State<MyHomePage> {
     double maxWidth = 200,
   }) {
     var btn = TextButton(
-      onPressed: () {
-        if (Platform.isAndroid) {
-          Navigator.of(context).pushNamed("ClassicPage");
-        } else {
-          Navigator.of(context).pushNamed("BlePage");
-        }
-      },
+      onPressed: () {},
       style: TextButton.styleFrom(padding: const EdgeInsets.only(left: 0, right: 8)),
       child: connectedDevice == null
           ? const Row(

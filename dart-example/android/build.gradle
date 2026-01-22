@@ -1,16 +1,55 @@
 buildscript {
-    ext.kotlin_version = '1.6.10'
+    ext.kotlin_version = '2.1.0'
     repositories {
         google()
         mavenCentral()
     }
-
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.1.2'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
     }
 }
+// 强制所有 Kotlin 子项目使用 JVM 17
+allprojects {
+    afterEvaluate { proj ->
+        if (proj.plugins.hasPlugin("org.jetbrains.kotlin.android")) {
+            // ① Kotlin 1.9 的入口是 kotlinOptions
+            proj.android.kotlinOptions {
+                jvmTarget = "17"
+            }
+            // ② Java 兼容性保持一致
+            proj.android.compileOptions {
+                sourceCompatibility JavaVersion.VERSION_17
+                targetCompatibility JavaVersion.VERSION_17
+            }
+            println ">>> Locked ${proj.name} jvmTarget to 17"
+        }
+    }
+}
+allprojects {
+    afterEvaluate { proj ->
+        if (!proj.plugins.hasPlugin("com.android.library")) return
 
+        if (!proj.android.hasProperty("namespace") || proj.android.namespace == null) {
+            def manifestFile = file("${proj.projectDir}/src/main/AndroidManifest.xml")
+            def fallbackPkg = "com.fallback.${proj.name}"
+            def pkg = fallbackPkg
+
+            if (manifestFile.exists()) {
+                def m = manifestFile.text =~ /package="([^"]+)"/
+                if (m) pkg = m[0][1]
+            }
+            proj.android.namespace = pkg
+            println ">>> Patched namespace for ${proj.name}: ${pkg}"
+        }
+
+        def manifestFile = file("${proj.projectDir}/src/main/AndroidManifest.xml")
+        if (manifestFile.exists()) {
+            def updated = manifestFile.text.replaceAll(/package="[^"]*"\s*/, '')
+            manifestFile.text = updated
+            println ">>> Removed package attribute in ${manifestFile}"
+        }
+    }
+}
 allprojects {
     repositories {
         google()

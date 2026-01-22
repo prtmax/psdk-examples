@@ -1,3 +1,15 @@
+## 2025-04-11
+
+### Changed
+
+- Add tspl state auto report
+
+## 2025-03-13
+
+### Changed
+
+- Add tspl set/get off time command
+
 ## 2025-01-14
 
 ### Changed

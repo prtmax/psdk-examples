@@ -40,7 +40,7 @@ class TipWithIconScreen extends StatelessWidget {
               this.tipText,
               style: Theme.of(context)
                   .primaryTextTheme
-                  .subtitle1
+                  .titleMedium
                   ?.copyWith(color: this.textColor),
             ),
           ),

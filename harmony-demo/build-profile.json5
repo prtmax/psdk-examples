@@ -5,13 +5,13 @@
         "name": "default",
         "type": "HarmonyOS",
         "material": {
-          "certpath": "C:\\Users\\sangfor\\.ohos\\config\\default_bluetoothDemo_ttO9jvUQnqXkTFSf1fBmytQbZu_uBsBs_rtuK9CrOC0=.cer",
-          "storePassword": "0000001B256C1BC7B3415FED23FFF095330CB6F8C506DC8DE72EC077F45CB6556BE975E367263C1094D542",
+          "certpath": "C:\\Users\\sangfor\\.ohos\\config\\default_harmony-demo_cLZCU990OTzQneRS05z8UhaOBfzl4vkp0EVnpHokx1k=.cer",
           "keyAlias": "debugKey",
-          "keyPassword": "0000001BBCDAAA700237D095B31BC1BBD785649B35F2C7D7ECA7ADE74FEE4639904B6BAB0F9D3B18E263E0",
-          "profile": "C:\\Users\\sangfor\\.ohos\\config\\default_bluetoothDemo_ttO9jvUQnqXkTFSf1fBmytQbZu_uBsBs_rtuK9CrOC0=.p7b",
+          "keyPassword": "0000001B1A8C6D61008D0F914D0559601566C727D8E693196F436E84CCFA126627EAEF9B84CB8A049E9001",
+          "profile": "C:\\Users\\sangfor\\.ohos\\config\\default_harmony-demo_cLZCU990OTzQneRS05z8UhaOBfzl4vkp0EVnpHokx1k=.p7b",
           "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\sangfor\\.ohos\\config\\default_bluetoothDemo_ttO9jvUQnqXkTFSf1fBmytQbZu_uBsBs_rtuK9CrOC0=.p12"
+          "storeFile": "C:\\Users\\sangfor\\.ohos\\config\\default_harmony-demo_cLZCU990OTzQneRS05z8UhaOBfzl4vkp0EVnpHokx1k=.p12",
+          "storePassword": "0000001BAC0C1E92C5355A74E58EAA71B2BB5F50D30A18186977E68BC687F61604C2E08990CD8FA2B8624F"
         }
       }
     ],
@@ -19,7 +19,7 @@
       {
         "name": "default",
         "signingConfig": "default",
-        "compatibleSdkVersion": "5.0.0(12)",
+        "compatibleSdkVersion": "6.0.0(20)",
         "runtimeOS": "HarmonyOS"
       }
     ],

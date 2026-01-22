@@ -9,6 +9,8 @@
 #import "TsplFunctionVC.h"
 #import "EscFunctionVC.h"
 #import "CpclFunctionVC.h"
+#import "WifiFunctionVC.h"
+#import "NetPrintVC.h"
 
 #define CellIdentifier @"cellId"
 
@@ -41,6 +43,12 @@
     [self.printers removeAllObjects];
     [self.tableView reloadData];
     [self.bleHelper startScan];
+}
+
+- (IBAction)netPrint:(id)sender {
+  [self.bleHelper stopScan];
+  NetPrintVC *vc = [[NetPrintVC alloc] init];
+  [self.navigationController pushViewController:vc animated:YES];
 }
 
 #pragma mark - BleHelperDelegate
@@ -77,17 +85,9 @@
     }
 }
 
-////传入RSSI值，返回距离（单位：米）。其中，A参数赋了59，n
-//- (float)calcDistByRSSI:(int)rssi {
-//    int iRssi = abs(rssi);
-//    float power = (iRssi - 59) / (10 * 1.2);
-//    return pow(10, power);
-//}
-
 - (void)bleHelperDidChangeConnectState:(BleState)state peripheral:(CBPeripheral *)peripheral {
     NSLog(@"bleHelperDidChangeConnectState: %ld", state);
     if (state == BleStateConnected) {
-        
         UIAlertController *alertController = [UIAlertController alertControllerWithTitle:@"指令类型" message:nil preferredStyle:UIAlertControllerStyleAlert];
         UIAlertAction *tsplAction = [UIAlertAction actionWithTitle:@"TSPL" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
             TsplFunctionVC *vc = [[TsplFunctionVC alloc] init];
@@ -104,6 +104,11 @@
             vc.navigationItem.title = peripheral.name;
             [self.navigationController pushViewController:vc animated:YES];
         }];
+      UIAlertAction *wifiAction = [UIAlertAction actionWithTitle:@"WIFI" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+          WifiFunctionVC *vc = [[WifiFunctionVC alloc] init];
+          vc.navigationItem.title = peripheral.name;
+          [self.navigationController pushViewController:vc animated:YES];
+      }];
         UIAlertAction *cancelAction = [UIAlertAction actionWithTitle:@"取消" style:UIAlertActionStyleCancel handler:^(UIAlertAction * _Nonnull action) {
             [self.bleHelper disconnect];
         }];
@@ -111,8 +116,11 @@
         [alertController addAction:tsplAction];
         [alertController addAction:escAction];
         [alertController addAction:cpclAction];
+        [alertController addAction:wifiAction];
         [alertController addAction:cancelAction];
         [self presentViewController:alertController animated:YES completion:nil];
+    } else if (state == BleStateDisconnected) {
+      [[NSNotificationCenter defaultCenter] postNotificationName:@"BleStateDisconnected" object:nil];
     }
 }
 

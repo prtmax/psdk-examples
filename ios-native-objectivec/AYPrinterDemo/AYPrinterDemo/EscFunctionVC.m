@@ -265,10 +265,10 @@
 /// 连续纸
 - (IBAction)continuousPrint {
 //    Xnip2024-09-07_08-24-20.png
-    UIImage *image = [UIImage imageNamed:@"7021733365744_.pic.jpg"];
+    UIImage *image = [UIImage imageNamed:@"dithered-image4.png"];
 //    image = [image dither];
-
-  image = [AYImageEnhance ditheringByFloydSteinberg:image];
+//
+//  image = [AYImageEnhance ditheringByFloydSteinberg:image];
     
     [self.esc clean];
     [self.esc wake];
@@ -281,6 +281,10 @@
     self.isLabel = NO;
     self.isPrinting = YES;
     [self.bleHelper writeCommands:self.esc.commands];
+  NSMutableData *data = [NSMutableData data];
+  for (NSData *cmd in self.esc.commands) {
+    [data appendData:cmd];
+  }
     self.copies -= 1;
     NSLog(@"打印中，请勿发其他指令，会有干扰！！！");
 }
