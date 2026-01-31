@@ -58,6 +58,9 @@
 		B5B824DF2E25E25E00085502 /* lion.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B5B824DE2E25E25E00085502 /* lion.jpg */; };
 		B5B825332E262C6D00085502 /* 6914eca2ce152eaec1ef818c90691004.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = B5B825322E262C6D00085502 /* 6914eca2ce152eaec1ef818c90691004.jpeg */; };
 		B5C147902DCD825A00AD5CC6 /* image.png in Resources */ = {isa = PBXBuildFile; fileRef = B5C1478F2DCD825A00AD5CC6 /* image.png */; };
+		B5DAE1572F2DE55700D4403C /* RGBPrintVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5DAE1562F2DE55700D4403C /* RGBPrintVC.xib */; };
+		B5DAE1582F2DE55700D4403C /* RGBPrintVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DAE1552F2DE55700D4403C /* RGBPrintVC.m */; };
+		B5DAE15B2F2DE57000D4403C /* RGBConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DAE15A2F2DE57000D4403C /* RGBConfig.m */; };
 		FECAFD37AFE582C13790ACA8 /* Pods_AYPrinterDemoTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6377182B2AED9CEC5B942E6F /* Pods_AYPrinterDemoTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -159,6 +162,11 @@
 		B5B824DE2E25E25E00085502 /* lion.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = lion.jpg; sourceTree = "<group>"; };
 		B5B825322E262C6D00085502 /* 6914eca2ce152eaec1ef818c90691004.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 6914eca2ce152eaec1ef818c90691004.jpeg; sourceTree = "<group>"; };
 		B5C1478F2DCD825A00AD5CC6 /* image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image.png; sourceTree = "<group>"; };
+		B5DAE1542F2DE55700D4403C /* RGBPrintVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RGBPrintVC.h; sourceTree = "<group>"; };
+		B5DAE1552F2DE55700D4403C /* RGBPrintVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RGBPrintVC.m; sourceTree = "<group>"; };
+		B5DAE1562F2DE55700D4403C /* RGBPrintVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RGBPrintVC.xib; sourceTree = "<group>"; };
+		B5DAE1592F2DE57000D4403C /* RGBConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RGBConfig.h; sourceTree = "<group>"; };
+		B5DAE15A2F2DE57000D4403C /* RGBConfig.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RGBConfig.m; sourceTree = "<group>"; };
 		C1904A8930F63CD7D33C217B /* Pods-AYPrinterDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AYPrinterDemo.debug.xcconfig"; path = "Target Support Files/Pods-AYPrinterDemo/Pods-AYPrinterDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		CD7E3EEB09CAA511CE409ADA /* Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig"; path = "Target Support Files/Pods-AYPrinterDemo-AYPrinterDemoUITests/Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig"; sourceTree = "<group>"; };
 		D4EF962A242669BF50CD3CA5 /* Pods_AYPrinterDemo_AYPrinterDemoUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AYPrinterDemo_AYPrinterDemoUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -291,11 +299,11 @@
 				B57458602AB067E600DF9716 /* AppDelegate.m */,
 				B57458622AB067E600DF9716 /* SceneDelegate.h */,
 				B57458632AB067E600DF9716 /* SceneDelegate.m */,
-				B57458652AB067E600DF9716 /* DeviceListVC.h */,
-				B57458662AB067E600DF9716 /* DeviceListVC.m */,
 				B57458682AB067E600DF9716 /* Main.storyboard */,
 				B543E1692AB85A3100713B63 /* BaseVC.h */,
 				B543E16A2AB85A3100713B63 /* BaseVC.m */,
+				B57458652AB067E600DF9716 /* DeviceListVC.h */,
+				B57458662AB067E600DF9716 /* DeviceListVC.m */,
 				B590F1F52AB19A6E0012CEE5 /* TsplFunctionVC.h */,
 				B590F1F62AB19A6E0012CEE5 /* TsplFunctionVC.m */,
 				B590F1F72AB19A6E0012CEE5 /* TsplFunctionVC.xib */,
@@ -315,6 +323,11 @@
 				B50821422DE981470008138F /* NetPrintVC.h */,
 				B50821432DE981470008138F /* NetPrintVC.m */,
 				B50821442DE981470008138F /* NetPrintVC.xib */,
+				B5DAE1542F2DE55700D4403C /* RGBPrintVC.h */,
+				B5DAE1552F2DE55700D4403C /* RGBPrintVC.m */,
+				B5DAE1562F2DE55700D4403C /* RGBPrintVC.xib */,
+				B5DAE1592F2DE57000D4403C /* RGBConfig.h */,
+				B5DAE15A2F2DE57000D4403C /* RGBConfig.m */,
 			);
 			path = AYPrinterDemo;
 			sourceTree = "<group>";
@@ -456,6 +469,7 @@
 				B5B824DF2E25E25E00085502 /* lion.jpg in Resources */,
 				B56455F32BC38C9F0076C82F /* DL-Q2 V1.12.PRTU in Resources */,
 				B56455FF2BC38C9F0076C82F /* shouji.png in Resources */,
+				B5DAE1572F2DE55700D4403C /* RGBPrintVC.xib in Resources */,
 				B56455F82BC38C9F0076C82F /* unititled.jpg in Resources */,
 				B543E17B2AB85C0900713B63 /* EscFunctionVC.xib in Resources */,
 				B5175E382C2FB55B00E533FF /* dithered-image (2).png in Resources */,
@@ -583,6 +597,7 @@
 				B5185D472DE83D7B0029E94E /* WifiFunctionVC.m in Sources */,
 				B57458672AB067E600DF9716 /* DeviceListVC.m in Sources */,
 				B50821452DE981470008138F /* NetPrintVC.m in Sources */,
+				B5DAE1582F2DE55700D4403C /* RGBPrintVC.m in Sources */,
 				B57458612AB067E600DF9716 /* AppDelegate.m in Sources */,
 				B590F1F82AB19A6E0012CEE5 /* TsplFunctionVC.m in Sources */,
 				B543E17A2AB85C0900713B63 /* EscFunctionVC.m in Sources */,
@@ -590,6 +605,7 @@
 				B543E16B2AB85A3100713B63 /* BaseVC.m in Sources */,
 				B57458722AB067E700DF9716 /* main.m in Sources */,
 				B57458642AB067E600DF9716 /* SceneDelegate.m in Sources */,
+				B5DAE15B2F2DE57000D4403C /* RGBConfig.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

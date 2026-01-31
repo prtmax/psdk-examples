@@ -73,4 +73,5 @@ typedef NS_ENUM(int, TFont) {
     TFontTSS24 = 3, // 24点阵
     TFontTSS28 = 4, // 28点阵
     TFontTSS32 = 5, // 32点阵
+    TFontSIMHEI = 6 //
 };

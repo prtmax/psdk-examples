@@ -250,6 +250,16 @@ NS_ASSUME_NONNULL_BEGIN
   */
 - (void)getOffTime;
 
+/**
+* 红色打印(0-15)
+*/
+- (void)setRed:(int)density;
+
+/**
+* 黑色打印
+*/
+- (void)setBlack;
+
 @end
 
 NS_ASSUME_NONNULL_END
