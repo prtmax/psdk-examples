@@ -93,28 +93,30 @@
             }
               break;
           case TReceivedStatus: {
-            int flag = bytes[3];
-            switch (flag) {
-              case 1:
-                NSLog(@"纸舱盖打开");
-                break;
-              case 2:
-                NSLog(@"缺纸");
-                break;
-              case 3:
-                NSLog(@"卡纸");
-                break;
-              case 4:
-                NSLog(@"低电压");
-                break;
-              case 5:
-                NSLog(@"打印机过热");
-                break;
-              case 0xff:
-                NSLog(@"打印机正常");
-                break;
-              default:
-                break;
+            int flag = bytes[0];
+            if (flag == 0) {
+              NSLog(@"打印机正常");
+            } else {
+              NSMutableArray *states = [NSMutableArray array];
+              if ((flag & 0x01) == 0x01) {
+                [states addObject:@"纸舱盖开"];
+              }
+              if ((flag & 0x02) == 0x02) {
+                [states addObject:@"打印出错"];
+              }
+              if ((flag & 0x04) == 0x04) {
+                [states addObject:@"缺纸"];
+              }
+              if ((flag & 0x20) == 0x20) {
+                [states addObject:@"打印中"];
+              }
+              if ((flag & 0x10) == 0x10) {
+                [states addObject:@"打印暂停"];
+              }
+              if ((flag & 0x80) == 0x80) {
+                [states addObject:@"过热"];
+              }
+              NSLog(@"states: %@", states);
             }
           }
             break;
@@ -135,12 +137,12 @@
 //    [tspl enableCut:YES];
 //    [tspl enableGap:YES];
     [tspl cls];
-  [tspl image:image x:0 y:0 compress:YES];
+    [tspl image:image x:0 y:0 compress:YES];
     [tspl print:1];
-  NSMutableData *da = [NSMutableData data];
-  for (NSData *d in tspl.commands) {
-    [da appendData:d];
-  }
+    NSMutableData *da = [NSMutableData data];
+    for (NSData *d in tspl.commands) {
+      [da appendData:d];
+    }
     
     [self.bleHelper writeCommands:tspl.commands];
 }
@@ -173,7 +175,13 @@
 
 - (IBAction)sn:(id)sender {
   AYTsplCommand *tspl = [AYTsplCommand new];
-    [tspl readSN];
+//    [tspl readSN];
+//  Byte cmd[] = {0x10, 0xff, 0xef, 0xf0};
+//  NSData *command = [NSData dataWithBytes:cmd length:sizeof(cmd)];
+  [tspl pageWidth:76 height:130];
+  [tspl cls];
+  [tspl addCustomCommand:@"LINE 0,56,1200,56,2\n".toGbkData];
+  [tspl print:1];
     
     [self.bleHelper writeCommands:tspl.commands];
 }

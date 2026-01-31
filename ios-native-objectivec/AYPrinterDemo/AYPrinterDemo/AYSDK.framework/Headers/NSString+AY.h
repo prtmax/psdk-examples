@@ -14,6 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 // 字符串转 Gbk data
 - (NSData *)toGbkData;
 
+- (NSData *)toUTF8Data;
+
 // 16进制字符串转nadata
 + (NSData *)convertHexStrToData:(NSString *)string;
 

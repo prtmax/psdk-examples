@@ -40,6 +40,7 @@
 		B56456052BC38C9F0076C82F /* handsomeMan.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = B56455F02BC38C9F0076C82F /* handsomeMan.jpeg */; };
 		B56456072BC38C9F0076C82F /* dithered-image.png in Resources */ = {isa = PBXBuildFile; fileRef = B56455F22BC38C9F0076C82F /* dithered-image.png */; };
 		B564560D2BC39F330076C82F /* AYSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B564560C2BC39F330076C82F /* AYSDK.framework */; };
+		B5694DD12E29DF7A00B26E03 /* lion-org.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B5694DD02E29DF7A00B26E03 /* lion-org.jpg */; };
 		B57458612AB067E600DF9716 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B57458602AB067E600DF9716 /* AppDelegate.m */; };
 		B57458642AB067E600DF9716 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B57458632AB067E600DF9716 /* SceneDelegate.m */; };
 		B57458672AB067E600DF9716 /* DeviceListVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B57458662AB067E600DF9716 /* DeviceListVC.m */; };
@@ -54,8 +55,9 @@
 		B581BA202BDA071D00D25CF6 /* A4主动上报信息释义.pdf in Resources */ = {isa = PBXBuildFile; fileRef = B581BA1F2BDA071D00D25CF6 /* A4主动上报信息释义.pdf */; };
 		B590F1F82AB19A6E0012CEE5 /* TsplFunctionVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B590F1F62AB19A6E0012CEE5 /* TsplFunctionVC.m */; };
 		B590F1F92AB19A6E0012CEE5 /* TsplFunctionVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = B590F1F72AB19A6E0012CEE5 /* TsplFunctionVC.xib */; };
+		B5B824DF2E25E25E00085502 /* lion.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B5B824DE2E25E25E00085502 /* lion.jpg */; };
+		B5B825332E262C6D00085502 /* 6914eca2ce152eaec1ef818c90691004.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = B5B825322E262C6D00085502 /* 6914eca2ce152eaec1ef818c90691004.jpeg */; };
 		B5C147902DCD825A00AD5CC6 /* image.png in Resources */ = {isa = PBXBuildFile; fileRef = B5C1478F2DCD825A00AD5CC6 /* image.png */; };
-		B5DE4ABA2DC0ACEF00AFAE0F /* base64-to-image.png in Resources */ = {isa = PBXBuildFile; fileRef = B5DE4AB92DC0ACEF00AFAE0F /* base64-to-image.png */; };
 		FECAFD37AFE582C13790ACA8 /* Pods_AYPrinterDemoTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6377182B2AED9CEC5B942E6F /* Pods_AYPrinterDemoTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -131,6 +133,7 @@
 		B56455F02BC38C9F0076C82F /* handsomeMan.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = handsomeMan.jpeg; sourceTree = "<group>"; };
 		B56455F22BC38C9F0076C82F /* dithered-image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dithered-image.png"; sourceTree = "<group>"; };
 		B564560C2BC39F330076C82F /* AYSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AYSDK.framework; sourceTree = "<group>"; };
+		B5694DD02E29DF7A00B26E03 /* lion-org.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "lion-org.jpg"; sourceTree = "<group>"; };
 		B574585C2AB067E600DF9716 /* AYPrinterDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AYPrinterDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B574585F2AB067E600DF9716 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		B57458602AB067E600DF9716 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -153,8 +156,9 @@
 		B590F1F52AB19A6E0012CEE5 /* TsplFunctionVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = TsplFunctionVC.h; sourceTree = "<group>"; };
 		B590F1F62AB19A6E0012CEE5 /* TsplFunctionVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = TsplFunctionVC.m; sourceTree = "<group>"; };
 		B590F1F72AB19A6E0012CEE5 /* TsplFunctionVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = TsplFunctionVC.xib; sourceTree = "<group>"; };
+		B5B824DE2E25E25E00085502 /* lion.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = lion.jpg; sourceTree = "<group>"; };
+		B5B825322E262C6D00085502 /* 6914eca2ce152eaec1ef818c90691004.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 6914eca2ce152eaec1ef818c90691004.jpeg; sourceTree = "<group>"; };
 		B5C1478F2DCD825A00AD5CC6 /* image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image.png; sourceTree = "<group>"; };
-		B5DE4AB92DC0ACEF00AFAE0F /* base64-to-image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "base64-to-image.png"; sourceTree = "<group>"; };
 		C1904A8930F63CD7D33C217B /* Pods-AYPrinterDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AYPrinterDemo.debug.xcconfig"; path = "Target Support Files/Pods-AYPrinterDemo/Pods-AYPrinterDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		CD7E3EEB09CAA511CE409ADA /* Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig"; path = "Target Support Files/Pods-AYPrinterDemo-AYPrinterDemoUITests/Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig"; sourceTree = "<group>"; };
 		D4EF962A242669BF50CD3CA5 /* Pods_AYPrinterDemo_AYPrinterDemoUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AYPrinterDemo_AYPrinterDemoUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -230,7 +234,8 @@
 			isa = PBXGroup;
 			children = (
 				B5C1478F2DCD825A00AD5CC6 /* image.png */,
-				B5DE4AB92DC0ACEF00AFAE0F /* base64-to-image.png */,
+				B5694DD02E29DF7A00B26E03 /* lion-org.jpg */,
+				B5B825322E262C6D00085502 /* 6914eca2ce152eaec1ef818c90691004.jpeg */,
 				B56396292DAFB6FA008EBC12 /* dithered-image4.png */,
 				B56396272DAFB628008EBC12 /* dithered-image3.png */,
 				B5175E372C2FB55B00E533FF /* dithered-image (2).png */,
@@ -239,6 +244,7 @@
 				B50C1ADF2BC78C2C00292025 /* a4.jpg */,
 				B57B35B62C0D942B00BBBD13 /* rgb1.jpg */,
 				B56455E22BC38C9F0076C82F /* dog.jpg */,
+				B5B824DE2E25E25E00085502 /* lion.jpg */,
 				B56455E32BC38C9F0076C82F /* unititled.jpg */,
 				B56455E62BC38C9F0076C82F /* 66671697191774.jpg */,
 				B56455E82BC38C9F0076C82F /* dessert.jpg */,
@@ -447,6 +453,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				B56455F42BC38C9F0076C82F /* DL-Q2 V1.12MH.PRTU in Resources */,
+				B5B824DF2E25E25E00085502 /* lion.jpg in Resources */,
 				B56455F32BC38C9F0076C82F /* DL-Q2 V1.12.PRTU in Resources */,
 				B56455FF2BC38C9F0076C82F /* shouji.png in Resources */,
 				B56455F82BC38C9F0076C82F /* unititled.jpg in Resources */,
@@ -458,6 +465,7 @@
 				B581BA202BDA071D00D25CF6 /* A4主动上报信息释义.pdf in Resources */,
 				B56456072BC38C9F0076C82F /* dithered-image.png in Resources */,
 				B590F1F92AB19A6E0012CEE5 /* TsplFunctionVC.xib in Resources */,
+				B5B825332E262C6D00085502 /* 6914eca2ce152eaec1ef818c90691004.jpeg in Resources */,
 				B5175E362C2FB34500E533FF /* dithered-image (1).png in Resources */,
 				B563962A2DAFB6FA008EBC12 /* dithered-image4.png in Resources */,
 				B502DDB72AB9840700B74A2F /* CpclFunctionVC.xib in Resources */,
@@ -470,12 +478,12 @@
 				B56455F72BC38C9F0076C82F /* dog.jpg in Resources */,
 				B50C1AE02BC78C2C00292025 /* a4.jpg in Resources */,
 				B56456012BC38C9F0076C82F /* test.jpg in Resources */,
+				B5694DD12E29DF7A00B26E03 /* lion-org.jpg in Resources */,
 				B56456022BC38C9F0076C82F /* longPic.jpg in Resources */,
 				B57B35B72C0D942B00BBBD13 /* rgb1.jpg in Resources */,
 				B5101EF12C12D0AC001B38E0 /* one.jpeg in Resources */,
 				B56456052BC38C9F0076C82F /* handsomeMan.jpeg in Resources */,
 				B56455FB2BC38C9F0076C82F /* 66671697191774.jpg in Resources */,
-				B5DE4ABA2DC0ACEF00AFAE0F /* base64-to-image.png in Resources */,
 				B56455F52BC38C9F0076C82F /* QR-888 FWQR_SFUBE_BQ_VER_01_240201.ALLAY in Resources */,
 				B5C147902DCD825A00AD5CC6 /* image.png in Resources */,
 				B56455FD2BC38C9F0076C82F /* dessert.jpg in Resources */,

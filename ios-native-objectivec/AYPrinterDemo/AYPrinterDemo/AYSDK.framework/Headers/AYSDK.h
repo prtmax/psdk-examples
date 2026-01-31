@@ -22,6 +22,7 @@
 #import <AYSDK/SdkInfo.h>
 #import <AYSDK/AYImageEnhance.h>
 #import <AYSDK/AYNetHelper.h>
+#import <AYSDK/AYOtaHelperCPCL.h>
 
 //! Project version number for AYSDK.
 FOUNDATION_EXPORT double AYSDKVersionNumber;

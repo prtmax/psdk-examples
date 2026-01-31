@@ -15,6 +15,8 @@ typedef NS_ENUM(NSInteger, TReceivedType) {
     TReceivedSetOffTime,  // 设置关机时间
     TReceivedGetOffTime,  // 获取关机时间
     TReceivedStatus,      // 状态上报
+    TReceivedNotSpace,    // 空间不足
+    TReceivedSpaceEnough, // 空间足够
     TReceivedNone,
 };
 

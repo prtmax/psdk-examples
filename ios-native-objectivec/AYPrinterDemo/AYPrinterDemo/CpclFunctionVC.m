@@ -22,10 +22,10 @@
 }
 
 - (IBAction)printImage:(id)sender {
-    UIImage *image = [UIImage imageNamed:@"base64-to-image.png"];
+    UIImage *image = [UIImage imageNamed:@"image.png"];
     AYCpclCommand *cpcl = [AYCpclCommand new];
     [cpcl pageWidth:76 * 8 height:100 * 8 copies:1];
-    [cpcl image:image x:0 y:0 compress:true];
+    [cpcl image:image x:0 y:0 compress:NO];
     [cpcl print:NO];
     
     [self.bleHelper writeCommands:cpcl.commands];
@@ -35,7 +35,8 @@
 - (IBAction)printTemplate:(id)sender {
     AYCpclCommand *cpcl = [AYCpclCommand new];
     [cpcl pageWidth:76 * 8 height:76 * 8 copies:1];
-    [cpcl qrCodeX:20 y:30 width:4 ecc:CEccLevelM rotate:CCodeRotation_0 content:@"你好中国"];
+    [cpcl qrCodeUTF8X:20 y:30 width:4 ecc:CEccLevelM rotate:CCodeRotation_0 content:@"receiveOrderId_7992959117389505298"];
+    [cpcl print:NO];
 
     [self.bleHelper writeCommands:cpcl.commands];
 }

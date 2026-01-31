@@ -25,6 +25,7 @@ typedef void(^OnEscSettingChange)(ESet type, NSData *data);
 typedef void(^OnTsplDataReceived)(TReceivedType type, NSData *data);
 typedef void(^OnCpclDataReceived)(CReceivedType type, NSData *data);
 typedef void(^OnDataReceived)(NSData *data);
+typedef void(^OnWriteComplete)(void);
 
 @protocol BleHelperDelegate <NSObject>
 
@@ -55,6 +56,9 @@ typedef void(^OnDataReceived)(NSData *data);
 @property(copy, nonatomic) OnTsplDataReceived onTsplDataReceived;
 /// 打印主动上报回调 - cpcl反馈
 @property(copy, nonatomic) OnCpclDataReceived onCpclDataReceived;
+
+/// 写入完成回调
+@property(copy, nonatomic) OnWriteComplete onWriteComplete;
 
 + (instancetype)shareInstance;
 

@@ -16,5 +16,8 @@
 // 弗洛伊德-斯坦伯格抖动算法
 + (UIImage *)ditheringByFloydSteinberg:(UIImage *)image;
 
+
++ (UIImage *)atkinsonDitheringImage:(UIImage *)image;
+
 @end
 
