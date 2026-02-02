@@ -17,14 +17,14 @@
         </placeholder>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
-            <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="2JV-h0-iuF">
-                    <rect key="frame" x="0.0" y="127.99999999999997" width="375" height="310.33333333333326"/>
+                    <rect key="frame" x="0.0" y="127.99999999999997" width="393" height="310.33333333333326"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sev-9g-S2u">
-                            <rect key="frame" x="0.0" y="0.0" width="375" height="34.333333333333336"/>
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="34.333333333333336"/>
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="plain" title="电池电量"/>
                             <connections>
@@ -32,7 +32,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uIP-pM-DDE">
-                            <rect key="frame" x="0.0" y="44.333333333333343" width="375" height="34.333333333333343"/>
+                            <rect key="frame" x="0.0" y="44.333333333333343" width="393" height="34.333333333333343"/>
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="plain" title="打印机状态"/>
                             <connections>
@@ -40,7 +40,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rdM-Wx-nIn">
-                            <rect key="frame" x="0.0" y="88.666666666666657" width="375" height="34.333333333333343"/>
+                            <rect key="frame" x="0.0" y="88.666666666666657" width="393" height="34.333333333333343"/>
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="plain" title="设置关机时间"/>
                             <connections>
@@ -48,7 +48,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bq7-J2-zAH">
-                            <rect key="frame" x="0.0" y="133" width="375" height="34.333333333333343"/>
+                            <rect key="frame" x="0.0" y="133" width="393" height="34.333333333333343"/>
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="plain" title="打印机所有信息"/>
                             <connections>
@@ -56,7 +56,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NN3-ok-t0i">
-                            <rect key="frame" x="0.0" y="177.33333333333331" width="375" height="34.333333333333343"/>
+                            <rect key="frame" x="0.0" y="177.33333333333331" width="393" height="34.333333333333343"/>
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="plain" title="墨盒信息"/>
                             <connections>
@@ -64,18 +64,24 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LRP-yE-AnP">
-                            <rect key="frame" x="0.0" y="221.66666666666669" width="375" height="34.333333333333314"/>
+                            <rect key="frame" x="0.0" y="221.66666666666669" width="393" height="34.333333333333314"/>
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="plain" title="打印"/>
+                            <connections>
+                                <action selector="print:" destination="-1" eventType="touchUpInside" id="uQJ-FS-PDf"/>
+                            </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="64C-lj-I0f">
-                            <rect key="frame" x="0.0" y="266" width="375" height="34.333333333333314"/>
+                            <rect key="frame" x="0.0" y="266" width="393" height="34.333333333333314"/>
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="plain" title="升级打印机"/>
+                            <connections>
+                                <action selector="ota:" destination="-1" eventType="touchUpInside" id="910-Lj-7SO"/>
+                            </connections>
                         </button>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rTW-rJ-XXy">
-                            <rect key="frame" x="0.0" y="310.33333333333331" width="375" height="0.0"/>
-                            <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                            <rect key="frame" x="0.0" y="310.33333333333331" width="393" height="0.0"/>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                             <color key="textColor" red="0.33333333333333331" green="0.63921568627450975" blue="0.30196078431372547" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                             <nil key="highlightedColor"/>
                         </label>

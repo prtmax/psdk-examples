@@ -37,27 +37,59 @@ typedef NS_ENUM(NSInteger, ReadMark) {
   
   __weak typeof(self) weakSelf = self;
   self.bleHelper.onDataReceived = ^(NSData *data) {
+    NSLog(@"onDataReceived %@", data);
+    Byte *bytes = (Byte *)[data bytes];
     switch (weakSelf.readMark) {
       case ReadMarkOperateBatVol:
         [weakSelf parseBatteryStatus:data];
+        weakSelf.readMark = ReadMarkNone;
         break;
-      case ReadMarkOperateStatus:
-        [weakSelf parsePrinterStatus:data];
+      case ReadMarkOperateStatus: {
+        NSArray<NSString *> *statuses = [weakSelf parsePrinterStatus:data];
+        weakSelf.displayLabel.text = [statuses componentsJoinedByString:@"+"];
+        weakSelf.readMark = ReadMarkNone;
+      }
         break;
       case ReadMarkOperateInfo:
         [weakSelf parseConfigResponse:data];
+        weakSelf.readMark = ReadMarkNone;
         break;
       case ReadMarkOperateInkBoxInfo:
         [weakSelf parseInkStatus:data];
+        weakSelf.readMark = ReadMarkNone;
         break;
-        
+      case ReadMarkOperatePrint: {
+        if (bytes[0] == 0xaa) {
+          weakSelf.readMark = ReadMarkNone;
+          weakSelf.displayLabel.text = @"打印进度: 100%\n打印完成";
+          break;
+        }
+        int progress = [weakSelf onPrintProcess:data];
+        weakSelf.displayLabel.text = [NSString stringWithFormat:@"打印进度: %d", progress];
+      }
+        break;
+      case ReadMarkOperateOTA: {
+          weakSelf.readMark = ReadMarkNone;
+          NSString *str = data.toRawString;
+          weakSelf.displayLabel.text = [str containsString:@"Error"] ? @"升级失败" :@"升级成功";
+      }
+        break;
+      case ReadMarkNone:
       default:
-        weakSelf.displayLabel.text = @"";
         break;
     }
-    
-    weakSelf.readMark = ReadMarkNone;
+  
+    if (bytes[0] == 0xff) {
+      NSArray<NSString *> *statuses = [weakSelf parsePrinterStatus:data];
+      weakSelf.displayLabel.text = [statuses componentsJoinedByString:@"+"];
+    }
   };
+  [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(bleStateDisconnected) name:@"BleStateDisconnected" object:nil];
+}
+
+- (void)bleStateDisconnected {
+  NSLog(@"设备已断开");
+  [self.navigationController popViewControllerAnimated:YES];
 }
 
 #pragma mark - click event
@@ -98,6 +130,37 @@ typedef NS_ENUM(NSInteger, ReadMark) {
   self.readMark = ReadMarkOperateInkBoxInfo;
   [self.rgbCommand clean];
   [self.rgbCommand inkBoxInfo];
+  [self.bleHelper writeCommands:self.rgbCommand.commands];
+}
+
+/// 打印图片
+- (IBAction)print:(id)sender {
+  UIImage *image = [UIImage imageNamed:@"caomei.jpg"];
+  self.readMark = ReadMarkOperatePrint;
+  NSMutableData *data = [NSMutableData data];
+  [self.rgbCommand clean];
+  [self.rgbCommand pageWidth:44 height:60];
+  [self.rgbCommand cls];
+  for (NSData *da in self.rgbCommand.commands) {
+    [data appendData:da];
+  }
+//  * @param quality  图片质量（0:快速 1:精细 2:照片）
+//  * @param mode  0:覆盖 1:或 2:异或 3:自定义 4:JPG 5:PNG 6:BMP
+  [self.rgbCommand image:image x:0 y:0 quality:0 mode:4];
+  [self.rgbCommand print:1];
+  
+  [self.bleHelper writeCommands:self.rgbCommand.commands];
+}
+
+/// ota 升级
+- (IBAction)ota:(id)sender{
+  NSString *filepath = [[NSBundle mainBundle] pathForResource:@"v138868.RM" ofType:nil];
+  NSData* filedata = [NSData dataWithContentsOfFile:filepath];
+  NSLog(@"filepath: %@\nfiledata: %@", filepath, filedata);
+  
+  self.readMark = ReadMarkOperateOTA;
+  [self.rgbCommand clean];
+  [self.rgbCommand ota:filedata];
   [self.bleHelper writeCommands:self.rgbCommand.commands];
 }
 
@@ -145,6 +208,29 @@ typedef NS_ENUM(NSInteger, ReadMark) {
     }
 }
 
+/// 状态掩码项
+static NSArray<NSDictionary<NSString *, id> *> *PrinterStatusMasks(void) {
+    static NSArray *masks;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        masks = @[
+            @{ @"mask": @(0x00000001), @"desc": @"开盖" },
+            @{ @"mask": @(0x00000002), @"desc": @"卡纸" },
+            @{ @"mask": @(0x00000004), @"desc": @"缺纸" },
+            @{ @"mask": @(0x00000008), @"desc": @"缺墨" },
+            @{ @"mask": @(0x00000020), @"desc": @"繁忙" },
+            @{ @"mask": @(0x00000040), @"desc": @"低压" },
+            @{ @"mask": @(0x00000100), @"desc": @"正在取消" },
+            @{ @"mask": @(0x00000200), @"desc": @"数据异常" },
+            @{ @"mask": @(0x00000400), @"desc": @"机电错误" },
+            @{ @"mask": @(0x00000800), @"desc": @"纸道有纸" },
+            @{ @"mask": @(0x00001000), @"desc": @"无墨盒" }
+        ];
+    });
+    return masks;
+}
+
+
 /**
  * 解析打印机状态（直接接收 4 字节数据）
  * @param data 4 字节 NSData
@@ -153,7 +239,7 @@ typedef NS_ENUM(NSInteger, ReadMark) {
 - (NSArray<NSString *> *)parsePrinterStatus:(NSData *)data {
     NSMutableArray<NSString *> *statuses = [NSMutableArray array];
 
-    // 校验输入长度
+    // 校验长度
     if (!data || data.length != 4) {
         [statuses addObject:@"错误: 输入必须是四个字节"];
         return statuses;
@@ -161,7 +247,7 @@ typedef NS_ENUM(NSInteger, ReadMark) {
 
     const uint8_t *bytes = data.bytes;
 
-    // 小端序转 32 位整数
+    // 小端序 → 32 位整型
     uint32_t value =
         (bytes[0] & 0xFF) |
         ((bytes[1] & 0xFF) << 8) |
@@ -174,32 +260,23 @@ typedef NS_ENUM(NSInteger, ReadMark) {
         return statuses;
     }
 
-    // 状态掩码表（等价于 Java 的 STATUS_MASKS）
-    NSDictionary<NSNumber *, NSString *> *statusMasks = @{
-        // 示例（你按协议补全）
-        @(0x00000001): @"缺纸",
-        @(0x00000002): @"开盖",
-        @(0x00000004): @"过热",
-        @(0x00000008): @"低电量"
-    };
-
-    // 遍历掩码
-    [statusMasks enumerateKeysAndObjectsUsingBlock:^(NSNumber *key, NSString *obj, BOOL *stop) {
-        uint32_t mask = key.unsignedIntValue;
+    // 遍历状态掩码（保持顺序）
+    for (NSDictionary *item in PrinterStatusMasks()) {
+        uint32_t mask = [item[@"mask"] unsignedIntValue];
         if ((value & mask) != 0) {
-            [statuses addObject:obj];
+            [statuses addObject:item[@"desc"]];
         }
-    }];
+    }
 
-    // 没有匹配到任何状态
+    // 未匹配任何状态
     if (statuses.count == 0) {
         [statuses addObject:
             [NSString stringWithFormat:@"未知状态 (0x%08X)", value]];
     }
-    self.displayLabel.text = [statuses componentsJoinedByString:@"+"];
 
     return statuses;
 }
+
 
 /**
  * 解析打印机配置响应
@@ -262,8 +339,6 @@ typedef NS_ENUM(NSInteger, ReadMark) {
         config.beepEnabled = bytes[offset] & 0xFF;
         offset++;
 
-        // 结束符 \r\n 可选校验（你 Java 里也是注释掉的）
-
         NSLog(@"打印机所有信息: %@", config);
         self.displayLabel.text = [NSString stringWithFormat:@"打印机所有信息: %@", config.description];
       
@@ -319,6 +394,36 @@ typedef NS_ENUM(NSInteger, ReadMark) {
         return 0;
     }
 }
+
+/// 打印进度解析（与 Android 逻辑完全一致）
+/// data: 必须是 5 字节，格式 FD xx xx xx xx
+/// 返回：0~100 的进度值，失败返回 -1
+- (int)onPrintProcess:(NSData *)data {
+
+    // 验证数据长度
+    if (!data || data.length != 5) {
+        return -1;
+    }
+
+    const uint8_t *bytes = data.bytes;
+
+    // 验证数据头 (0xFD)
+    if (bytes[0] != 0xFD) {
+        return -1;
+    }
+
+    // 取最后 1 个字节作为进度（0~255）
+    int progress = bytes[4] & 0xFF;
+
+    // 验证进度范围 (0~100)
+    if (progress > 100) {
+        return -1;
+    }
+
+    NSLog(@"打印进度: %d", progress);
+    return progress;
+}
+
 
 
 @end

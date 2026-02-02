@@ -89,4 +89,12 @@
  */
 - (void)setShutdownTime:(int)time;
 
+#pragma mark - OTA 升级
+/**
+ * OTA 升级
+ *
+ * @param data 固件数据
+ */
+- (void)ota:(NSData *)data;
+
 @end
