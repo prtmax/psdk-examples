@@ -260,6 +260,14 @@ class _MyHomePageState extends State<MyHomePage> {
                         child: const Text('走纸校准'),
                       ),
                     ),
+                    SizedBox(
+                      width: (MediaQuery.of(context).size.width - 64) / 3,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () => doSetDensity(),
+                        child: const Text('设置浓度'),
+                      ),
+                    ),
                   ],
                 ),
             ],
@@ -696,6 +704,17 @@ class _MyHomePageState extends State<MyHomePage> {
     } finally {
       SmartDialog.dismiss();
     }
+  }
+
+  /// 设置浓度
+  Future<void> doSetDensity() async {
+    if (connectedDevice == null) {
+      SmartDialog.showToast('未连接打印机');
+      return;
+    }
+    ///0 1 2 对应低中高
+    Uint8List value = Printer().rawESC().thickness(thickness: 1).command().binary();
+    await safeWrite(value);
   }
 
   Future<void> doCPCLModel() async {
