@@ -16,6 +16,7 @@ import 'package:psdk_fruit_cpcl/psdk_fruit_cpcl.dart';
 import 'package:psdk_fruit_esc/psdk_fruit_esc.dart';
 import 'package:psdk_fruit_tspl/psdk_fruit_tspl.dart';
 import 'bluetooth/view.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -94,69 +95,175 @@ class _MyHomePageState extends State<MyHomePage> {
         )
       ]),
       body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: <Widget>[
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: SizedBox(
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: () => Get.toNamed('/bluetooth'),
-                        child: const Text('蓝牙连接'),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 20),
-                  Expanded(
-                    child: SizedBox(
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: () => Get.toNamed('/tcp'),
-                        child: const Text('tcp连接'),
-                      ),
-                    ),
-                  ),
-                  if (Platform.isAndroid || Platform.isWindows) const SizedBox(width: 20),
-                  if (Platform.isAndroid || Platform.isWindows)
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: <Widget>[
+              Padding(
+                padding: const EdgeInsets.only(bottom: 16.0),
+                child: Row(
+                  children: [
                     Expanded(
                       child: SizedBox(
                         height: 50,
                         child: ElevatedButton(
-                          onPressed: () => Get.toNamed('/usb'),
-                          child: const Text('usb连接'),
+                          onPressed: () => Get.toNamed('/bluetooth'),
+                          child: const Text('蓝牙连接'),
                         ),
                       ),
                     ),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: SizedBox(
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: () => Get.toNamed('/tcp'),
+                          child: const Text('tcp连接'),
+                        ),
+                      ),
+                    ),
+                    if (Platform.isAndroid || Platform.isWindows) const SizedBox(width: 20),
+                    if (Platform.isAndroid || Platform.isWindows)
+                      Expanded(
+                        child: SizedBox(
+                          height: 50,
+                          child: ElevatedButton(
+                            onPressed: () => Get.toNamed('/usb'),
+                            child: const Text('usb连接'),
+                          ),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              buildChoiceClip(),
+              const SizedBox(height: 20),
+              Wrap(
+                spacing: 16,
+                runSpacing: 16,
+                alignment: WrapAlignment.center,
+                children: [
+                  SizedBox(
+                    width: (MediaQuery.of(context).size.width - 64) / 3,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () => doPrintPic(),
+                      child: const Text('打印图片'),
+                    ),
+                  ),
+                  SizedBox(
+                    width: (MediaQuery.of(context).size.width - 64) / 3,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () => doPrintModel(),
+                      child: const Text('打印模板'),
+                    ),
+                  ),
+                  SizedBox(
+                    width: (MediaQuery.of(context).size.width - 64) / 3,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () => doStatus(),
+                      child: const Text('查询状态'),
+                    ),
+                  ),
                 ],
               ),
-            ),
-            buildChoiceClip(),
-            const SizedBox(height: 20),
-            SizedBox.fromSize(
-                size: const Size(145, 50),
-                child: ElevatedButton(
-                  onPressed: () => doPrintPic(),
-                  child: const Text('打印图片'),
-                )),
-            const SizedBox(height: 20),
-            SizedBox.fromSize(
-                size: const Size(145, 50),
-                child: ElevatedButton(
-                  onPressed: () => doPrintModel(),
-                  child: const Text('打印模板'),
-                )),
-            const SizedBox(height: 20),
-            SizedBox.fromSize(
-                size: const Size(145, 50),
-                child: ElevatedButton(
-                  onPressed: () => doStatus(),
-                  child: const Text('查询状态'),
-                )),
-          ],
+              const SizedBox(height: 20),
+              Wrap(
+                spacing: 16,
+                runSpacing: 16,
+                alignment: WrapAlignment.center,
+                children: [
+                  // 版本号查询按钮
+                  SizedBox(
+                    width: (MediaQuery.of(context).size.width - 64) / 3,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () => doQueryVersion(),
+                      child: const Text('版本号'),
+                    ),
+                  ),
+                  // 型号查询按钮
+                  SizedBox(
+                    width: (MediaQuery.of(context).size.width - 64) / 3,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () => doQueryModel(),
+                      child: const Text('型号'),
+                    ),
+                  ),
+                  // SN号查询按钮
+                  SizedBox(
+                    width: (MediaQuery.of(context).size.width - 64) / 3,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () => doQuerySN(),
+                      child: const Text('SN号'),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              if (Printer.curCmd == 2)
+                Wrap(
+                  spacing: 16,
+                  runSpacing: 16,
+                  alignment: WrapAlignment.center,
+                  children: [
+                    SizedBox(
+                      width: (MediaQuery.of(context).size.width - 64) / 3,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () => doQueryBattery(),
+                        child: const Text('电量查询'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: (MediaQuery.of(context).size.width - 64) / 3,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () => doQueryAllInfo(),
+                        child: const Text('设备所有信息'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: (MediaQuery.of(context).size.width - 64) / 3,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () => doGetShutdownTime(),
+                        child: const Text('获取关机时间'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: (MediaQuery.of(context).size.width - 64) / 3,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () => doSetPaperType(),
+                        child: const Text('设置纸张类型'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: (MediaQuery.of(context).size.width - 64) / 3,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () => doSetShutdownTime(),
+                        child: const Text('设置关机时间'),
+                      ),
+                    ),
+                    SizedBox(
+                      width: (MediaQuery.of(context).size.width - 64) / 3,
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () => doLearnGap(),
+                        child: const Text('走纸校准'),
+                      ),
+                    ),
+                  ],
+                ),
+            ],
+          ),
         ),
       ),
     );
@@ -226,6 +333,7 @@ class _MyHomePageState extends State<MyHomePage> {
           await safeWrite(value);
           break;
         case 2:
+          Printer.readMark = ReadMark.OPERATE_PRINT;
           Uint8List value = Printer().rawESC().enable().wakeup().image(arg: EImage(image: imageBytes)).stopJob().command().binary();
           await safeWrite(value);
           break;
@@ -283,6 +391,308 @@ class _MyHomePageState extends State<MyHomePage> {
           await safeWrite(value);
           break;
       }
+    } catch (e) {
+      SmartDialog.showToast('状态查询失败：${e.toString()}');
+    } finally {
+      SmartDialog.dismiss();
+    }
+  }
+
+  ///查询版本号(返回结果在startRead()回调里)
+  Future<void> doQueryVersion() async {
+    if (connectedDevice == null) {
+      SmartDialog.showToast('未连接打印机');
+      return;
+    }
+    try {
+      SmartDialog.showLoading(msg: '查询版本号中');
+      Printer.readMark = ReadMark.OPERATE_PRINTERVER;
+      switch (Printer.curCmd) {
+        case 0: // TSPL
+          Uint8List value = Printer().rawTSPL().version().command().binary();
+          await safeWrite(value);
+          break;
+        case 1: // CPCL
+          Uint8List value = Printer().rawCPCL().version().command().binary();
+          await safeWrite(value);
+          break;
+        case 2: // ESC
+          Uint8List value = Printer().rawESC().version().command().binary();
+          await safeWrite(value);
+          break;
+      }
+    } catch (e) {
+      SmartDialog.showToast('版本号查询失败：${e.toString()}');
+    } finally {
+      SmartDialog.dismiss();
+    }
+  }
+
+  /// 查询型号
+  Future<void> doQueryModel() async {
+    if (connectedDevice == null) {
+      SmartDialog.showToast('未连接打印机');
+      return;
+    }
+    try {
+      SmartDialog.showLoading(msg: '查询型号中');
+      Printer.readMark = ReadMark.OPERATE_MODEL;
+      switch (Printer.curCmd) {
+        case 0: // TSPL
+          Uint8List value = Printer().rawTSPL().mddle().command().binary();
+          await safeWrite(value);
+          break;
+        case 1: // CPCL
+          Uint8List value = Printer().rawCPCL().model().command().binary();
+          await safeWrite(value);
+          break;
+        case 2: // ESC
+          Uint8List value = Printer().rawESC().model().command().binary();
+          await safeWrite(value);
+          break;
+      }
+    } catch (e) {
+      SmartDialog.showToast('型号查询失败：${e.toString()}');
+    } finally {
+      SmartDialog.dismiss();
+    }
+  }
+
+  /// 查询SN号
+  Future<void> doQuerySN() async {
+    if (connectedDevice == null) {
+      SmartDialog.showToast('未连接打印机');
+      return;
+    }
+    try {
+      SmartDialog.showLoading(msg: '查询SN号中');
+      Printer.readMark = ReadMark.OPERATE_SN;
+      switch (Printer.curCmd) {
+        case 0: // TSPL
+          Uint8List value = Printer().rawTSPL().sn().command().binary();
+          await safeWrite(value);
+          break;
+        case 1: // CPCL
+          Uint8List value = Printer().rawCPCL().sn().command().binary();
+          await safeWrite(value);
+          break;
+        case 2: // ESC
+          Uint8List value = Printer().rawESC().sn().command().binary();
+          await safeWrite(value);
+          break;
+      }
+    } catch (e) {
+      SmartDialog.showToast('SN号查询失败：${e.toString()}');
+    } finally {
+      SmartDialog.dismiss();
+    }
+  }
+
+  /// 电量查询
+  Future<void> doQueryBattery() async {
+    if (connectedDevice == null) {
+      SmartDialog.showToast('未连接打印机');
+      return;
+    }
+    try {
+      SmartDialog.showLoading(msg: '查询电量中');
+      Printer.readMark = ReadMark.OPERATE_BATVOL;
+      Uint8List value = Printer().rawESC().batteryVolume().command().binary();
+      await safeWrite(value);
+    } catch (e) {
+      SmartDialog.showToast('电量查询失败：${e.toString()}');
+    } finally {
+      SmartDialog.dismiss();
+    }
+  }
+
+  /// 设备所有信息查询
+  Future<void> doQueryAllInfo() async {
+    if (connectedDevice == null) {
+      SmartDialog.showToast('未连接打印机');
+      return;
+    }
+    try {
+      SmartDialog.showLoading(msg: '查询设备所有信息中');
+      Printer.readMark = ReadMark.OPERATE_INFO;
+      Uint8List value = Printer().rawESC().info().command().binary();
+      await safeWrite(value);
+    } catch (e) {
+      SmartDialog.showToast('设备所有信息查询失败：${e.toString()}');
+    } finally {
+      SmartDialog.dismiss();
+    }
+  }
+
+  /// 获取关机时间
+  Future<void> doGetShutdownTime() async {
+    if (connectedDevice == null) {
+      SmartDialog.showToast('未连接打印机');
+      return;
+    }
+    try {
+      SmartDialog.showLoading(msg: '获取关机时间中');
+      Printer.readMark = ReadMark.OPERATE_GET_TIME;
+      Uint8List value = Printer().rawESC().getShutdownTime().command().binary();
+      await safeWrite(value);
+    } catch (e) {
+      SmartDialog.showToast('获取关机时间失败：${e.toString()}');
+    } finally {
+      SmartDialog.dismiss();
+    }
+  }
+
+  /// 设置纸张类型
+  Future<void> doSetPaperType() async {
+    if (connectedDevice == null) {
+      SmartDialog.showToast('未连接打印机');
+      return;
+    }
+
+    // 纸张类型选项
+    ///A4机型纸张类型
+    final List<PaperTypeItem> paperTypes = [
+      PaperTypeItem(name: "标签纸", type: Type.noDryAdhesivePaper),
+      PaperTypeItem(name: "连续纸", type: Type.continuousReelPaper),
+      PaperTypeItem(name: "折叠黑标纸", type: Type.foldedBlackLabelPaper),
+      PaperTypeItem(name: "折叠打孔纸", type: Type.holePaper),
+    ];
+
+    ///口袋机型纸张类型
+    final List<PaperTypeItem> paperTypesQ3 = [
+      PaperTypeItem(name: "标签纸", type: TypeQ3.noDryAdhesivePaper),
+      PaperTypeItem(name: "连续纸", type: TypeQ3.continuousReelPaper),
+      PaperTypeItem(name: "透明黑标纸", type: TypeQ3.transparentBlackLabelPaper),
+    ];
+    PaperTypeItem selectedPaper = paperTypes[0];
+
+    await Get.dialog(
+      StatefulBuilder(
+        builder: (BuildContext dialogContext, StateSetter dialogSetState) {
+          return AlertDialog(
+            title: const Text('选择纸张类型'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: paperTypes.map((paper) {
+                return RadioListTile<PaperTypeItem>(
+                  title: Text(paper.name),
+                  value: paper,
+                  groupValue: selectedPaper,
+                  onChanged: (value) {
+                    if (value != null) {
+                      dialogSetState(() {
+                        selectedPaper = value;
+                      });
+                    }
+                  },
+                );
+              }).toList(),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Get.back(); // 关闭弹窗
+                },
+                child: const Text('取消'),
+              ),
+              TextButton(
+                onPressed: () async {
+                  Get.back();
+                  try {
+                    SmartDialog.showLoading(msg: '设置纸张类型中');
+                    Uint8List value = Printer().rawESC().paperType(arg: EPaperType(type: selectedPaper.type)).command().binary();
+                    // Uint8List value = Printer().rawESC().paperTypeQ3(arg: EPaperTypeQ3(type: selectedPaper.type)).command().binary();
+                    await safeWrite(value);
+                  } catch (e) {
+                    SmartDialog.showToast('纸张类型设置失败：${e.toString()}');
+                  } finally {
+                    SmartDialog.dismiss();
+                  }
+                },
+                child: const Text('确认'),
+              ),
+            ],
+          );
+        },
+      ),
+    );
+  }
+
+  /// 设置关机时间
+  Future<void> doSetShutdownTime() async {
+    if (connectedDevice == null) {
+      SmartDialog.showToast('未连接打印机');
+      return;
+    }
+
+    TextEditingController timeController = TextEditingController(text: '30');
+
+    await Get.dialog(
+      AlertDialog(
+        title: const Text('设置关机时间（分钟）'),
+        content: TextField(
+          controller: timeController,
+          keyboardType: TextInputType.number,
+          inputFormatters: [
+            FilteringTextInputFormatter.digitsOnly,
+          ],
+          decoration: const InputDecoration(
+            hintText: '请输入关机时间（分钟）',
+            border: OutlineInputBorder(),
+            helperText: '0表示永不关机',
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Get.back();
+            },
+            child: const Text('取消'),
+          ),
+          TextButton(
+            onPressed: () async {
+              String timeStr = timeController.text.trim();
+              if (timeStr.isEmpty) {
+                SmartDialog.showToast('请输入关机时间');
+                return;
+              }
+              int? shutdownTime = int.tryParse(timeStr);
+              if (shutdownTime == null || shutdownTime < 0) {
+                SmartDialog.showToast('请输入有效的非负数字');
+                return;
+              }
+              Get.back();
+              try {
+                SmartDialog.showLoading(msg: '设置关机时间中');
+                Printer.readMark = ReadMark.OPERATE_SET_TIME;
+                Uint8List value = Printer().rawESC().setShutdownTime(time: shutdownTime).command().binary();
+                await safeWrite(value);
+              } catch (e) {
+                SmartDialog.showToast('关机时间设置失败：${e.toString()}');
+              } finally {
+                SmartDialog.dismiss();
+              }
+            },
+            child: const Text('确认'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  /// 口袋打印机 校正纸张（需要先设置纸张类型后再调用）
+  Future<void> doLearnGap() async {
+    if (connectedDevice == null) {
+      SmartDialog.showToast('未连接打印机');
+      return;
+    }
+    try {
+      SmartDialog.showLoading(msg: '校正纸张中');
+      Printer.readMark = ReadMark.OPERATE_LEARN_GAP;
+      Uint8List value = Printer().rawESC().learnLabelGap().command().binary();
+      await safeWrite(value);
+    } catch (e) {
+      SmartDialog.showToast('校正纸张失败：${e.toString()}');
     } finally {
       SmartDialog.dismiss();
     }
@@ -323,7 +733,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   rotation: CRotation.rotation_90,
                   bold: true,
                   alpha: 255,
-                )))//图片形式的text 支持外国语种
+                ))) //图片形式的text 支持外国语种
         .text(arg: CText(textX: 598 - 56 - 5, textY: 88 + 128 + 80 + 104, content: "派", font: CFont.tss24))
         .text(arg: CText(textX: 598 - 56 - 5, textY: 88 + 128 + 80 + 160, content: "件", font: CFont.tss24))
         .text(arg: CText(textX: 598 - 56 - 5, textY: 88 + 128 + 80 + 208, content: "联", font: CFont.tss24))
@@ -454,7 +864,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 Text(
                   "未连接",
-                  style: TextStyle(color: Color(0xFFC7C7C7), fontSize: 14, fontWeight: FontWeight.normal),
+                  style: TextStyle(color: Colors.blue, fontSize: 14, fontWeight: FontWeight.normal),
                 ),
               ],
             )
@@ -465,7 +875,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   maxWidth: 100,
                   child: Text(
                     connectedDevice.deviceName() ?? "",
-                    style: const TextStyle(color: Colors.white, fontSize: 14, fontWeight: FontWeight.normal),
+                    style: const TextStyle(color: Colors.blue, fontSize: 14, fontWeight: FontWeight.normal),
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),

@@ -1,7 +1,7 @@
 import 'dart:async';
-import 'dart:typed_data';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:psdk_device_adapter/psdk_device_adapter.dart';
+import 'package:psdk_frame_father/father/types/hex_output.dart';
 import 'package:psdk_fruit_cpcl/psdk_fruit_cpcl.dart';
 import 'package:psdk_fruit_esc/psdk_fruit_esc.dart';
 import 'package:psdk_fruit_tspl/psdk_fruit_tspl.dart';
@@ -33,35 +33,102 @@ class Printer {
 
   startRead() {
     streamRead?.cancel();
-    streamRead = tspl().read(options: ReadOptions(timeout: 2)).listen((event) {
+    streamRead = tspl().read(options: ReadOptions(timeout: 2)).listen((bytes) {
       switch (readMark) {
+        case ReadMark.OPERATE_BATVOL:
+          readMark = ReadMark.NONE;
+          if (bytes.length == 2) {
+            int battery = bytes[1] > 100 ? 100 : bytes[1];
+            SmartDialog.showToast('电量：$battery');
+            switch (bytes[0]) {
+              case 0x00:
+                SmartDialog.showToast('未充电');
+                break;
+              case 0x01:
+                SmartDialog.showToast('未充电');
+                break;
+              case 0x02:
+                SmartDialog.showToast('充电中');
+                break;
+              case 0x03:
+                SmartDialog.showToast('充电完成');
+                break;
+            }
+          }
+          break;
         case ReadMark.OPERATE_PRINTERVER:
           readMark = ReadMark.NONE;
-          String printerVersion = String.fromCharCodes(event);
+          String printerVersion = String.fromCharCodes(bytes);
           SmartDialog.showToast(printerVersion);
           break;
         case ReadMark.OPERATE_SN:
           readMark = ReadMark.NONE;
-          String printerSN = String.fromCharCodes(event);
+          String printerSN = String.fromCharCodes(bytes);
           SmartDialog.showToast(printerSN);
           break;
         case ReadMark.OPERATE_MODEL:
           readMark = ReadMark.NONE;
-          String printerModel = String.fromCharCodes(event);
+          String printerModel = String.fromCharCodes(bytes);
           SmartDialog.showToast(printerModel);
+          break;
+        case ReadMark.OPERATE_INFO:
+          readMark = ReadMark.NONE;
+          String printerInfo = String.fromCharCodes(bytes);
+          SmartDialog.showToast(printerInfo);
+          break;
+        case ReadMark.OPERATE_GET_TIME:
+          readMark = ReadMark.NONE;
+          if (bytes.length == 2) {
+            int time = int.parse(HexOutput.def().format(bytes), radix: 16);
+            SmartDialog.showToast('关机时间：$time分钟');
+          }
+          break;
+        case ReadMark.OPERATE_SET_TIME:
+          readMark = ReadMark.NONE;
+          if (HexOutput.def().format(bytes) == "4f4b") {
+            SmartDialog.showToast('设置关机时间成功');
+          } else {
+            SmartDialog.showToast('设置关机时间失败');
+          }
+          break;
+        case ReadMark.OPERATE_LEARN_GAP:
+          readMark = ReadMark.NONE;
+          String backValue = String.fromCharCodes(bytes);
+          if (!(backValue.toLowerCase() == "ok")) {
+            SmartDialog.showToast('校准失败');
+          } else {
+            ///学习成功后发送定位指令
+            readMark = ReadMark.OPERATE_POSITION;
+            esc().enable().lineDot(dot: 10).position().stopJob().write();
+          }
+          break;
+        case ReadMark.OPERATE_POSITION:
+          readMark = ReadMark.NONE;
+          if (HexOutput.def().format(bytes).toLowerCase().contains("4f4b") || HexOutput.def().format(bytes).toLowerCase().contains("aa")) {
+            SmartDialog.showToast('校准成功');
+          } else {
+            SmartDialog.showToast('校准失败');
+          }
           break;
         case ReadMark.OPERATE_STATUS:
           readMark = ReadMark.NONE;
           switch (Printer.curCmd) {
             case 0:
-              doTSPLStatus(event);
+              doTSPLStatus(bytes);
               break;
             case 1:
-              doCPCLStatus(event);
+              doCPCLStatus(bytes);
               break;
             case 2:
-              doESCStatus(event);
+              doESCStatus(bytes);
               break;
+          }
+          break;
+        case ReadMark.OPERATE_PRINT:
+          readMark = ReadMark.NONE;
+          if (HexOutput.def().format(bytes).toLowerCase().contains("4f4b") || HexOutput.def().format(bytes).toLowerCase().contains("aa")) {
+            print('-------------ok------------');
+            ///打印完成 可以在这里下发第二份数据
           }
           break;
         default:
@@ -207,8 +274,22 @@ class Printer {
 
 enum ReadMark {
   NONE,
+  OPERATE_PRINT,//打印
   OPERATE_PRINTERVER, //打印机软件版本号
   OPERATE_SN, //打印机SN号
   OPERATE_MODEL, //打印机型号
   OPERATE_STATUS, //打印机状态
+  OPERATE_INFO, //设备所有信息
+  OPERATE_BATVOL, //电量查询
+  OPERATE_SET_TIME, //设置关机时间
+  OPERATE_GET_TIME, //获取关机时间
+  OPERATE_LEARN_GAP, //学习缝隙
+  OPERATE_POSITION, //走纸定位
+}
+
+class PaperTypeItem {
+  final String name;
+  final dynamic type;
+
+  PaperTypeItem({required this.name, required this.type});
 }
