@@ -21,7 +21,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="2JV-h0-iuF">
-                    <rect key="frame" x="0.0" y="127.99999999999997" width="393" height="310.33333333333326"/>
+                    <rect key="frame" x="0.0" y="127.99999999999997" width="393" height="443.33333333333326"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sev-9g-S2u">
                             <rect key="frame" x="0.0" y="0.0" width="393" height="34.333333333333336"/>
@@ -63,8 +63,32 @@
                                 <action selector="inkBoxInfo:" destination="-1" eventType="touchUpInside" id="WbP-Mh-CIH"/>
                             </connections>
                         </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LRP-yE-AnP">
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Iu-Zp-4yB">
                             <rect key="frame" x="0.0" y="221.66666666666669" width="393" height="34.333333333333314"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="退纸"/>
+                            <connections>
+                                <action selector="ejectPaper" destination="-1" eventType="touchUpInside" id="KBM-sg-Gcr"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RSh-7F-rUZ">
+                            <rect key="frame" x="0.0" y="266" width="393" height="34.333333333333314"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="清洁打印头"/>
+                            <connections>
+                                <action selector="printerClean" destination="-1" eventType="touchUpInside" id="z7N-pC-yEA"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0rP-Fl-7hw">
+                            <rect key="frame" x="0.0" y="310.33333333333331" width="393" height="34.333333333333314"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="打印自测页"/>
+                            <connections>
+                                <action selector="selfTest" destination="-1" eventType="touchUpInside" id="Jua-cl-5pV"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LRP-yE-AnP">
+                            <rect key="frame" x="0.0" y="354.66666666666669" width="393" height="34.333333333333314"/>
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="plain" title="打印"/>
                             <connections>
@@ -72,7 +96,7 @@
                             </connections>
                         </button>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="64C-lj-I0f">
-                            <rect key="frame" x="0.0" y="266" width="393" height="34.333333333333314"/>
+                            <rect key="frame" x="0.0" y="399" width="393" height="34.333333333333314"/>
                             <state key="normal" title="Button"/>
                             <buttonConfiguration key="configuration" style="plain" title="升级打印机"/>
                             <connections>
@@ -80,7 +104,7 @@
                             </connections>
                         </button>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rTW-rJ-XXy">
-                            <rect key="frame" x="0.0" y="310.33333333333331" width="393" height="0.0"/>
+                            <rect key="frame" x="0.0" y="443.33333333333337" width="393" height="0.0"/>
                             <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                             <color key="textColor" red="0.33333333333333331" green="0.63921568627450975" blue="0.30196078431372547" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                             <nil key="highlightedColor"/>

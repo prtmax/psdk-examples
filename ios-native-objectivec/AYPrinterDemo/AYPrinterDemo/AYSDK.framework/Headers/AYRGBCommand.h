@@ -80,6 +80,21 @@
  */
 - (void)batteryVolume;
 
+/**
+ * 退纸
+ */
+- (void)ejectPaper;
+
+/**
+ * 清洁打印头
+ */
+- (void)printerClean;
+
+/**
+ * 打印自测页
+ */
+- (void)selfTest;
+
 #pragma mark - 系统设置
 
 /**

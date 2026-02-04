@@ -16,7 +16,9 @@ typedef NS_ENUM(NSInteger, ReadMark) {
     ReadMarkOperateShutdownTime,   // 设置关机时间
     ReadMarkOperateInfo,           // 设备所有信息
     ReadMarkOperateInkBoxInfo,     // 墨盒信息
-    ReadMarkOperateOTA             // OTA 升级
+    ReadMarkOperateOTA,            // OTA 升级
+    ReadMarkOperatePrinterClean,   // 清洁打印头
+    ReadMarkOperateEjectPaper       // 退纸 / 回纸
 };
 
 
@@ -37,7 +39,7 @@ typedef NS_ENUM(NSInteger, ReadMark) {
   
   __weak typeof(self) weakSelf = self;
   self.bleHelper.onDataReceived = ^(NSData *data) {
-    NSLog(@"onDataReceived %@", data);
+    NSLog(@"onDataReceived %@ - %@", data, data.toRawString);
     Byte *bytes = (Byte *)[data bytes];
     switch (weakSelf.readMark) {
       case ReadMarkOperateBatVol:
@@ -57,6 +59,16 @@ typedef NS_ENUM(NSInteger, ReadMark) {
       case ReadMarkOperateInkBoxInfo:
         [weakSelf parseInkStatus:data];
         weakSelf.readMark = ReadMarkNone;
+        break;
+      case ReadMarkOperateEjectPaper:
+        break;
+      case ReadMarkOperatePrinterClean: {
+        weakSelf.readMark = ReadMarkNone;
+        if ([data.toRawString hasPrefix:@"PRINTERCLEAN FINISH"]) {
+          NSLog(@"清洁完成");
+          weakSelf.displayLabel.text = @"清洁完成";
+        }
+      }
         break;
       case ReadMarkOperatePrint: {
         if (bytes[0] == 0xaa) {
@@ -80,8 +92,8 @@ typedef NS_ENUM(NSInteger, ReadMark) {
     }
   
     if (bytes[0] == 0xff) {
-      NSArray<NSString *> *statuses = [weakSelf parsePrinterStatus:data];
-      weakSelf.displayLabel.text = [statuses componentsJoinedByString:@"+"];
+      NSString *statuses = [weakSelf parseStatus:data];
+      weakSelf.displayLabel.text = statuses;
     }
   };
   [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(bleStateDisconnected) name:@"BleStateDisconnected" object:nil];
@@ -130,6 +142,30 @@ typedef NS_ENUM(NSInteger, ReadMark) {
   self.readMark = ReadMarkOperateInkBoxInfo;
   [self.rgbCommand clean];
   [self.rgbCommand inkBoxInfo];
+  [self.bleHelper writeCommands:self.rgbCommand.commands];
+}
+
+/// 退纸
+- (IBAction)ejectPaper {
+  self.readMark = ReadMarkOperateEjectPaper;
+  [self.rgbCommand clean];
+  [self.rgbCommand ejectPaper];
+  [self.bleHelper writeCommands:self.rgbCommand.commands];
+}
+
+/// 清洁打印头
+- (IBAction)printerClean {
+  self.readMark = ReadMarkOperatePrinterClean;
+  [self.rgbCommand clean];
+  [self.rgbCommand printerClean];
+  [self.bleHelper writeCommands:self.rgbCommand.commands];
+}
+
+/// 打印自测页
+- (IBAction)selfTest {
+  self.readMark = ReadMarkNone;
+  [self.rgbCommand clean];
+  [self.rgbCommand selfTest];
   [self.bleHelper writeCommands:self.rgbCommand.commands];
 }
 
@@ -230,7 +266,6 @@ static NSArray<NSDictionary<NSString *, id> *> *PrinterStatusMasks(void) {
     return masks;
 }
 
-
 /**
  * 解析打印机状态（直接接收 4 字节数据）
  * @param data 4 字节 NSData
@@ -276,6 +311,86 @@ static NSArray<NSDictionary<NSString *, id> *> *PrinterStatusMasks(void) {
 
     return statuses;
 }
+
+
+#pragma mark - 解析打印机状态数据
+- (NSString *)parseStatus:(NSData *)data {
+    if (!data || data.length != 5) {
+        return @"无效数据: 数据长度错误";
+    }
+
+    const uint8_t *bytes = data.bytes;
+
+    // 验证数据头
+    if (bytes[0] != 0xFF) {
+        return @"无效数据: 数据头不匹配";
+    }
+
+    // 组合 4 字节状态码（大端）
+    uint32_t statusType =
+        ((uint32_t)bytes[1] << 24) |
+        ((uint32_t)bytes[2] << 16) |
+        ((uint32_t)bytes[3] << 8)  |
+        (uint32_t)bytes[4];
+
+    NSString *status = [self mapStatusToString:statusType];
+    NSLog(@"主动上报状态: %@", status);
+    return status;
+}
+
+#pragma mark - 状态码映射
+- (NSString *)mapStatusToString:(uint32_t)statusType {
+    if (statusType == 0x00000000) {
+        return @"正常";
+    }
+
+    NSMutableArray<NSString *> *statusList = [NSMutableArray array];
+
+    if (statusType & 0x00000001) {
+        [statusList addObject:@"开盖"];
+    }
+    if (statusType & 0x00000002) {
+        [statusList addObject:@"卡纸"];
+    }
+    if (statusType & 0x00000004) {
+        [statusList addObject:@"缺纸"];
+    }
+    if (statusType & 0x00000008) {
+        [statusList addObject:@"缺墨"];
+    }
+    if (statusType & 0x00000040) {
+        [statusList addObject:@"低压"];
+    }
+    if (statusType & 0x00000100) {
+        [statusList addObject:@"正在取消"];
+    }
+    if (statusType & 0x00000200) {
+        [statusList addObject:@"数据异常"];
+    }
+    if (statusType & 0x00000400) {
+        [statusList addObject:@"机电错误"];
+    }
+    if (statusType & 0x00000800) {
+        [statusList addObject:@"纸道有纸"];
+    }
+    if (statusType & 0x00001000) {
+        [statusList addObject:@"无墨盒"];
+    }
+
+    if (statusType & 0x10000000) {
+        [statusList addObject:@"充电中"];
+    }
+    if (statusType & 0x20000000) {
+        [statusList addObject:@"充电完成"];
+    }
+
+    if (statusList.count > 0) {
+        return [statusList componentsJoinedByString:@" + "];
+    } else {
+        return [NSString stringWithFormat:@"未知状态: 0x%08X", statusType];
+    }
+}
+
 
 
 /**
