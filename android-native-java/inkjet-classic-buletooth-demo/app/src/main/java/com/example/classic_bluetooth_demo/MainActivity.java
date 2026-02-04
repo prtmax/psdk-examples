@@ -282,7 +282,9 @@ public class MainActivity extends Activity {
           onReceive((byte[]) msg.obj);
           break;
         case StatusFLAG:
-          parseStatus((byte[]) msg.obj);
+          String status = parseStatus((byte[]) msg.obj);
+          Log.e(TAG, "打印机上报状态: " + status);
+          show("打印机上报状态: " + status);
           break;
         case PrintProcessFLAG:
           onPrintProcess((byte[]) msg.obj);
@@ -307,7 +309,7 @@ public class MainActivity extends Activity {
   }};
 
   /**
-   * 解析打印机状态 (直接接收字节数组)
+   * 解析打印机状态
    *
    * @param bytes 四字节数组
    * @return 状态列表，如果正常则返回包含"正常"的列表
@@ -315,35 +317,30 @@ public class MainActivity extends Activity {
   public static List<String> parsePrinterStatus(byte[] bytes) {
     List<String> statuses = new ArrayList<>();
 
-    // 检查输入长度
     if (bytes == null || bytes.length != 4) {
       statuses.add("错误: 输入必须是四个字节");
       return statuses;
     }
 
-    // 将字节数组转换为小端序的整数值
-    int value = (bytes[0] & 0xFF) |
-            ((bytes[1] & 0xFF) << 8) |
-            ((bytes[2] & 0xFF) << 16) |
-            ((bytes[3] & 0xFF) << 24);
+    int statusCode = ((bytes[0] & 0xFF) << 24) |
+            ((bytes[1] & 0xFF) << 16) |
+            ((bytes[2] & 0xFF) << 8) |
+            (bytes[3] & 0xFF);
 
-    // 检查正常状态
-    if (value == 0) {
+    if (statusCode == 0) {
       statuses.add("正常");
       return statuses;
     }
 
-    // 检查每个状态掩码
     for (Map.Entry<Integer, String> entry : STATUS_MASKS.entrySet()) {
       int mask = entry.getKey();
-      if ((value & mask) != 0) {
+      if ((statusCode & mask) != 0) {
         statuses.add(entry.getValue());
       }
     }
 
-    // 如果没有匹配的状态
     if (statuses.isEmpty()) {
-      statuses.add("未知状态 (0x" + Integer.toHexString(value) + ")");
+      statuses.add("未知状态 (0x" + Integer.toHexString(statusCode) + ")");
     }
 
     return statuses;
