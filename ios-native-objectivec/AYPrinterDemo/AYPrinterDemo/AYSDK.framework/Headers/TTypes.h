@@ -15,6 +15,8 @@ typedef NS_ENUM(NSInteger, TReceivedType) {
     TReceivedSetOffTime,  // 设置关机时间
     TReceivedGetOffTime,  // 获取关机时间
     TReceivedStatus,      // 状态上报
+    TReceivedNotSpace,    // 空间不足
+    TReceivedSpaceEnough, // 空间足够
     TReceivedNone,
 };
 
@@ -71,4 +73,5 @@ typedef NS_ENUM(int, TFont) {
     TFontTSS24 = 3, // 24点阵
     TFontTSS28 = 4, // 28点阵
     TFontTSS32 = 5, // 32点阵
+    TFontSIMHEI = 6 //
 };

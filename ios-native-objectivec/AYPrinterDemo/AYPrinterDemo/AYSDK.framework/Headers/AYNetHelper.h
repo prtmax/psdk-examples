@@ -18,6 +18,7 @@ typedef NS_ENUM(NSInteger, NetState) {
 
 - (void)netConnectStateDidChange:(NetState)state;
 - (void)netOnReceive:(NSData *_Nullable)data;
+- (void)netDidWriteData;
 
 @end
 

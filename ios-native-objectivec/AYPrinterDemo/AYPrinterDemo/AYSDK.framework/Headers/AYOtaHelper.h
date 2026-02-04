@@ -6,12 +6,7 @@
 //
 
 #import <Foundation/Foundation.h>
-
-typedef NS_ENUM(NSInteger, OtaState) {
-    OtaStateStart,
-    OtaStateFail,
-    OtaStateSuccess,
-};
+#import <AYSDK/ETypes.h>
 
 typedef void(^OnOtaProgressChange)(int progress);
 typedef void(^OnOtaStateChange)(OtaState state);

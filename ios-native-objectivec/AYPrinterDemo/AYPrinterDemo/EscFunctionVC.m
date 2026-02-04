@@ -265,7 +265,7 @@
 /// 连续纸
 - (IBAction)continuousPrint {
 //    Xnip2024-09-07_08-24-20.png
-    UIImage *image = [UIImage imageNamed:@"dithered-image4.png"];
+    UIImage *image = [UIImage imageNamed:@"dithered-image (2).png"];
 //    image = [image dither];
 //
 //  image = [AYImageEnhance ditheringByFloydSteinberg:image];

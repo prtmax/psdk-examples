@@ -1,3 +1,33 @@
+## 2025-08-25
+
+### Changed
+
+- improve something
+
+## 2025-08-13
+
+### Changed
+
+- improve esc ota update
+
+## 2025-07-25
+
+### Changed
+
+- add tspl command(label、bline)
+
+## 2025-07-09
+
+### Changed
+
+- improve tspl image
+
+## 2025-06-26
+
+### Changed
+
+- improve ble
+
 ## 2025-04-11
 
 ### Changed

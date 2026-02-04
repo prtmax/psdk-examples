@@ -5,6 +5,13 @@
 //  Created by aiyin on 2023/9/14.
 //
 
+
+typedef NS_ENUM(NSInteger, OtaState) {
+    OtaStateStart,
+    OtaStateFail,
+    OtaStateSuccess,
+};
+
 typedef NS_ENUM(NSInteger, EImageMode) {
     Normal = 0,      // 正常打印
     DoubleWidth,     // 倍宽打印

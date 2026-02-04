@@ -56,6 +56,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)qrCodeX:(int)x y:(int)y width:(int)width ecc:(CEccLevel)ecc rotate:(CCodeRotation)rotate content:(NSString *)content;
 
+- (void)qrCodeUTF8X:(int)x y:(int)y width:(int)width ecc:(CEccLevel)ecc rotate:(CCodeRotation)rotate content:(NSString *)content;
+
 /**
  * 文本加粗
  * @param bold 是否加粗

@@ -32,6 +32,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// 设置动态ip
 - (void)setDHCP;
 
+/// 重置
+- (void)reset;
+
 /// 获取 wifi ip
 - (void)getIP;
 
@@ -40,6 +43,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 /// 获取 wifi 网关
 - (void)getGateway;
+
+/// 获取 wifi 信息
+- (void)getWifiInfo;
 
 @end
 

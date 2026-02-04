@@ -33,6 +33,8 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)direction:(TOutDirection)direction mirror:(BOOL)mirror;
 
+- (void)reference:(int)x y:(int)y;
+
 /**
  * 设置打印速度
  */
@@ -44,9 +46,37 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)density:(int)density;
 
+/**
+ * 定位缝隙
+ * @param enable true:定位 false:不定位
+ */
 - (void)enableGap:(BOOL)enable;
 
+/**
+ * 使能切刀
+ * @param enable true:使能 false:不使能
+ */
 - (void)enableCut:(BOOL)enable;
+
+/**
+* 连续纸打印
+*/
+- (void)continuous;
+
+/**
+* 标签纸打印
+*/
+- (void)label;
+
+/**
+* 黑标纸打印
+*/
+- (void)bline;
+
+/**
+* 热敏模式
+*/
+- (void)ribbon:(BOOL)ribbon;
 
 /**
  * 绘制线条
@@ -219,6 +249,16 @@ NS_ASSUME_NONNULL_BEGIN
   * 获取关机时间 , 回复分钟数：XXXX（unsigned int，00表示永不自动关机）
   */
 - (void)getOffTime;
+
+/**
+* 红色打印(0-15)
+*/
+- (void)setRed:(int)density;
+
+/**
+* 黑色打印
+*/
+- (void)setBlack;
 
 @end
 

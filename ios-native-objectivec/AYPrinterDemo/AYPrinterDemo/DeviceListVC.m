@@ -11,6 +11,7 @@
 #import "CpclFunctionVC.h"
 #import "WifiFunctionVC.h"
 #import "NetPrintVC.h"
+#import "RGBPrintVC.h"
 
 #define CellIdentifier @"cellId"
 
@@ -104,6 +105,12 @@
             vc.navigationItem.title = peripheral.name;
             [self.navigationController pushViewController:vc animated:YES];
         }];
+      UIAlertAction *rgbAction = [UIAlertAction actionWithTitle:@"彩喷" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+        RGBPrintVC *vc = [[RGBPrintVC alloc] init];
+          vc.navigationItem.title = peripheral.name;
+          [self.navigationController pushViewController:vc animated:YES];
+      }];
+      
       UIAlertAction *wifiAction = [UIAlertAction actionWithTitle:@"WIFI" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
           WifiFunctionVC *vc = [[WifiFunctionVC alloc] init];
           vc.navigationItem.title = peripheral.name;
@@ -116,6 +123,7 @@
         [alertController addAction:tsplAction];
         [alertController addAction:escAction];
         [alertController addAction:cpclAction];
+      [alertController addAction:rgbAction];
         [alertController addAction:wifiAction];
         [alertController addAction:cancelAction];
         [self presentViewController:alertController animated:YES completion:nil];
