@@ -135,9 +135,9 @@
     <string name="usb_attached">USB已连接!</string>
     <string name="usb_open_failed">USB打开失败，请检查是否有可用的USB端口</string>
     <string name="no_status_info">未找到状态信息</string>
-    <string name="language">语言</string>
-    <string name="language_english">英文</string>
-    <string name="language_chinese">中文</string>
+    <string name="language">语言 / Language</string>
+    <string name="language_english">英文 / English</string>
+    <string name="language_chinese">中文 / Chinese</string>
     <string name="language_choose">选择语言</string>
     <string name="address_only_empty">地址不能为空</string>
     <string name="connect_failed_check_address">连接失败，请检查地址是否可用</string>

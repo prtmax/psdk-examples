@@ -135,9 +135,9 @@
     <string name="usb_attached">USB Attached!</string>
     <string name="usb_open_failed">USB open failed, check if there is available USB port</string>
     <string name="no_status_info">No status info found</string>
-    <string name="language">Language</string>
-    <string name="language_english">English</string>
-    <string name="language_chinese">Chinese</string>
+    <string name="language">语言 / Language</string>
+    <string name="language_english">英文 / English</string>
+    <string name="language_chinese">中文 / Chinese</string>
     <string name="language_choose">Choose Language</string>
     <string name="address_only_empty">Address cannot be empty</string>
     <string name="connect_failed_check_address">Connection failed, please check the address</string>
