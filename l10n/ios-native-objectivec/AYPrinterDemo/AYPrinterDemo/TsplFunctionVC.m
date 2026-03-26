@@ -1,0 +1,252 @@
+//
+//  TsplFunctionVC.m
+//  AYPrinterDemo
+//
+//  Created by aiyin on 2023/9/13.
+//
+
+#import "TsplFunctionVC.h"
+
+@interface TsplFunctionVC ()
+
+@property (weak, nonatomic) IBOutlet UILabel *displayLabel;
+
+@end
+
+@implementation TsplFunctionVC
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    // Do any additional setup after loading the view from its nib.
+    __weak typeof(self) weakSelf = self;
+    self.bleHelper.onDataReceived = ^(NSData *data) {
+        NSLog(@"onDataReceived: %@ - %@", data, data.toRawString);
+    };
+    self.bleHelper.onTsplDataReceived = ^(TReceivedType type, NSData *data) {
+        NSLog(@"onTsplDataReceived: %@ - %@", data, data.toRawString);
+        const Byte *bytes = data.bytes;
+        switch (type) {
+            case TReceivedTypeSN:
+                weakSelf.displayLabel.text = [NSString stringWithFormat:@"SN: %@", data.toRawString];
+                break;
+            case TReceivedTypeVersion:
+                weakSelf.displayLabel.text = [NSString stringWithFormat:AYLocalizedString(@"打印机版本号: %@"), data.toRawString];
+                break;
+            case TReceivedPrinterState: {
+               const Byte *bytes = data.bytes;
+                NSMutableArray *stateArray = [NSMutableArray array];
+                if (bytes[0] == (Byte)0x00) {
+                    NSLog(@"%@", AYLocalizedString(@"打印机正常"));
+                    [stateArray addObject:AYLocalizedString(@"打印机正常")];
+                }
+                if ((bytes[0]&(Byte)0x01) ==  (Byte)0x01) {
+                    NSLog(@"%@", AYLocalizedString(@"打印机开盖"));
+                    [stateArray addObject:AYLocalizedString(@"开盖")];
+                }
+                if ((bytes[0]&(Byte)0x02) ==  (Byte)0x02) {
+                     NSLog(@"%@", AYLocalizedString(@"纸张错误"));
+                    [stateArray addObject:AYLocalizedString(@"纸张错误")];
+                 }
+                if ((bytes[0]&(Byte)0x04) ==  (Byte)0x04) {
+                     NSLog(@"%@", AYLocalizedString(@"打印机缺纸"));
+                    [stateArray addObject:AYLocalizedString(@"缺纸")];
+                 }
+                if ((bytes[0]&(Byte)0x20) ==  (Byte)0x20) {
+                     NSLog(@"%@", AYLocalizedString(@"打印中"));
+                    [stateArray addObject:AYLocalizedString(@"打印中")];
+                 }
+                if ((bytes[0]&(Byte)0x10) ==  (Byte)0x10) {
+                     NSLog(@"%@", AYLocalizedString(@"暂停"));
+                    [stateArray addObject:AYLocalizedString(@"暂停")];
+                }
+                if ((bytes[0]&(Byte)0x80) ==  (Byte)0x80) {
+                     NSLog(@"%@", AYLocalizedString(@"过热"));
+                    [stateArray addObject:AYLocalizedString(@"过热")];
+                }
+                
+                weakSelf.displayLabel.text = [stateArray componentsJoinedByString:@"&"];
+            }
+                break;
+            case TReceivedBatteryLevel: {
+                weakSelf.displayLabel.text = [NSString stringWithFormat:AYLocalizedString(@"打印机电量: %d"), bytes[3]];
+            }
+                break;
+            case TReceivedPrintSuccess: {
+                NSLog(@"%@", AYLocalizedString(@"打印成功"));
+                weakSelf.displayLabel.text = AYLocalizedString(@"打印成功");
+            }
+                break;
+            case TReceivedGetOffTime: {
+              int time = [data toInt];
+              NSLog(AYLocalizedString(@"获取关机时间: %d"), time);
+              if (time == 0) {
+                weakSelf.displayLabel.text = AYLocalizedString(@"永不自动关机");
+              } else {
+                weakSelf.displayLabel.text = [NSString stringWithFormat:AYLocalizedString(@"关机时间: %d 分钟"), time];
+              }
+            }
+                break;
+            case TReceivedSetOffTime: {
+              if ([data.toRawString isEqualToString:@"WRITEC OFFTIME OK\r\n"]) {
+                weakSelf.displayLabel.text = AYLocalizedString(@"设置关机时间成功");
+              }
+            }
+              break;
+          case TReceivedStatus: {
+            int flag = bytes[0];
+            if (flag == 0) {
+              NSLog(@"%@", AYLocalizedString(@"打印机正常"));
+            } else {
+              NSMutableArray *states = [NSMutableArray array];
+              if ((flag & 0x01) == 0x01) {
+                [states addObject:AYLocalizedString(@"纸舱盖开")];
+              }
+              if ((flag & 0x02) == 0x02) {
+                [states addObject:AYLocalizedString(@"打印出错")];
+              }
+              if ((flag & 0x04) == 0x04) {
+                [states addObject:AYLocalizedString(@"缺纸")];
+              }
+              if ((flag & 0x20) == 0x20) {
+                [states addObject:AYLocalizedString(@"打印中")];
+              }
+              if ((flag & 0x10) == 0x10) {
+                [states addObject:AYLocalizedString(@"打印暂停")];
+              }
+              if ((flag & 0x80) == 0x80) {
+                [states addObject:AYLocalizedString(@"过热")];
+              }
+              NSLog(@"states: %@", states);
+            }
+          }
+            break;
+            
+            default:
+                break;
+        }
+    };
+}
+
+- (IBAction)imagePtint:(id)sender {
+    UIImage *image = [UIImage imageNamed:@"image.png"];
+    AYTsplCommand *tspl = [AYTsplCommand new];
+    [tspl pageWidth:76 height:130];
+    [tspl direction:0 mirror:0];
+//    [tspl speed:5]; // 设置打印速度 / Set print speed.
+//    [tspl density:5]; // 设置打印浓度 / Set print density.
+//    [tspl enableCut:YES]; // 启用切刀 / Enable cutter.
+//    [tspl enableGap:YES]; // 启用缝隙定位 / Enable gap detection.
+    [tspl cls];
+    [tspl image:image x:0 y:0 compress:YES];
+    [tspl print:1];
+    NSMutableData *da = [NSMutableData data];
+    for (NSData *d in tspl.commands) {
+      [da appendData:d];
+    }
+    
+    [self.bleHelper writeCommands:tspl.commands];
+}
+
+- (IBAction)commandPrint:(id)sender {
+    AYTsplCommand *tspl = [AYTsplCommand new];
+    [tspl pageWidth:76 height:130];
+    [tspl cls];
+    [tspl density:10];
+    [tspl circleX:0 y:0 diameter:76 * 8 thinkness:5];
+    [tspl lineX:0 y:10 endX:480 endY:10 width:2 lineType:0];
+    [tspl lineX:0 y:34 endX:480 endY:34 width:2 lineType:1];
+    [tspl lineX:0 y:58 endX:480 endY:58 width:2 lineType:2];
+    [tspl lineX:0 y:83 endX:480 endY:83 width:2 lineType:3];
+    [tspl lineX:0 y:107 endX:480 endY:107 width:2 lineType:4];
+    [tspl qrCodeX:50 y:350 ecc:TECCLevelM cellwidth:6 rotation:TRotation_0 content:@"28938928"];
+    [tspl textX:100 y:120 font:TFontTSS24 rotation:TRotation_0 xMulti:1 yMulti:1 bold:YES content:@"hello world, 你好"];
+    [tspl textX:100 y:150 font:TFontTSS24 rotation:TRotation_0 xMulti:1 yMulti:1 bold:NO content:@"hello world, 你好"];
+    [tspl print:1];
+    
+    [self.bleHelper writeCommands:tspl.commands];
+}
+
+- (IBAction)selfTest:(id)sender {
+  AYTsplCommand *tspl = [AYTsplCommand new];
+    [tspl selfTest];
+    
+    [self.bleHelper writeCommands:tspl.commands];
+}
+
+- (IBAction)sn:(id)sender {
+  AYTsplCommand *tspl = [AYTsplCommand new];
+//    [tspl readSN]; // 直接读取 SN / Read SN directly.
+//  Byte cmd[] = {0x10, 0xff, 0xef, 0xf0}; // 自定义测试指令 / Custom test command.
+//  NSData *command = [NSData dataWithBytes:cmd length:sizeof(cmd)]; // 组装测试数据 / Build test payload.
+  [tspl pageWidth:76 height:130];
+  [tspl cls];
+  [tspl addCustomCommand:@"LINE 0,56,1200,56,2\n".toGbkData];
+  [tspl print:1];
+    
+    [self.bleHelper writeCommands:tspl.commands];
+}
+
+- (IBAction)version:(id)sender {
+  AYTsplCommand *tspl = [AYTsplCommand new];
+    [tspl readVersion];
+    
+    [self.bleHelper writeCommands:tspl.commands];
+}
+
+- (IBAction)state:(id)sender {
+  AYTsplCommand *tspl = [AYTsplCommand new];
+    [tspl readPrinterState];
+    
+    [self.bleHelper writeCommands:tspl.commands];
+}
+
+- (IBAction)batteryLevel:(id)sender {
+  AYTsplCommand *tspl = [AYTsplCommand new];
+    [tspl readBatteryLevel];
+    
+    [self.bleHelper writeCommands:tspl.commands];
+}
+
+- (IBAction)setOffTime:(UIButton *)sender {
+  UIAlertController *alertController = [UIAlertController alertControllerWithTitle:nil message:AYLocalizedString(@"请输入关机时间(分钟)") preferredStyle:UIAlertControllerStyleAlert];
+
+  [alertController addAction:[UIAlertAction actionWithTitle:AYLocalizedString(@"取消") style:UIAlertActionStyleCancel handler:nil]];
+
+  [alertController addAction:[UIAlertAction actionWithTitle:AYLocalizedString(@"确定") style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
+
+      UITextField *tf = alertController.textFields.firstObject;
+      AYTsplCommand *tspl = [AYTsplCommand new];
+      [tspl setOffTime:tf.text.intValue];
+      [self.bleHelper writeCommands:tspl.commands];
+  }]];
+
+  [alertController addTextFieldWithConfigurationHandler:^(UITextField*_Nonnull textField) {
+
+      textField.placeholder = AYLocalizedString(@"请输入关机时间");
+      textField.keyboardType = UIKeyboardTypeNumberPad;
+
+  }];
+
+  [self presentViewController:alertController animated:YES completion:nil];
+}
+
+
+- (IBAction)getOffTime:(UIButton *)sender {
+  AYTsplCommand *tspl = [AYTsplCommand new];
+  [tspl getOffTime];
+  [self.bleHelper writeCommands:tspl.commands];
+}
+
+#warning 仅适用于部分机型，请勿随意升级 / Only supported on some models. Do not upgrade casually.
+- (IBAction)otaUpdate:(id)sender {
+   NSString *filepath = [[NSBundle mainBundle] pathForResource:@"QR-888 FWQR_SFUBE_BQ_VER_01_240201.ALLAY" ofType:nil];
+
+    NSLog(@"%@", filepath);
+    NSData* filedata = [NSData dataWithContentsOfFile:filepath];
+    NSMutableArray<NSData *> *dadas = [NSMutableArray array];
+    [dadas addObject:filedata];
+    [self.bleHelper writeCommands:dadas];
+}
+
+
+@end

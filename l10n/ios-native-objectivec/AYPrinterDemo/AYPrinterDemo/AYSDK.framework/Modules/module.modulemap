@@ -1,0 +1,6 @@
+framework module AYSDK {
+  umbrella header "AYSDK.h"
+  export *
+
+  module * { export * }
+}
