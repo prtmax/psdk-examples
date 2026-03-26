@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="RGBPrintVC">
+            <connections>
+                <outlet property="displayLabel" destination="rTW-rJ-XXy" id="1Ec-XY-6Ng"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="2JV-h0-iuF">
+                    <rect key="frame" x="0.0" y="127.99999999999997" width="393" height="443.33333333333326"/>
+                    <subviews>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sev-9g-S2u">
+                            <rect key="frame" x="0.0" y="0.0" width="393" height="34.333333333333336"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="电池电量"/>
+                            <connections>
+                                <action selector="batteryVolume:" destination="-1" eventType="touchUpInside" id="oPZ-Ff-nLm"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="uIP-pM-DDE">
+                            <rect key="frame" x="0.0" y="44.333333333333343" width="393" height="34.333333333333343"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="打印机状态"/>
+                            <connections>
+                                <action selector="state:" destination="-1" eventType="touchUpInside" id="zUY-KW-tW2"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="rdM-Wx-nIn">
+                            <rect key="frame" x="0.0" y="88.666666666666657" width="393" height="34.333333333333343"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="设置关机时间"/>
+                            <connections>
+                                <action selector="setShutdownTime:" destination="-1" eventType="touchUpInside" id="tpO-bi-reG"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Bq7-J2-zAH">
+                            <rect key="frame" x="0.0" y="133" width="393" height="34.333333333333343"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="打印机所有信息"/>
+                            <connections>
+                                <action selector="info:" destination="-1" eventType="touchUpInside" id="PK9-Wc-IaV"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="NN3-ok-t0i">
+                            <rect key="frame" x="0.0" y="177.33333333333331" width="393" height="34.333333333333343"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="墨盒信息"/>
+                            <connections>
+                                <action selector="inkBoxInfo:" destination="-1" eventType="touchUpInside" id="WbP-Mh-CIH"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2Iu-Zp-4yB">
+                            <rect key="frame" x="0.0" y="221.66666666666669" width="393" height="34.333333333333314"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="退纸"/>
+                            <connections>
+                                <action selector="ejectPaper" destination="-1" eventType="touchUpInside" id="KBM-sg-Gcr"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RSh-7F-rUZ">
+                            <rect key="frame" x="0.0" y="266" width="393" height="34.333333333333314"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="清洁打印头"/>
+                            <connections>
+                                <action selector="printerClean" destination="-1" eventType="touchUpInside" id="z7N-pC-yEA"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0rP-Fl-7hw">
+                            <rect key="frame" x="0.0" y="310.33333333333331" width="393" height="34.333333333333314"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="打印自测页"/>
+                            <connections>
+                                <action selector="selfTest" destination="-1" eventType="touchUpInside" id="Jua-cl-5pV"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LRP-yE-AnP">
+                            <rect key="frame" x="0.0" y="354.66666666666669" width="393" height="34.333333333333314"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="打印"/>
+                            <connections>
+                                <action selector="print:" destination="-1" eventType="touchUpInside" id="uQJ-FS-PDf"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="64C-lj-I0f">
+                            <rect key="frame" x="0.0" y="399" width="393" height="34.333333333333314"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="升级打印机"/>
+                            <connections>
+                                <action selector="ota:" destination="-1" eventType="touchUpInside" id="910-Lj-7SO"/>
+                            </connections>
+                        </button>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="rTW-rJ-XXy">
+                            <rect key="frame" x="0.0" y="443.33333333333337" width="393" height="0.0"/>
+                            <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
+                            <color key="textColor" red="0.33333333333333331" green="0.63921568627450975" blue="0.30196078431372547" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                    </subviews>
+                </stackView>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="Q5M-cg-NOt"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="2JV-h0-iuF" firstAttribute="leading" secondItem="Q5M-cg-NOt" secondAttribute="leading" id="H98-Zu-I9J"/>
+                <constraint firstItem="Q5M-cg-NOt" firstAttribute="trailing" secondItem="2JV-h0-iuF" secondAttribute="trailing" id="HGR-s5-gcH"/>
+                <constraint firstItem="2JV-h0-iuF" firstAttribute="top" secondItem="Q5M-cg-NOt" secondAttribute="top" constant="10" id="V3A-SX-5C0"/>
+            </constraints>
+            <point key="canvasLocation" x="-215" y="58"/>
+        </view>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
