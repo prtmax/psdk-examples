@@ -2,6 +2,9 @@ package com.example.classic_bluetooth_demo;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
+import android.net.wifi.WifiInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
@@ -228,6 +231,27 @@ public class WIFIActivity extends Activity {
         }
       }
     });
+    // 获取当前设备连接的WiFi名称并填入输入框
+    getCurrentWifiName();
+  }
+
+  private void getCurrentWifiName() {
+    WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+    if (wifiManager != null) {
+      WifiInfo wifiInfo = wifiManager.getConnectionInfo();
+      if (wifiInfo != null) {
+        String ssid = wifiInfo.getSSID();
+        if (ssid != null && !ssid.equals("<unknown ssid>")) {
+          wifi_name.setText(ssid.replace("\"", ""));
+        } else {
+          wifi_name.setText("未连接WiFi");
+        }
+      } else {
+        wifi_name.setText("未连接WiFi");
+      }
+    } else {
+      wifi_name.setText("WiFi管理器不可用");
+    }
   }
 
   /// 校验格式

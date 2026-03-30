@@ -1,12 +1,11 @@
 package com.example.classic_bluetooth_demo;
 
-
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.*;
 import com.example.classic_bluetooth_demo.util.*;
 import com.printer.psdk.cpcl.GenericCPCL;
@@ -27,233 +26,286 @@ import com.printer.psdk.tspl.mark.ShowType;
 
 import java.io.IOException;
 import java.io.InputStream;
-
+import java.util.ArrayList;
+import java.util.List;
 
 public class NETActivity extends Activity {
-  private Network network;
+  private final Network network = Network.getInstance();
   private Button switch_net;
   private Button save_address;
   private Button printPdf;
   private Button printImage;
   private Button printModel;
+  private Button search_printer;
   private EditText et_address;
   private EditText et_port;
   private CheckBox cb_compress;
   private CheckBox cb_cut;
   private CheckBox cb_position;
+  private TextView logText;
   private boolean isOpen = false;
   private String curCmd = "tspl";
+
+  private List<Network.PrinterInfo> printerList = new ArrayList<>();
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_net);
+    initView();
+    initUdpDiscovery();
+  }
+
+  private void initView() {
     save_address = findViewById(R.id.save_address);
     switch_net = findViewById(R.id.switch_net);
     printPdf = findViewById(R.id.printPdf);
     printImage = findViewById(R.id.printImage);
     printModel = findViewById(R.id.printModel);
+    search_printer = findViewById(R.id.search_printer);
     cb_compress = findViewById(R.id.cb_compress);
     cb_cut = findViewById(R.id.cb_cut);
     cb_position = findViewById(R.id.cb_position);
     et_address = findViewById(R.id.et_address);
     et_port = findViewById(R.id.et_port);
+    logText = findViewById(R.id.logText);
 
     RadioGroup radioGroup = findViewById(R.id.radioGroup);
-    radioGroup.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-      @Override
-      public void onCheckedChanged(RadioGroup group, int checkedId) {
-        RadioButton radioButton = findViewById(checkedId);
-        curCmd = radioButton.getText().toString();
-      }
+    radioGroup.setOnCheckedChangeListener((group, checkedId) -> {
+      RadioButton radioButton = findViewById(checkedId);
+      curCmd = radioButton.getText().toString();
     });
 
-    save_address.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
+    // 保存IP
+    save_address.setOnClickListener(v -> {
+      String address = et_address.getText().toString();
+      if (address.isEmpty()) {
+        Util.show(NETActivity.this, "地址或为空");
+        return;
+      }
+      MSharedPreferences mSharedPreferences = MSharedPreferences.getmSharedPreferences();
+      mSharedPreferences.init(NETActivity.this);
+      mSharedPreferences.putString(Config.KEY_IP_ADDRESS, address);
+      mSharedPreferences.commit();
+      Util.show(NETActivity.this, "保存成功");
+    });
+
+    switch_net.setOnClickListener(v -> {
+      if (isOpen && network != null) {
+        try {
+          network.close();
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+        switch_net.setText("连接");
+        isOpen = false;
+      } else {
         String address = et_address.getText().toString();
-        if (address.isEmpty()) {
-          Util.show(NETActivity.this,"地址或为空");
+        String port = et_port.getText().toString();
+        if (address.isEmpty() || port.isEmpty()) {
+          Util.show(NETActivity.this, "地址或端口号为空");
           return;
         }
-        MSharedPreferences mSharedPreferences = MSharedPreferences.getmSharedPreferences();
-        mSharedPreferences.init(NETActivity.this);
-        mSharedPreferences.putString(Config.KEY_IP_ADDRESS, address);
-        mSharedPreferences.commit();
-        Util.show(NETActivity.this,"保存成功");
-      }
-    });
-    switch_net.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        if (isOpen && network != null) {
-          try {
-            network.close();
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-          switch_net.setText("连接");
-          isOpen = false;
-        } else {
-          String address = et_address.getText().toString();
-          String port = et_port.getText().toString();
-          if (address.isEmpty() || port.isEmpty()) {
-            Util.show(NETActivity.this,"地址或端口号为空");
-            return;
-          }
-          network = new Network(address, Integer.parseInt(port));
 
-          PdfUtil.showLoading(NETActivity.this, "连接中。。。");
-          new Thread(() -> {
-            NetConnectedDevice netConnectedDevice = network.connect();
-            runOnUiThread(() -> {
-              PdfUtil.dismissLoading();
-              if (netConnectedDevice != null) {
-                PrintUtil.getInstance().init(netConnectedDevice);
-                Util.show(NETActivity.this,"连接成功");
-                switch_net.setText("断开");
-                isOpen = true;
-              } else {
-                Util.show(NETActivity.this,"连接失败，检查地址是否可用");
-              }
-            });
-          }).start();
-        }
-      }
-
-    });
-    printPdf.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        if (!isOpen) {
-          Util.show(NETActivity.this,"未连接");
-          return;
-        }
-        Intent intent = new Intent(NETActivity.this, PDFActivity.class);
-        startActivity(intent);
+        PdfUtil.showLoading(NETActivity.this, "连接中...");
+        new Thread(() -> {
+          NetConnectedDevice netConnectedDevice = network.connect(address, Integer.parseInt(port));
+          runOnUiThread(() -> {
+            PdfUtil.dismissLoading();
+            if (netConnectedDevice != null) {
+              PrintUtil.getInstance().init(netConnectedDevice);
+              Util.show(NETActivity.this, "连接成功");
+              switch_net.setText("断开");
+              isOpen = true;
+            } else {
+              Util.show(NETActivity.this, "连接失败，检查地址是否可用");
+            }
+          });
+        }).start();
       }
     });
 
-    printImage.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        if (!isOpen) {
-          Util.show(NETActivity.this,"未连接");
-          return;
-        }
-        imageTest(1);
+    // 打印PDF
+    printPdf.setOnClickListener(v -> {
+      if (!isOpen) {
+        Util.show(NETActivity.this, "未连接");
+        return;
       }
-    });
-    printModel.setOnClickListener(new View.OnClickListener() {
-      @Override
-      public void onClick(View v) {
-        if (!isOpen) {
-          Util.show(NETActivity.this,"未连接");
-          return;
-        }
-        if (curCmd.equals("tspl")) {
-          GenericTSPL _gtspl = PrintUtil.getInstance().tspl().clear().page(TPage.builder().width(100).height(150).build())
-            .direction(TDirection.builder().direction(TDirection.Direction.UP_OUT).mirror(TDirection.Mirror.NO_MIRROR).build())
-            .gap(cb_position.isChecked())
-            .cut(cb_cut.isChecked())
-            .speed(6)
-            .density(6)
-            .cls()
-            .bar(TBar.builder().x(300).y(10).width(4).height(90).build())
-            .bar(TBar.builder().x(30).y(100).width(740).height(4).build())
-            .bar(TBar.builder().x(30).y(880).width(740).height(4).build())
-            .bar(TBar.builder().x(30).y(1300).width(740).height(4).build())
-            .text(TText.builder().x(400).y(25).font(Font.TSS24).xmulti(3).ymulti(3).content("上海浦东").build())
-            .text(TText.builder().x(30).y(120).font(Font.TSS24).xmulti(1).ymulti(1).content("发  件  人：张三 (电话 874236021)").build())
-            .text(TText.builder().x(30).y(150).font(Font.TSS24).xmulti(1).ymulti(1).content("发件人地址：广州省 深圳市 福田区 思创路123号\"工业园\"1栋2楼").build())
-            .text(TText.builder().x(30).y(200).font(Font.TSS24).xmulti(1).ymulti(1).content("收  件  人：李四 (电话 13899658435)").build())
-            .text(TText.builder().x(30).y(230).font(Font.TSS24).xmulti(1).ymulti(1).content("收件人地址：上海市 浦东区 太仓路司务小区9栋1105室").build())
-            .text(TText.builder().x(30).y(700).font(Font.TSS16).xmulti(1).ymulti(1).content("各類郵件禁寄、限寄的範圍，除上述規定外，還應參閱「中華人民共和國海關對").build())
-            .text(TText.builder().x(30).y(720).font(Font.TSS16).xmulti(1).ymulti(1).content("进出口邮递物品监管办法”和国家法令有关禁止和限制邮寄物品的规定，以及邮").build())
-            .text(TText.builder().x(30).y(740).font(Font.TSS16).xmulti(1).ymulti(1).content("寄物品的规定，以及邮电部转发的各国（地区）邮 政禁止和限制。").build())
-            .text(TText.builder().x(30).y(760).font(Font.TSS16).xmulti(1).ymulti(1).content("寄件人承诺不含有法律规定的违禁物品。").build())
-            .barcode(TBarCode.builder().x(80).y(300).codeType(CodeType.CODE_128).height(90).showType(ShowType.SHOW_CENTER).cellWidth(4).content("873456093465").build())
-            .barcode(TBarCode.builder().x(550).y(910).codeType(CodeType.CODE_128).height(50).showType(ShowType.SHOW_CENTER).cellWidth(2).content("873456093465").build())
-            .box(TBox.builder().startX(40).startY(500).endX(340).endY(650).width(4).radius(20).build())
-            .text(TText.builder().x(60).y(520).font(Font.TSS24).xmulti(1).ymulti(1).content("寄件人签字：").build())
-            .text(TText.builder().x(130).y(625).font(Font.TSS24).xmulti(1).ymulti(1).content("2015-10-30 09:09").build())
-            .text(TText.builder().x(50).y(1000).font(Font.TSS32).xmulti(2).ymulti(3).content("广东 ---- 上海浦东").build())
-            .circle(TCircle.builder().x(670).y(1170).width(6).radius(100).build())
-            .text(TText.builder().x(670).y(1170).font(Font.TSS24).xmulti(3).ymulti(3).content("碎").build())
-            .qrcode(TQRCode.builder().x(620).y(620).correctLevel(CorrectLevel.H).cellWidth(4).content("www.qrprt.com   www.qrprt.com   www.qrprt.com").build())
-            .print(1);
-          safeWrite(_gtspl);
-        } else {
-          GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().clear().page(CPage.builder().width(608).height(1040).copies(1).build())
-            .box(CBox.builder().topLeftX(0).topLeftY(1).bottomRightX(598).bottomRightY(664).lineWidth(2).build())
-            .line(CLine.builder().startX(0).startY(88).endX(598).endY(88).lineWidth(2).build())
-            .line(CLine.builder().startX(0).startY(88 + 128).endX(598).endY(88 + 128).lineWidth(2).build())
-            .line(CLine.builder().startX(0).startY(88 + 128 + 80).endX(598).endY(88 + 128 + 80).lineWidth(2).build())
-            .line(CLine.builder().startX(0).startY(88 + 128 + 80 + 144).endX(598 - 56 - 16).endY(88 + 128 + 80 + 144).lineWidth(2).build())
-            .line(CLine.builder().startX(0).startY(88 + 128 + 80 + 144 + 128).endX(598 - 56 - 16).endY(88 + 128 + 80 + 144 + 128).lineWidth(2).build())
-            .line(CLine.builder().startX(52).startY(88 + 128 + 80).endX(52).endY(88 + 128 + 80 + 144 + 128).lineWidth(2).build())
-            .line(CLine.builder().startX(598 - 56 - 16).startY(88 + 128 + 80).endX(598 - 56 - 16).endY(664).lineWidth(2).build())
-            .bar(CBar.builder().x(120).y(88 + 12).lineWidth(1).height(80).content("1234567890").codeType(com.printer.psdk.cpcl.mark.CodeType.CODE128).codeRotation(CodeRotation.ROTATION_0).build())
-            .text(CText.builder().textX(120 + 12).textY(88 + 20 + 76).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("1234567890").build())
-            .text(CText.builder().textX(12).textY(88 + 128 + 80 + 32).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("收").build())
-            .text(CText.builder().textX(12).textY(88 + 128 + 80 + 96).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("件").build())
-            .text(CText.builder().textX(12).textY(88 + 128 + 80 + 144 + 32).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("发").build())
-            .text(CText.builder().textX(12).textY(88 + 128 + 80 + 144 + 80).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("件").build())
-            .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 144 + 128 + 16).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("签收人/签收时间").build())
-            .text(CText.builder().textX(430).textY(88 + 128 + 80 + 144 + 128 + 36).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("月").build())
-            .text(CText.builder().textX(490).textY(88 + 128 + 80 + 144 + 128 + 36).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("日").build())
-            .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 24).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("收姓名" + " " + "13777777777").build())
-            .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 24 + 32).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("南京市浦口区威尼斯水城七街区七街区").build())
-            .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 144 + 24).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("名字" + " " + "13777777777").build())
-            .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 144 + 24 + 32).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("南京市浦口区威尼斯水城七街区七街区").build())
-            .text(CText.builder().textX(598 - 56 - 5).textY(88 + 128 + 80 + 104).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("派").build())
-            .text(CText.builder().textX(598 - 56 - 5).textY(88 + 128 + 80 + 160).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("件").build())
-            .text(CText.builder().textX(598 - 56 - 5).textY(88 + 128 + 80 + 208).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("联").build())
-            .box(CBox.builder().topLeftX(0).topLeftY(1).bottomRightX(598).bottomRightY(968).lineWidth(2).build())
-            .line(CLine.builder().startX(0).startY(696 + 80).endX(598).endY(696 + 80).lineWidth(2).build())
-            .line(CLine.builder().startX(0).startY(696 + 80 + 136).endX(598 - 56 - 16).endY(696 + 80 + 136).lineWidth(2).build())
-            .line(CLine.builder().startX(52).startY(80).endX(52).endY(696 + 80 + 136).lineWidth(2).build())
-            .line(CLine.builder().startX(598 - 56 - 16).startY(80).endX(598 - 56 - 16).endY(968).lineWidth(2).build())
-            .bar(CBar.builder().x(320).y(696 - 4).lineWidth(1).height(56).content("1234567890").codeType(com.printer.psdk.cpcl.mark.CodeType.CODE128).codeRotation(CodeRotation.ROTATION_0).build())
-            .text(CText.builder().textX(320 + 8).textY(696 + 54).font(com.printer.psdk.cpcl.mark.Font.TSS16).content("1234567890").build())
-            .text(CText.builder().textX(12).textY(696 + 80 + 35).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("发").build())
-            .text(CText.builder().textX(12).textY(696 + 80 + 84).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("件").build())
-            .text(CText.builder().textX(52 + 20).textY(696 + 80 + 28).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("名字" + " " + "13777777777").build())
-            .text(CText.builder().textX(52 + 20).textY(696 + 80 + 28 + 32).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("南京市浦口区威尼斯水城七街区七街区").build())
-            .text(CText.builder().textX(598 - 56 - 5).textY(696 + 80 + 50).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("客").build())
-            .text(CText.builder().textX(598 - 56 - 5).textY(696 + 80 + 82).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("户").build())
-            .text(CText.builder().textX(598 - 56 - 5).textY(696 + 80 + 106).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("联").build())
-            .text(CText.builder().textX(12 + 8).textY(696 + 80 + 136 + 22 - 5).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("物品：" + "几个快递" + " " + "12kg").build())
-            .box(CBox.builder().topLeftX(598 - 56 - 16 - 120).topLeftY(696 + 80 + 136 + 11).bottomRightX(598 - 56 - 16 - 16).bottomRightY(968 - 11).lineWidth(2).build())
-            .text(CText.builder().textX(598 - 56 - 16 - 120 + 17).textY(696 + 80 + 136 + 11 + 6).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("已验视").build());
-          if (cb_position.isChecked()) {
-            _gcpcl.form();
-          }
-          _gcpcl.print(CPrint.builder().build());
-          safeWrite(_gcpcl);
-        }
-
-      }
+      Intent intent = new Intent(NETActivity.this, PDFActivity.class);
+      startActivity(intent);
     });
 
+    // 打印图片
+    printImage.setOnClickListener(v -> {
+      if (!isOpen) {
+        Util.show(NETActivity.this, "未连接");
+        return;
+      }
+      imageTest(1);
+    });
+
+    // 打印模板
+    printModel.setOnClickListener(v -> {
+      if (!isOpen) {
+        Util.show(NETActivity.this, "未连接");
+        return;
+      }
+      printTemplate();
+    });
   }
 
-  @Override
-  protected void onResume() {
-    super.onResume();
-    MSharedPreferences mSharedPreferences = MSharedPreferences.getmSharedPreferences();
-    mSharedPreferences.init(this);
-    String ipAddress = mSharedPreferences.getString(Config.KEY_IP_ADDRESS);
-    if(!ipAddress.isEmpty()){
-      et_address.setText(ipAddress);
+  // ==================== UDP 搜索打印机 ====================
+  private void initUdpDiscovery() {
+
+    search_printer.setOnClickListener(v -> {
+      if (network.isScanning()) {
+        network.stopPrinterDiscovery();
+        search_printer.setText("搜索网络打印机");
+      } else {
+        startSearch();
+      }
+    });
+
+    // 监听状态
+    network.setOnScanningChangeListener(scanning -> {
+      runOnUiThread(() -> {
+        if (scanning) {
+          logText.append("正在搜索打印机...\n");
+          search_printer.setText("停止搜索");
+        } else {
+          logText.append("搜索结束\n");
+          search_printer.setText("搜索网络打印机");
+          showPrinterListDialog();
+        }
+      });
+    });
+
+    // 监听发现设备
+    network.setOnPrinterFoundListener(info -> {
+      runOnUiThread(() -> {
+        logText.append("发现设备：" + info + "\n");
+        printerList.add(info);
+      });
+    });
+  }
+
+  private void startSearch() {
+    printerList.clear();
+    logText.setText("");
+    network.startPrinterDiscovery();
+  }
+
+  // 选择设备自动填入IP
+  private void showPrinterListDialog() {
+    if (printerList.isEmpty()) {
+      Util.show(this, "未找到打印机");
+      return;
+    }
+
+    String[] items = new String[printerList.size()];
+    for (int i = 0; i < printerList.size(); i++) {
+      items[i] = printerList.get(i).toString();
+    }
+
+    new AlertDialog.Builder(this)
+            .setTitle("选择打印机")
+            .setItems(items, (dialog, which) -> {
+              Network.PrinterInfo info = printerList.get(which);
+              et_address.setText(info.getId());
+              et_port.setText("9100"); // 打印机默认端口
+            })
+            .show();
+  }
+
+  private void printTemplate() {
+    if (curCmd.equals("tspl")) {
+      GenericTSPL _gtspl = PrintUtil.getInstance().tspl().clear().page(TPage.builder().width(100).height(150).build())
+              .direction(TDirection.builder().direction(TDirection.Direction.UP_OUT).mirror(TDirection.Mirror.NO_MIRROR).build())
+              .gap(cb_position.isChecked())
+              .cut(cb_cut.isChecked())
+              .speed(6)
+              .density(6)
+              .cls()
+              .bar(TBar.builder().x(300).y(10).width(4).height(90).build())
+              .bar(TBar.builder().x(30).y(100).width(740).height(4).build())
+              .bar(TBar.builder().x(30).y(880).width(740).height(4).build())
+              .bar(TBar.builder().x(30).y(1300).width(740).height(4).build())
+              .text(TText.builder().x(400).y(25).font(Font.TSS24).xmulti(3).ymulti(3).content("上海浦东").build())
+              .text(TText.builder().x(30).y(120).font(Font.TSS24).xmulti(1).ymulti(1).content("发  件  人：张三 (电话 874236021)").build())
+              .text(TText.builder().x(30).y(150).font(Font.TSS24).xmulti(1).ymulti(1).content("发件人地址：广州省 深圳市 福田区 思创路123号\"工业园\"1栋2楼").build())
+              .text(TText.builder().x(30).y(200).font(Font.TSS24).xmulti(1).ymulti(1).content("收  件  人：李四 (电话 13899658435)").build())
+              .text(TText.builder().x(30).y(230).font(Font.TSS24).xmulti(1).ymulti(1).content("收件人地址：上海市 浦东区 太仓路司务小区9栋1105室").build())
+              .text(TText.builder().x(30).y(700).font(Font.TSS16).xmulti(1).ymulti(1).content("各類郵件禁寄、限寄的範圍，除上述規定外，還應參閱「中華人民共和國海關對").build())
+              .text(TText.builder().x(30).y(720).font(Font.TSS16).xmulti(1).ymulti(1).content("进出口邮递物品监管办法”和国家法令有关禁止和限制邮寄物品的规定，以及邮").build())
+              .text(TText.builder().x(30).y(740).font(Font.TSS16).xmulti(1).ymulti(1).content("寄物品的规定，以及邮电部转发的各国（地区）邮 政禁止和限制。").build())
+              .text(TText.builder().x(30).y(760).font(Font.TSS16).xmulti(1).ymulti(1).content("寄件人承诺不含有法律规定的违禁物品。").build())
+              .barcode(TBarCode.builder().x(80).y(300).codeType(CodeType.CODE_128).height(90).showType(ShowType.SHOW_CENTER).cellWidth(4).content("873456093465").build())
+              .barcode(TBarCode.builder().x(550).y(910).codeType(CodeType.CODE_128).height(50).showType(ShowType.SHOW_CENTER).cellWidth(2).content("873456093465").build())
+              .box(TBox.builder().startX(40).startY(500).endX(340).endY(650).width(4).radius(20).build())
+              .text(TText.builder().x(60).y(520).font(Font.TSS24).xmulti(1).ymulti(1).content("寄件人签字：").build())
+              .text(TText.builder().x(130).y(625).font(Font.TSS24).xmulti(1).ymulti(1).content("2015-10-30 09:09").build())
+              .text(TText.builder().x(50).y(1000).font(Font.TSS32).xmulti(2).ymulti(3).content("广东 ---- 上海浦东").build())
+              .circle(TCircle.builder().x(670).y(1170).width(6).radius(100).build())
+              .text(TText.builder().x(670).y(1170).font(Font.TSS24).xmulti(3).ymulti(3).content("碎").build())
+              .qrcode(TQRCode.builder().x(620).y(620).correctLevel(CorrectLevel.H).cellWidth(4).content("www.qrprt.com   www.qrprt.com   www.qrprt.com").build())
+              .print(1);
+      safeWrite(_gtspl);
+    } else {
+      GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().clear().page(CPage.builder().width(608).height(1040).copies(1).build())
+              .box(CBox.builder().topLeftX(0).topLeftY(1).bottomRightX(598).bottomRightY(664).lineWidth(2).build())
+              .line(CLine.builder().startX(0).startY(88).endX(598).endY(88).lineWidth(2).build())
+              .line(CLine.builder().startX(0).startY(88 + 128).endX(598).endY(88 + 128).lineWidth(2).build())
+              .line(CLine.builder().startX(0).startY(88 + 128 + 80).endX(598).endY(88 + 128 + 80).lineWidth(2).build())
+              .line(CLine.builder().startX(0).startY(88 + 128 + 80 + 144).endX(598 - 56 - 16).endY(88 + 128 + 80 + 144).lineWidth(2).build())
+              .line(CLine.builder().startX(0).startY(88 + 128 + 80 + 144 + 128).endX(598 - 56 - 16).endY(88 + 128 + 80 + 144 + 128).lineWidth(2).build())
+              .line(CLine.builder().startX(52).startY(88 + 128 + 80).endX(52).endY(88 + 128 + 80 + 144 + 128).lineWidth(2).build())
+              .line(CLine.builder().startX(598 - 56 - 16).startY(88 + 128 + 80).endX(598 - 56 - 16).endY(664).lineWidth(2).build())
+              .bar(CBar.builder().x(120).y(88 + 12).lineWidth(1).height(80).content("1234567890").codeType(com.printer.psdk.cpcl.mark.CodeType.CODE128).codeRotation(CodeRotation.ROTATION_0).build())
+              .text(CText.builder().textX(120 + 12).textY(88 + 20 + 76).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("1234567890").build())
+              .text(CText.builder().textX(12).textY(88 + 128 + 80 + 32).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("收").build())
+              .text(CText.builder().textX(12).textY(88 + 128 + 80 + 96).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("件").build())
+              .text(CText.builder().textX(12).textY(88 + 128 + 80 + 144 + 32).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("发").build())
+              .text(CText.builder().textX(12).textY(88 + 128 + 80 + 144 + 80).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("件").build())
+              .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 144 + 128 + 16).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("签收人/签收时间").build())
+              .text(CText.builder().textX(430).textY(88 + 128 + 80 + 144 + 128 + 36).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("月").build())
+              .text(CText.builder().textX(490).textY(88 + 128 + 80 + 144 + 128 + 36).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("日").build())
+              .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 24).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("收姓名" + " " + "13777777777").build())
+              .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 24 + 32).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("南京市浦口区威尼斯水城七街区七街区").build())
+              .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 144 + 24).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("名字" + " " + "13777777777").build())
+              .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 144 + 24 + 32).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("南京市浦口区威尼斯水城七街区七街区").build())
+              .text(CText.builder().textX(598 - 56 - 5).textY(88 + 128 + 80 + 104).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("派").build())
+              .text(CText.builder().textX(598 - 56 - 5).textY(88 + 128 + 80 + 160).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("件").build())
+              .text(CText.builder().textX(598 - 56 - 5).textY(88 + 128 + 80 + 208).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("联").build())
+              .box(CBox.builder().topLeftX(0).topLeftY(1).bottomRightX(598).bottomRightY(968).lineWidth(2).build())
+              .line(CLine.builder().startX(0).startY(696 + 80).endX(598).endY(696 + 80).lineWidth(2).build())
+              .line(CLine.builder().startX(0).startY(696 + 80 + 136).endX(598 - 56 - 16).endY(696 + 80 + 136).lineWidth(2).build())
+              .line(CLine.builder().startX(52).startY(80).endX(52).endY(696 + 80 + 136).lineWidth(2).build())
+              .line(CLine.builder().startX(598 - 56 - 16).startY(80).endX(598 - 56 - 16).endY(968).lineWidth(2).build())
+              .bar(CBar.builder().x(320).y(696 - 4).lineWidth(1).height(56).content("1234567890").codeType(com.printer.psdk.cpcl.mark.CodeType.CODE128).codeRotation(CodeRotation.ROTATION_0).build())
+              .text(CText.builder().textX(320 + 8).textY(696 + 54).font(com.printer.psdk.cpcl.mark.Font.TSS16).content("1234567890").build())
+              .text(CText.builder().textX(12).textY(696 + 80 + 35).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("发").build())
+              .text(CText.builder().textX(12).textY(696 + 80 + 84).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("件").build())
+              .text(CText.builder().textX(52 + 20).textY(696 + 80 + 28).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("名字" + " " + "13777777777").build())
+              .text(CText.builder().textX(52 + 20).textY(696 + 80 + 28 + 32).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("南京市浦口区威尼斯水城七街区七街区").build())
+              .text(CText.builder().textX(598 - 56 - 5).textY(696 + 80 + 50).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("客").build())
+              .text(CText.builder().textX(598 - 56 - 5).textY(696 + 80 + 82).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("户").build())
+              .text(CText.builder().textX(598 - 56 - 5).textY(696 + 80 + 106).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("联").build())
+              .text(CText.builder().textX(12 + 8).textY(696 + 80 + 136 + 22 - 5).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("物品：" + "几个快递" + " " + "12kg").build())
+              .box(CBox.builder().topLeftX(598 - 56 - 16 - 120).topLeftY(696 + 80 + 136 + 11).bottomRightX(598 - 56 - 16 - 16).bottomRightY(968 - 11).lineWidth(2).build())
+              .text(CText.builder().textX(598 - 56 - 16 - 120 + 17).textY(696 + 80 + 136 + 11 + 6).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("已验视").build());
+      if (cb_position.isChecked()) {
+        _gcpcl.form();
+      }
+      _gcpcl.print(CPrint.builder().build());
+      safeWrite(_gcpcl);
     }
   }
 
   public void imageTest(int i) {
-    InputStream is = NETActivity.this.getResources().openRawResource(getImageID("p" + i));
-    BitmapDrawable bmpDraw = new BitmapDrawable(is);
-    Bitmap rawBitmap = bmpDraw.getBitmap();
+    InputStream is = getResources().openRawResource(getImageID("p" + i));
+    Bitmap rawBitmap = new BitmapDrawable(is).getBitmap();
     rawBitmap = Bitmap.createScaledBitmap(rawBitmap, 800, 1200, true);
+
     if (curCmd.equals("tspl")) {
       GenericTSPL _gtspl = PrintUtil.getInstance().tspl().clear().page(TPage.builder().width(100).height(150).build())
         //注释的为热转印机器指令
@@ -298,43 +350,15 @@ public class NETActivity extends Activity {
     }
   }
 
-
-  //第一个参数文件名称（不加后缀）， 第二个参数文件夹名称，第三个参数包名
   public int getImageID(String name) {
     return getResources().getIdentifier(name, "raw", getPackageName());
-  }
-
-
-  //    private void dataListen(ConnectedDevice connectedDevice) {
-//        DataListener.with(connectedDevice).listen(new ListenAction() {
-//            @Override
-//            public void action(byte[] bytes) {
-//            //固件回传的数据
-//            }
-//        }).start();
-//    }
-
-  private String safeWriteAndRead(PSDK psdk) {
-    try {
-      WroteReporter reporter = psdk.write();
-      if (!reporter.isOk()) {
-        throw new IOException("写入数据失败", reporter.getException());
-      }
-      Thread.sleep(200);
-      byte[] bytes = psdk.read(ReadOptions.builder().timeout(2000).build());
-      return new String(bytes);
-    } catch (Exception e) {
-      return null;
-    }
   }
 
   private void safeWrite(PSDK psdk) {
     try {
       WroteReporter reporter = psdk.write();
-      if (!reporter.isOk()) {
-        throw new IOException("写入数据失败", reporter.getException());
-      }
-      Util.show(NETActivity.this,"发送成功");
+      if (!reporter.isOk()) throw new IOException("写入失败");
+      Util.show(NETActivity.this, "发送成功");
     } catch (Exception e) {
       e.printStackTrace();
       Util.show(NETActivity.this,"发送失败,请尝试重新连接");
@@ -342,15 +366,22 @@ public class NETActivity extends Activity {
   }
 
   @Override
+  protected void onResume() {
+    super.onResume();
+    MSharedPreferences msp = MSharedPreferences.getmSharedPreferences();
+    msp.init(this);
+    String ip = msp.getString(Config.KEY_IP_ADDRESS);
+    if (!ip.isEmpty()) et_address.setText(ip);
+  }
+
+  @Override
   protected void onDestroy() {
     super.onDestroy();
     if (network != null) {
-      try {
-        network.close();
-      } catch (IOException e) {
-        e.printStackTrace();
-      }
+      network.stopPrinterDiscovery();
+    }
+    if (network != null) {
+      try { network.close(); } catch (IOException ignored) {}
     }
   }
-
 }
