@@ -47,7 +47,7 @@ public class CPCLActivity extends Activity {
   private Connection connection;
   private TextView tv_connect_status;
   private EditText etMsg;
-  private Button btnText, btnBitmap, btnStatus, btnBarCode, btnQRCode, btnModel, btnPDF, btnOta;
+  private Button btnText, btnBitmap, btnStatus, btnBarCode, btnQRCode, btnModel, btnWfModel, btnPDF, btnOta;
   private EditText sampleEdit;
   private int sampleNumber;
   private boolean isSending = false;
@@ -68,6 +68,7 @@ public class CPCLActivity extends Activity {
     btnBarCode = findViewById(R.id.btnBarCode);
     btnQRCode = findViewById(R.id.btnQRCode);
     btnModel = findViewById(R.id.btnModel);
+    btnWfModel = findViewById(R.id.btnWfModel);
     btnPDF = findViewById(R.id.btnPDF);
     btnOta = findViewById(R.id.btnOta);
     sampleEdit = findViewById(R.id.sampleEdit);
@@ -224,6 +225,28 @@ public class CPCLActivity extends Activity {
         }
       }
     });
+    btnWfModel.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (sampleEdit.getText().toString().trim().equals("")) {
+          sampleNumber = 1;
+        } else {
+          sampleNumber = Integer.parseInt(sampleEdit.getText().toString().trim());
+        }
+        if (!isSending) {
+          new Thread(new Runnable() {
+            @Override
+            public void run() {
+              try {
+                printWf();
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+            }
+          }).start();
+        }
+      }
+    });
     btnPDF.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -303,6 +326,32 @@ public class CPCLActivity extends Activity {
       .mag(CMag.builder().font(Font.TSS24).build())//还原
       .form()//标签定位指令
       .print(CPrint.builder().mode(CPrint.Mode.MIRROR).build());
+    boolean result = safeWrite(_gcpcl);
+    Util.show(CPCLActivity.this, result ? "成功" : "失败");
+  }
+
+  private void printWf() {
+    int dpi = 8; //1mm=8dot(分辨率203) 1mm=12dot(分辨率300)
+    GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl()
+            .page(CPage.builder().width(200 * dpi).height(200 * dpi).copies(sampleNumber).build())
+            .mag(CMag.builder().font(Font.TSS24_MAX1).build())//字体放大1倍
+            .text(CText.builder().textX(45 * dpi).textY(33 * dpi).font(Font.TSS24_MAX1).bold(true).content("废物名称内容").build())
+            .text(CText.builder().textX(45 * dpi).textY(44 * dpi).font(Font.TSS24_MAX1).bold(true).content("废物类别内容").build())
+            .text(CText.builder().textX(45 * dpi).textY(55 * dpi).font(Font.TSS24_MAX1).bold(true).content("废物代码内容").build())
+            .text(CText.builder().textX(105 * dpi).textY(55 * dpi).font(Font.TSS24_MAX1).bold(true).content("废物形态内容").build())
+            .text(CText.builder().textX(45 * dpi).textY(68 * dpi).font(Font.TSS24_MAX1).bold(true).content("主要成分内容").build())
+            .text(CText.builder().textX(45 * dpi).textY(91 * dpi).font(Font.TSS24_MAX1).bold(true).content("有害成分内容").build())
+            .text(CText.builder().textX(45 * dpi).textY(114 * dpi).font(Font.TSS24_MAX1).bold(true).content("注意事项内容").build())
+            .text(CText.builder().textX(48 * dpi).textY(138 * dpi).font(Font.TSS24_MAX1).bold(true).content("数字识别码内容").build())
+            .text(CText.builder().textX(55 * dpi).textY(148 * dpi).font(Font.TSS24_MAX1).bold(true).content("产生/收集单位内容").build())
+            .text(CText.builder().textX(66 * dpi).textY(160 * dpi).font(Font.TSS24_MAX1).bold(true).content("联系人和联系方式内容").build())
+            .text(CText.builder().textX(40 * dpi).textY(172 * dpi).font(Font.TSS24_MAX1).bold(true).content("产生日期内容").build())
+            .text(CText.builder().textX(102 * dpi).textY(172 * dpi).font(Font.TSS24_MAX1).bold(true).content("废物重量内容").build())
+            .mag(CMag.builder().font(Font.TSS24).build())//字体还原
+            .text(CText.builder().textX(27 * dpi).textY(184 * dpi).font(Font.TSS24).bold(false).content("备注内容").build())
+            .qrcode(CQRCode.builder().x(148 * dpi).y(148 * dpi).width(10).content("https://wfqr.qrprt.com/id=00000000000000000").build())
+            .form()//标签定位指令
+            .print(CPrint.builder().build());
     boolean result = safeWrite(_gcpcl);
     Util.show(CPCLActivity.this, result ? "成功" : "失败");
   }

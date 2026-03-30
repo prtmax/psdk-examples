@@ -107,7 +107,14 @@
             <Button
                     android:id="@+id/btnModel"
                     android:layout_margin="5dp"
-                    android:text="打印模板76*130"
+                    android:text="面单模板76*130"
+                    android:layout_weight="1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+            <Button
+                    android:id="@+id/btnWfModel"
+                    android:layout_margin="5dp"
+                    android:text="危废模板200*200"
                     android:layout_weight="1"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>

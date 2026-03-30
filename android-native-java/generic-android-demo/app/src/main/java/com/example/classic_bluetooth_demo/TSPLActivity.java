@@ -331,6 +331,7 @@ public class TSPLActivity extends Activity {
                 .text(TText.builder().x(670).y(1170).font(Font.TSS24).xmulti(3).ymulti(3).content("碎").build())
                 .qrcode(TQRCode.builder().x(620).y(620).correctLevel(CorrectLevel.H).cellWidth(4).content("www.qrprt.com   www.qrprt.com   www.qrprt.com").build())
                 .print(1);
+//        Log.e("command：", _gtspl.command().string());
         boolean result = safeWrite(_gtspl);
         Util.show(TSPLActivity.this, result ? "成功" : "失败");
       }
