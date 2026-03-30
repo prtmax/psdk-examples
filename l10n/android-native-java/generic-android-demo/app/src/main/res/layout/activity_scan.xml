@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="#fff"
+  android:orientation="vertical">
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <Button
+      android:id="@+id/bt_usb"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:gravity="center"
+      android:text="@string/usb_print">
+    </Button>
+    <Button
+      android:id="@+id/bt_net"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:gravity="center"
+      android:text="@string/net_print">
+    </Button>
+    <Button
+      android:id="@+id/bt_language"
+      android:layout_width="wrap_content"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:gravity="center"
+      android:text="@string/language">
+    </Button>
+  </LinearLayout>
+
+  <EditText
+    android:id="@+id/edit_name"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp"
+    android:hint="@string/input_bt_name"/>
+
+
+  <ListView
+    android:id="@+id/lv"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_weight="1"/>
+  <TextView
+    android:id="@+id/tvEmpty"
+    android:textSize="20sp"
+    android:text="@string/no_bt_found"
+    android:textColor="#bfbfbf"
+    android:layout_gravity="center"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"/>
+  <Button android:id="@+id/bt_Scan"
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:text="@string/scan"
+  />
+</LinearLayout>

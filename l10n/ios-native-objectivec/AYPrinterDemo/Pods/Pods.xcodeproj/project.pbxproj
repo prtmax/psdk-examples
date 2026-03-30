@@ -1,0 +1,755 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		2F91214E038F8CFD51576D8C74B6BEA1 /* Pods-AYPrinterDemo-AYPrinterDemoUITests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 0B1C85711996AD51A8446B25C270D83D /* Pods-AYPrinterDemo-AYPrinterDemoUITests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		47157826CA40CA2EB81A6B0824D9D2B9 /* Pods-AYPrinterDemoTests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = 3A8A6EAAB1E416BAF6543E54E8F422DE /* Pods-AYPrinterDemoTests-dummy.m */; };
+		5F218E0E672285CE4718D1ED4CB79759 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */; };
+		82670712AFE06D8C86B9CE8D2A827516 /* Pods-AYPrinterDemo-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = E48C25D340E9D89751AFAADCB2424B31 /* Pods-AYPrinterDemo-dummy.m */; };
+		8379E8BE5DA7953513556E5F7A254045 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */; };
+		976F9915F0065203268E84C3BEEFF8C4 /* Pods-AYPrinterDemoTests-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 40C498F88903B38C556B16A79AA52DCA /* Pods-AYPrinterDemoTests-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		CB16395067FF400C36926C37EE221FC5 /* Pods-AYPrinterDemo-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = 9DFBFB1D16746F3F95101744E453F636 /* Pods-AYPrinterDemo-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
+		D5FE57E18E9406B0238A259DE1FC1C36 /* Pods-AYPrinterDemo-AYPrinterDemoUITests-dummy.m in Sources */ = {isa = PBXBuildFile; fileRef = A6138FAD89EB227A9C5ACF6A67F7EB63 /* Pods-AYPrinterDemo-AYPrinterDemoUITests-dummy.m */; };
+		F9C0F3FF95434887948D3E5F1E038EE9 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		3D9F3C8016FDB46694ABB8715A67E510 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 7BC420B9E08EDE57E1999AE9274AF83D;
+			remoteInfo = "Pods-AYPrinterDemo";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		0B1C85711996AD51A8446B25C270D83D /* Pods-AYPrinterDemo-AYPrinterDemoUITests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-AYPrinterDemo-AYPrinterDemoUITests-umbrella.h"; sourceTree = "<group>"; };
+		14F07751B57ECAAA137B3BBEE313A218 /* Pods-AYPrinterDemo-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-AYPrinterDemo-acknowledgements.markdown"; sourceTree = "<group>"; };
+		25A52582CCEF0D3740BFC6C9B3D01295 /* Pods-AYPrinterDemo-AYPrinterDemoUITests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-AYPrinterDemo-AYPrinterDemoUITests.modulemap"; sourceTree = "<group>"; };
+		3A8A6EAAB1E416BAF6543E54E8F422DE /* Pods-AYPrinterDemoTests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-AYPrinterDemoTests-dummy.m"; sourceTree = "<group>"; };
+		40C498F88903B38C556B16A79AA52DCA /* Pods-AYPrinterDemoTests-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-AYPrinterDemoTests-umbrella.h"; sourceTree = "<group>"; };
+		47C971B16580877E1751E68B3F472328 /* Pods-AYPrinterDemo-AYPrinterDemoUITests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-AYPrinterDemo-AYPrinterDemoUITests.debug.xcconfig"; sourceTree = "<group>"; };
+		53E7553943AA99B564AF93EC48397151 /* Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig"; sourceTree = "<group>"; };
+		54F23AA0066E80EB8522670D6C6AD2E6 /* Pods-AYPrinterDemoTests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-AYPrinterDemoTests-acknowledgements.markdown"; sourceTree = "<group>"; };
+		55C5CD86B9954189C14E1C46507995FF /* Pods-AYPrinterDemo-AYPrinterDemoUITests */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-AYPrinterDemo-AYPrinterDemoUITests"; path = Pods_AYPrinterDemo_AYPrinterDemoUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		62A97C8AC4B5E8559F592CD8F8F39BC3 /* Pods-AYPrinterDemo-AYPrinterDemoUITests-acknowledgements.markdown */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text; path = "Pods-AYPrinterDemo-AYPrinterDemoUITests-acknowledgements.markdown"; sourceTree = "<group>"; };
+		63DF706EF491A8B973067F29F48A8D41 /* Pods-AYPrinterDemoTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-AYPrinterDemoTests.release.xcconfig"; sourceTree = "<group>"; };
+		6D8A6FF486F3E4D78BB627C1EAA56677 /* Pods-AYPrinterDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-AYPrinterDemo.release.xcconfig"; sourceTree = "<group>"; };
+		6EB7F3BEF17DB81646A607575220A8E4 /* Pods-AYPrinterDemo-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-AYPrinterDemo-acknowledgements.plist"; sourceTree = "<group>"; };
+		73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS14.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
+		80128A80E1888CFEA7C04A276ABA2EA6 /* Pods-AYPrinterDemo */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-AYPrinterDemo"; path = Pods_AYPrinterDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		96FAEE3A1C9D5029A3BE53A8BC4FFB03 /* Pods-AYPrinterDemo-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-AYPrinterDemo-Info.plist"; sourceTree = "<group>"; };
+		9D940727FF8FB9C785EB98E56350EF41 /* Podfile */ = {isa = PBXFileReference; explicitFileType = text.script.ruby; includeInIndex = 1; indentWidth = 2; lastKnownFileType = text; name = Podfile; path = ../Podfile; sourceTree = SOURCE_ROOT; tabWidth = 2; xcLanguageSpecificationIdentifier = xcode.lang.ruby; };
+		9DFBFB1D16746F3F95101744E453F636 /* Pods-AYPrinterDemo-umbrella.h */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.h; path = "Pods-AYPrinterDemo-umbrella.h"; sourceTree = "<group>"; };
+		A6138FAD89EB227A9C5ACF6A67F7EB63 /* Pods-AYPrinterDemo-AYPrinterDemoUITests-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-AYPrinterDemo-AYPrinterDemoUITests-dummy.m"; sourceTree = "<group>"; };
+		A93AD1761EA5968F30B455F56E6F1300 /* Pods-AYPrinterDemo-AYPrinterDemoUITests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-AYPrinterDemo-AYPrinterDemoUITests-Info.plist"; sourceTree = "<group>"; };
+		D2A5B70668D145B25809513418D29A16 /* Pods-AYPrinterDemoTests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-AYPrinterDemoTests-acknowledgements.plist"; sourceTree = "<group>"; };
+		E2C96CB7E41BD754F37B1C4788A479D0 /* Pods-AYPrinterDemoTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-AYPrinterDemoTests.debug.xcconfig"; sourceTree = "<group>"; };
+		E48C25D340E9D89751AFAADCB2424B31 /* Pods-AYPrinterDemo-dummy.m */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.c.objc; path = "Pods-AYPrinterDemo-dummy.m"; sourceTree = "<group>"; };
+		E838BB72EA3FAC56AE5A84EFFB69C2F1 /* Pods-AYPrinterDemo-AYPrinterDemoUITests-acknowledgements.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-AYPrinterDemo-AYPrinterDemoUITests-acknowledgements.plist"; sourceTree = "<group>"; };
+		EBCD17DF91C45FEF7962B15F0AFA2247 /* Pods-AYPrinterDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; path = "Pods-AYPrinterDemo.debug.xcconfig"; sourceTree = "<group>"; };
+		EC27C834A9BB9EFD44E871FC62C781C7 /* Pods-AYPrinterDemoTests-Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = "Pods-AYPrinterDemoTests-Info.plist"; sourceTree = "<group>"; };
+		EEA450624CB945B0A3575C3C0FED4F19 /* Pods-AYPrinterDemo.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-AYPrinterDemo.modulemap"; sourceTree = "<group>"; };
+		F047925B8ADD5FDCE047611EA284B9AB /* Pods-AYPrinterDemoTests.modulemap */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.module; path = "Pods-AYPrinterDemoTests.modulemap"; sourceTree = "<group>"; };
+		F5278F792337D4A3F1226D2B19BE3D1F /* Pods-AYPrinterDemoTests */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; name = "Pods-AYPrinterDemoTests"; path = Pods_AYPrinterDemoTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A13F73015618717C681CC92418E752CE /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5F218E0E672285CE4718D1ED4CB79759 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A4C716B37169EC6646AC6B1547456AC9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				F9C0F3FF95434887948D3E5F1E038EE9 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		F4BEB4682CCF9135A2D0C8F16F2D190D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				8379E8BE5DA7953513556E5F7A254045 /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		21F3CD00EFB1EDFF58CD54C9D2605B79 /* Pods-AYPrinterDemoTests */ = {
+			isa = PBXGroup;
+			children = (
+				F047925B8ADD5FDCE047611EA284B9AB /* Pods-AYPrinterDemoTests.modulemap */,
+				54F23AA0066E80EB8522670D6C6AD2E6 /* Pods-AYPrinterDemoTests-acknowledgements.markdown */,
+				D2A5B70668D145B25809513418D29A16 /* Pods-AYPrinterDemoTests-acknowledgements.plist */,
+				3A8A6EAAB1E416BAF6543E54E8F422DE /* Pods-AYPrinterDemoTests-dummy.m */,
+				EC27C834A9BB9EFD44E871FC62C781C7 /* Pods-AYPrinterDemoTests-Info.plist */,
+				40C498F88903B38C556B16A79AA52DCA /* Pods-AYPrinterDemoTests-umbrella.h */,
+				E2C96CB7E41BD754F37B1C4788A479D0 /* Pods-AYPrinterDemoTests.debug.xcconfig */,
+				63DF706EF491A8B973067F29F48A8D41 /* Pods-AYPrinterDemoTests.release.xcconfig */,
+			);
+			name = "Pods-AYPrinterDemoTests";
+			path = "Target Support Files/Pods-AYPrinterDemoTests";
+			sourceTree = "<group>";
+		};
+		34447EABD028FC1A49FD35509C041747 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				80128A80E1888CFEA7C04A276ABA2EA6 /* Pods-AYPrinterDemo */,
+				55C5CD86B9954189C14E1C46507995FF /* Pods-AYPrinterDemo-AYPrinterDemoUITests */,
+				F5278F792337D4A3F1226D2B19BE3D1F /* Pods-AYPrinterDemoTests */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		4CD8E1A7F9E91A50B9D45AF0047322C9 /* Targets Support Files */ = {
+			isa = PBXGroup;
+			children = (
+				7CF9DD78EB71ECD2BBF585F56F3D9115 /* Pods-AYPrinterDemo */,
+				F4B224324515E1F93A05BB1F056C2C41 /* Pods-AYPrinterDemo-AYPrinterDemoUITests */,
+				21F3CD00EFB1EDFF58CD54C9D2605B79 /* Pods-AYPrinterDemoTests */,
+			);
+			name = "Targets Support Files";
+			sourceTree = "<group>";
+		};
+		578452D2E740E91742655AC8F1636D1F /* iOS */ = {
+			isa = PBXGroup;
+			children = (
+				73010CC983E3809BECEE5348DA1BB8C6 /* Foundation.framework */,
+			);
+			name = iOS;
+			sourceTree = "<group>";
+		};
+		7CF9DD78EB71ECD2BBF585F56F3D9115 /* Pods-AYPrinterDemo */ = {
+			isa = PBXGroup;
+			children = (
+				EEA450624CB945B0A3575C3C0FED4F19 /* Pods-AYPrinterDemo.modulemap */,
+				14F07751B57ECAAA137B3BBEE313A218 /* Pods-AYPrinterDemo-acknowledgements.markdown */,
+				6EB7F3BEF17DB81646A607575220A8E4 /* Pods-AYPrinterDemo-acknowledgements.plist */,
+				E48C25D340E9D89751AFAADCB2424B31 /* Pods-AYPrinterDemo-dummy.m */,
+				96FAEE3A1C9D5029A3BE53A8BC4FFB03 /* Pods-AYPrinterDemo-Info.plist */,
+				9DFBFB1D16746F3F95101744E453F636 /* Pods-AYPrinterDemo-umbrella.h */,
+				EBCD17DF91C45FEF7962B15F0AFA2247 /* Pods-AYPrinterDemo.debug.xcconfig */,
+				6D8A6FF486F3E4D78BB627C1EAA56677 /* Pods-AYPrinterDemo.release.xcconfig */,
+			);
+			name = "Pods-AYPrinterDemo";
+			path = "Target Support Files/Pods-AYPrinterDemo";
+			sourceTree = "<group>";
+		};
+		CF1408CF629C7361332E53B88F7BD30C = {
+			isa = PBXGroup;
+			children = (
+				9D940727FF8FB9C785EB98E56350EF41 /* Podfile */,
+				D210D550F4EA176C3123ED886F8F87F5 /* Frameworks */,
+				34447EABD028FC1A49FD35509C041747 /* Products */,
+				4CD8E1A7F9E91A50B9D45AF0047322C9 /* Targets Support Files */,
+			);
+			sourceTree = "<group>";
+		};
+		D210D550F4EA176C3123ED886F8F87F5 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				578452D2E740E91742655AC8F1636D1F /* iOS */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F4B224324515E1F93A05BB1F056C2C41 /* Pods-AYPrinterDemo-AYPrinterDemoUITests */ = {
+			isa = PBXGroup;
+			children = (
+				25A52582CCEF0D3740BFC6C9B3D01295 /* Pods-AYPrinterDemo-AYPrinterDemoUITests.modulemap */,
+				62A97C8AC4B5E8559F592CD8F8F39BC3 /* Pods-AYPrinterDemo-AYPrinterDemoUITests-acknowledgements.markdown */,
+				E838BB72EA3FAC56AE5A84EFFB69C2F1 /* Pods-AYPrinterDemo-AYPrinterDemoUITests-acknowledgements.plist */,
+				A6138FAD89EB227A9C5ACF6A67F7EB63 /* Pods-AYPrinterDemo-AYPrinterDemoUITests-dummy.m */,
+				A93AD1761EA5968F30B455F56E6F1300 /* Pods-AYPrinterDemo-AYPrinterDemoUITests-Info.plist */,
+				0B1C85711996AD51A8446B25C270D83D /* Pods-AYPrinterDemo-AYPrinterDemoUITests-umbrella.h */,
+				47C971B16580877E1751E68B3F472328 /* Pods-AYPrinterDemo-AYPrinterDemoUITests.debug.xcconfig */,
+				53E7553943AA99B564AF93EC48397151 /* Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig */,
+			);
+			name = "Pods-AYPrinterDemo-AYPrinterDemoUITests";
+			path = "Target Support Files/Pods-AYPrinterDemo-AYPrinterDemoUITests";
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		2A775624C6554DABC730C95F1655F0D7 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				2F91214E038F8CFD51576D8C74B6BEA1 /* Pods-AYPrinterDemo-AYPrinterDemoUITests-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3A0E78CF37971EC82ABCDFBF5BC5A793 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				CB16395067FF400C36926C37EE221FC5 /* Pods-AYPrinterDemo-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		3B9C7E2FBBE62F71EAB407E38FBC9F54 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				976F9915F0065203268E84C3BEEFF8C4 /* Pods-AYPrinterDemoTests-umbrella.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		1A65D6A0A7D30B815F780823728CA35B /* Pods-AYPrinterDemo-AYPrinterDemoUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 81842B34504B56FC3D34D3731191C791 /* Build configuration list for PBXNativeTarget "Pods-AYPrinterDemo-AYPrinterDemoUITests" */;
+			buildPhases = (
+				2A775624C6554DABC730C95F1655F0D7 /* Headers */,
+				0D67CA5E0372626909E60B51703B7D3F /* Sources */,
+				F4BEB4682CCF9135A2D0C8F16F2D190D /* Frameworks */,
+				72FD4032B365033F3BF8A22FB6DFC22E /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Pods-AYPrinterDemo-AYPrinterDemoUITests";
+			productName = Pods_AYPrinterDemo_AYPrinterDemoUITests;
+			productReference = 55C5CD86B9954189C14E1C46507995FF /* Pods-AYPrinterDemo-AYPrinterDemoUITests */;
+			productType = "com.apple.product-type.framework";
+		};
+		59AA1A839F6454BCCC1BD3A07E3EF3D0 /* Pods-AYPrinterDemoTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 32F9DAE811133C5D1841FEBBC797720D /* Build configuration list for PBXNativeTarget "Pods-AYPrinterDemoTests" */;
+			buildPhases = (
+				3B9C7E2FBBE62F71EAB407E38FBC9F54 /* Headers */,
+				731D00296C9DDD21F88B65211EC8525D /* Sources */,
+				A4C716B37169EC6646AC6B1547456AC9 /* Frameworks */,
+				FD1CEC6BB4D14302522F12B9DC68F299 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				EB04BDDF57827E12D51BB75A9202935E /* PBXTargetDependency */,
+			);
+			name = "Pods-AYPrinterDemoTests";
+			productName = Pods_AYPrinterDemoTests;
+			productReference = F5278F792337D4A3F1226D2B19BE3D1F /* Pods-AYPrinterDemoTests */;
+			productType = "com.apple.product-type.framework";
+		};
+		7BC420B9E08EDE57E1999AE9274AF83D /* Pods-AYPrinterDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 332C3A947C2FEE1A8C022BE11103E131 /* Build configuration list for PBXNativeTarget "Pods-AYPrinterDemo" */;
+			buildPhases = (
+				3A0E78CF37971EC82ABCDFBF5BC5A793 /* Headers */,
+				224FFE15E6B9509F883EC30F7C593685 /* Sources */,
+				A13F73015618717C681CC92418E752CE /* Frameworks */,
+				9B053B5FB402018C623E584F9AC6E600 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = "Pods-AYPrinterDemo";
+			productName = Pods_AYPrinterDemo;
+			productReference = 80128A80E1888CFEA7C04A276ABA2EA6 /* Pods-AYPrinterDemo */;
+			productType = "com.apple.product-type.framework";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		BFDFE7DC352907FC980B868725387E98 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+			};
+			buildConfigurationList = 4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				Base,
+				en,
+			);
+			mainGroup = CF1408CF629C7361332E53B88F7BD30C;
+			productRefGroup = 34447EABD028FC1A49FD35509C041747 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7BC420B9E08EDE57E1999AE9274AF83D /* Pods-AYPrinterDemo */,
+				1A65D6A0A7D30B815F780823728CA35B /* Pods-AYPrinterDemo-AYPrinterDemoUITests */,
+				59AA1A839F6454BCCC1BD3A07E3EF3D0 /* Pods-AYPrinterDemoTests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		72FD4032B365033F3BF8A22FB6DFC22E /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		9B053B5FB402018C623E584F9AC6E600 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		FD1CEC6BB4D14302522F12B9DC68F299 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		0D67CA5E0372626909E60B51703B7D3F /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D5FE57E18E9406B0238A259DE1FC1C36 /* Pods-AYPrinterDemo-AYPrinterDemoUITests-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		224FFE15E6B9509F883EC30F7C593685 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				82670712AFE06D8C86B9CE8D2A827516 /* Pods-AYPrinterDemo-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		731D00296C9DDD21F88B65211EC8525D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				47157826CA40CA2EB81A6B0824D9D2B9 /* Pods-AYPrinterDemoTests-dummy.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		EB04BDDF57827E12D51BB75A9202935E /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = "Pods-AYPrinterDemo";
+			target = 7BC420B9E08EDE57E1999AE9274AF83D /* Pods-AYPrinterDemo */;
+			targetProxy = 3D9F3C8016FDB46694ABB8715A67E510 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		12189238F23EDCF8DE2CD253C6CD9AA0 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 53E7553943AA99B564AF93EC48397151 /* Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-AYPrinterDemo-AYPrinterDemoUITests/Pods-AYPrinterDemo-AYPrinterDemoUITests-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-AYPrinterDemo-AYPrinterDemoUITests/Pods-AYPrinterDemo-AYPrinterDemoUITests.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		1552EDF91B37F46CCCB7F8C4C9391A3C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = EBCD17DF91C45FEF7962B15F0AFA2247 /* Pods-AYPrinterDemo.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-AYPrinterDemo/Pods-AYPrinterDemo-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-AYPrinterDemo/Pods-AYPrinterDemo.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		8536E0D813D9CE4144C3C4E18F6C2034 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = E2C96CB7E41BD754F37B1C4788A479D0 /* Pods-AYPrinterDemoTests.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-AYPrinterDemoTests/Pods-AYPrinterDemoTests-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-AYPrinterDemoTests/Pods-AYPrinterDemoTests.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+		8DE5143C03248BB6CD542DE3963D6F3A /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_DEBUG=1",
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = DEBUG;
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Debug;
+		};
+		9E406C6AAF85E580207CD97B0044DEAB /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_LOCALIZABILITY_NONLOCALIZED = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"POD_CONFIGURATION_RELEASE=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRIP_INSTALLED_PRODUCT = NO;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
+				SWIFT_VERSION = 5.0;
+				SYMROOT = "${SRCROOT}/../build";
+			};
+			name = Release;
+		};
+		BE6CDBC57839D86B8C31B93D44806FB8 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 63DF706EF491A8B973067F29F48A8D41 /* Pods-AYPrinterDemoTests.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-AYPrinterDemoTests/Pods-AYPrinterDemoTests-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-AYPrinterDemoTests/Pods-AYPrinterDemoTests.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		D47AD2D4C9DD65EB54DA96F0E9D47E82 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 6D8A6FF486F3E4D78BB627C1EAA56677 /* Pods-AYPrinterDemo.release.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-AYPrinterDemo/Pods-AYPrinterDemo-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-AYPrinterDemo/Pods-AYPrinterDemo.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Release;
+		};
+		E624B441D938D8E50114093408B42F1F /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 47C971B16580877E1751E68B3F472328 /* Pods-AYPrinterDemo-AYPrinterDemoUITests.debug.xcconfig */;
+			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = NO;
+				CLANG_ENABLE_OBJC_WEAK = NO;
+				"CODE_SIGN_IDENTITY[sdk=appletvos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "";
+				"CODE_SIGN_IDENTITY[sdk=watchos*]" = "";
+				CURRENT_PROJECT_VERSION = 1;
+				DEFINES_MODULE = YES;
+				DYLIB_COMPATIBILITY_VERSION = 1;
+				DYLIB_CURRENT_VERSION = 1;
+				DYLIB_INSTALL_NAME_BASE = "@rpath";
+				INFOPLIST_FILE = "Target Support Files/Pods-AYPrinterDemo-AYPrinterDemoUITests/Pods-AYPrinterDemo-AYPrinterDemoUITests-Info.plist";
+				INSTALL_PATH = "$(LOCAL_LIBRARY_DIR)/Frameworks";
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MACH_O_TYPE = staticlib;
+				MODULEMAP_FILE = "Target Support Files/Pods-AYPrinterDemo-AYPrinterDemoUITests/Pods-AYPrinterDemo-AYPrinterDemoUITests.modulemap";
+				OTHER_LDFLAGS = "";
+				OTHER_LIBTOOLFLAGS = "";
+				PODS_ROOT = "$(SRCROOT)";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.cocoapods.${PRODUCT_NAME:rfc1034identifier}";
+				PRODUCT_NAME = "$(TARGET_NAME:c99extidentifier)";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VERSIONING_SYSTEM = "apple-generic";
+				VERSION_INFO_PREFIX = "";
+			};
+			name = Debug;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		32F9DAE811133C5D1841FEBBC797720D /* Build configuration list for PBXNativeTarget "Pods-AYPrinterDemoTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8536E0D813D9CE4144C3C4E18F6C2034 /* Debug */,
+				BE6CDBC57839D86B8C31B93D44806FB8 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		332C3A947C2FEE1A8C022BE11103E131 /* Build configuration list for PBXNativeTarget "Pods-AYPrinterDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				1552EDF91B37F46CCCB7F8C4C9391A3C /* Debug */,
+				D47AD2D4C9DD65EB54DA96F0E9D47E82 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		4821239608C13582E20E6DA73FD5F1F9 /* Build configuration list for PBXProject "Pods" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				8DE5143C03248BB6CD542DE3963D6F3A /* Debug */,
+				9E406C6AAF85E580207CD97B0044DEAB /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		81842B34504B56FC3D34D3731191C791 /* Build configuration list for PBXNativeTarget "Pods-AYPrinterDemo-AYPrinterDemoUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				E624B441D938D8E50114093408B42F1F /* Debug */,
+				12189238F23EDCF8DE2CD253C6CD9AA0 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = BFDFE7DC352907FC980B868725387E98 /* Project object */;
+}
