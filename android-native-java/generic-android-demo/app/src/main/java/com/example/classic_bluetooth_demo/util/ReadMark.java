@@ -26,4 +26,6 @@ public enum ReadMark {
   OPERATE_WIFI_DHCP,//查询DHCP
   OPERATE_ALL_IP_INFO, //查询IP所有信息
   OPERATE_ALL_WIFI_INFO,//查询WIFI所有信息
+  OPERATE_GET_KEY,//查询秘钥
+  OPERATE_SET_WIFI,//设置wifi
 }

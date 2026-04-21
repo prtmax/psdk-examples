@@ -37,6 +37,7 @@
         <activity android:name="com.example.classic_bluetooth_demo.TSPLActivity"/>
         <activity android:name="com.example.classic_bluetooth_demo.ESCActivity"/>
         <activity android:name="com.example.classic_bluetooth_demo.WIFIActivity"/>
+        <activity android:name="com.example.classic_bluetooth_demo.ESCWIFIActivity"/>
         <activity android:name="com.example.classic_bluetooth_demo.ZPLActivity"/>
         <activity android:name="com.example.classic_bluetooth_demo.PDFActivity"/>
         <activity android:name="com.example.classic_bluetooth_demo.NETActivity"/>

@@ -66,7 +66,7 @@ public class WIFIActivity extends Activity {
     btnGetIp = findViewById(R.id.button_get_ip);
     btnInfo = findViewById(R.id.button_get_info);
     BluetoothDevice device = getIntent().getParcelableExtra("device");
-    connection = Bluetooth.getInstance().createConnectionClassic(device, new ConnectListener() {
+    connection = Bluetooth.getInstance().createConnectionBle(device, new ConnectListener() {
       @Override
       public void onConnectSuccess(ConnectedDevice connectedDevice) {
         wifi = WIFI.generic(connectedDevice);
@@ -375,20 +375,6 @@ public class WIFIActivity extends Activity {
     } catch (Exception e) {
       e.printStackTrace();
     }
-  }
-
-  private String ByteArrToHex(byte[] inBytArr) {
-    StringBuilder strBuilder = new StringBuilder();
-    int j = inBytArr.length;
-    for (int i = 0; i < j; i++) {
-      strBuilder.append(Byte2Hex(inBytArr[i]));
-      strBuilder.append(":");
-    }
-    return strBuilder.toString();
-  }
-
-  private String Byte2Hex(Byte inByte) {
-    return String.format("%02x", inByte).toUpperCase();
   }
 
   @Override

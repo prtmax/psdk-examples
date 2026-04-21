@@ -1,3 +1,15 @@
 <resources>
     <string name="app_name">打印demo</string>
+    <string name="scan_mode_print">打印设备(spp)</string>
+    <string name="scan_mode_ble">配网设备(ble)</string>
+    <string name="scan_mode_hint_print">当前入口：打印设备（SPP）</string>
+    <string name="scan_mode_hint_ble">当前入口：配网设备（BLE）</string>
+    <string name="scan_mode_desc">上方可进入 USB/NET 打印功能，或切换 SPP/BLE 搜索入口；搜索结果会按当前入口过滤。</string>
+    <string name="scan_mode_title_print">请选择打印类型</string>
+    <string name="scan_mode_title_ble">请选择配网类型</string>
+    <string name="scan_usb">USB打印</string>
+    <string name="scan_net">NET打印</string>
+    <string name="scan_search_hint">输入设备名称筛选</string>
+    <string name="scan_empty_hint">没有发现设备，请确认蓝牙已开启</string>
+    <string name="scan_button_text">扫描</string>
 </resources>

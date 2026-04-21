@@ -11,39 +11,104 @@
     android:orientation="horizontal">
     <Button
       android:id="@+id/bt_usb"
-      android:layout_width="wrap_content"
+      android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_weight="1"
       android:gravity="center"
-      android:text="USB打印">
+      android:text="@string/scan_usb">
     </Button>
     <Button
       android:id="@+id/bt_net"
-      android:layout_width="wrap_content"
+      android:layout_width="0dp"
       android:layout_height="wrap_content"
       android:layout_weight="1"
       android:gravity="center"
-      android:text="NET打印">
+      android:text="@string/scan_net">
     </Button>
   </LinearLayout>
+
+  <LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+    <Button
+      android:id="@+id/bt_print_mode"
+      style="?android:attr/buttonBarButtonStyle"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:layout_marginStart="6dp"
+      android:layout_marginEnd="3dp"
+      android:background="@drawable/scan_mode_button_background"
+      android:gravity="center"
+      android:minHeight="48dp"
+      android:paddingTop="10dp"
+      android:paddingBottom="10dp"
+      android:textAllCaps="false"
+      android:textColor="@color/scan_mode_button_text_color"
+      android:textStyle="bold"
+      android:text="@string/scan_mode_print">
+    </Button>
+    <Button
+      android:id="@+id/bt_ble_mode"
+      style="?android:attr/buttonBarButtonStyle"
+      android:layout_width="0dp"
+      android:layout_height="wrap_content"
+      android:layout_weight="1"
+      android:layout_marginStart="3dp"
+      android:layout_marginEnd="6dp"
+      android:background="@drawable/scan_mode_button_background"
+      android:gravity="center"
+      android:minHeight="48dp"
+      android:paddingTop="10dp"
+      android:paddingBottom="10dp"
+      android:textAllCaps="false"
+      android:textColor="@color/scan_mode_button_text_color"
+      android:textStyle="bold"
+      android:text="@string/scan_mode_ble">
+    </Button>
+  </LinearLayout>
+
+  <TextView
+    android:id="@+id/tvModeHint"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="10dp"
+    android:layout_marginTop="8dp"
+    android:layout_marginRight="10dp"
+    android:text="@string/scan_mode_hint_print"
+    android:textColor="#666666"
+    android:textSize="14sp"/>
+
+  <TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="10dp"
+    android:layout_marginBottom="4dp"
+    android:text="@string/scan_mode_desc"
+    android:textColor="#666666"
+    android:textSize="14sp"/>
 
   <EditText
     android:id="@+id/edit_name"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="10dp"
-    android:hint="输入蓝牙名称"/>
+    android:autofillHints="name"
+    android:hint="@string/scan_search_hint"
+    android:inputType="text"/>
 
 
   <ListView
     android:id="@+id/lv"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="0dp"
     android:layout_weight="1"/>
   <TextView
     android:id="@+id/tvEmpty"
     android:textSize="20sp"
-    android:text="没有发现蓝牙设备"
+    android:text="@string/scan_empty_hint"
     android:textColor="#bfbfbf"
     android:layout_gravity="center"
     android:layout_width="wrap_content"
@@ -51,6 +116,6 @@
   <Button android:id="@+id/bt_Scan"
           android:layout_width="match_parent"
           android:layout_height="wrap_content"
-          android:text="扫描"
+          android:text="@string/scan_button_text"
   />
 </LinearLayout>

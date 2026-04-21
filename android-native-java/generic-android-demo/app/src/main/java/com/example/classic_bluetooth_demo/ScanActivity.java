@@ -11,6 +11,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.os.Process;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -32,25 +34,53 @@ import java.util.List;
 
 public class ScanActivity extends Activity {
 
+  private static final int MODE_PRINT = 0;
+  private static final int MODE_BLE = 1;
+  private static final long RESTART_SCAN_DELAY_MS = 150L;
+
+  private ListView lv;
   private myAdapter listAdapter;
   private TextView tvEmpty;
-  private Button bt_Scan, bt_usb, bt_net;
+  private TextView tvModeHint;
+  private Button bt_Scan, bt_usb, bt_net, bt_print_mode, bt_ble_mode;
   private EditText edit_name;
   private final List<Device> devList = new ArrayList<>();
   private final List<Device> searchList = new ArrayList<>();
   private AlertDialog alertDialog;
+  private int currentMode = MODE_PRINT;
+  private final Handler handler = new Handler(Looper.getMainLooper());
+  private final Runnable restartDiscoveryRunnable = this::doStartDiscovery;
 
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    if (savedInstanceState != null) {
+      currentMode = savedInstanceState.getInt("scan_mode", MODE_PRINT);
+    }
     setContentView(R.layout.activity_scan);
     initViews();
+    updateModeUi();
     //初始化sdk
     Bluetooth.getInstance().initialize(getApplication());
     Bluetooth.getInstance().setDiscoveryListener(discoveryListener);
     Bluetooth.getInstance().setBluetoothStateListener(bluetoothStateListen);
     checkPermissions();
+  }
+
+  @Override
+  protected void onSaveInstanceState(Bundle outState) {
+    super.onSaveInstanceState(outState);
+    outState.putInt("scan_mode", currentMode);
+  }
+
+  @Override
+  protected void onPause() {
+    super.onPause();
+    handler.removeCallbacks(restartDiscoveryRunnable);
+    if (Bluetooth.getInstance().isInitialized()) {
+      Bluetooth.getInstance().stopDiscovery();
+    }
   }
 
   private static final String[] PERMISSIONS_STORAGE = {
@@ -92,38 +122,38 @@ public class ScanActivity extends Activity {
   }
 
   public void showList(int position) {
-    final String[] items = {"CPCL", "TSPL", "ESC", "WIFI", "ZPL"};
+    final String[] items = currentMode == MODE_PRINT
+      ? new String[]{"CPCL打印（SPP）", "TSPL打印（SPP）", "ESC打印（SPP）", "ZPL打印（SPP）"}
+      : new String[]{"WIFI配网（BLE）", "ESC配网（BLE）"};
     AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
-    alertBuilder.setTitle("请先选择指令类型");
+    alertBuilder.setTitle(currentMode == MODE_PRINT ? R.string.scan_mode_title_print : R.string.scan_mode_title_ble);
     alertBuilder.setItems(items, new DialogInterface.OnClickListener() {
       @Override
       public void onClick(DialogInterface dialogInterface, int i) {
-        switch (i) {
-          case 0:
-            Intent intent0 = new Intent(ScanActivity.this, CPCLActivity.class);
-            intent0.putExtra("device", listAdapter.mList.get(position).device);
-            startActivity(intent0);
-            break;
-          case 1:
-            Intent intent1 = new Intent(ScanActivity.this, TSPLActivity.class);
-            intent1.putExtra("device", listAdapter.mList.get(position).device);
-            startActivity(intent1);
-            break;
-          case 2:
-            Intent intent2 = new Intent(ScanActivity.this, ESCActivity.class);
-            intent2.putExtra("device", listAdapter.mList.get(position).device);
-            startActivity(intent2);
-            break;
-          case 3:
-            Intent intent3 = new Intent(ScanActivity.this, WIFIActivity.class);
-            intent3.putExtra("device", listAdapter.mList.get(position).device);
-            startActivity(intent3);
-            break;
-          case 4:
-            Intent intent4 = new Intent(ScanActivity.this, ZPLActivity.class);
-            intent4.putExtra("device", listAdapter.mList.get(position).device);
-            startActivity(intent4);
-            break;
+        if (currentMode == MODE_PRINT) {
+          switch (i) {
+            case 0:
+              startDeviceActivity(CPCLActivity.class, position);
+              break;
+            case 1:
+              startDeviceActivity(TSPLActivity.class, position);
+              break;
+            case 2:
+              startDeviceActivity(ESCActivity.class, position);
+              break;
+            case 3:
+              startDeviceActivity(ZPLActivity.class, position);
+              break;
+          }
+        } else {
+          switch (i) {
+            case 0:
+              startDeviceActivity(WIFIActivity.class, position);
+              break;
+            case 1:
+              startDeviceActivity(ESCWIFIActivity.class, position);
+              break;
+          }
         }
         Toast.makeText(ScanActivity.this, items[i], Toast.LENGTH_SHORT).show();
         alertDialog.dismiss();
@@ -136,27 +166,30 @@ public class ScanActivity extends Activity {
 
   private void initViews() {
 
-    ListView lv = findViewById(R.id.lv);
+    lv = findViewById(R.id.lv);
     tvEmpty = findViewById(R.id.tvEmpty);
+    tvModeHint = findViewById(R.id.tvModeHint);
     bt_Scan = findViewById(R.id.bt_Scan);
     bt_usb = findViewById(R.id.bt_usb);
     bt_net = findViewById(R.id.bt_net);
+    bt_print_mode = findViewById(R.id.bt_print_mode);
+    bt_ble_mode = findViewById(R.id.bt_ble_mode);
     edit_name = findViewById(R.id.edit_name);
     listAdapter = new myAdapter(this, devList);
     lv.setAdapter(listAdapter);
     lv.setOnItemClickListener((parent, view, position, id) -> showList(position));
-    bt_usb.setOnClickListener(new View.OnClickListener() {
+    bt_usb.setOnClickListener(view -> startActivity(new Intent(ScanActivity.this, USBActivity.class)));
+    bt_net.setOnClickListener(view -> startActivity(new Intent(ScanActivity.this, NETActivity.class)));
+    bt_print_mode.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        Intent intent = new Intent(ScanActivity.this, USBActivity.class);
-        startActivity(intent);
+        setCurrentMode(MODE_PRINT);
       }
     });
-    bt_net.setOnClickListener(new View.OnClickListener() {
+    bt_ble_mode.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
-        Intent intent = new Intent(ScanActivity.this, NETActivity.class);
-        startActivity(intent);
+        setCurrentMode(MODE_BLE);
       }
     });
     bt_Scan.setOnClickListener(new View.OnClickListener() {
@@ -186,21 +219,7 @@ public class ScanActivity extends Activity {
 
       @Override
       public void afterTextChanged(Editable editable) {
-        searchList.clear();
-        if (editable.toString().equals("")) {
-          listAdapter = new myAdapter(ScanActivity.this, devList);
-          lv.setAdapter(listAdapter);
-        } else {
-          for (Device device : devList) {
-            if (device.getName() != null) {
-              if (device.getName().contains(editable.toString())) {
-                searchList.add(device);
-              }
-            }
-          }
-          listAdapter = new myAdapter(ScanActivity.this, searchList);
-          lv.setAdapter(listAdapter);
-        }
+        applySearchFilter(editable == null ? "" : editable.toString());
       }
     });
   }
@@ -208,6 +227,7 @@ public class ScanActivity extends Activity {
   @Override
   protected void onDestroy() {
     super.onDestroy();
+    handler.removeCallbacks(restartDiscoveryRunnable);
     Process.killProcess(Process.myPid());
   }
 
@@ -254,13 +274,11 @@ public class ScanActivity extends Activity {
 
     @Override
     public void onDeviceFound(BluetoothDevice device, int rssi) {
-      tvEmpty.setVisibility(View.INVISIBLE);
       Device dev = new Device(device, rssi);
-      if (!devList.contains(dev) && dev.getName() != null) {
-        if (!dev.getName().trim().equals("") && !dev.getName().isEmpty() && !dev.getName().endsWith("_BLE") && !dev.getName().endsWith("-LE")) {
-          devList.add(dev);
-          listAdapter.notifyDataSetChanged();
-        }
+      if (isDeviceAllowedForCurrentMode(device) && !devList.contains(dev) && !TextUtils.isEmpty(dev.getName()) && !TextUtils.isEmpty(dev.getName().trim())) {
+        devList.add(dev);
+        tvEmpty.setVisibility(View.INVISIBLE);
+        applySearchFilter(edit_name.getText() == null ? "" : edit_name.getText().toString());
       }
     }
   };
@@ -279,21 +297,75 @@ public class ScanActivity extends Activity {
     }
   }
 
-  @Override
-  protected void onPause() {
-    super.onPause();
-    if (Bluetooth.getInstance().isInitialized()) {
-      Bluetooth.getInstance().stopDiscovery();
-    }
-  }
-
 
   private void doStartDiscovery() {
     devList.clear();
-    listAdapter.notifyDataSetChanged();
+    searchList.clear();
+    applySearchFilter(edit_name.getText() == null ? "" : edit_name.getText().toString());
     tvEmpty.setVisibility(View.VISIBLE);
     Bluetooth.getInstance().startDiscovery();
     bt_Scan.setText("停止扫描");
+  }
+
+  private void setCurrentMode(int mode) {
+    currentMode = mode;
+    updateModeUi();
+    restartDiscovery();
+  }
+
+  private void restartDiscovery() {
+    handler.removeCallbacks(restartDiscoveryRunnable);
+    if (!Bluetooth.getInstance().isInitialized() || !Bluetooth.getInstance().isEnabledBluetooth()) {
+      return;
+    }
+    Bluetooth.getInstance().stopDiscovery();
+    handler.postDelayed(restartDiscoveryRunnable, RESTART_SCAN_DELAY_MS);
+  }
+
+  private void updateModeUi() {
+    if (tvModeHint != null) {
+      tvModeHint.setText(currentMode == MODE_PRINT ? R.string.scan_mode_hint_print : R.string.scan_mode_hint_ble);
+    }
+    if (bt_print_mode != null && bt_ble_mode != null) {
+      bt_print_mode.setEnabled(currentMode != MODE_PRINT);
+      bt_ble_mode.setEnabled(currentMode != MODE_BLE);
+    }
+  }
+
+  private void applySearchFilter(String keyword) {
+    searchList.clear();
+    if (TextUtils.isEmpty(keyword)) {
+      listAdapter = new myAdapter(ScanActivity.this, devList);
+    } else {
+      for (Device device : devList) {
+        if (!TextUtils.isEmpty(device.getName()) && device.getName().contains(keyword)) {
+          searchList.add(device);
+        }
+      }
+      listAdapter = new myAdapter(ScanActivity.this, searchList);
+    }
+    lv.setAdapter(listAdapter);
+    tvEmpty.setVisibility(listAdapter.getCount() == 0 ? View.VISIBLE : View.INVISIBLE);
+  }
+
+  private boolean isDeviceAllowedForCurrentMode(BluetoothDevice device) {
+    if (device == null) {
+      return false;
+    }
+    int type = device.getType();
+    if (currentMode == MODE_PRINT) {
+      return type != BluetoothDevice.DEVICE_TYPE_LE;
+    }
+    if (currentMode == MODE_BLE) {
+      return type != BluetoothDevice.DEVICE_TYPE_CLASSIC;
+    }
+    return true;
+  }
+
+  private void startDeviceActivity(Class<? extends Activity> activityClass, int position) {
+    Intent intent = new Intent(ScanActivity.this, activityClass);
+    intent.putExtra("device", listAdapter.mList.get(position).device);
+    startActivity(intent);
   }
 
   public class myAdapter extends BaseAdapter {
