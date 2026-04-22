@@ -165,6 +165,28 @@ NS_ASSUME_NONNULL_BEGIN
  *  纸张类型(Q1 Q2 Q3 D11 D30 B21 B22用这个)
  */
 - (void)paperTypeQX:(EPaperTypeQX)type;
+
+
+#pragma mark - 配网
+/**
+ * APP设置配网信息
+ * @param name SSID热点名称
+ * @param pwd 密码
+ * @param mode 加密方式  (0, 1, 2)
+ */
+-(void)setWifiName:(NSString *)name pwd:(NSString *)pwd mode:(int)mode;
+
+/**
+ * 查询配网是否成功
+ * 成功返回 FC 00（0x00:未连接 0x01:热点连接成功 0x02:IOT连接成功(云联接)），失败无 返回
+ */
+- (void)getWifiState;
+
+/**
+ * 获取设备秘钥
+ */
+- (void)getKey;
+
 @end
 
 NS_ASSUME_NONNULL_END

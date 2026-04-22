@@ -41,6 +41,8 @@
 		B56456052BC38C9F0076C82F /* handsomeMan.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = B56455F02BC38C9F0076C82F /* handsomeMan.jpeg */; };
 		B56456072BC38C9F0076C82F /* dithered-image.png in Resources */ = {isa = PBXBuildFile; fileRef = B56455F22BC38C9F0076C82F /* dithered-image.png */; };
 		B564560D2BC39F330076C82F /* AYSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B564560C2BC39F330076C82F /* AYSDK.framework */; };
+		B5669E552F985908003FB3A5 /* EscWifiVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B5669E532F985908003FB3A5 /* EscWifiVC.m */; };
+		B5669E562F985908003FB3A5 /* EscWifiVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5669E542F985908003FB3A5 /* EscWifiVC.xib */; };
 		B5694DD12E29DF7A00B26E03 /* lion-org.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B5694DD02E29DF7A00B26E03 /* lion-org.jpg */; };
 		B57458612AB067E600DF9716 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B57458602AB067E600DF9716 /* AppDelegate.m */; };
 		B57458642AB067E600DF9716 /* SceneDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = B57458632AB067E600DF9716 /* SceneDelegate.m */; };
@@ -139,6 +141,9 @@
 		B56455F02BC38C9F0076C82F /* handsomeMan.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = handsomeMan.jpeg; sourceTree = "<group>"; };
 		B56455F22BC38C9F0076C82F /* dithered-image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "dithered-image.png"; sourceTree = "<group>"; };
 		B564560C2BC39F330076C82F /* AYSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AYSDK.framework; sourceTree = "<group>"; };
+		B5669E522F985908003FB3A5 /* EscWifiVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EscWifiVC.h; sourceTree = "<group>"; };
+		B5669E532F985908003FB3A5 /* EscWifiVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EscWifiVC.m; sourceTree = "<group>"; };
+		B5669E542F985908003FB3A5 /* EscWifiVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = EscWifiVC.xib; sourceTree = "<group>"; };
 		B5694DD02E29DF7A00B26E03 /* lion-org.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = "lion-org.jpg"; sourceTree = "<group>"; };
 		B574585C2AB067E600DF9716 /* AYPrinterDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AYPrinterDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		B574585F2AB067E600DF9716 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
@@ -316,6 +321,9 @@
 				B543E1772AB85C0900713B63 /* EscFunctionVC.h */,
 				B543E1782AB85C0900713B63 /* EscFunctionVC.m */,
 				B543E1792AB85C0900713B63 /* EscFunctionVC.xib */,
+				B5669E522F985908003FB3A5 /* EscWifiVC.h */,
+				B5669E532F985908003FB3A5 /* EscWifiVC.m */,
+				B5669E542F985908003FB3A5 /* EscWifiVC.xib */,
 				B502DDB32AB9840700B74A2F /* CpclFunctionVC.h */,
 				B502DDB42AB9840700B74A2F /* CpclFunctionVC.m */,
 				B502DDB52AB9840700B74A2F /* CpclFunctionVC.xib */,
@@ -475,6 +483,7 @@
 				B5B824DF2E25E25E00085502 /* lion.jpg in Resources */,
 				B56455F32BC38C9F0076C82F /* DL-Q2 V1.12.PRTU in Resources */,
 				B56455FF2BC38C9F0076C82F /* shouji.png in Resources */,
+				B5669E562F985908003FB3A5 /* EscWifiVC.xib in Resources */,
 				B5DAE1572F2DE55700D4403C /* RGBPrintVC.xib in Resources */,
 				B56455F82BC38C9F0076C82F /* unititled.jpg in Resources */,
 				B543E17B2AB85C0900713B63 /* EscFunctionVC.xib in Resources */,
@@ -611,6 +620,7 @@
 				B543E17A2AB85C0900713B63 /* EscFunctionVC.m in Sources */,
 				B502DDB62AB9840700B74A2F /* CpclFunctionVC.m in Sources */,
 				B543E16B2AB85A3100713B63 /* BaseVC.m in Sources */,
+				B5669E552F985908003FB3A5 /* EscWifiVC.m in Sources */,
 				B57458722AB067E700DF9716 /* main.m in Sources */,
 				B57458642AB067E600DF9716 /* SceneDelegate.m in Sources */,
 				B5DAE15B2F2DE57000D4403C /* RGBConfig.m in Sources */,

@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+    <device id="retina6_12" orientation="portrait" appearance="light"/>
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
+        <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EscWifiVC">
+            <connections>
+                <outlet property="displayLabel" destination="oF0-Gn-WAZ" id="LwL-vV-Cgq"/>
+                <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
+                <outlet property="wifiNameTF" destination="M7K-Ib-3KP" id="FYE-E0-rub"/>
+                <outlet property="wifiPwdTF" destination="ehJ-HW-iR0" id="Q3Q-VQ-fcN"/>
+            </connections>
+        </placeholder>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <view clearsContextBeforeDrawing="NO" contentMode="scaleToFill" id="i5M-Pr-FkT">
+            <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+            <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+            <subviews>
+                <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="LHL-L2-aY5">
+                    <rect key="frame" x="10" y="118.00000000000001" width="373" height="255.33333333333337"/>
+                    <subviews>
+                        <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="请输入wifi名称" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="M7K-Ib-3KP">
+                            <rect key="frame" x="0.0" y="0.0" width="373" height="34"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <textInputTraits key="textInputTraits"/>
+                        </textField>
+                        <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="请输入wifi密码" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="ehJ-HW-iR0">
+                            <rect key="frame" x="0.0" y="44" width="373" height="34"/>
+                            <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                            <textInputTraits key="textInputTraits"/>
+                        </textField>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="ErP-00-DMQ">
+                            <rect key="frame" x="0.0" y="88" width="373" height="34.333333333333343"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="设置wifi名称密码"/>
+                            <connections>
+                                <action selector="setWifi" destination="-1" eventType="touchUpInside" id="7Ps-7w-osG"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="EDx-u1-K4l">
+                            <rect key="frame" x="0.0" y="132.33333333333334" width="373" height="34.333333333333343"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="查询wifi连接状态"/>
+                            <connections>
+                                <action selector="getWifiState" destination="-1" eventType="touchUpInside" id="9c0-fI-oOR"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="tnA-gp-lnV" userLabel="获取SN">
+                            <rect key="frame" x="0.0" y="176.66666666666669" width="373" height="34.333333333333343"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="获取sn"/>
+                            <connections>
+                                <action selector="getSN" destination="-1" eventType="touchUpInside" id="IIF-9z-eGZ"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Jwi-WA-WUR">
+                            <rect key="frame" x="0.0" y="221" width="373" height="34.333333333333343"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="获取密钥"/>
+                            <connections>
+                                <action selector="getKey" destination="-1" eventType="touchUpInside" id="Cbd-Cb-iR2"/>
+                            </connections>
+                        </button>
+                    </subviews>
+                </stackView>
+                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oF0-Gn-WAZ">
+                    <rect key="frame" x="10" y="426" width="373" height="0.0"/>
+                    <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                    <color key="textColor" red="0.33333333329999998" green="0.63921568630000003" blue="0.30196078430000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
+                    <nil key="highlightedColor"/>
+                </label>
+            </subviews>
+            <viewLayoutGuide key="safeArea" id="Q5M-cg-NOt"/>
+            <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+            <constraints>
+                <constraint firstItem="LHL-L2-aY5" firstAttribute="leading" secondItem="Q5M-cg-NOt" secondAttribute="leading" constant="10" id="D81-1X-ndN"/>
+                <constraint firstItem="oF0-Gn-WAZ" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" constant="10" id="WBA-aR-XFu"/>
+                <constraint firstAttribute="trailing" secondItem="oF0-Gn-WAZ" secondAttribute="trailing" constant="10" id="oiO-gW-CqF"/>
+                <constraint firstItem="Q5M-cg-NOt" firstAttribute="trailing" secondItem="LHL-L2-aY5" secondAttribute="trailing" constant="10" id="uI9-5c-JzA"/>
+                <constraint firstItem="oF0-Gn-WAZ" firstAttribute="top" secondItem="LHL-L2-aY5" secondAttribute="bottom" constant="52.670000000000002" id="vzG-t8-7SV"/>
+                <constraint firstItem="LHL-L2-aY5" firstAttribute="top" secondItem="Q5M-cg-NOt" secondAttribute="top" id="x78-De-VBi"/>
+            </constraints>
+            <point key="canvasLocation" x="4" y="108"/>
+        </view>
+    </objects>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
+</document>
