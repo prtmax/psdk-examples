@@ -3,9 +3,7 @@ package com.example.classic_bluetooth_demo;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
-import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothGatt;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
@@ -77,31 +75,31 @@ public class ESCActivity extends Activity {
     super.onCreate(savedInstanceState);
     setContentView(R.layout.activity_esc);
     tv_connect_status = findViewById(R.id.tv_connect_status);
-    sampleEdit = (EditText) findViewById(R.id.sampleEdit);
-    thickness = (EditText) findViewById(R.id.thickness);
+    sampleEdit = findViewById(R.id.sampleEdit);
+    thickness = findViewById(R.id.thickness);
     sampleEdit.setText("1");
     setThickness = findViewById(R.id.setThickness);
-    continueButton = (Button) findViewById(R.id.print_continue);
-    labelButton = (Button) findViewById(R.id.printer_label);
-    statusButton = (Button) findViewById(R.id.printer_status);
-    batteryVolButton = (Button) findViewById(R.id.printer_BatteryVol);
-    version_printerButton = (Button) findViewById(R.id.printer_version);
-    snButton = (Button) findViewById(R.id.printer_SN);
-    modelButton = (Button) findViewById(R.id.printer_model);
-    macaddressButton = (Button) findViewById(R.id.mac_address);
-    bt_nameButton = (Button) findViewById(R.id.bt_name);
-    version_btButton = (Button) findViewById(R.id.bt_version);
-    printer_info = (Button) findViewById(R.id.printer_info);
-    set_off_time = (Button) findViewById(R.id.set_off_time);
-    get_off_time = (Button) findViewById(R.id.get_off_time);
-    bottom_stock = (Button) findViewById(R.id.bottom_stock);
-    bottom_label = (Button) findViewById(R.id.bottom_label);
-    paper_info = (Button) findViewById(R.id.paper_info);
-    paper_uid = (Button) findViewById(R.id.paper_uid);
-    paper_used_length = (Button) findViewById(R.id.paper_used_length);
-    paper_rest_length = (Button) findViewById(R.id.paper_rest_length);
-    updatePrinterButton = (Button) findViewById(R.id.updatePrinter);
-    printGray = (Button) findViewById(R.id.printGray);
+    continueButton = findViewById(R.id.print_continue);
+    labelButton = findViewById(R.id.printer_label);
+    statusButton = findViewById(R.id.printer_status);
+    batteryVolButton = findViewById(R.id.printer_BatteryVol);
+    version_printerButton = findViewById(R.id.printer_version);
+    snButton = findViewById(R.id.printer_SN);
+    modelButton = findViewById(R.id.printer_model);
+    macaddressButton = findViewById(R.id.mac_address);
+    bt_nameButton = findViewById(R.id.bt_name);
+    version_btButton = findViewById(R.id.bt_version);
+    printer_info = findViewById(R.id.printer_info);
+    set_off_time = findViewById(R.id.set_off_time);
+    get_off_time = findViewById(R.id.get_off_time);
+    bottom_stock = findViewById(R.id.bottom_stock);
+    bottom_label = findViewById(R.id.bottom_label);
+    paper_info = findViewById(R.id.paper_info);
+    paper_uid = findViewById(R.id.paper_uid);
+    paper_used_length = findViewById(R.id.paper_used_length);
+    paper_rest_length = findViewById(R.id.paper_rest_length);
+    updatePrinterButton = findViewById(R.id.updatePrinter);
+    printGray = findViewById(R.id.printGray);
     BluetoothDevice device = getIntent().getParcelableExtra("device");
 
     connection = Bluetooth.getInstance().createConnectionClassic(device, new ConnectListener() {
@@ -163,6 +161,10 @@ public class ESCActivity extends Activity {
     continueButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         if (sampleEdit.getText().toString().trim().equals("")) {
           sampleNumber = 1;
         } else {
@@ -197,6 +199,10 @@ public class ESCActivity extends Activity {
     labelButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         if (sampleEdit.getText().toString().trim().equals("")) {
           sampleNumber = 1;
         } else {
@@ -231,6 +237,10 @@ public class ESCActivity extends Activity {
     printGray.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         if (sampleEdit.getText().toString().trim().equals("")) {
           sampleNumber = 1;
         } else {
@@ -266,9 +276,13 @@ public class ESCActivity extends Activity {
     setThickness.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         if (thickness.getText() != null && thickness.length() != 0) {
           String nongduzhi = thickness.getText().toString().trim();
-          int thickness = Integer.valueOf(nongduzhi);
+          int thickness = Integer.parseInt(nongduzhi);
           GenericESC _gesc = PrintUtil.getInstance().esc().thickness(thickness);
           safeWrite(_gesc);
         } else {
@@ -351,6 +365,10 @@ public class ESCActivity extends Activity {
     set_off_time.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         readMark = ReadMark.NONE;
         GenericESC _gesc = PrintUtil.getInstance().esc().setShutdownTime(60);
         safeWrite(_gesc);
@@ -359,6 +377,10 @@ public class ESCActivity extends Activity {
     get_off_time.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         readMark = ReadMark.OPERATE_TIME;
         GenericESC _gesc = PrintUtil.getInstance().esc().getShutdownTime();
         safeWrite(_gesc);
@@ -367,6 +389,10 @@ public class ESCActivity extends Activity {
     bottom_stock.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         readMark = ReadMark.OPERATE_PAPERTYPE;
         GenericESC _gesc = PrintUtil.getInstance().esc().paperType(EPaperType.builder().type(EPaperType.Type.CONTINUOUS_REEL_PAPER).build());
         safeWrite(_gesc);
@@ -375,6 +401,10 @@ public class ESCActivity extends Activity {
     bottom_label.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         readMark = ReadMark.OPERATE_PAPERTYPE;
         GenericESC _gesc = PrintUtil.getInstance().esc().paperType(EPaperType.builder().type(EPaperType.Type.FOLDED_BLACK_LABEL_PAPER).build());
         safeWrite(_gesc);
@@ -383,6 +413,10 @@ public class ESCActivity extends Activity {
     paper_info.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         readMark = ReadMark.OPERATE_NFC_PAPER;
         GenericESC _gesc = PrintUtil.getInstance().esc().getNfcPaper();
         safeWrite(_gesc);
@@ -391,6 +425,10 @@ public class ESCActivity extends Activity {
     paper_uid.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         readMark = ReadMark.OPERATE_NFC_UID;
         GenericESC _gesc = PrintUtil.getInstance().esc().getNfcUID();
         safeWrite(_gesc);
@@ -399,6 +437,10 @@ public class ESCActivity extends Activity {
     paper_used_length.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         readMark = ReadMark.OPERATE_NFC_USED_LENGTH;
         GenericESC _gesc = PrintUtil.getInstance().esc().getNfcUsedLength();
         safeWrite(_gesc);
@@ -407,6 +449,10 @@ public class ESCActivity extends Activity {
     paper_rest_length.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         readMark = ReadMark.OPERATE_NFC_REST_LENGTH;
         GenericESC _gesc = PrintUtil.getInstance().esc().getNfcRestLength();
         safeWrite(_gesc);
@@ -415,6 +461,10 @@ public class ESCActivity extends Activity {
     updatePrinterButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         progressDialog = new ProgressDialog(ESCActivity.this);
         progressDialog.setMessage("打印机正在进入升级模式，此过程可能需要几分钟，请耐心等待......");
         showprogress();
@@ -868,6 +918,14 @@ public class ESCActivity extends Activity {
       }
     } catch (Exception e) {
       e.printStackTrace();
+    }
+  }
+
+  private boolean isConnected() {
+    try {
+      return connection != null && connection.isConnected();
+    } catch (Exception e) {
+      return false;
     }
   }
 

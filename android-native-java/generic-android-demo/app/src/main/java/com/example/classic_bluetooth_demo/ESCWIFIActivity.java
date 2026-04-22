@@ -21,19 +21,12 @@ import com.printer.psdk.frame.father.PSDK;
 import com.printer.psdk.frame.father.listener.DataListener;
 import com.printer.psdk.frame.father.listener.DataListenerRunner;
 import com.printer.psdk.frame.father.listener.ListenAction;
-import com.printer.psdk.wifi.GenericWIFI;
-import com.printer.psdk.wifi.WIFI;
-import com.printer.psdk.wifi.args.WSetSSID;
-import com.printer.psdk.wifi.args.WSetWifiIP;
 
 import java.io.IOException;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class ESCWIFIActivity extends Activity {
   private EditText wifi_name, wifi_pwd;
-  private EditText etIpAddress, etGateway, etNetmask;
-  private Button button_send, button_search_name, button_search_pwd, button_status, button_get_key;
+  private Button button_send, button_status, button_get_key, button_get_sn;
   private TextView tv_content;
   private TextView title_right_text;
   private Connection connection;
@@ -50,6 +43,7 @@ public class ESCWIFIActivity extends Activity {
     button_send = (Button) findViewById(R.id.button_send);
     button_status = (Button) findViewById(R.id.button_status);
     button_get_key = (Button) findViewById(R.id.button_get_key);
+    button_get_sn = (Button) findViewById(R.id.button_get_sn);
     tv_content = (TextView) findViewById(R.id.tv_content);
     BluetoothDevice device = getIntent().getParcelableExtra("device");
     connection = Bluetooth.getInstance().createConnectionBle(device, new ConnectListener() {
@@ -114,6 +108,10 @@ public class ESCWIFIActivity extends Activity {
     button_status.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        if (!isConnected()) {
+          Toast.makeText(ESCWIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         readMark = ReadMark.OPERATE_WIFI_LINK_STATE;
         GenericESC _gesc = esc.getWifiSta();
         safeWrite(_gesc);
@@ -122,6 +120,10 @@ public class ESCWIFIActivity extends Activity {
     button_get_key.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        if (!isConnected()) {
+          Toast.makeText(ESCWIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         readMark = ReadMark.OPERATE_GET_KEY;
         GenericESC _gesc = esc.getKey();
         safeWrite(_gesc);
@@ -130,6 +132,10 @@ public class ESCWIFIActivity extends Activity {
     button_send.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        if (!isConnected()) {
+          Toast.makeText(ESCWIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         String wifiName = wifi_name.getText().toString().trim();
         String wifiPwd = wifi_pwd.getText().toString().trim();
         if (!wifiName.equals("")) {
@@ -139,6 +145,18 @@ public class ESCWIFIActivity extends Activity {
         } else {
           Toast.makeText(ESCWIFIActivity.this, "名称或密码为空", Toast.LENGTH_LONG).show();
         }
+      }
+    });
+    button_get_sn.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        if (!isConnected()) {
+          Toast.makeText(ESCWIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
+        readMark = ReadMark.OPERATE_PRINTERSN;
+        GenericESC _gesc = esc.sn();
+        safeWrite(_gesc);
       }
     });
 
@@ -199,6 +217,17 @@ public class ESCWIFIActivity extends Activity {
                     String keyString = "打印机秘钥:" + key;
                     runOnUiThread(() -> tv_content.setText(keyString));
                     break;
+                  case OPERATE_PRINTERSN:
+                    readMark = ReadMark.NONE;
+                    String sn = "";
+                    try {
+                      sn = new String(received, "GB2312");
+                    } catch (Exception e) {
+                      e.printStackTrace();
+                    }
+                    String snString = "打印机SN:" + sn;
+                    runOnUiThread(() -> tv_content.setText(snString));
+                    break;
                   default:
                     break;
                 }
@@ -215,6 +244,13 @@ public class ESCWIFIActivity extends Activity {
       }
     } catch (Exception e) {
       e.printStackTrace();
+    }
+  }
+  private boolean isConnected() {
+    try {
+      return connection != null && connection.isConnected();
+    } catch (Exception e) {
+      return false;
     }
   }
 

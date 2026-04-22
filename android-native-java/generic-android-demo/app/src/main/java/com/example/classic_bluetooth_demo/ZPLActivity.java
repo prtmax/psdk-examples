@@ -91,6 +91,10 @@ public class ZPLActivity extends Activity {
     btnModel.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(ZPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         //传入zpl指令字符串 生成byte数据
         byte[] printData = PrintUtil.getInstance().rawTspl().raw(Raw.builder().command("^XA^PW870^LL1515\n" +
           "^CI14\n" +
@@ -219,6 +223,14 @@ public class ZPLActivity extends Activity {
   private void show(String message) {
     if (message == null) return;
     Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+  }
+
+  private boolean isConnected() {
+    try {
+      return connection != null && connection.isConnected();
+    } catch (Exception e) {
+      return false;
+    }
   }
 
   @Override

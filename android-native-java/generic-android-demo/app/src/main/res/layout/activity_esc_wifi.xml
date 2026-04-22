@@ -61,6 +61,14 @@
         android:layout_height="wrap_content"
         android:text="获取秘钥"
         android:textSize="18sp"/>
+      <Button
+        android:id="@+id/button_get_sn"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="查询SN"
+        android:textSize="18sp"/>
+
     </LinearLayout>
 
 

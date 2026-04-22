@@ -134,10 +134,14 @@ public class CPCLActivity extends Activity {
         connection.connect(null);
       }
     }).start();
-    EditText etMsg = findViewById(R.id.etMsg);
+    etMsg = findViewById(R.id.etMsg);
     btnText.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(CPCLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().page(CPage.builder().width(100).height(100).build())
           .text(CText.builder().font(Font.TSS32).content(etMsg.getText().toString()).build())
           .print(CPrint.builder().build());
@@ -149,6 +153,10 @@ public class CPCLActivity extends Activity {
     btnBitmap.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(CPCLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.raw.logo);
         GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().page(CPage.builder().width(608).height(600).build())
           .image(CImage.builder()
@@ -165,6 +173,10 @@ public class CPCLActivity extends Activity {
     btnStatus.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(CPCLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         readMark = ReadMark.OPERATE_STATUS;
         GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().status();
         boolean result = safeWrite(_gcpcl);
@@ -175,6 +187,10 @@ public class CPCLActivity extends Activity {
     btnBarCode.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(CPCLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().page(CPage.builder().width(500).height(100).build())
           .bar(CBar.builder().x(10).y(10).content("1236549879").height(50).lineWidth(2).build())
           .print(CPrint.builder().build());
@@ -185,6 +201,10 @@ public class CPCLActivity extends Activity {
     btnQRCode.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(CPCLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().page(CPage.builder().width(100).height(100).build())
           .qrcode(CQRCode.builder().x(10).y(10).content("1236549879").width(2).build())
           .print(CPrint.builder().build());
@@ -195,6 +215,10 @@ public class CPCLActivity extends Activity {
     btnModel.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(CPCLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         if (sampleEdit.getText().toString().trim().equals("")) {
           sampleNumber = 1;
         } else {
@@ -228,6 +252,10 @@ public class CPCLActivity extends Activity {
     btnWfModel.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(CPCLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         if (sampleEdit.getText().toString().trim().equals("")) {
           sampleNumber = 1;
         } else {
@@ -543,4 +571,11 @@ public class CPCLActivity extends Activity {
     connection.disconnect();
   }
 
+  private boolean isConnected() {
+    try {
+      return connection != null && connection.isConnected();
+    } catch (Exception e) {
+      return false;
+    }
+  }
 }

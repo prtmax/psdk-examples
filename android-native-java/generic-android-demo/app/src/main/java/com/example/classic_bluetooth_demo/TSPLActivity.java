@@ -133,10 +133,13 @@ public class TSPLActivity extends Activity {
         connection.connect(null);
       }
     }).start();
-    EditText etMsg = findViewById(R.id.etMsg);
     btnText.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         GenericTSPL _gtspl = PrintUtil.getInstance().tspl().page(TPage.builder().width(100).height(100).build())
                 .direction(
                         TDirection.builder()
@@ -157,6 +160,10 @@ public class TSPLActivity extends Activity {
     btnBitmap.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
         GenericTSPL _gtspl = PrintUtil.getInstance().tspl().page(TPage.builder().width(100).height(100).build())
                 .direction(
@@ -181,6 +188,10 @@ public class TSPLActivity extends Activity {
     btnSN.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         readMark = ReadMark.OPERATE_PRINTERSN;
         GenericTSPL _gtspl = PrintUtil.getInstance().tspl().sn();
         boolean result = safeWrite(_gtspl);
@@ -190,6 +201,10 @@ public class TSPLActivity extends Activity {
     btnVer.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         readMark = ReadMark.OPERATE_PRINTERVER;
         GenericTSPL _gtspl = PrintUtil.getInstance().tspl().version();
         boolean result = safeWrite(_gtspl);
@@ -199,6 +214,10 @@ public class TSPLActivity extends Activity {
     btnStatus.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         readMark = ReadMark.OPERATE_STATUS;
         GenericTSPL _gtspl = PrintUtil.getInstance().tspl().status();
         boolean result = safeWrite(_gtspl);
@@ -208,6 +227,10 @@ public class TSPLActivity extends Activity {
     btnDensity.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         GenericTSPL _gtspl = PrintUtil.getInstance().tspl().density(Integer.parseInt(etDensity.getText().toString()));
         boolean result = safeWrite(_gtspl);
         Util.show(TSPLActivity.this, result ? "成功" : "失败");
@@ -216,6 +239,10 @@ public class TSPLActivity extends Activity {
     btnBarCode.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         GenericTSPL _gtspl = PrintUtil.getInstance().tspl().page(TPage.builder().width(100).height(100).build())
                 .direction(
                         TDirection.builder()
@@ -235,6 +262,10 @@ public class TSPLActivity extends Activity {
     btnQRCode.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         GenericTSPL _gtspl = PrintUtil.getInstance().tspl().page(TPage.builder().width(100).height(100).build())
                 .direction(
                         TDirection.builder()
@@ -254,6 +285,10 @@ public class TSPLActivity extends Activity {
     btnDoubleColor.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         BitmapFactory.Options options = new BitmapFactory.Options();
         options.inScaled = false;
         Bitmap redBitmap = BitmapFactory.decodeResource(getResources(), R.raw.red, options);
@@ -293,6 +328,10 @@ public class TSPLActivity extends Activity {
     btnModel.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         //page宽高的单位是mm 下面坐标的xy单位是dot 1mm=8dot(分辨率203) 1mm=12dot(分辨率300) 开发者根据自己使用的打印机来适配
         GenericTSPL _gtspl = PrintUtil.getInstance().tspl().page(TPage.builder().width(100).height(180).build())
                 .label()//标签纸打印 三种纸调用的时候根据打印机实际纸张选一种就可以了
@@ -517,4 +556,11 @@ public class TSPLActivity extends Activity {
     connection.disconnect();
   }
 
+  private boolean isConnected() {
+    try {
+      return connection != null && connection.isConnected();
+    } catch (Exception e) {
+      return false;
+    }
+  }
 }

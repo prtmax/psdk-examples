@@ -124,7 +124,7 @@ public class ScanActivity extends Activity {
   public void showList(int position) {
     final String[] items = currentMode == MODE_PRINT
       ? new String[]{"CPCL打印（SPP）", "TSPL打印（SPP）", "ESC打印（SPP）", "ZPL打印（SPP）"}
-      : new String[]{"WIFI配网（BLE）", "ESC配网（BLE）"};
+      : new String[]{"TSPL配网（BLE）", "ESC配网（BLE）"};
     AlertDialog.Builder alertBuilder = new AlertDialog.Builder(this);
     alertBuilder.setTitle(currentMode == MODE_PRINT ? R.string.scan_mode_title_print : R.string.scan_mode_title_ble);
     alertBuilder.setItems(items, new DialogInterface.OnClickListener() {

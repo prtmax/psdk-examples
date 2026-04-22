@@ -127,6 +127,10 @@ public class WIFIActivity extends Activity {
     button_search_name.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        if (!isConnected()) {
+          Toast.makeText(WIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         readMark = ReadMark.OPERATE_WIFI_NAME;
         GenericWIFI _gesc = wifi.getSSID();
         safeWrite(_gesc);
@@ -135,6 +139,10 @@ public class WIFIActivity extends Activity {
     button_search_pwd.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        if (!isConnected()) {
+          Toast.makeText(WIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         readMark = ReadMark.OPERATE_WIFI_PASSWORD;
         GenericWIFI _gesc = wifi.getPassword();
         safeWrite(_gesc);
@@ -143,6 +151,10 @@ public class WIFIActivity extends Activity {
     button_status.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        if (!isConnected()) {
+          Toast.makeText(WIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         readMark = ReadMark.OPERATE_WIFI_LINK_STATE;
         GenericWIFI _gesc = wifi.state();
         safeWrite(_gesc);
@@ -151,6 +163,10 @@ public class WIFIActivity extends Activity {
     button_reset.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        if (!isConnected()) {
+          Toast.makeText(WIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         GenericWIFI _gesc = wifi.reset();
         safeWrite(_gesc);
       }
@@ -158,6 +174,10 @@ public class WIFIActivity extends Activity {
     button_search_dhcp.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        if (!isConnected()) {
+          Toast.makeText(WIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         readMark = ReadMark.OPERATE_WIFI_DHCP;
         GenericWIFI _gesc = wifi.getWifiDHCP();
         safeWrite(_gesc);
@@ -166,6 +186,10 @@ public class WIFIActivity extends Activity {
     button_send.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        if (!isConnected()) {
+          Toast.makeText(WIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         String wifiName = wifi_name.getText().toString().trim();
         String wifiPwd = wifi_pwd.getText().toString().trim();
         if (!wifiName.equals("")) {
@@ -180,6 +204,10 @@ public class WIFIActivity extends Activity {
     btnSetIp.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        if (!isConnected()) {
+          Toast.makeText(WIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         if(dhcp_radio.isChecked()){
           GenericWIFI _gesc = wifi.setWifiDHCP();//设置成动态ip
           safeWrite(_gesc);
@@ -208,6 +236,10 @@ public class WIFIActivity extends Activity {
     btnGetIp.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        if (!isConnected()) {
+          Toast.makeText(WIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         readMark = ReadMark.OPERATE_ALL_IP_INFO;
         GenericWIFI _gesc = wifi.getWifiIP().getWifiMASK().getWifiGATEWAY();//查询相关信息
         safeWrite(_gesc);
@@ -216,6 +248,10 @@ public class WIFIActivity extends Activity {
     btnInfo.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View view) {
+        if (!isConnected()) {
+          Toast.makeText(WIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
         readMark = ReadMark.OPERATE_ALL_WIFI_INFO;
         GenericWIFI _gesc = wifi.getWifiInfo();//查询wifi相关信息
         safeWrite(_gesc);
@@ -374,6 +410,14 @@ public class WIFIActivity extends Activity {
       }
     } catch (Exception e) {
       e.printStackTrace();
+    }
+  }
+
+  private boolean isConnected() {
+    try {
+      return connection != null && connection.isConnected();
+    } catch (Exception e) {
+      return false;
     }
   }
 
