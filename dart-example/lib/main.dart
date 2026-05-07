@@ -6,6 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 import 'package:get/get.dart';
 import 'package:printer_demo/tcp/view.dart';
+import 'package:printer_demo/toolkit/custom_loading_widget.dart';
+import 'package:printer_demo/toolkit/custom_toast_widget.dart';
 import 'package:printer_demo/toolkit/printer.dart';
 import 'package:printer_demo/usb/view.dart';
 import 'package:psdk_device_adapter/psdk_device_adapter.dart';
@@ -30,6 +32,19 @@ class MyApp extends StatelessWidget {
       title: 'Printer Demo',
       theme: ThemeData(
         primarySwatch: Colors.blue,
+      ),
+      builder: FlutterSmartDialog.init(
+        //default toast widget
+        toastBuilder: (String msg) => CustomToastWidget(
+          msg: msg,
+          alignment: Alignment.center,
+        ),
+        //default loading widget
+        loadingBuilder: (String msg) => CustomLoadingWidget(
+          msg: msg,
+          background: Colors.blue,
+        ),
+        // builder: _builder,
       ),
       home: const MyHomePage(title: 'Printer Demo'),
       getPages: [
@@ -92,197 +107,173 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final buttonWidth = (constraints.maxWidth - 32) / 3;
-              return Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 16.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: SizedBox(
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: () => Get.toNamed('/bluetooth'),
-                            child: const Text('蓝牙连接'),
-                          ),
+          child: Column(mainAxisAlignment: MainAxisAlignment.start, children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.only(bottom: 16.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: SizedBox(
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () => Get.toNamed('/bluetooth'),
+                        child: const Text('蓝牙连接'),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Expanded(
+                    child: SizedBox(
+                      height: 50,
+                      child: ElevatedButton(
+                        onPressed: () => Get.toNamed('/tcp'),
+                        child: const Text('tcp连接'),
+                      ),
+                    ),
+                  ),
+                  if (Platform.isAndroid || Platform.isWindows) const SizedBox(width: 20),
+                  if (Platform.isAndroid || Platform.isWindows)
+                    Expanded(
+                      child: SizedBox(
+                        height: 50,
+                        child: ElevatedButton(
+                          onPressed: () => Get.toNamed('/usb'),
+                          child: const Text('usb连接'),
                         ),
                       ),
-                      const SizedBox(width: 20),
-                      Expanded(
-                        child: SizedBox(
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: () => Get.toNamed('/tcp'),
-                            child: const Text('tcp连接'),
-                          ),
-                        ),
-                      ),
-                      if (Platform.isAndroid || Platform.isWindows) const SizedBox(width: 20),
-                      if (Platform.isAndroid || Platform.isWindows)
-                        Expanded(
-                          child: SizedBox(
-                            height: 50,
-                            child: ElevatedButton(
-                              onPressed: () => Get.toNamed('/usb'),
-                              child: const Text('usb连接'),
-                            ),
-                          ),
-                        ),
-                    ],
+                    ),
+                ],
+              ),
+            ),
+            buildChoiceClip(),
+            const SizedBox(height: 20),
+
+            Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () => doPrintPic(),
+                      child: const Text('打印图片'),
+                    ),
                   ),
                 ),
-                buildChoiceClip(),
-                const SizedBox(height: 20),
-                Wrap(
-                  spacing: 16,
-                  runSpacing: 16,
-                  alignment: WrapAlignment.center,
-                  children: [
-                    SizedBox(
-                      width: buttonWidth,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: () => doPrintPic(),
-                        child: const Text('打印图片'),
-                      ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: SizedBox(
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () => doPrintModel(),
+                      child: const Text('打印模板'),
                     ),
-                    SizedBox(
-                      width: buttonWidth,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: () => doPrintModel(),
-                        child: const Text('打印模板'),
-                      ),
-                    ),
-                    SizedBox(
-                      width: buttonWidth,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: () => doStatus(),
-                        child: const Text('查询状态'),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-                const SizedBox(height: 20),
-                Wrap(
-                  spacing: 16,
-                  runSpacing: 16,
-                  alignment: WrapAlignment.center,
-                  children: [
-                    // 版本号查询按钮
-                    SizedBox(
-                      width: buttonWidth,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: () => doQueryVersion(),
-                        child: const Text('版本号'),
-                      ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: SizedBox(
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () => doStatus(),
+                      child: const Text('查询状态'),
                     ),
-                    // 型号查询按钮
-                    SizedBox(
-                      width: buttonWidth,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: () => doQueryModel(),
-                        child: const Text('型号'),
-                      ),
-                    ),
-                    // SN号查询按钮
-                    SizedBox(
-                      width: buttonWidth,
-                      height: 50,
-                      child: ElevatedButton(
-                        onPressed: () => doQuerySN(),
-                        child: const Text('SN号'),
-                      ),
-                    ),
-                  ],
+                  ),
                 ),
-                const SizedBox(height: 20),
-                if (Printer.curCmd == 2)
-                  Wrap(
-                    spacing: 16,
-                    runSpacing: 16,
-                    alignment: WrapAlignment.center,
+              ],
+            ),
+            const SizedBox(height: 20),
+
+            Row(
+              children: [
+                Expanded(
+                  child: SizedBox(
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () => doQueryVersion(),
+                      child: const Text('版本号'),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: SizedBox(
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () => doQueryModel(),
+                      child: const Text('型号'),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: SizedBox(
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: () => doQuerySN(),
+                      child: const Text('SN号'),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+
+            if (Printer.curCmd == 2)
+              Column(
+                children: [
+                  Row(
                     children: [
-                      SizedBox(
-                        width: buttonWidth,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: () => doQueryBattery(),
-                          child: const Text('电量查询'),
-                        ),
-                      ),
-                      SizedBox(
-                        width: buttonWidth,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: () => doQueryAllInfo(),
-                          child: const Text('设备所有信息'),
-                        ),
-                      ),
-                      SizedBox(
-                        width: buttonWidth,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: () => doGetShutdownTime(),
-                          child: const Text('获取关机时间'),
-                        ),
-                      ),
-                      SizedBox(
-                        width: buttonWidth,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: () => doSetPaperType(),
-                          child: const Text('设置纸张类型'),
-                        ),
-                      ),
-                      SizedBox(
-                        width: buttonWidth,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: () => doSetShutdownTime(),
-                          child: const Text('设置关机时间'),
-                        ),
-                      ),
-                      SizedBox(
-                        width: buttonWidth,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: () => doLearnGap(),
-                          child: const Text('走纸校准'),
-                        ),
-                      ),
-                      SizedBox(
-                        width: buttonWidth,
-                        height: 50,
-                        child: ElevatedButton(
-                          onPressed: () => doSetDensity(),
-                          child: const Text('设置浓度'),
-                        ),
-                      ),
+                      Expanded(child: _buildBtn('电量查询', doQueryBattery)),
+                      const SizedBox(width: 16),
+                      Expanded(child: _buildBtn('设备所有信息', doQueryAllInfo)),
+                      const SizedBox(width: 16),
+                      Expanded(child: _buildBtn('获取关机时间', doGetShutdownTime)),
                     ],
                   ),
-              ]);
-            },
-          ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(child: _buildBtn('设置纸张类型', doSetPaperType)),
+                      const SizedBox(width: 16),
+                      Expanded(child: _buildBtn('设置关机时间', doSetShutdownTime)),
+                      const SizedBox(width: 16),
+                      Expanded(child: _buildBtn('走纸校准', doLearnGap)),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  Row(
+                    children: [
+                      Expanded(child: _buildBtn('设置浓度', doSetDensity)),
+                      const Spacer(),
+                      const Spacer(),
+                    ],
+                  ),
+                ],
+              ),
+          ]),
         ),
+      ),
+    );
+  }
+
+  Widget _buildBtn(String text, VoidCallback onTap) {
+    return SizedBox(
+      height: 50,
+      child: ElevatedButton(
+        onPressed: onTap,
+        child: Text(text),
       ),
     );
   }
 
   Widget buildChoiceClip() {
     return Wrap(
-      children: _tagList
-          .map((e) => Padding(
-                padding: const EdgeInsets.only(left: 5, right: 5),
-                child: buildItem(e),
-              ))
-          .toList(),
-    );
+        children: _tagList
+            .map((e) => Padding(
+                  padding: const EdgeInsets.only(left: 5, right: 5),
+                  child: buildItem(e),
+                ))
+            .toList());
   }
 
   ChoiceChip buildItem(Map<String, dynamic> map) {
