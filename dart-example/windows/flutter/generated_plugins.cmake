@@ -6,7 +6,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
   ble_plugin
   bluetooth_low_energy_windows
   dynamic_color
-  geolocator_windows
   permission_handler_windows
 )
 

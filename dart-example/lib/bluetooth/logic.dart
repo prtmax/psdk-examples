@@ -48,7 +48,7 @@ class BluetoothLogic extends GetxController {
     state.streamBleDiscovered = state.bluetooth.discovered().listen((device) {
       String deviceName = device.name ?? '';
       if (deviceName.isEmpty) return;
-      var notifiedDevice = state.notifiedDevices.firstWhereOrNull((element) => element.mac == device.mac);
+      var notifiedDevice = state.notifiedDevices.firstWhereOrNull((element) => element.mac == device.mac || element.name == device.name);
       if (notifiedDevice != null) return;
       state.results.add(device);
       super.update();
@@ -79,7 +79,6 @@ class BluetoothLogic extends GetxController {
     final allGranted = permissions.values.every((status) => status.isGranted);
     if (!allGranted) {
       print('部分权限未授予');
-      return;
     }
     state.notifiedDevices.clear();
     state.results.clear();
