@@ -48,6 +48,7 @@ dependencies:
     path: ../../../psdk/dart/packages/device_adapter
   psdk_fruit_emapi:
     path: ../../../psdk/dart/fruits/emapi
+  file_picker: ^11.0.2
 
 dev_dependencies:
   flutter_test:

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:psdk_fruit_emapi/psdk_fruit_emapi.dart';
 
@@ -115,6 +116,8 @@ class _EmapiDemoPageState extends State<EmapiDemoPage> {
                 ssidController: ssidController,
                 passwordController: passwordController,
                 otaPathController: otaPathController,
+                otaFileLabel: _otaFileLabel,
+                onPickOtaFile: _pickOtaFile,
               )
             : _ScanPage(controller),
       ),
@@ -127,6 +130,35 @@ class _EmapiDemoPageState extends State<EmapiDemoPage> {
         builder: (context) => SettingsPage(controller: controller),
       ),
     );
+  }
+
+  String get _otaFileLabel {
+    final path = otaPathController.text.trim();
+    if (path.isEmpty) {
+      return controller.simulationMode ? '未选择，模拟模式可直接开始' : '未选择 OTA 文件';
+    }
+    final parts = path.split(RegExp(r'[/\\]'));
+    return parts.isEmpty ? path : parts.last;
+  }
+
+  Future<void> _pickOtaFile() async {
+    if (controller.busy) {
+      return;
+    }
+    final result = await FilePicker.pickFiles(allowMultiple: false);
+    if (!mounted || result == null) {
+      return;
+    }
+    final path = result.files.single.path;
+    if (path == null || path.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('未获取到 OTA 文件路径，请重新选择文件')));
+      return;
+    }
+    setState(() {
+      otaPathController.text = path;
+    });
   }
 }
 
@@ -282,12 +314,16 @@ class _FunctionPage extends StatelessWidget {
     required this.ssidController,
     required this.passwordController,
     required this.otaPathController,
+    required this.otaFileLabel,
+    required this.onPickOtaFile,
   });
 
   final EmapiDemoController controller;
   final TextEditingController ssidController;
   final TextEditingController passwordController;
   final TextEditingController otaPathController;
+  final String otaFileLabel;
+  final Future<void> Function() onPickOtaFile;
 
   @override
   Widget build(BuildContext context) {
@@ -345,15 +381,49 @@ class _FunctionPage extends StatelessWidget {
                   label: const Text('提交配网信息'),
                 ),
               ),
+              const SizedBox(height: 16),
+              _SectionHeader(
+                title: 'OTA 文件',
+                subtitle: controller.simulationMode
+                    ? '模拟模式可不选文件，直接使用内置模拟包'
+                    : '选择升级文件后，再确认开始升级',
+              ),
               const SizedBox(height: 10),
-              TextField(
-                controller: otaPathController,
-                decoration: InputDecoration(
-                  prefixIcon: const Icon(Icons.upload_file),
-                  labelText: controller.simulationMode
-                      ? 'OTA 文件路径（模拟模式可留空）'
-                      : 'OTA 文件路径',
-                ),
+              Row(
+                children: [
+                  Icon(
+                    Icons.description_outlined,
+                    color: theme.colorScheme.primary,
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      otaFileLabel,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyMedium,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+              Wrap(
+                spacing: 8,
+                runSpacing: 8,
+                children: [
+                  OutlinedButton.icon(
+                    onPressed: controller.busy ? null : onPickOtaFile,
+                    icon: const Icon(Icons.folder_open),
+                    label: const Text('选择 OTA 文件'),
+                  ),
+                  FilledButton.icon(
+                    onPressed: controller.busy
+                        ? null
+                        : () => controller.performOta(otaPathController.text),
+                    icon: const Icon(Icons.system_update_alt),
+                    label: const Text('开始 OTA 升级'),
+                  ),
+                ],
               ),
             ],
           ),

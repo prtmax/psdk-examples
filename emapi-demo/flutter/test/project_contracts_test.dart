@@ -103,6 +103,17 @@ void main() {
     expect(main, contains('controller.setWifiConfig'));
   });
 
+  test('main_exposesOtaFilePickerAndConfirmAction', () {
+    final main = readProjectFile('lib/main.dart');
+    final pubspec = readProjectFile('pubspec.yaml');
+
+    expect(pubspec, contains('file_picker:'));
+    expect(main, contains('FilePicker.pickFiles'));
+    expect(main, contains('选择 OTA 文件'));
+    expect(main, contains('开始 OTA 升级'));
+    expect(main, contains('未选择，模拟模式可直接开始'));
+  });
+
   test('bluetoothConnector_checksPermissionStatusesBeforeDiscovery', () {
     final connector = readProjectFile(
       'lib/src/bluetooth_printer_connector.dart',
