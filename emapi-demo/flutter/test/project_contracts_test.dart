@@ -127,7 +127,10 @@ void main() {
     expect(main, contains('左右滑动选择操作，上拉切换为多行'));
     expect(main, contains('已展开，多行显示全部操作'));
     expect(main, contains('DraggableScrollableController'));
-    expect(main, contains('Wrap('));
+    expect(main, contains('LayoutBuilder'));
+    expect(main, contains('(constraints.maxWidth - spacing * 2) / 3'));
+    expect(main, contains('size >= 0.42'));
+    expect(main, contains('size <= 0.28'));
     expect(main, contains('暂无命令结果'));
     expect(main, contains('暂无上报解析'));
   });

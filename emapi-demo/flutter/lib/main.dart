@@ -469,10 +469,14 @@ class _OperationSheetState extends State<_OperationSheet> {
   }
 
   void _handleSheetSizeChanged() {
-    final nextExpanded = sheetController.size >= 0.34;
-    if (nextExpanded != expanded) {
+    final size = sheetController.size;
+    if (!expanded && size >= 0.42) {
       setState(() {
-        expanded = nextExpanded;
+        expanded = true;
+      });
+    } else if (expanded && size <= 0.28) {
+      setState(() {
+        expanded = false;
       });
     }
   }
@@ -596,23 +600,31 @@ class _ActionSheetContent extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         if (expanded)
-          Wrap(
-            spacing: 8,
-            runSpacing: 8,
-            children: [
-              for (final action in _mainActions)
-                _ActionButtonTile(
-                  icon: action.icon,
-                  label: action.label,
-                  busy: controller.busy,
-                  pending: controller.pendingActionLabel == action.label,
-                  onPressed: () => action.invoke(
-                    controller: controller,
-                    onOpenWifi: onOpenWifi,
-                    onOpenOta: onOpenOta,
-                  ),
-                ),
-            ],
+          LayoutBuilder(
+            builder: (context, constraints) {
+              const spacing = 8.0;
+              final tileWidth = (constraints.maxWidth - spacing * 2) / 3;
+              return Wrap(
+                spacing: spacing,
+                runSpacing: spacing,
+                children: [
+                  for (final action in _mainActions)
+                    _ActionButtonTile(
+                      width: tileWidth,
+                      compact: true,
+                      icon: action.icon,
+                      label: action.label,
+                      busy: controller.busy,
+                      pending: controller.pendingActionLabel == action.label,
+                      onPressed: () => action.invoke(
+                        controller: controller,
+                        onOpenWifi: onOpenWifi,
+                        onOpenOta: onOpenOta,
+                      ),
+                    ),
+                ],
+              );
+            },
           )
         else
           SizedBox(
@@ -624,6 +636,8 @@ class _ActionSheetContent extends StatelessWidget {
               itemBuilder: (context, index) {
                 final action = _mainActions[index];
                 return _ActionButtonTile(
+                  width: 134,
+                  compact: false,
                   icon: action.icon,
                   label: action.label,
                   busy: controller.busy,
@@ -808,6 +822,8 @@ class _SheetTitle extends StatelessWidget {
 
 class _ActionButtonTile extends StatelessWidget {
   const _ActionButtonTile({
+    required this.width,
+    required this.compact,
     required this.icon,
     required this.label,
     required this.busy,
@@ -815,6 +831,8 @@ class _ActionButtonTile extends StatelessWidget {
     required this.onPressed,
   });
 
+  final double width;
+  final bool compact;
   final IconData icon;
   final String label;
   final bool busy;
@@ -824,11 +842,15 @@ class _ActionButtonTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: 134,
+      width: width,
+      height: compact ? 78 : 104,
       child: FilledButton.tonal(
         onPressed: busy ? null : onPressed,
         style: FilledButton.styleFrom(
-          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          padding: EdgeInsets.symmetric(
+            horizontal: compact ? 6 : 10,
+            vertical: 8,
+          ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(14),
           ),
@@ -837,13 +859,13 @@ class _ActionButtonTile extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             if (pending)
-              const SizedBox.square(
-                dimension: 22,
+              SizedBox.square(
+                dimension: compact ? 18 : 22,
                 child: CircularProgressIndicator(strokeWidth: 2),
               )
             else
-              Icon(icon, size: 22),
-            const SizedBox(height: 8),
+              Icon(icon, size: compact ? 19 : 22),
+            SizedBox(height: compact ? 6 : 8),
             Text(
               label,
               maxLines: 2,
