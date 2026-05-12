@@ -114,6 +114,18 @@ void main() {
     expect(main, contains('未选择，模拟模式可直接开始'));
   });
 
+  test('main_keepsLatestFeedbackVisibleAndMovesHistoryToTabs', () {
+    final main = readProjectFile('lib/main.dart');
+
+    expect(main, contains('_ActivityDock'));
+    expect(main, contains('最近反馈'));
+    expect(main, contains('全部记录'));
+    expect(main, contains('ActivityLogPage'));
+    expect(main, contains('TabBarView'));
+    expect(main, contains('暂无命令结果'));
+    expect(main, contains('暂无上报解析'));
+  });
+
   test('bluetoothConnector_checksPermissionStatusesBeforeDiscovery', () {
     final connector = readProjectFile(
       'lib/src/bluetooth_printer_connector.dart',
