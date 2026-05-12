@@ -332,6 +332,20 @@ class _FunctionPage extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 10),
+              Align(
+                alignment: Alignment.centerRight,
+                child: FilledButton.icon(
+                  onPressed: controller.busy
+                      ? null
+                      : () => controller.setWifiConfig(
+                          ssid: ssidController.text,
+                          password: passwordController.text,
+                        ),
+                  icon: const Icon(Icons.send_to_mobile),
+                  label: const Text('提交配网信息'),
+                ),
+              ),
+              const SizedBox(height: 10),
               TextField(
                 controller: otaPathController,
                 decoration: InputDecoration(

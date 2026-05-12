@@ -95,6 +95,14 @@ void main() {
     expect(main, contains('生成模拟蓝牙设备'));
   });
 
+  test('main_exposesInlineWifiConfigSubmitAction', () {
+    final main = readProjectFile('lib/main.dart');
+
+    expect(main, contains('提交配网信息'));
+    expect(main, contains('Icons.send_to_mobile'));
+    expect(main, contains('controller.setWifiConfig'));
+  });
+
   test('bluetoothConnector_checksPermissionStatusesBeforeDiscovery', () {
     final connector = readProjectFile(
       'lib/src/bluetooth_printer_connector.dart',
