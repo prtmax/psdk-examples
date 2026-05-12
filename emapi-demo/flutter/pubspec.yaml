@@ -39,16 +39,43 @@ dependencies:
       path: dart/devices/bluetooth_ble
       ref: feat-emapi-protocol-sdk
   psdk_bluetooth_classic:
-    path: ../../../psdk/dart/devices/bluetooth_classic
+    git:
+      url: https://github.com/prtmax/psdk.git
+      path: dart/devices/bluetooth_classic
+      ref: feat-emapi-protocol-sdk
   psdk_bluetooth_traits:
-    path: ../../../psdk/dart/devices/bluetooth_traits
+    git:
+      url: https://github.com/prtmax/psdk.git
+      path: dart/devices/bluetooth_traits
+      ref: feat-emapi-protocol-sdk
   psdk_bluetooth_windows:
-    path: ../../../psdk/dart/devices/bluetooth_windows
+    git:
+      url: https://github.com/prtmax/psdk.git
+      path: dart/devices/bluetooth_windows
+      ref: feat-emapi-protocol-sdk
   psdk_device_adapter:
-    path: ../../../psdk/dart/packages/device_adapter
+    git:
+      url: https://github.com/prtmax/psdk.git
+      path: dart/packages/device_adapter
+      ref: feat-emapi-protocol-sdk
   psdk_fruit_emapi:
-    path: ../../../psdk/dart/fruits/emapi
+    git:
+      url: https://github.com/prtmax/psdk.git
+      path: dart/fruits/emapi
+      ref: feat-emapi-protocol-sdk
   file_picker: ^11.0.2
+
+dependency_overrides:
+  psdk_bluetooth_traits:
+    git:
+      url: https://github.com/prtmax/psdk.git
+      path: dart/devices/bluetooth_traits
+      ref: feat-emapi-protocol-sdk
+  psdk_device_adapter:
+    git:
+      url: https://github.com/prtmax/psdk.git
+      path: dart/packages/device_adapter
+      ref: feat-emapi-protocol-sdk
 
 dev_dependencies:
   flutter_test:
@@ -60,12 +87,6 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
-
-dependency_overrides:
-  psdk_bluetooth_traits:
-    path: ../../../psdk/dart/devices/bluetooth_traits
-  psdk_device_adapter:
-    path: ../../../psdk/dart/packages/device_adapter
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

@@ -349,37 +349,47 @@ packages:
   psdk_bluetooth_classic:
     dependency: "direct main"
     description:
-      path: "../../../psdk/dart/devices/bluetooth_classic"
-      relative: true
-    source: path
+      path: "dart/devices/bluetooth_classic"
+      ref: feat-emapi-protocol-sdk
+      resolved-ref: "1d148c6f861a3b57d97ccf32e5b2ad8dd84ff6de"
+      url: "https://github.com/prtmax/psdk.git"
+    source: git
     version: "0.1.4"
   psdk_bluetooth_traits:
     dependency: "direct main"
     description:
-      path: "../../../psdk/dart/devices/bluetooth_traits"
-      relative: true
-    source: path
+      path: "dart/devices/bluetooth_traits"
+      ref: feat-emapi-protocol-sdk
+      resolved-ref: "1d148c6f861a3b57d97ccf32e5b2ad8dd84ff6de"
+      url: "https://github.com/prtmax/psdk.git"
+    source: git
     version: "0.1.4"
   psdk_bluetooth_windows:
     dependency: "direct main"
     description:
-      path: "../../../psdk/dart/devices/bluetooth_windows"
-      relative: true
-    source: path
+      path: "dart/devices/bluetooth_windows"
+      ref: feat-emapi-protocol-sdk
+      resolved-ref: "1d148c6f861a3b57d97ccf32e5b2ad8dd84ff6de"
+      url: "https://github.com/prtmax/psdk.git"
+    source: git
     version: "0.1.4"
   psdk_device_adapter:
     dependency: "direct main"
     description:
-      path: "../../../psdk/dart/packages/device_adapter"
-      relative: true
-    source: path
+      path: "dart/packages/device_adapter"
+      ref: feat-emapi-protocol-sdk
+      resolved-ref: "1d148c6f861a3b57d97ccf32e5b2ad8dd84ff6de"
+      url: "https://github.com/prtmax/psdk.git"
+    source: git
     version: "0.1.4"
   psdk_fruit_emapi:
     dependency: "direct main"
     description:
-      path: "../../../psdk/dart/fruits/emapi"
-      relative: true
-    source: path
+      path: "dart/fruits/emapi"
+      ref: feat-emapi-protocol-sdk
+      resolved-ref: "1d148c6f861a3b57d97ccf32e5b2ad8dd84ff6de"
+      url: "https://github.com/prtmax/psdk.git"
+    source: git
     version: "0.1.4"
   sky_engine:
     dependency: transitive

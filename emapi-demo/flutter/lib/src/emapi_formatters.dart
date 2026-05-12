@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:math' as math;
 
 import 'package:psdk_fruit_emapi/psdk_fruit_emapi.dart';
 
@@ -112,17 +111,7 @@ String otaProgressText({
 }
 
 int calculateOtaChunkSize({int? mtu, int fallbackMtu = 512}) {
-  // TODO(EMAPI hardware): tag 0x08 is currently treated as the full EMAPI frame MTU. If firmware defines it as payload MTU, OTA/print chunk sizing must be adjusted.
-  // TODO(EMAPI hardware): command.md does not define a mandatory OTA chunk size. This demo derives a conservative chunk size from MTU/fallback until hardware validation.
-  final maxFrameLength = mtu ?? fallbackMtu;
-  // TODO(EMAPI hardware): file chunk payload follows current SDK encoding: uint32 index + uint16 length + data. Confirm field widths with firmware.
-  const fileChunkHeaderLength = 6;
-  final capacity =
-      maxFrameLength -
-      EmapiConstants.frameOverheadLength -
-      EmapiConstants.commandHeaderLength -
-      fileChunkHeaderLength;
-  return math.max(1, capacity);
+  return fileTransferPayloadCapacity(mtu: mtu ?? fallbackMtu);
 }
 
 String _value(Object? value) {

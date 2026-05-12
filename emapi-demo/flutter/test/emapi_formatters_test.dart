@@ -38,7 +38,9 @@ void main() {
   });
 
   test('calculateOtaChunkSize_usesConservativeFrameMtuCapacity', () {
-    expect(calculateOtaChunkSize(mtu: 512), 492);
-    expect(calculateOtaChunkSize(mtu: 20), 1);
+    expect(calculateOtaChunkSize(mtu: 4096), 3054);
+    expect(calculateOtaChunkSize(mtu: 512), 494);
+    expect(calculateOtaChunkSize(mtu: 20), 2);
+    expect(calculateOtaChunkSize(mtu: 10), 1);
   });
 }
