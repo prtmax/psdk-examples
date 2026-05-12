@@ -87,69 +87,90 @@ void main() {
 
   test('main_exposesSettingsAndSimulationModeUi', () {
     final main = readProjectFile('lib/main.dart');
+    final settings = readProjectFile('lib/src/pages/settings_page.dart');
 
     expect(main, contains('Icons.tune'));
     expect(main, contains('SettingsPage'));
-    expect(main, contains('SwitchListTile'));
-    expect(main, contains('模拟模式'));
-    expect(main, contains('生成模拟蓝牙设备'));
+    expect(settings, contains('SwitchListTile'));
+    expect(settings, contains('模拟模式'));
+    expect(settings, contains('生成模拟蓝牙设备'));
   });
 
   test('main_exposesInlineWifiConfigSubmitAction', () {
-    final main = readProjectFile('lib/main.dart');
+    final operationSheet = readProjectFile(
+      'lib/src/widgets/operation_sheet.dart',
+    );
 
-    expect(main, contains('提交配网信息'));
-    expect(main, contains('Icons.send_to_mobile'));
-    expect(main, contains('controller.setWifiConfig'));
+    expect(operationSheet, contains('提交配网信息'));
+    expect(operationSheet, contains('Icons.send_to_mobile'));
+    expect(operationSheet, contains('controller.setWifiConfig'));
   });
 
   test('main_exposesOtaFilePickerAndConfirmAction', () {
     final main = readProjectFile('lib/main.dart');
+    final functionPage = readProjectFile('lib/src/pages/function_page.dart');
+    final operationSheet = readProjectFile(
+      'lib/src/widgets/operation_sheet.dart',
+    );
     final pubspec = readProjectFile('pubspec.yaml');
 
     expect(pubspec, contains('file_picker:'));
     expect(main, contains('FilePicker.pickFiles'));
-    expect(main, contains('选择 OTA 文件'));
-    expect(main, contains('开始 OTA 升级'));
+    expect(operationSheet, contains('选择 OTA 文件'));
+    expect(operationSheet, contains('开始 OTA 升级'));
     expect(main, contains('未选择，模拟模式可直接开始'));
   });
 
   test('main_usesRecordsAsPrimaryViewAndMovesActionsToSheet', () {
-    final main = readProjectFile('lib/main.dart');
+    final functionPage = readProjectFile('lib/src/pages/function_page.dart');
+    final operationSheet = readProjectFile(
+      'lib/src/widgets/operation_sheet.dart',
+    );
 
-    expect(main, contains('DraggableScrollableSheet'));
-    expect(main, contains('_OperationSheet'));
-    expect(main, contains('_FunctionSheetMode'));
-    expect(main, contains('TabBarView'));
-    expect(main, contains('命令结果'));
-    expect(main, contains('上报解析'));
-    expect(main, contains('功能区'));
-    expect(main, contains('左右滑动选择操作，上拉切换为多行'));
-    expect(main, contains('已展开，多行显示全部操作'));
-    expect(main, contains('DraggableScrollableController'));
-    expect(main, contains('LayoutBuilder'));
-    expect(main, contains('(constraints.maxWidth - spacing * 2) / 3'));
-    expect(main, contains('size >= 0.42'));
-    expect(main, contains('size <= 0.28'));
-    expect(main, contains('暂无命令结果'));
-    expect(main, contains('暂无上报解析'));
+    expect(operationSheet, contains('DraggableScrollableSheet'));
+    expect(functionPage, contains('_OperationSheet'));
+    expect(functionPage, contains('_FunctionSheetMode'));
+    expect(functionPage, contains('TabBarView'));
+    expect(functionPage, contains('命令结果'));
+    expect(functionPage, contains('上报解析'));
+    expect(operationSheet, contains('功能区'));
+    expect(operationSheet, contains('左右滑动选择操作，上拉切换为多行'));
+    expect(operationSheet, contains('已展开，多行显示全部操作'));
+    expect(operationSheet, contains('DraggableScrollableController'));
+    expect(operationSheet, contains('LayoutBuilder'));
+    expect(
+      operationSheet,
+      contains('(constraints.maxWidth - spacing * 2) / 3'),
+    );
+    expect(operationSheet, contains('size >= 0.42'));
+    expect(operationSheet, contains('size <= 0.28'));
+    expect(functionPage, contains('暂无命令结果'));
+    expect(functionPage, contains('暂无上报解析'));
   });
 
   test('main_onlyShowsOtaProgressInsideOtaSheet', () {
-    final main = readProjectFile('lib/main.dart');
+    final operationSheet = readProjectFile(
+      'lib/src/widgets/operation_sheet.dart',
+    );
 
-    expect(main, contains('_OtaSheetContent'));
-    expect(main.split('_OtaProgressStrip(progressText').length - 1, 1);
+    expect(operationSheet, contains('_OtaSheetContent'));
+    expect(
+      operationSheet.split('_OtaProgressStrip(progressText').length - 1,
+      1,
+    );
   });
 
   test('main_opensWifiAndOtaFormsInsideOperationSheet', () {
-    final main = readProjectFile('lib/main.dart');
+    final functionPage = readProjectFile('lib/src/pages/function_page.dart');
+    final operationSheet = readProjectFile(
+      'lib/src/widgets/operation_sheet.dart',
+    );
 
-    expect(main, contains('_WifiSheetContent'));
-    expect(main, contains('_OtaSheetContent'));
-    expect(main, contains('返回功能区'));
-    expect(main, contains('onOpenWifi'));
-    expect(main, contains('onOpenOta'));
+    expect(operationSheet, contains('_WifiSheetContent'));
+    expect(operationSheet, contains('_OtaSheetContent'));
+    expect(operationSheet, contains('返回功能区'));
+    expect(functionPage, contains('onOpenWifi'));
+    expect(functionPage, contains('onOpenOta'));
   });
 
   test('bluetoothConnector_checksPermissionStatusesBeforeDiscovery', () {

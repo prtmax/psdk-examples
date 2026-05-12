@@ -7,6 +7,7 @@ import 'package:psdk_device_adapter/psdk_device_adapter.dart';
 import 'package:psdk_fruit_emapi/psdk_fruit_emapi.dart';
 
 import 'bluetooth_printer_connector.dart';
+import 'entities/emapi_demo_log_entry.dart';
 import 'emapi_formatters.dart';
 
 class EmapiDemoController extends ChangeNotifier {
@@ -749,18 +750,6 @@ Uint8List _responseBytes({
       EmapiCommand(type: type, parent: parent, child: child, payload: payload),
     ),
   );
-}
-
-class EmapiDemoLogEntry {
-  const EmapiDemoLogEntry({
-    required this.title,
-    required this.message,
-    this.bytes,
-  });
-
-  final String title;
-  final String message;
-  final Uint8List? bytes;
 }
 
 enum _TraceDirection { outbound, inbound }
