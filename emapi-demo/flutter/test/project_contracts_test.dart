@@ -124,9 +124,19 @@ void main() {
     expect(main, contains('命令结果'));
     expect(main, contains('上报解析'));
     expect(main, contains('功能区'));
-    expect(main, contains('左右滑动选择操作'));
+    expect(main, contains('左右滑动选择操作，上拉切换为多行'));
+    expect(main, contains('已展开，多行显示全部操作'));
+    expect(main, contains('DraggableScrollableController'));
+    expect(main, contains('Wrap('));
     expect(main, contains('暂无命令结果'));
     expect(main, contains('暂无上报解析'));
+  });
+
+  test('main_onlyShowsOtaProgressInsideOtaSheet', () {
+    final main = readProjectFile('lib/main.dart');
+
+    expect(main, contains('_OtaSheetContent'));
+    expect(main.split('_OtaProgressStrip(progressText').length - 1, 1);
   });
 
   test('main_opensWifiAndOtaFormsInsideOperationSheet', () {

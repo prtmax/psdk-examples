@@ -422,7 +422,7 @@ class _FunctionPageState extends State<_FunctionPage> {
   }
 }
 
-class _OperationSheet extends StatelessWidget {
+class _OperationSheet extends StatefulWidget {
   const _OperationSheet({
     required this.mode,
     required this.controller,
@@ -448,8 +448,39 @@ class _OperationSheet extends StatelessWidget {
   final VoidCallback onOpenOta;
 
   @override
+  State<_OperationSheet> createState() => _OperationSheetState();
+}
+
+class _OperationSheetState extends State<_OperationSheet> {
+  final sheetController = DraggableScrollableController();
+  bool expanded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    sheetController.addListener(_handleSheetSizeChanged);
+  }
+
+  @override
+  void dispose() {
+    sheetController.removeListener(_handleSheetSizeChanged);
+    sheetController.dispose();
+    super.dispose();
+  }
+
+  void _handleSheetSizeChanged() {
+    final nextExpanded = sheetController.size >= 0.34;
+    if (nextExpanded != expanded) {
+      setState(() {
+        expanded = nextExpanded;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     return DraggableScrollableSheet(
+      controller: sheetController,
       initialChildSize: 0.26,
       minChildSize: 0.18,
       maxChildSize: 0.64,
@@ -462,26 +493,27 @@ class _OperationSheet extends StatelessWidget {
             padding: const EdgeInsets.fromLTRB(16, 8, 16, 18),
             children: [
               const _SheetHandle(),
-              if (mode == _FunctionSheetMode.actions)
+              if (widget.mode == _FunctionSheetMode.actions)
                 _ActionSheetContent(
-                  controller: controller,
-                  onOpenWifi: onOpenWifi,
-                  onOpenOta: onOpenOta,
+                  controller: widget.controller,
+                  expanded: expanded,
+                  onOpenWifi: widget.onOpenWifi,
+                  onOpenOta: widget.onOpenOta,
                 )
-              else if (mode == _FunctionSheetMode.wifi)
+              else if (widget.mode == _FunctionSheetMode.wifi)
                 _WifiSheetContent(
-                  controller: controller,
-                  ssidController: ssidController,
-                  passwordController: passwordController,
-                  onBack: onBack,
+                  controller: widget.controller,
+                  ssidController: widget.ssidController,
+                  passwordController: widget.passwordController,
+                  onBack: widget.onBack,
                 )
               else
                 _OtaSheetContent(
-                  controller: controller,
-                  otaPathController: otaPathController,
-                  otaFileLabel: otaFileLabel,
-                  onPickOtaFile: onPickOtaFile,
-                  onBack: onBack,
+                  controller: widget.controller,
+                  otaPathController: widget.otaPathController,
+                  otaFileLabel: widget.otaFileLabel,
+                  onPickOtaFile: widget.onPickOtaFile,
+                  onBack: widget.onBack,
                 ),
             ],
           ),
@@ -539,11 +571,13 @@ class _SheetHandle extends StatelessWidget {
 class _ActionSheetContent extends StatelessWidget {
   const _ActionSheetContent({
     required this.controller,
+    required this.expanded,
     required this.onOpenWifi,
     required this.onOpenOta,
   });
 
   final EmapiDemoController controller;
+  final bool expanded;
   final VoidCallback onOpenWifi;
   final VoidCallback onOpenOta;
 
@@ -555,34 +589,54 @@ class _ActionSheetContent extends StatelessWidget {
         _SheetTitle(
           title: '功能区',
           subtitle: controller.pendingActionLabel == null
-              ? '左右滑动选择操作，上拉查看更多空间'
+              ? expanded
+                    ? '已展开，多行显示全部操作'
+                    : '左右滑动选择操作，上拉切换为多行'
               : '正在执行：${controller.pendingActionLabel}',
         ),
         const SizedBox(height: 10),
-        SizedBox(
-          height: 104,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: _mainActions.length,
-            separatorBuilder: (context, index) => const SizedBox(width: 8),
-            itemBuilder: (context, index) {
-              final action = _mainActions[index];
-              return _ActionButtonTile(
-                icon: action.icon,
-                label: action.label,
-                busy: controller.busy,
-                pending: controller.pendingActionLabel == action.label,
-                onPressed: () => action.invoke(
-                  controller: controller,
-                  onOpenWifi: onOpenWifi,
-                  onOpenOta: onOpenOta,
+        if (expanded)
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              for (final action in _mainActions)
+                _ActionButtonTile(
+                  icon: action.icon,
+                  label: action.label,
+                  busy: controller.busy,
+                  pending: controller.pendingActionLabel == action.label,
+                  onPressed: () => action.invoke(
+                    controller: controller,
+                    onOpenWifi: onOpenWifi,
+                    onOpenOta: onOpenOta,
+                  ),
                 ),
-              );
-            },
+            ],
+          )
+        else
+          SizedBox(
+            height: 104,
+            child: ListView.separated(
+              scrollDirection: Axis.horizontal,
+              itemCount: _mainActions.length,
+              separatorBuilder: (context, index) => const SizedBox(width: 8),
+              itemBuilder: (context, index) {
+                final action = _mainActions[index];
+                return _ActionButtonTile(
+                  icon: action.icon,
+                  label: action.label,
+                  busy: controller.busy,
+                  pending: controller.pendingActionLabel == action.label,
+                  onPressed: () => action.invoke(
+                    controller: controller,
+                    onOpenWifi: onOpenWifi,
+                    onOpenOta: onOpenOta,
+                  ),
+                );
+              },
+            ),
           ),
-        ),
-        const SizedBox(height: 10),
-        _OtaProgressStrip(progressText: controller.otaProgress),
       ],
     );
   }
