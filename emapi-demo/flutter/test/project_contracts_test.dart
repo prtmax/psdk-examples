@@ -183,7 +183,10 @@ void main() {
     await controller.startScan();
 
     expect(controller.scanning, isFalse);
-    expect(controller.commandLogs.first, contains('permissions denied'));
+    expect(
+      controller.commandLogs.first.message,
+      contains('permissions denied'),
+    );
   });
 
   test(
@@ -207,7 +210,8 @@ void main() {
 
       expect(controller.connected, isTrue);
       expect(controller.connectedDeviceName, 'EMAPI 模拟打印机');
-      expect(controller.reportLogs.first, contains('蓝牙连接上报'));
+      expect(controller.reportLogs.first.message, contains('蓝牙连接上报'));
+      expect(controller.reportLogs.first.bytes, isNotNull);
     },
   );
 
@@ -224,15 +228,19 @@ void main() {
 
     await controller.queryDeviceInfo();
 
-    expect(controller.commandLogs.first, contains('EMAPI-SIM-01'));
+    expect(controller.commandLogs.first.message, contains('EMAPI-SIM-01'));
+    expect(controller.requestLogs.first.title, '查询打印机基本参数');
+    expect(controller.requestLogs.first.bytes, isNotNull);
     expect(controller.knownMtu, 512);
 
     await controller.performOta('');
 
     expect(controller.otaTotalBytes, 2048);
     expect(controller.otaSentBytes, 2048);
-    expect(controller.commandLogs.first, contains('模拟模式：OTA 升级命令已完成'));
-    expect(controller.reportLogs.first, contains('升级状态上报'));
+    expect(controller.commandLogs.first.message, contains('模拟模式：OTA 升级命令已完成'));
+    expect(controller.reportLogs.first.message, contains('升级状态上报'));
+    expect(controller.requestLogs.first.title, 'OTA 升级文件');
+    expect(controller.requestLogs.first.bytes, hasLength(2048));
   });
 }
 
