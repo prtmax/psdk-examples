@@ -108,7 +108,6 @@ void main() {
 
   test('main_exposesOtaFilePickerAndConfirmAction', () {
     final main = readProjectFile('lib/main.dart');
-    final functionPage = readProjectFile('lib/src/pages/function_page.dart');
     final operationSheet = readProjectFile(
       'lib/src/widgets/operation_sheet.dart',
     );

@@ -90,8 +90,6 @@ class _ScanPage extends StatelessWidget {
               ],
             ),
           ),
-        const SizedBox(height: 16),
-        _LogPanel(title: '命令结果', entries: controller.commandLogs),
       ],
     );
   }

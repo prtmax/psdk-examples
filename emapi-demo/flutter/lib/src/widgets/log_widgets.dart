@@ -35,39 +35,6 @@ class _LogList extends StatelessWidget {
   }
 }
 
-class _LogPanel extends StatelessWidget {
-  const _LogPanel({required this.title, required this.entries});
-
-  final String title;
-  final List<EmapiDemoLogEntry> entries;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return _Panel(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _SectionHeader(title: title, subtitle: '${entries.length} 条记录'),
-          const SizedBox(height: 8),
-          if (entries.isEmpty)
-            Text(
-              '暂无',
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: theme.colorScheme.onSurfaceVariant,
-              ),
-            )
-          else
-            for (final entry in entries.take(20)) ...[
-              _LogCard(entry: entry),
-              const Divider(height: 16),
-            ],
-        ],
-      ),
-    );
-  }
-}
-
 class _LogCard extends StatelessWidget {
   const _LogCard({required this.entry});
 
