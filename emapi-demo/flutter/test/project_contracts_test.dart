@@ -114,16 +114,29 @@ void main() {
     expect(main, contains('未选择，模拟模式可直接开始'));
   });
 
-  test('main_keepsLatestFeedbackVisibleAndMovesHistoryToTabs', () {
+  test('main_usesRecordsAsPrimaryViewAndMovesActionsToSheet', () {
     final main = readProjectFile('lib/main.dart');
 
-    expect(main, contains('_ActivityDock'));
-    expect(main, contains('最近反馈'));
-    expect(main, contains('全部记录'));
-    expect(main, contains('ActivityLogPage'));
+    expect(main, contains('DraggableScrollableSheet'));
+    expect(main, contains('_OperationSheet'));
+    expect(main, contains('_FunctionSheetMode'));
     expect(main, contains('TabBarView'));
+    expect(main, contains('命令结果'));
+    expect(main, contains('上报解析'));
+    expect(main, contains('功能区'));
+    expect(main, contains('左右滑动选择操作'));
     expect(main, contains('暂无命令结果'));
     expect(main, contains('暂无上报解析'));
+  });
+
+  test('main_opensWifiAndOtaFormsInsideOperationSheet', () {
+    final main = readProjectFile('lib/main.dart');
+
+    expect(main, contains('_WifiSheetContent'));
+    expect(main, contains('_OtaSheetContent'));
+    expect(main, contains('返回功能区'));
+    expect(main, contains('onOpenWifi'));
+    expect(main, contains('onOpenOta'));
   });
 
   test('bluetoothConnector_checksPermissionStatusesBeforeDiscovery', () {

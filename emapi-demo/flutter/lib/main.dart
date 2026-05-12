@@ -308,7 +308,9 @@ class SettingsPage extends StatelessWidget {
   }
 }
 
-class _FunctionPage extends StatelessWidget {
+enum _FunctionSheetMode { actions, wifi, ota }
+
+class _FunctionPage extends StatefulWidget {
   const _FunctionPage({
     required this.controller,
     required this.ssidController,
@@ -326,214 +328,314 @@ class _FunctionPage extends StatelessWidget {
   final Future<void> Function() onPickOtaFile;
 
   @override
+  State<_FunctionPage> createState() => _FunctionPageState();
+}
+
+class _FunctionPageState extends State<_FunctionPage> {
+  _FunctionSheetMode sheetMode = _FunctionSheetMode.actions;
+
+  EmapiDemoController get controller {
+    return widget.controller;
+  }
+
+  void _showActions() {
+    setState(() {
+      sheetMode = _FunctionSheetMode.actions;
+    });
+  }
+
+  void _showWifiForm() {
+    setState(() {
+      sheetMode = _FunctionSheetMode.wifi;
+    });
+  }
+
+  void _showOtaForm() {
+    setState(() {
+      sheetMode = _FunctionSheetMode.ota;
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Column(
-      children: [
-        Expanded(
-          child: ListView(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 24),
+    return DefaultTabController(
+      length: 2,
+      child: Stack(
+        children: [
+          Column(
             children: [
-              _HeroPanel(
-                title: controller.connectedDeviceName ?? 'EMAPI 打印机',
-                subtitle: controller.pendingActionLabel == null
-                    ? '连接已建立，可执行 EMAPI 功能'
-                    : '正在执行：${controller.pendingActionLabel}',
-                icon: controller.simulationMode
-                    ? Icons.science_outlined
-                    : Icons.print,
-                trailing: _ModePill(
-                  label: controller.simulationMode ? '模拟模式' : '真实设备',
-                  active: controller.simulationMode,
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+                child: _HeroPanel(
+                  title: controller.connectedDeviceName ?? 'EMAPI 打印机',
+                  subtitle: controller.pendingActionLabel == null
+                      ? '记录实时显示，操作从底部面板执行'
+                      : '正在执行：${controller.pendingActionLabel}',
+                  icon: controller.simulationMode
+                      ? Icons.science_outlined
+                      : Icons.print,
+                  trailing: _ModePill(
+                    label: controller.simulationMode ? '模拟模式' : '真实设备',
+                    active: controller.simulationMode,
+                  ),
                 ),
               ),
-              const SizedBox(height: 12),
-              _Panel(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const _SectionHeader(
-                      title: '输入参数',
-                      subtitle: '配网和 OTA 流程使用',
-                    ),
-                    const SizedBox(height: 12),
-                    TextField(
-                      controller: ssidController,
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.wifi),
-                        labelText: 'WiFi SSID',
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    TextField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: const InputDecoration(
-                        prefixIcon: Icon(Icons.key),
-                        labelText: 'WiFi 密码',
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                    Align(
-                      alignment: Alignment.centerRight,
-                      child: FilledButton.icon(
-                        onPressed: controller.busy
-                            ? null
-                            : () => controller.setWifiConfig(
-                                ssid: ssidController.text,
-                                password: passwordController.text,
-                              ),
-                        icon: const Icon(Icons.send_to_mobile),
-                        label: const Text('提交配网信息'),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    _SectionHeader(
-                      title: 'OTA 文件',
-                      subtitle: controller.simulationMode
-                          ? '模拟模式可不选文件，直接使用内置模拟包'
-                          : '选择升级文件后，再确认开始升级',
-                    ),
-                    const SizedBox(height: 10),
-                    Row(
-                      children: [
-                        Icon(
-                          Icons.description_outlined,
-                          color: theme.colorScheme.primary,
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: Text(
-                            otaFileLabel,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: theme.textTheme.bodyMedium,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 10),
-                    Wrap(
-                      spacing: 8,
-                      runSpacing: 8,
-                      children: [
-                        OutlinedButton.icon(
-                          onPressed: controller.busy ? null : onPickOtaFile,
-                          icon: const Icon(Icons.folder_open),
-                          label: const Text('选择 OTA 文件'),
-                        ),
-                        FilledButton.icon(
-                          onPressed: controller.busy
-                              ? null
-                              : () => controller.performOta(
-                                  otaPathController.text,
-                                ),
-                          icon: const Icon(Icons.system_update_alt),
-                          label: const Text('开始 OTA 升级'),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              _Panel(
-                tone: _PanelTone.subtle,
-                child: Row(
-                  children: [
-                    Icon(Icons.speed, color: theme.colorScheme.primary),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Text(
-                        controller.otaProgress,
-                        style: theme.textTheme.bodyMedium,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              const _SectionHeader(
-                title: 'EMAPI 操作',
-                subtitle: '执行后结果会显示在底部反馈栏',
-              ),
-              const SizedBox(height: 8),
-              _ActionGrid(
-                busy: controller.busy,
-                pendingActionLabel: controller.pendingActionLabel,
-                actions: [
-                  _DemoAction(
-                    Icons.power_settings_new,
-                    '打印机休眠关机',
-                    controller.sleepShutdown,
-                  ),
-                  _DemoAction(
-                    Icons.nfc,
-                    '查询 RFID 卡 UID',
-                    controller.queryRfidUid,
-                  ),
-                  _DemoAction(
-                    Icons.badge_outlined,
-                    '查询 RFID 卡信息',
-                    controller.queryRfidCardInfo,
-                  ),
-                  _DemoAction(
-                    Icons.straighten,
-                    '查询卡内纸张长度',
-                    controller.queryRfidPaperLength,
-                  ),
-                  _DemoAction(
-                    Icons.verified_user_outlined,
-                    '设置 RFID 认证失败处理',
-                    () => controller.setRfidAuthFailureHandling(
-                      EmapiRfidAuthFailurePolicy.forbidPrint,
-                    ),
-                  ),
-                  _DemoAction(
-                    Icons.router_outlined,
-                    '设置配网信息',
-                    () => controller.setWifiConfig(
-                      ssid: ssidController.text,
-                      password: passwordController.text,
-                    ),
-                  ),
-                  _DemoAction(
-                    Icons.wifi_tethering,
-                    '查询 WIFI 模块连接状态',
-                    controller.queryWifiConnectionState,
-                  ),
-                  _DemoAction(
-                    Icons.network_wifi,
-                    '查询 WIFI 模块热点相关信息',
-                    controller.queryWifiHotspotInfo,
-                  ),
-                  _DemoAction(
-                    Icons.info_outline,
-                    '查询打印机基本参数',
-                    controller.queryDeviceInfo,
-                  ),
-                  _DemoAction(
-                    Icons.receipt_long,
-                    '查询打印状态',
-                    controller.queryPrintStatus,
-                  ),
-                  _DemoAction(
-                    Icons.system_update_alt,
-                    'OTA 升级',
-                    () => controller.performOta(otaPathController.text),
-                  ),
+              TabBar(
+                tabs: [
+                  Tab(text: '命令结果 ${controller.commandLogs.length}'),
+                  Tab(text: '上报解析 ${controller.reportLogs.length}'),
                 ],
+              ),
+              Expanded(
+                child: TabBarView(
+                  children: [
+                    _LogList(
+                      emptyText: '暂无命令结果',
+                      entries: controller.commandLogs,
+                      bottomPadding: 210,
+                    ),
+                    _LogList(
+                      emptyText: '暂无上报解析',
+                      entries: controller.reportLogs,
+                      bottomPadding: 210,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
+          _OperationSheet(
+            mode: sheetMode,
+            controller: controller,
+            ssidController: widget.ssidController,
+            passwordController: widget.passwordController,
+            otaPathController: widget.otaPathController,
+            otaFileLabel: widget.otaFileLabel,
+            onPickOtaFile: widget.onPickOtaFile,
+            onBack: _showActions,
+            onOpenWifi: _showWifiForm,
+            onOpenOta: _showOtaForm,
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _OperationSheet extends StatelessWidget {
+  const _OperationSheet({
+    required this.mode,
+    required this.controller,
+    required this.ssidController,
+    required this.passwordController,
+    required this.otaPathController,
+    required this.otaFileLabel,
+    required this.onPickOtaFile,
+    required this.onBack,
+    required this.onOpenWifi,
+    required this.onOpenOta,
+  });
+
+  final _FunctionSheetMode mode;
+  final EmapiDemoController controller;
+  final TextEditingController ssidController;
+  final TextEditingController passwordController;
+  final TextEditingController otaPathController;
+  final String otaFileLabel;
+  final Future<void> Function() onPickOtaFile;
+  final VoidCallback onBack;
+  final VoidCallback onOpenWifi;
+  final VoidCallback onOpenOta;
+
+  @override
+  Widget build(BuildContext context) {
+    return DraggableScrollableSheet(
+      initialChildSize: 0.26,
+      minChildSize: 0.18,
+      maxChildSize: 0.64,
+      snap: true,
+      snapSizes: const [0.18, 0.36, 0.64],
+      builder: (context, scrollController) {
+        return _SheetSurface(
+          child: ListView(
+            controller: scrollController,
+            padding: const EdgeInsets.fromLTRB(16, 8, 16, 18),
+            children: [
+              const _SheetHandle(),
+              if (mode == _FunctionSheetMode.actions)
+                _ActionSheetContent(
+                  controller: controller,
+                  onOpenWifi: onOpenWifi,
+                  onOpenOta: onOpenOta,
+                )
+              else if (mode == _FunctionSheetMode.wifi)
+                _WifiSheetContent(
+                  controller: controller,
+                  ssidController: ssidController,
+                  passwordController: passwordController,
+                  onBack: onBack,
+                )
+              else
+                _OtaSheetContent(
+                  controller: controller,
+                  otaPathController: otaPathController,
+                  otaFileLabel: otaFileLabel,
+                  onPickOtaFile: onPickOtaFile,
+                  onBack: onBack,
+                ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+}
+
+class _SheetSurface extends StatelessWidget {
+  const _SheetSurface({required this.child});
+
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: const Color(0xFFFBFCFA),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(22)),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
+        boxShadow: [
+          BoxShadow(
+            color: theme.colorScheme.onSurface.withValues(alpha: 0.12),
+            blurRadius: 18,
+            offset: const Offset(0, -4),
+          ),
+        ],
+      ),
+      child: child,
+    );
+  }
+}
+
+class _SheetHandle extends StatelessWidget {
+  const _SheetHandle();
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: Container(
+        width: 44,
+        height: 4,
+        margin: const EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.outlineVariant,
+          borderRadius: BorderRadius.circular(999),
         ),
-        _ActivityDock(
-          commandLogs: controller.commandLogs,
-          reportLogs: controller.reportLogs,
-          onOpenAll: () => Navigator.of(context).push(
-            MaterialPageRoute<void>(
-              builder: (context) => ActivityLogPage(controller: controller),
-            ),
+      ),
+    );
+  }
+}
+
+class _ActionSheetContent extends StatelessWidget {
+  const _ActionSheetContent({
+    required this.controller,
+    required this.onOpenWifi,
+    required this.onOpenOta,
+  });
+
+  final EmapiDemoController controller;
+  final VoidCallback onOpenWifi;
+  final VoidCallback onOpenOta;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SheetTitle(
+          title: '功能区',
+          subtitle: controller.pendingActionLabel == null
+              ? '左右滑动选择操作，上拉查看更多空间'
+              : '正在执行：${controller.pendingActionLabel}',
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 104,
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: _mainActions.length,
+            separatorBuilder: (context, index) => const SizedBox(width: 8),
+            itemBuilder: (context, index) {
+              final action = _mainActions[index];
+              return _ActionButtonTile(
+                icon: action.icon,
+                label: action.label,
+                busy: controller.busy,
+                pending: controller.pendingActionLabel == action.label,
+                onPressed: () => action.invoke(
+                  controller: controller,
+                  onOpenWifi: onOpenWifi,
+                  onOpenOta: onOpenOta,
+                ),
+              );
+            },
+          ),
+        ),
+        const SizedBox(height: 10),
+        _OtaProgressStrip(progressText: controller.otaProgress),
+      ],
+    );
+  }
+}
+
+class _WifiSheetContent extends StatelessWidget {
+  const _WifiSheetContent({
+    required this.controller,
+    required this.ssidController,
+    required this.passwordController,
+    required this.onBack,
+  });
+
+  final EmapiDemoController controller;
+  final TextEditingController ssidController;
+  final TextEditingController passwordController;
+  final VoidCallback onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SheetTitle(title: '配网信息', subtitle: '输入 WiFi 后提交到打印机', onBack: onBack),
+        const SizedBox(height: 10),
+        TextField(
+          controller: ssidController,
+          decoration: const InputDecoration(
+            prefixIcon: Icon(Icons.wifi),
+            labelText: 'WiFi SSID',
+          ),
+        ),
+        const SizedBox(height: 10),
+        TextField(
+          controller: passwordController,
+          obscureText: true,
+          decoration: const InputDecoration(
+            prefixIcon: Icon(Icons.key),
+            labelText: 'WiFi 密码',
+          ),
+        ),
+        const SizedBox(height: 10),
+        Align(
+          alignment: Alignment.centerRight,
+          child: FilledButton.icon(
+            onPressed: controller.busy
+                ? null
+                : () => controller.setWifiConfig(
+                    ssid: ssidController.text,
+                    password: passwordController.text,
+                  ),
+            icon: const Icon(Icons.send_to_mobile),
+            label: const Text('提交配网信息'),
           ),
         ),
       ],
@@ -541,89 +643,290 @@ class _FunctionPage extends StatelessWidget {
   }
 }
 
-class ActivityLogPage extends StatelessWidget {
-  const ActivityLogPage({super.key, required this.controller});
+class _OtaSheetContent extends StatelessWidget {
+  const _OtaSheetContent({
+    required this.controller,
+    required this.otaPathController,
+    required this.otaFileLabel,
+    required this.onPickOtaFile,
+    required this.onBack,
+  });
 
   final EmapiDemoController controller;
+  final TextEditingController otaPathController;
+  final String otaFileLabel;
+  final Future<void> Function() onPickOtaFile;
+  final VoidCallback onBack;
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: const Text('全部记录'),
-          bottom: TabBar(
-            tabs: [
-              Tab(text: '命令结果 ${controller.commandLogs.length}'),
-              Tab(text: '上报解析 ${controller.reportLogs.length}'),
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SheetTitle(
+          title: 'OTA 升级',
+          subtitle: controller.simulationMode
+              ? '模拟模式可不选文件，直接使用内置模拟包'
+              : '选择升级文件后再开始',
+          onBack: onBack,
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Icon(Icons.description_outlined, color: theme.colorScheme.primary),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(
+                otaFileLabel,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: theme.textTheme.bodyMedium,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            OutlinedButton.icon(
+              onPressed: controller.busy ? null : onPickOtaFile,
+              icon: const Icon(Icons.folder_open),
+              label: const Text('选择 OTA 文件'),
+            ),
+            FilledButton.icon(
+              onPressed: controller.busy
+                  ? null
+                  : () => controller.performOta(otaPathController.text),
+              icon: const Icon(Icons.system_update_alt),
+              label: const Text('开始 OTA 升级'),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        _OtaProgressStrip(progressText: controller.otaProgress),
+      ],
+    );
+  }
+}
+
+class _SheetTitle extends StatelessWidget {
+  const _SheetTitle({required this.title, required this.subtitle, this.onBack});
+
+  final String title;
+  final String subtitle;
+  final VoidCallback? onBack;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      children: [
+        if (onBack != null) ...[
+          IconButton(
+            tooltip: '返回功能区',
+            onPressed: onBack,
+            icon: const Icon(Icons.arrow_back),
+          ),
+          const SizedBox(width: 4),
+        ],
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(title, style: theme.textTheme.titleMedium),
+              const SizedBox(height: 2),
+              Text(
+                subtitle,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
             ],
           ),
         ),
-        body: AnimatedBuilder(
-          animation: controller,
-          builder: (context, _) {
-            return TabBarView(
-              children: [
-                _LogList(emptyText: '暂无命令结果', entries: controller.commandLogs),
-                _LogList(emptyText: '暂无上报解析', entries: controller.reportLogs),
-              ],
-            );
-          },
+      ],
+    );
+  }
+}
+
+class _ActionButtonTile extends StatelessWidget {
+  const _ActionButtonTile({
+    required this.icon,
+    required this.label,
+    required this.busy,
+    required this.pending,
+    required this.onPressed,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool busy;
+  final bool pending;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      width: 134,
+      child: FilledButton.tonal(
+        onPressed: busy ? null : onPressed,
+        style: FilledButton.styleFrom(
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            if (pending)
+              const SizedBox.square(
+                dimension: 22,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              )
+            else
+              Icon(icon, size: 22),
+            const SizedBox(height: 8),
+            Text(
+              label,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+            ),
+          ],
         ),
       ),
     );
   }
 }
 
-class _ActionGrid extends StatelessWidget {
-  const _ActionGrid({
-    required this.actions,
-    required this.busy,
-    required this.pendingActionLabel,
-  });
+class _OtaProgressStrip extends StatelessWidget {
+  const _OtaProgressStrip({required this.progressText});
 
-  final List<_DemoAction> actions;
-  final bool busy;
-  final String? pendingActionLabel;
+  final String progressText;
 
   @override
   Widget build(BuildContext context) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: actions.length,
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 240,
-        mainAxisExtent: 56,
-        mainAxisSpacing: 8,
-        crossAxisSpacing: 8,
+    final theme = Theme.of(context);
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.42),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: theme.colorScheme.outlineVariant),
       ),
-      itemBuilder: (context, index) {
-        final action = actions[index];
-        final pending = pendingActionLabel == action.label;
-        return FilledButton.tonalIcon(
-          onPressed: busy ? null : action.onPressed,
-          icon: pending
-              ? const SizedBox.square(
-                  dimension: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : Icon(action.icon, size: 18),
-          label: Text(action.label, textAlign: TextAlign.center),
-        );
-      },
+      child: Padding(
+        padding: const EdgeInsets.all(10),
+        child: Row(
+          children: [
+            Icon(Icons.speed, color: theme.colorScheme.primary),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Text(progressText, style: theme.textTheme.bodySmall),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
 
-class _DemoAction {
-  const _DemoAction(this.icon, this.label, this.onPressed);
+class _SheetAction {
+  const _SheetAction(this.icon, this.label, this.invoke);
 
   final IconData icon;
   final String label;
-  final Future<void> Function() onPressed;
+  final void Function({
+    required EmapiDemoController controller,
+    required VoidCallback onOpenWifi,
+    required VoidCallback onOpenOta,
+  })
+  invoke;
 }
+
+final _mainActions = [
+  _SheetAction(Icons.power_settings_new, '休眠关机', ({
+    required controller,
+    required onOpenWifi,
+    required onOpenOta,
+  }) {
+    controller.sleepShutdown();
+  }),
+  _SheetAction(Icons.nfc, 'RFID UID', ({
+    required controller,
+    required onOpenWifi,
+    required onOpenOta,
+  }) {
+    controller.queryRfidUid();
+  }),
+  _SheetAction(Icons.badge_outlined, 'RFID 信息', ({
+    required controller,
+    required onOpenWifi,
+    required onOpenOta,
+  }) {
+    controller.queryRfidCardInfo();
+  }),
+  _SheetAction(Icons.straighten, '纸张长度', ({
+    required controller,
+    required onOpenWifi,
+    required onOpenOta,
+  }) {
+    controller.queryRfidPaperLength();
+  }),
+  _SheetAction(Icons.verified_user_outlined, 'RFID 失败处理', ({
+    required controller,
+    required onOpenWifi,
+    required onOpenOta,
+  }) {
+    controller.setRfidAuthFailureHandling(
+      EmapiRfidAuthFailurePolicy.forbidPrint,
+    );
+  }),
+  _SheetAction(Icons.router_outlined, '配网信息', ({
+    required controller,
+    required onOpenWifi,
+    required onOpenOta,
+  }) {
+    onOpenWifi();
+  }),
+  _SheetAction(Icons.wifi_tethering, 'WIFI 状态', ({
+    required controller,
+    required onOpenWifi,
+    required onOpenOta,
+  }) {
+    controller.queryWifiConnectionState();
+  }),
+  _SheetAction(Icons.network_wifi, '热点信息', ({
+    required controller,
+    required onOpenWifi,
+    required onOpenOta,
+  }) {
+    controller.queryWifiHotspotInfo();
+  }),
+  _SheetAction(Icons.info_outline, '基本参数', ({
+    required controller,
+    required onOpenWifi,
+    required onOpenOta,
+  }) {
+    controller.queryDeviceInfo();
+  }),
+  _SheetAction(Icons.receipt_long, '打印状态', ({
+    required controller,
+    required onOpenWifi,
+    required onOpenOta,
+  }) {
+    controller.queryPrintStatus();
+  }),
+  _SheetAction(Icons.system_update_alt, 'OTA 升级', ({
+    required controller,
+    required onOpenWifi,
+    required onOpenOta,
+  }) {
+    onOpenOta();
+  }),
+];
 
 class _DeviceTile extends StatelessWidget {
   const _DeviceTile({
@@ -837,132 +1140,16 @@ class _EmptyState extends StatelessWidget {
   }
 }
 
-class _ActivityDock extends StatelessWidget {
-  const _ActivityDock({
-    required this.commandLogs,
-    required this.reportLogs,
-    required this.onOpenAll,
-  });
-
-  final List<String> commandLogs;
-  final List<String> reportLogs;
-  final VoidCallback onOpenAll;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: const Color(0xFFFBFCFA),
-        border: Border(
-          top: BorderSide(color: theme.colorScheme.outlineVariant),
-        ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Text('最近反馈', style: theme.textTheme.titleSmall),
-                const Spacer(),
-                TextButton.icon(
-                  onPressed: onOpenAll,
-                  icon: const Icon(Icons.list_alt, size: 18),
-                  label: const Text('全部记录'),
-                ),
-              ],
-            ),
-            Row(
-              children: [
-                Expanded(
-                  child: _LatestActivityTile(
-                    icon: Icons.terminal,
-                    label: '命令',
-                    count: commandLogs.length,
-                    text: commandLogs.isEmpty ? '暂无命令结果' : commandLogs.first,
-                  ),
-                ),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: _LatestActivityTile(
-                    icon: Icons.sensors,
-                    label: '上报',
-                    count: reportLogs.length,
-                    text: reportLogs.isEmpty ? '暂无上报解析' : reportLogs.first,
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class _LatestActivityTile extends StatelessWidget {
-  const _LatestActivityTile({
-    required this.icon,
-    required this.label,
-    required this.count,
-    required this.text,
-  });
-
-  final IconData icon;
-  final String label;
-  final int count;
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.primaryContainer.withValues(alpha: 0.36),
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.colorScheme.outlineVariant),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(10),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Row(
-              children: [
-                Icon(icon, size: 16, color: theme.colorScheme.primary),
-                const SizedBox(width: 6),
-                Text(label, style: theme.textTheme.labelMedium),
-                const Spacer(),
-                Text(
-                  '$count',
-                  style: theme.textTheme.labelSmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            Text(
-              text,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              style: theme.textTheme.bodySmall,
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
 class _LogList extends StatelessWidget {
-  const _LogList({required this.emptyText, required this.entries});
+  const _LogList({
+    required this.emptyText,
+    required this.entries,
+    this.bottomPadding = 16,
+  });
 
   final String emptyText;
   final List<String> entries;
+  final double bottomPadding;
 
   @override
   Widget build(BuildContext context) {
@@ -978,7 +1165,7 @@ class _LogList extends StatelessWidget {
       );
     }
     return ListView.separated(
-      padding: const EdgeInsets.all(16),
+      padding: EdgeInsets.fromLTRB(16, 16, 16, bottomPadding),
       itemCount: entries.length,
       separatorBuilder: (context, index) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
