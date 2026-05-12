@@ -22,18 +22,20 @@ List<Permission> androidBluetoothPermissionsForSdk(int sdkInt) {
 
 class DiscoveredPrinterDevice {
   DiscoveredPrinterDevice({
-    required this.rawDevice,
+    this.rawDevice,
     required this.name,
     required this.mac,
     required this.rssi,
     required this.protocol,
+    this.simulated = false,
   });
 
-  final FluetoothDevice rawDevice;
+  final FluetoothDevice? rawDevice;
   final String name;
   final String mac;
   final int? rssi;
   final BluetoothProtocol protocol;
+  final bool simulated;
 
   String get protocolLabel {
     return switch (protocol) {
@@ -191,8 +193,12 @@ class BluetoothPrinterConnector {
   }
 
   Future<ConnectedDevice> connect(DiscoveredPrinterDevice device) async {
+    final rawDevice = device.rawDevice;
+    if (rawDevice == null) {
+      throw StateError('模拟设备不能通过真实蓝牙连接');
+    }
     await stopScan();
-    return await _bluetooth.connect(device.rawDevice);
+    return await _bluetooth.connect(rawDevice);
   }
 
   Future<void> dispose() async {

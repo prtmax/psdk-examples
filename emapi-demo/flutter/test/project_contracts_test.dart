@@ -85,6 +85,16 @@ void main() {
     expect(controller, contains('初始化失败'));
   });
 
+  test('main_exposesSettingsAndSimulationModeUi', () {
+    final main = readProjectFile('lib/main.dart');
+
+    expect(main, contains('Icons.tune'));
+    expect(main, contains('SettingsPage'));
+    expect(main, contains('SwitchListTile'));
+    expect(main, contains('模拟模式'));
+    expect(main, contains('生成模拟蓝牙设备'));
+  });
+
   test('bluetoothConnector_checksPermissionStatusesBeforeDiscovery', () {
     final connector = readProjectFile(
       'lib/src/bluetooth_printer_connector.dart',
@@ -117,6 +127,55 @@ void main() {
 
     expect(controller.scanning, isFalse);
     expect(controller.commandLogs.first, contains('permissions denied'));
+  });
+
+  test(
+    'controller_simulationModeGeneratesAndConnectsSimulatedDevice',
+    () async {
+      final controller = EmapiDemoController(
+        connector: _FailingScanConnector(StateError('unexpected real scan')),
+      );
+      addTearDown(controller.dispose);
+
+      await controller.init();
+      await controller.setSimulationMode(true);
+      await controller.startScan();
+
+      expect(controller.bluetoothEnabled, isTrue);
+      expect(controller.scanning, isFalse);
+      expect(controller.devices, hasLength(1));
+      expect(controller.devices.single.simulated, isTrue);
+
+      await controller.connect(controller.devices.single);
+
+      expect(controller.connected, isTrue);
+      expect(controller.connectedDeviceName, 'EMAPI 模拟打印机');
+      expect(controller.reportLogs.first, contains('蓝牙连接上报'));
+    },
+  );
+
+  test('controller_simulationModeReturnsQueryAndOtaResults', () async {
+    final controller = EmapiDemoController(
+      connector: _FailingScanConnector(StateError('unexpected real scan')),
+    );
+    addTearDown(controller.dispose);
+
+    await controller.init();
+    await controller.setSimulationMode(true);
+    await controller.startScan();
+    await controller.connect(controller.devices.single);
+
+    await controller.queryDeviceInfo();
+
+    expect(controller.commandLogs.first, contains('EMAPI-SIM-01'));
+    expect(controller.knownMtu, 512);
+
+    await controller.performOta('');
+
+    expect(controller.otaTotalBytes, 2048);
+    expect(controller.otaSentBytes, 2048);
+    expect(controller.commandLogs.first, contains('模拟模式：OTA 升级命令已完成'));
+    expect(controller.reportLogs.first, contains('升级状态上报'));
   });
 }
 

@@ -18,8 +18,34 @@ class EmapiDemoApp extends StatelessWidget {
     return MaterialApp(
       title: 'EMAPI Demo',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF1B6C8C)),
+        colorScheme: const ColorScheme.light(
+          primary: Color(0xFF256B75),
+          onPrimary: Color(0xFFF7FBFA),
+          primaryContainer: Color(0xFFD7EEF0),
+          onPrimaryContainer: Color(0xFF153F46),
+          secondary: Color(0xFF6B6558),
+          onSecondary: Color(0xFFF8F5EF),
+          secondaryContainer: Color(0xFFEDE4D4),
+          onSecondaryContainer: Color(0xFF403A2F),
+          surface: Color(0xFFF6F8F6),
+          onSurface: Color(0xFF1D2424),
+          surfaceContainerHighest: Color(0xFFE3E9E7),
+          outline: Color(0xFF74817E),
+          outlineVariant: Color(0xFFC8D2CF),
+          error: Color(0xFFB4473D),
+          onError: Color(0xFFFDF8F6),
+        ),
+        scaffoldBackgroundColor: const Color(0xFFF6F8F6),
         useMaterial3: true,
+        inputDecorationTheme: InputDecorationTheme(
+          filled: true,
+          fillColor: const Color(0xFFFBFCFA),
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+          enabledBorder: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: const BorderSide(color: Color(0xFFC8D2CF)),
+          ),
+        ),
       ),
       home: const EmapiDemoPage(),
     );
@@ -69,6 +95,11 @@ class _EmapiDemoPageState extends State<EmapiDemoPage> {
       appBar: AppBar(
         title: const Text('EMAPI Flutter Demo'),
         actions: [
+          IconButton(
+            tooltip: '设置',
+            onPressed: controller.busy ? null : _openSettings,
+            icon: const Icon(Icons.tune),
+          ),
           if (controller.connected)
             IconButton(
               tooltip: '断开连接',
@@ -89,6 +120,14 @@ class _EmapiDemoPageState extends State<EmapiDemoPage> {
       ),
     );
   }
+
+  Future<void> _openSettings() {
+    return Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (context) => SettingsPage(controller: controller),
+      ),
+    );
+  }
 }
 
 class _ScanPage extends StatelessWidget {
@@ -98,44 +137,141 @@ class _ScanPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    final theme = Theme.of(context);
+    return ListView(
+      padding: const EdgeInsets.all(16),
       children: [
-        _StatusTile(
-          title: controller.bluetoothEnabled ? '蓝牙已开启' : '蓝牙未开启或未授权',
-          subtitle: controller.scanning ? '正在扫描设备' : '点击刷新开始扫描',
-          icon: controller.bluetoothEnabled
-              ? Icons.bluetooth
-              : Icons.bluetooth_disabled,
-        ),
-        Expanded(
-          child: ListView.separated(
-            itemCount: controller.devices.length,
-            separatorBuilder: (context, index) => const Divider(height: 1),
-            itemBuilder: (context, index) {
-              final device = controller.devices[index];
-              return _DeviceTile(
-                device: device,
-                enabled: !controller.busy,
-                onTap: () => controller.connect(device),
-              );
-            },
+        _HeroPanel(
+          title: controller.simulationMode ? '模拟测试台' : '蓝牙设备',
+          subtitle: controller.simulationMode
+              ? '无需真实硬件，使用模拟设备验证 EMAPI 流程'
+              : controller.scanning
+              ? '正在扫描附近打印机'
+              : '扫描并连接支持 EMAPI 的打印机',
+          icon: controller.simulationMode
+              ? Icons.science_outlined
+              : Icons.bluetooth_searching,
+          trailing: _ModePill(
+            label: controller.simulationMode ? '模拟模式' : '真实设备',
+            active: controller.simulationMode,
           ),
         ),
-        Padding(
-          padding: const EdgeInsets.all(16),
-          child: FilledButton.icon(
-            onPressed: controller.busy ? null : controller.startScan,
-            icon: controller.scanning
-                ? const SizedBox.square(
-                    dimension: 18,
-                    child: CircularProgressIndicator(strokeWidth: 2),
-                  )
-                : const Icon(Icons.refresh),
-            label: Text(controller.scanning ? '扫描中' : '刷新'),
-          ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: FilledButton.icon(
+                onPressed: controller.busy ? null : controller.startScan,
+                icon: controller.scanning
+                    ? const SizedBox.square(
+                        dimension: 18,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.radar),
+                label: Text(controller.scanning ? '扫描中' : '开始扫描'),
+              ),
+            ),
+            const SizedBox(width: 8),
+            OutlinedButton.icon(
+              onPressed: controller.scanning && !controller.busy
+                  ? controller.stopScan
+                  : null,
+              icon: const Icon(Icons.stop_circle_outlined),
+              label: const Text('停止'),
+            ),
+          ],
         ),
+        const SizedBox(height: 16),
+        _SectionHeader(
+          title: '设备列表',
+          subtitle: controller.devices.isEmpty
+              ? '暂无设备'
+              : '${controller.devices.length} 台可连接设备',
+        ),
+        const SizedBox(height: 8),
+        if (controller.devices.isEmpty)
+          _EmptyState(
+            icon: controller.simulationMode
+                ? Icons.science_outlined
+                : Icons.bluetooth_disabled,
+            text: controller.simulationMode ? '点击开始扫描生成模拟打印机' : '点击开始扫描查找蓝牙打印机',
+          )
+        else
+          _Panel(
+            padding: EdgeInsets.zero,
+            child: Column(
+              children: [
+                for (var index = 0; index < controller.devices.length; index++)
+                  Column(
+                    children: [
+                      _DeviceTile(
+                        device: controller.devices[index],
+                        enabled: !controller.busy,
+                        onTap: () =>
+                            controller.connect(controller.devices[index]),
+                      ),
+                      if (index != controller.devices.length - 1)
+                        Divider(
+                          height: 1,
+                          color: theme.colorScheme.outlineVariant,
+                        ),
+                    ],
+                  ),
+              ],
+            ),
+          ),
+        const SizedBox(height: 16),
         _LogPanel(title: '命令结果', entries: controller.commandLogs),
       ],
+    );
+  }
+}
+
+class SettingsPage extends StatelessWidget {
+  const SettingsPage({super.key, required this.controller});
+
+  final EmapiDemoController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('设置')),
+      body: AnimatedBuilder(
+        animation: controller,
+        builder: (context, _) {
+          final theme = Theme.of(context);
+          return ListView(
+            padding: const EdgeInsets.all(16),
+            children: [
+              _Panel(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('测试模式', style: theme.textTheme.titleMedium),
+                    const SizedBox(height: 4),
+                    Text(
+                      '没有真实蓝牙和打印机时，开启模拟模式进行完整流程验证。',
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text('模拟模式'),
+                      subtitle: const Text('生成模拟蓝牙设备，所有 EMAPI 操作返回模拟结果'),
+                      value: controller.simulationMode,
+                      onChanged: controller.busy
+                          ? null
+                          : (value) => controller.setSimulationMode(value),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
+      ),
     );
   }
 }
@@ -155,73 +291,135 @@ class _FunctionPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        _StatusTile(
-          title: '已连接 ${controller.connectedDeviceName ?? ''}',
+        _HeroPanel(
+          title: controller.connectedDeviceName ?? 'EMAPI 打印机',
           subtitle: controller.pendingActionLabel == null
-              ? '可执行 EMAPI 功能'
+              ? '连接已建立，可执行 EMAPI 功能'
               : '正在执行：${controller.pendingActionLabel}',
-          icon: Icons.print,
-        ),
-        const SizedBox(height: 12),
-        TextField(
-          controller: ssidController,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'WiFi SSID',
+          icon: controller.simulationMode
+              ? Icons.science_outlined
+              : Icons.print,
+          trailing: _ModePill(
+            label: controller.simulationMode ? '模拟模式' : '真实设备',
+            active: controller.simulationMode,
           ),
         ),
+        const SizedBox(height: 12),
+        _Panel(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const _SectionHeader(title: '输入参数', subtitle: '配网和 OTA 流程使用'),
+              const SizedBox(height: 12),
+              TextField(
+                controller: ssidController,
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.wifi),
+                  labelText: 'WiFi SSID',
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: passwordController,
+                obscureText: true,
+                decoration: const InputDecoration(
+                  prefixIcon: Icon(Icons.key),
+                  labelText: 'WiFi 密码',
+                ),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: otaPathController,
+                decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.upload_file),
+                  labelText: controller.simulationMode
+                      ? 'OTA 文件路径（模拟模式可留空）'
+                      : 'OTA 文件路径',
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        _Panel(
+          tone: _PanelTone.subtle,
+          child: Row(
+            children: [
+              Icon(Icons.speed, color: theme.colorScheme.primary),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  controller.otaProgress,
+                  style: theme.textTheme.bodyMedium,
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        const _SectionHeader(title: 'EMAPI 操作', subtitle: '请求执行时会暂时禁用其它操作'),
         const SizedBox(height: 8),
-        TextField(
-          controller: passwordController,
-          obscureText: true,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'WiFi 密码',
-          ),
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: otaPathController,
-          decoration: const InputDecoration(
-            border: OutlineInputBorder(),
-            labelText: 'OTA 文件路径',
-          ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          controller.otaProgress,
-          style: Theme.of(context).textTheme.bodyMedium,
-        ),
-        const SizedBox(height: 12),
         _ActionGrid(
           busy: controller.busy,
           pendingActionLabel: controller.pendingActionLabel,
           actions: [
-            _DemoAction('打印机休眠关机', controller.sleepShutdown),
-            _DemoAction('查询 RFID 卡 UID', controller.queryRfidUid),
-            _DemoAction('查询 RFID 卡信息', controller.queryRfidCardInfo),
-            _DemoAction('查询卡内纸张长度', controller.queryRfidPaperLength),
             _DemoAction(
+              Icons.power_settings_new,
+              '打印机休眠关机',
+              controller.sleepShutdown,
+            ),
+            _DemoAction(Icons.nfc, '查询 RFID 卡 UID', controller.queryRfidUid),
+            _DemoAction(
+              Icons.badge_outlined,
+              '查询 RFID 卡信息',
+              controller.queryRfidCardInfo,
+            ),
+            _DemoAction(
+              Icons.straighten,
+              '查询卡内纸张长度',
+              controller.queryRfidPaperLength,
+            ),
+            _DemoAction(
+              Icons.verified_user_outlined,
               '设置 RFID 认证失败处理',
               () => controller.setRfidAuthFailureHandling(
                 EmapiRfidAuthFailurePolicy.forbidPrint,
               ),
             ),
             _DemoAction(
+              Icons.router_outlined,
               '设置配网信息',
               () => controller.setWifiConfig(
                 ssid: ssidController.text,
                 password: passwordController.text,
               ),
             ),
-            _DemoAction('查询 WIFI 模块连接状态', controller.queryWifiConnectionState),
-            _DemoAction('查询 WIFI 模块热点相关信息', controller.queryWifiHotspotInfo),
-            _DemoAction('查询打印机基本参数', controller.queryDeviceInfo),
-            _DemoAction('查询打印状态', controller.queryPrintStatus),
             _DemoAction(
+              Icons.wifi_tethering,
+              '查询 WIFI 模块连接状态',
+              controller.queryWifiConnectionState,
+            ),
+            _DemoAction(
+              Icons.network_wifi,
+              '查询 WIFI 模块热点相关信息',
+              controller.queryWifiHotspotInfo,
+            ),
+            _DemoAction(
+              Icons.info_outline,
+              '查询打印机基本参数',
+              controller.queryDeviceInfo,
+            ),
+            _DemoAction(
+              Icons.receipt_long,
+              '查询打印状态',
+              controller.queryPrintStatus,
+            ),
+            _DemoAction(
+              Icons.system_update_alt,
               'OTA 升级',
               () => controller.performOta(otaPathController.text),
             ),
@@ -262,14 +460,15 @@ class _ActionGrid extends StatelessWidget {
       itemBuilder: (context, index) {
         final action = actions[index];
         final pending = pendingActionLabel == action.label;
-        return FilledButton.tonal(
+        return FilledButton.tonalIcon(
           onPressed: busy ? null : action.onPressed,
-          child: pending
+          icon: pending
               ? const SizedBox.square(
                   dimension: 18,
                   child: CircularProgressIndicator(strokeWidth: 2),
                 )
-              : Text(action.label, textAlign: TextAlign.center),
+              : Icon(action.icon, size: 18),
+          label: Text(action.label, textAlign: TextAlign.center),
         );
       },
     );
@@ -277,8 +476,9 @@ class _ActionGrid extends StatelessWidget {
 }
 
 class _DemoAction {
-  const _DemoAction(this.label, this.onPressed);
+  const _DemoAction(this.icon, this.label, this.onPressed);
 
+  final IconData icon;
   final String label;
   final Future<void> Function() onPressed;
 }
@@ -298,34 +498,199 @@ class _DeviceTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListTile(
       enabled: enabled,
-      leading: const Icon(Icons.bluetooth_searching),
+      leading: CircleAvatar(
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        child: Icon(
+          device.simulated ? Icons.science_outlined : Icons.bluetooth,
+          color: Theme.of(context).colorScheme.onPrimaryContainer,
+        ),
+      ),
       title: Text(device.name),
       subtitle: Text(
         '${device.protocolLabel}  ${device.mac.isEmpty ? '无 MAC' : device.mac}',
       ),
-      trailing: Text(device.rssi == null ? '' : '${device.rssi} dBm'),
+      trailing: FilledButton.tonal(
+        onPressed: enabled ? onTap : null,
+        child: const Text('连接'),
+      ),
       onTap: enabled ? onTap : null,
     );
   }
 }
 
-class _StatusTile extends StatelessWidget {
-  const _StatusTile({
+class _HeroPanel extends StatelessWidget {
+  const _HeroPanel({
     required this.title,
     required this.subtitle,
     required this.icon,
+    required this.trailing,
   });
 
   final String title;
   final String subtitle;
   final IconData icon;
+  final Widget trailing;
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon),
-      title: Text(title),
-      subtitle: Text(subtitle),
+    final theme = Theme.of(context);
+    return _Panel(
+      tone: _PanelTone.emphasis,
+      child: Row(
+        children: [
+          Container(
+            width: 48,
+            height: 48,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.onPrimary.withValues(alpha: 0.16),
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(icon, color: theme.colorScheme.onPrimary),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: theme.textTheme.titleLarge?.copyWith(
+                    color: theme.colorScheme.onPrimary,
+                  ),
+                ),
+                const SizedBox(height: 2),
+                Text(
+                  subtitle,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onPrimary.withValues(alpha: 0.82),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 12),
+          trailing,
+        ],
+      ),
+    );
+  }
+}
+
+class _SectionHeader extends StatelessWidget {
+  const _SectionHeader({required this.title, required this.subtitle});
+
+  final String title;
+  final String subtitle;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title, style: theme.textTheme.titleMedium),
+        const SizedBox(height: 2),
+        Text(
+          subtitle,
+          style: theme.textTheme.bodySmall?.copyWith(
+            color: theme.colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ModePill extends StatelessWidget {
+  const _ModePill({required this.label, required this.active});
+
+  final String label;
+  final bool active;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final background = active
+        ? theme.colorScheme.secondaryContainer
+        : theme.colorScheme.onPrimary.withValues(alpha: 0.14);
+    final foreground = active
+        ? theme.colorScheme.onSecondaryContainer
+        : theme.colorScheme.onPrimary;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(999),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+        child: Text(
+          label,
+          style: theme.textTheme.labelMedium?.copyWith(color: foreground),
+        ),
+      ),
+    );
+  }
+}
+
+enum _PanelTone { normal, subtle, emphasis }
+
+class _Panel extends StatelessWidget {
+  const _Panel({
+    required this.child,
+    this.padding = const EdgeInsets.all(14),
+    this.tone = _PanelTone.normal,
+  });
+
+  final Widget child;
+  final EdgeInsetsGeometry padding;
+  final _PanelTone tone;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final background = switch (tone) {
+      _PanelTone.emphasis => theme.colorScheme.primary,
+      _PanelTone.subtle => theme.colorScheme.primaryContainer.withValues(
+        alpha: 0.45,
+      ),
+      _PanelTone.normal => const Color(0xFFFBFCFA),
+    };
+    final border = tone == _PanelTone.emphasis
+        ? Colors.transparent
+        : theme.colorScheme.outlineVariant;
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: border),
+      ),
+      child: Padding(padding: padding, child: child),
+    );
+  }
+}
+
+class _EmptyState extends StatelessWidget {
+  const _EmptyState({required this.icon, required this.text});
+
+  final IconData icon;
+  final String text;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return _Panel(
+      tone: _PanelTone.subtle,
+      child: Column(
+        children: [
+          Icon(icon, size: 36, color: theme.colorScheme.primary),
+          const SizedBox(height: 8),
+          Text(
+            text,
+            textAlign: TextAlign.center,
+            style: theme.textTheme.bodyMedium,
+          ),
+        ],
+      ),
     );
   }
 }
@@ -339,27 +704,25 @@ class _LogPanel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        border: Border.all(color: theme.colorScheme.outlineVariant),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(title, style: theme.textTheme.titleMedium),
-            const SizedBox(height: 8),
-            if (entries.isEmpty)
-              const Text('暂无')
-            else
-              for (final entry in entries.take(20)) ...[
-                SelectableText(entry),
-                const Divider(height: 16),
-              ],
-          ],
-        ),
+    return _Panel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _SectionHeader(title: title, subtitle: '${entries.length} 条记录'),
+          const SizedBox(height: 8),
+          if (entries.isEmpty)
+            Text(
+              '暂无',
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            )
+          else
+            for (final entry in entries.take(20)) ...[
+              SelectableText(entry),
+              const Divider(height: 16),
+            ],
+        ],
       ),
     );
   }

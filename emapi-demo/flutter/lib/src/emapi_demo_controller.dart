@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/foundation.dart';
+import 'package:psdk_bluetooth_traits/psdk_bluetooth_traits.dart';
 import 'package:psdk_device_adapter/psdk_device_adapter.dart';
 import 'package:psdk_fruit_emapi/psdk_fruit_emapi.dart';
 
@@ -28,6 +29,7 @@ class EmapiDemoController extends ChangeNotifier {
   bool scanning = false;
   bool connecting = false;
   bool connected = false;
+  bool simulationMode = false;
   String? connectedDeviceName;
   String? pendingActionLabel;
   int? knownMtu;
@@ -65,6 +67,16 @@ class EmapiDemoController extends ChangeNotifier {
   }
 
   Future<void> startScan() async {
+    if (simulationMode) {
+      devices
+        ..clear()
+        ..add(_simulatedDevice());
+      scanning = false;
+      bluetoothEnabled = true;
+      _addCommandLog('模拟模式：已生成 1 台模拟蓝牙设备');
+      _notify();
+      return;
+    }
     var discoveryStarted = false;
     await _runConnectionTask(
       () async {
@@ -85,18 +97,39 @@ class EmapiDemoController extends ChangeNotifier {
     );
   }
 
+  Future<void> stopScan() async {
+    await _runConnectionTask(() async {
+      await _connector.stopScan();
+      scanning = false;
+      _addCommandLog(simulationMode ? '模拟模式：扫描已停止' : '已停止扫描');
+      _notify();
+    });
+  }
+
   Future<void> connect(DiscoveredPrinterDevice device) async {
     await _runConnectionTask(
       () async {
         connecting = true;
         _notify();
-        _connectedDevice = await _connector.connect(device);
-        _printer = EmapiPrinter.connectedDevice(
-          connectedDevice: _connectedDevice!,
-        );
-        // TODO(EMAPI SDK): reports are exposed through EmapiPrinter.reports only; no public startListeningReports/stopListeningReports API exists currently.
-        await _reportSubscription?.cancel();
-        _reportSubscription = _printer!.reports.listen(_handleReport);
+        if (simulationMode || device.simulated) {
+          _connectedDevice = null;
+          _printer = null;
+          await _reportSubscription?.cancel();
+          _emitSimulatedReport(
+            EmapiBluetoothConnectionReport(
+              _simulatedBluetoothReportCommand,
+              state: 1,
+            ),
+          );
+        } else {
+          _connectedDevice = await _connector.connect(device);
+          _printer = EmapiPrinter.connectedDevice(
+            connectedDevice: _connectedDevice!,
+          );
+          // TODO(EMAPI SDK): reports are exposed through EmapiPrinter.reports only; no public startListeningReports/stopListeningReports API exists currently.
+          await _reportSubscription?.cancel();
+          _reportSubscription = _printer!.reports.listen(_handleReport);
+        }
         connected = true;
         connectedDeviceName = device.name;
         _addCommandLog('已连接：${device.name}');
@@ -124,6 +157,12 @@ class EmapiDemoController extends ChangeNotifier {
 
   Future<void> sleepShutdown() {
     return _runPrinterAction('打印机休眠关机', () async {
+      if (simulationMode) {
+        _emitSimulatedReport(
+          EmapiFlowControlReport(_simulatedFlowControlReportCommand, state: 0),
+        );
+        return '模拟模式：休眠关机指令已接收';
+      }
       await _requirePrinter().sleepShutdown();
       return '打印机休眠关机：已发送';
     });
@@ -131,6 +170,9 @@ class EmapiDemoController extends ChangeNotifier {
 
   Future<void> queryRfidUid() {
     return _runPrinterAction('查询 RFID 卡 UID', () async {
+      if (simulationMode) {
+        return 'RFID 卡 UID：04AABBCCDDEE';
+      }
       final uid = await _requirePrinter().queryRfidUid();
       return 'RFID 卡 UID：$uid';
     });
@@ -138,6 +180,17 @@ class EmapiDemoController extends ChangeNotifier {
 
   Future<void> queryRfidCardInfo() {
     return _runPrinterAction('查询 RFID 卡信息', () async {
+      if (simulationMode) {
+        return formatRfidCardInfo(
+          const EmapiRfidCardInfo(
+            paperModel: 'SIM-L801',
+            paperLength: '40m',
+            paperWidth: '80mm',
+            paperColor: 'white',
+            paperMaterialNumber: 'SIM-PAPER-01',
+          ),
+        );
+      }
       final info = await _requirePrinter().queryRfidCardInfo();
       return formatRfidCardInfo(info);
     });
@@ -145,6 +198,9 @@ class EmapiDemoController extends ChangeNotifier {
 
   Future<void> queryRfidPaperLength() {
     return _runPrinterAction('查询卡内纸张长度', () async {
+      if (simulationMode) {
+        return '卡内纸张长度：123456';
+      }
       final length = await _requirePrinter().queryRfidPaperLength();
       return '卡内纸张长度：$length';
     });
@@ -152,6 +208,12 @@ class EmapiDemoController extends ChangeNotifier {
 
   Future<void> setRfidAuthFailureHandling(EmapiRfidAuthFailurePolicy policy) {
     return _runPrinterAction('设置 RFID 认证失败处理', () async {
+      if (simulationMode) {
+        final policyText = policy == EmapiRfidAuthFailurePolicy.forbidPrint
+            ? '禁止打印'
+            : '允许打印';
+        return '模拟模式：RFID 认证失败处理已设置为 $policyText';
+      }
       await _requirePrinter().setRfidAuthFailureHandling(policy);
       final policyText = policy == EmapiRfidAuthFailurePolicy.forbidPrint
           ? '禁止打印'
@@ -162,6 +224,16 @@ class EmapiDemoController extends ChangeNotifier {
 
   Future<void> setWifiConfig({required String ssid, required String password}) {
     return _runPrinterAction('设置配网信息', () async {
+      if (simulationMode) {
+        _emitSimulatedReport(
+          EmapiWifiConfigStatusReport(
+            _simulatedWifiReportCommand,
+            ssid: ssid.isEmpty ? 'SIM_WIFI' : ssid,
+            state: 1,
+          ),
+        );
+        return '模拟模式：配网信息已发送：SSID=${ssid.isEmpty ? 'SIM_WIFI' : ssid}';
+      }
       await _requirePrinter().setWifiConfig(ssid: ssid, password: password);
       return '配网信息已发送：SSID=$ssid';
     });
@@ -169,6 +241,9 @@ class EmapiDemoController extends ChangeNotifier {
 
   Future<void> queryWifiConnectionState() {
     return _runPrinterAction('查询 WIFI 模块连接状态', () async {
+      if (simulationMode) {
+        return formatWifiConnectionState(EmapiWifiConnectionState.iotConnected);
+      }
       final state = await _requirePrinter().queryWifiConnectionState();
       return formatWifiConnectionState(state);
     });
@@ -176,6 +251,16 @@ class EmapiDemoController extends ChangeNotifier {
 
   Future<void> queryWifiHotspotInfo() {
     return _runPrinterAction('查询 WIFI 模块热点相关信息', () async {
+      if (simulationMode) {
+        return formatWifiHotspotInfo(
+          const EmapiWifiHotspotInfo(
+            ssid: 'SIM_AP',
+            rssi: -42,
+            ip: '192.168.4.1',
+            port: '9100',
+          ),
+        );
+      }
       final info = await _requirePrinter().queryWifiHotspotInfo();
       return formatWifiHotspotInfo(info);
     });
@@ -183,6 +268,20 @@ class EmapiDemoController extends ChangeNotifier {
 
   Future<void> queryDeviceInfo() {
     return _runPrinterAction('查询打印机基本参数', () async {
+      if (simulationMode) {
+        final info = EmapiPrinterInfo(
+          deviceType: 'simulator',
+          deviceModel: 'EMAPI-SIM-01',
+          brand: 'PSDK',
+          serialNumber: 'SIM0000001',
+          hardwareVersion: 'HW-SIM',
+          softwareVersion: 'SW-SIM',
+          bootVersion: 'BOOT-SIM',
+          mtu: 512,
+        );
+        knownMtu = info.mtu;
+        return formatDeviceInfo(info);
+      }
       final info = await _requirePrinter().queryDeviceInfo();
       knownMtu = info.mtu;
       return formatDeviceInfo(info);
@@ -191,6 +290,19 @@ class EmapiDemoController extends ChangeNotifier {
 
   Future<void> queryPrintStatus() {
     return _runPrinterAction('查询打印状态', () async {
+      if (simulationMode) {
+        return formatPrintStatus(
+          const EmapiPrintStatus(
+            paperStatus: 1,
+            coverStatus: 0,
+            lowBattery: 0,
+            overheat: 0,
+            batteryPercent: 86,
+            batteryVoltage: 7400,
+            tphTemperature: 28,
+          ),
+        );
+      }
       final status = await _requirePrinter().queryPrintStatus();
       return formatPrintStatus(status);
     });
@@ -198,35 +310,103 @@ class EmapiDemoController extends ChangeNotifier {
 
   Future<void> performOta(String filePath) {
     return _runPrinterAction('OTA 升级', () async {
-      if (filePath.trim().isEmpty) {
-        throw ArgumentError('请选择或输入 OTA 文件路径');
-      }
-      final file = File(filePath.trim());
-      final bytes = await file.readAsBytes();
+      final bytes = simulationMode
+          ? Uint8List.fromList(
+              List<int>.generate(2048, (index) => index & 0xFF),
+            )
+          : await _readOtaBytes(filePath);
       if (bytes.isEmpty) {
         throw ArgumentError('OTA 文件为空');
       }
-      final printer = _requirePrinter();
       final chunkSize = calculateOtaChunkSize(mtu: knownMtu);
       otaSentBytes = 0;
       otaTotalBytes = bytes.length;
       _notify();
-      await printer.startMainControllerOta(totalSize: bytes.length);
-      var index = 0;
-      for (var offset = 0; offset < bytes.length; offset += chunkSize) {
-        final end = offset + chunkSize > bytes.length
-            ? bytes.length
-            : offset + chunkSize;
-        final chunk = Uint8List.sublistView(bytes, offset, end);
-        await printer.transferMainControllerOtaChunk(index: index, data: chunk);
-        index += 1;
-        otaSentBytes = end;
-        _notify();
+      if (!simulationMode) {
+        final printer = _requirePrinter();
+        await printer.startMainControllerOta(totalSize: bytes.length);
+        await _transferOtaBytes(
+          printer: printer,
+          bytes: bytes,
+          chunkSize: chunkSize,
+        );
+        await printer.finishMainControllerOta();
+        await printer.upgradeMainController();
+      } else {
+        await _simulateOtaTransfer(bytes: bytes, chunkSize: chunkSize);
       }
-      await printer.finishMainControllerOta();
-      await printer.upgradeMainController();
-      return 'OTA 升级命令已完成\n$otaProgress';
+      return '${simulationMode ? '模拟模式：' : ''}OTA 升级命令已完成\n$otaProgress';
     });
+  }
+
+  Future<void> setSimulationMode(bool enabled) async {
+    if (simulationMode == enabled) {
+      return;
+    }
+    if (connected) {
+      await disconnect();
+    }
+    simulationMode = enabled;
+    devices.clear();
+    scanning = false;
+    if (enabled) {
+      bluetoothEnabled = true;
+    } else {
+      try {
+        bluetoothEnabled = await _connector.bluetoothIsEnabled();
+      } catch (error) {
+        bluetoothEnabled = false;
+        _addCommandLog('蓝牙状态检查失败\n${formatError(error)}');
+      }
+    }
+    _addCommandLog(enabled ? '已开启模拟模式' : '已关闭模拟模式');
+    _notify();
+  }
+
+  Future<Uint8List> _readOtaBytes(String filePath) async {
+    if (filePath.trim().isEmpty) {
+      throw ArgumentError('请选择或输入 OTA 文件路径');
+    }
+    final file = File(filePath.trim());
+    return file.readAsBytes();
+  }
+
+  Future<void> _transferOtaBytes({
+    required EmapiPrinter printer,
+    required Uint8List bytes,
+    required int chunkSize,
+  }) async {
+    var index = 0;
+    for (var offset = 0; offset < bytes.length; offset += chunkSize) {
+      final end = offset + chunkSize > bytes.length
+          ? bytes.length
+          : offset + chunkSize;
+      final chunk = Uint8List.sublistView(bytes, offset, end);
+      await printer.transferMainControllerOtaChunk(index: index, data: chunk);
+      index += 1;
+      otaSentBytes = end;
+      _notify();
+    }
+  }
+
+  Future<void> _simulateOtaTransfer({
+    required Uint8List bytes,
+    required int chunkSize,
+  }) async {
+    _emitSimulatedReport(
+      EmapiUpgradeStatusReport(_simulatedUpgradeReportCommand, status: 1),
+    );
+    for (var offset = 0; offset < bytes.length; offset += chunkSize) {
+      await Future<void>.delayed(const Duration(milliseconds: 70));
+      final end = offset + chunkSize > bytes.length
+          ? bytes.length
+          : offset + chunkSize;
+      otaSentBytes = end;
+      _notify();
+    }
+    _emitSimulatedReport(
+      EmapiUpgradeStatusReport(_simulatedUpgradeReportCommand, status: 0),
+    );
   }
 
   @override
@@ -294,9 +474,47 @@ class EmapiDemoController extends ChangeNotifier {
     _notify();
   }
 
+  void _emitSimulatedReport(EmapiReport report) {
+    _handleReport(report);
+  }
+
+  DiscoveredPrinterDevice _simulatedDevice() {
+    return DiscoveredPrinterDevice(
+      name: 'EMAPI 模拟打印机',
+      mac: 'SIM-00-00-EMAPI',
+      rssi: -38,
+      protocol: BluetoothProtocol.classic,
+      simulated: true,
+    );
+  }
+
   void _notify() {
     if (!_disposed) {
       notifyListeners();
     }
   }
 }
+
+final _simulatedBluetoothReportCommand = EmapiCommand(
+  type: EmapiConstants.typeRequest,
+  parent: EmapiConstants.parentReport,
+  child: EmapiConstants.childReportBluetoothConnection,
+);
+
+final _simulatedFlowControlReportCommand = EmapiCommand(
+  type: EmapiConstants.typeRequest,
+  parent: EmapiConstants.parentReport,
+  child: EmapiConstants.childReportFlowControl,
+);
+
+final _simulatedUpgradeReportCommand = EmapiCommand(
+  type: EmapiConstants.typeRequest,
+  parent: EmapiConstants.parentReport,
+  child: EmapiConstants.childReportUpgradeStatus,
+);
+
+final _simulatedWifiReportCommand = EmapiCommand(
+  type: EmapiConstants.typePassthroughRequest,
+  parent: EmapiConstants.parentWifi,
+  child: EmapiConstants.childWifiConfigStatus,
+);
