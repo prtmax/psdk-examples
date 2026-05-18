@@ -28,4 +28,6 @@ public enum ReadMark {
   OPERATE_ALL_WIFI_INFO,//查询WIFI所有信息
   OPERATE_GET_KEY,//查询秘钥
   OPERATE_SET_WIFI,//设置wifi
+  OPERATE_SET_KEY,//设置秘钥
+  OPERATE_SET_HOST//设置服务器域名
 }

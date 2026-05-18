@@ -23,6 +23,8 @@ import com.printer.psdk.frame.father.listener.DataListenerRunner;
 import com.printer.psdk.frame.father.listener.ListenAction;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ESCWIFIActivity extends Activity {
   private EditText wifi_name, wifi_pwd;
@@ -32,6 +34,10 @@ public class ESCWIFIActivity extends Activity {
   private Connection connection;
   private GenericESC esc;
   private ReadMark readMark = ReadMark.NONE;
+  // 新增控件变量
+  private EditText et_key, et_host_custom;
+  private Button btn_set_key, btn_set_host;
+  private CheckBox cb_host1, cb_host2, cb_host3, cb_host4, cb_host5, cb_host6, cb_host7, cb_host8;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +51,18 @@ public class ESCWIFIActivity extends Activity {
     button_get_key = (Button) findViewById(R.id.button_get_key);
     button_get_sn = (Button) findViewById(R.id.button_get_sn);
     tv_content = (TextView) findViewById(R.id.tv_content);
+    et_key = (EditText) findViewById(R.id.et_key);
+    btn_set_key = (Button) findViewById(R.id.btn_set_key);
+    et_host_custom = (EditText) findViewById(R.id.et_host_custom);
+    btn_set_host = (Button) findViewById(R.id.btn_set_host);
+    cb_host1 = (CheckBox) findViewById(R.id.cb_host1);
+    cb_host2 = (CheckBox) findViewById(R.id.cb_host2);
+    cb_host3 = (CheckBox) findViewById(R.id.cb_host3);
+    cb_host4 = (CheckBox) findViewById(R.id.cb_host4);
+    cb_host5 = (CheckBox) findViewById(R.id.cb_host5);
+    cb_host6 = (CheckBox) findViewById(R.id.cb_host6);
+    cb_host7 = (CheckBox) findViewById(R.id.cb_host7);
+    cb_host8 = (CheckBox) findViewById(R.id.cb_host8);
     BluetoothDevice device = getIntent().getParcelableExtra("device");
     connection = Bluetooth.getInstance().createConnectionBle(device, new ConnectListener() {
       @Override
@@ -159,6 +177,58 @@ public class ESCWIFIActivity extends Activity {
         safeWrite(_gesc);
       }
     });
+    // 设置秘钥按钮事件
+    btn_set_key.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(ESCWIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
+        String key = et_key.getText().toString().trim();
+        if (key.isEmpty()) {
+          Toast.makeText(ESCWIFIActivity.this, "请输入设备秘钥", Toast.LENGTH_SHORT).show();
+          return;
+        }
+        readMark = ReadMark.OPERATE_SET_KEY;
+        GenericESC _gesc = esc.setKey(key);
+        safeWrite(_gesc);
+      }
+    });
+    // 设置域名按钮事件
+    btn_set_host.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (!isConnected()) {
+          Toast.makeText(ESCWIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          return;
+        }
+        List<String> hosts = new ArrayList<>();
+        if (cb_host1.isChecked()) hosts.add(cb_host1.getText().toString());
+        if (cb_host2.isChecked()) hosts.add(cb_host2.getText().toString());
+        if (cb_host3.isChecked()) hosts.add(cb_host3.getText().toString());
+        if (cb_host4.isChecked()) hosts.add(cb_host4.getText().toString());
+        if (cb_host5.isChecked()) hosts.add(cb_host5.getText().toString());
+        if (cb_host6.isChecked()) hosts.add(cb_host6.getText().toString());
+        if (cb_host7.isChecked()) hosts.add(cb_host7.getText().toString());
+        if (cb_host8.isChecked()) hosts.add(cb_host8.getText().toString());
+        String custom = et_host_custom.getText().toString().trim();
+        if (!custom.isEmpty()) {
+          String[] arr = custom.split(",");
+          for (String s : arr) {
+            String host = s.trim();
+            if (!host.isEmpty()) hosts.add(host);
+          }
+        }
+        if (hosts.isEmpty()) {
+          Toast.makeText(ESCWIFIActivity.this, "请至少选择或输入一个域名", Toast.LENGTH_SHORT).show();
+          return;
+        }
+        readMark = ReadMark.OPERATE_SET_HOST;
+        GenericESC _gesc = esc.setHost(hosts);
+        safeWrite(_gesc);
+      }
+    });
 
     // 获取当前设备连接的WiFi名称并填入输入框
     getCurrentWifiName();
@@ -227,6 +297,28 @@ public class ESCWIFIActivity extends Activity {
                     }
                     String snString = "打印机SN:" + sn;
                     runOnUiThread(() -> tv_content.setText(snString));
+                    break;
+                  case OPERATE_SET_KEY:
+                    readMark = ReadMark.NONE;
+                    String setKeyResult = "";
+                    try {
+                      setKeyResult = new String(received, "GB2312");
+                    } catch (Exception e) {
+                      e.printStackTrace();
+                    }
+                    String setKeyString = "设置秘钥:" + (setKeyResult.equals("OK") ? "成功" : "失败");
+                    runOnUiThread(() -> tv_content.setText(setKeyString));
+                    break;
+                  case OPERATE_SET_HOST:
+                    readMark = ReadMark.NONE;
+                    String setHostResult = "";
+                    try {
+                      setHostResult = new String(received, "GB2312");
+                    } catch (Exception e) {
+                      e.printStackTrace();
+                    }
+                    String setHostString = "设置域名:" + (setHostResult.equals("OK") ? "成功" : "失败");
+                    runOnUiThread(() -> tv_content.setText(setHostString));
                     break;
                   default:
                     break;

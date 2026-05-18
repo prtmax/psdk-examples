@@ -193,7 +193,6 @@ public class WIFIActivity extends Activity {
         String wifiName = wifi_name.getText().toString().trim();
         String wifiPwd = wifi_pwd.getText().toString().trim();
         if (!wifiName.equals("")) {
-          readMark = ReadMark.OPERATE_WIFI_LINK_STATE;
           GenericWIFI _gesc = wifi.setSSID(WSetSSID.builder().name(wifiName).password(wifiPwd).build());
           safeWrite(_gesc);
         } else {
