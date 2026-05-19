@@ -17,6 +17,8 @@ typedef NS_ENUM(NSInteger, TReceivedType) {
     TReceivedStatus,      // 状态上报
     TReceivedNotSpace,    // 空间不足
     TReceivedSpaceEnough, // 空间足够
+    TReceivedTypeHardwareVersion, // 固件版本
+    TReceivedTypeFactoryReset,    // 恢复出厂
     TReceivedNone,
 };
 

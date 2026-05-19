@@ -230,6 +230,21 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readVersion;
 
 /**
+ * 读取硬件版本
+ */
+- (void)readHardwareVersion;
+
+/**
+ * 学习纸张（间隙检测）
+ */
+- (void)learnPaperGap;
+
+/**
+ * 恢复出厂设置
+ */
+- (void)resetToFactory;
+
+/**
  * 查询打印机电量，适用于电池款
  */
 - (void)readBatteryLevel;

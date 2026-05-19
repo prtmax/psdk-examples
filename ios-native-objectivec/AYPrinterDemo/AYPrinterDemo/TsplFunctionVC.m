@@ -120,7 +120,16 @@
             }
           }
             break;
-            
+          case TReceivedTypeFactoryReset: {
+            if ([data.toRawString isEqualToString:@"RESET FACTORY OK\r\n"]) {
+              weakSelf.displayLabel.text = @"恢复出厂设置成功";
+            }
+          }
+            break;
+          case TReceivedTypeHardwareVersion: {
+            weakSelf.displayLabel.text = [NSString stringWithFormat:@"硬件版本: %@", data.toRawString];
+          }
+            break;
             default:
                 break;
         }
@@ -234,6 +243,34 @@
 - (IBAction)getOffTime:(UIButton *)sender {
   AYTsplCommand *tspl = [AYTsplCommand new];
   [tspl getOffTime];
+  [self.bleHelper writeCommands:tspl.commands];
+}
+
+/**
+ * 学习纸张（间隙检测）
+ */
+- (IBAction)learnPaperGap {
+  AYTsplCommand *tspl = [AYTsplCommand new];
+  [tspl learnPaperGap];
+  [self.bleHelper writeCommands:tspl.commands];
+}
+
+/**
+ * 读取硬件版本
+ */
+- (IBAction)readHardwareVersion {
+  AYTsplCommand *tspl = [AYTsplCommand new];
+  [tspl readHardwareVersion];
+  [self.bleHelper writeCommands:tspl.commands];
+}
+
+
+/**
+ * 恢复出厂设置
+ */
+- (IBAction)resetToFactory {
+  AYTsplCommand *tspl = [AYTsplCommand new];
+  [tspl resetToFactory];
   [self.bleHelper writeCommands:tspl.commands];
 }
 
