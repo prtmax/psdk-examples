@@ -12,6 +12,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="EscWifiVC">
             <connections>
                 <outlet property="displayLabel" destination="oF0-Gn-WAZ" id="LwL-vV-Cgq"/>
+                <outlet property="keyTF" destination="DRf-se-aiT" id="FBo-ik-qfy"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
                 <outlet property="wifiNameTF" destination="M7K-Ib-3KP" id="FYE-E0-rub"/>
                 <outlet property="wifiPwdTF" destination="ehJ-HW-iR0" id="Q3Q-VQ-fcN"/>
@@ -23,7 +24,7 @@
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="LHL-L2-aY5">
-                    <rect key="frame" x="10" y="118.00000000000001" width="373" height="255.33333333333337"/>
+                    <rect key="frame" x="10" y="118" width="373" height="344"/>
                     <subviews>
                         <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" placeholder="请输入wifi名称" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="M7K-Ib-3KP">
                             <rect key="frame" x="0.0" y="0.0" width="373" height="34"/>
@@ -67,10 +68,36 @@
                                 <action selector="getKey" destination="-1" eventType="touchUpInside" id="Cbd-Cb-iR2"/>
                             </connections>
                         </button>
+                        <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="sTa-Jn-C9t">
+                            <rect key="frame" x="0.0" y="265.33333333333331" width="373" height="34.333333333333314"/>
+                            <subviews>
+                                <textField opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="248" contentHorizontalAlignment="left" contentVerticalAlignment="center" borderStyle="roundedRect" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="DRf-se-aiT">
+                                    <rect key="frame" x="0.0" y="0.0" width="281.33333333333331" height="34.333333333333336"/>
+                                    <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                    <textInputTraits key="textInputTraits"/>
+                                </textField>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="c3h-nm-yJG">
+                                    <rect key="frame" x="281.33333333333331" y="0.0" width="91.666666666666686" height="34.333333333333336"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="设置密钥"/>
+                                    <connections>
+                                        <action selector="setKey" destination="-1" eventType="touchUpInside" id="6WL-dE-Bm3"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </stackView>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="soc-fd-tA4">
+                            <rect key="frame" x="0.0" y="309.66666666666669" width="373" height="34.333333333333314"/>
+                            <state key="normal" title="Button"/>
+                            <buttonConfiguration key="configuration" style="plain" title="设置域名"/>
+                            <connections>
+                                <action selector="setHost" destination="-1" eventType="touchUpInside" id="Dh7-9M-wfD"/>
+                            </connections>
+                        </button>
                     </subviews>
                 </stackView>
                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="oF0-Gn-WAZ">
-                    <rect key="frame" x="10" y="426" width="373" height="0.0"/>
+                    <rect key="frame" x="10" y="514.66666666666663" width="373" height="0.0"/>
                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
                     <color key="textColor" red="0.33333333329999998" green="0.63921568630000003" blue="0.30196078430000001" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                     <nil key="highlightedColor"/>
@@ -86,7 +113,7 @@
                 <constraint firstItem="oF0-Gn-WAZ" firstAttribute="top" secondItem="LHL-L2-aY5" secondAttribute="bottom" constant="52.670000000000002" id="vzG-t8-7SV"/>
                 <constraint firstItem="LHL-L2-aY5" firstAttribute="top" secondItem="Q5M-cg-NOt" secondAttribute="top" id="x78-De-VBi"/>
             </constraints>
-            <point key="canvasLocation" x="4" y="108"/>
+            <point key="canvasLocation" x="3.8167938931297707" y="107.74647887323944"/>
         </view>
     </objects>
     <resources>

@@ -12,12 +12,15 @@ typedef NS_ENUM(NSUInteger, WifiOperation) {
   WifiOperatioGetState,
   WifiOperatioGetKey,
   WifiOperatioGetSN,
+  WifiOperatioSetKey,
+  WifiOperatioSetHost,
 };
 
 @interface EscWifiVC ()
 
 @property (weak, nonatomic) IBOutlet UITextField *wifiNameTF;
 @property (weak, nonatomic) IBOutlet UITextField *wifiPwdTF;
+@property (weak, nonatomic) IBOutlet UITextField *keyTF;
 @property (weak, nonatomic) IBOutlet UILabel *displayLabel;
 @property (strong, nonatomic) AYEscCommand *esc;
 @property (assign, nonatomic) WifiOperation operation;
@@ -62,6 +65,12 @@ typedef NS_ENUM(NSUInteger, WifiOperation) {
       case WifiOperatioGetSN:
         NSLog(@"打印机sn：%@", str);
         weakSelf.displayLabel.text = [NSString stringWithFormat:@"打印机sn：%@", str];
+        break;
+      case WifiOperatioSetKey:
+        NSLog(@"设置密钥：%@", [[data toRawString] isEqualToString:@"OK"] ? @"成功" : @"失败");
+        break;
+      case WifiOperatioSetHost:
+        NSLog(@"设置域名：%@", [[data toRawString] isEqualToString:@"OK"] ? @"成功" : @"失败");
         break;
         
       default:
@@ -115,6 +124,41 @@ typedef NS_ENUM(NSUInteger, WifiOperation) {
   self.operation = WifiOperatioGetKey;
   [self.esc clean];
   [self.esc getKey];
+  [self.bleHelper writeCommands:self.esc.commands];
+}
+
+/**
+ * 设置设备秘钥
+ */
+- (IBAction)setKey {
+  if (!self.keyTF.text.length) {
+    NSLog(@"请输入密钥");
+    return;
+  }
+  self.operation = WifiOperatioSetKey;
+  [self.esc clean];
+  [self.esc setKey:self.keyTF.text];
+  [self.bleHelper writeCommands:self.esc.commands];
+}
+
+/**
+ * 设置域名
+ */
+- (IBAction)setHost {
+  self.operation = WifiOperatioSetHost;
+  [self.esc clean];
+  // 自定义域名，可多个
+  NSArray *hostArray = @[
+      @"https://aliyuncs.com",
+      @"https://iprtapp.com",
+//      @"https://aynapp.aiyinprinter.com.cn",
+//      @"https://aynapp.aiyinprinter.com",
+//      @"https://aynapp.aiyin.com",
+//      @"https://aynapp.ai-yin.cn",
+//      @"https://aynapp.ai-yin.com",
+//      @"https://aynapp.ai-yin.com.cn"
+  ];
+  [self.esc setHosts:hostArray];
   [self.bleHelper writeCommands:self.esc.commands];
 }
 

@@ -187,6 +187,16 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)getKey;
 
+/**
+ * 设置设备秘钥 成功返回OK，失败返回ER
+ */
+- (void)setKey:(NSString *)key;
+
+/**
+ * 设置服务器域名 成功返回OK，失败返回ER
+ */
+- (void)setHosts:(NSArray<NSString *> *)hosts;
+
 @end
 
 NS_ASSUME_NONNULL_END
