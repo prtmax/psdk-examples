@@ -10,6 +10,7 @@
 @interface TsplFunctionVC ()
 
 @property (weak, nonatomic) IBOutlet UILabel *displayLabel;
+@property (strong, nonatomic) AYOtaHelperCPCL *otaHelper;
 
 @end
 
@@ -280,10 +281,34 @@
 
     NSLog(@"%@", filepath);
     NSData* filedata = [NSData dataWithContentsOfFile:filepath];
-    NSMutableArray<NSData *> *dadas = [NSMutableArray array];
-    [dadas addObject:filedata];
-    [self.bleHelper writeCommands:dadas];
+//    NSMutableArray<NSData *> *dadas = [NSMutableArray array];
+//    [dadas addObject:filedata];
+//    [self.bleHelper writeCommands:dadas];
+  
+  // 升级回调
+  self.otaHelper.otaStateChange = ^(OtaState state) {
+    switch (state) {
+      case OtaStateStart:
+        NSLog(@"开始升级");
+        break;
+      case OtaStateFail:
+        NSLog(@"升级失败");
+        break;
+      case OtaStateSuccess:
+        NSLog(@"升级成功");
+        break;
+    }
+  };
+  // 发送升级数据
+  [self.otaHelper otaWithFileData:filedata];
 }
 
+
+- (AYOtaHelperCPCL *)otaHelper {
+  if (!_otaHelper) {
+    _otaHelper = [AYOtaHelperCPCL new];
+  }
+  return _otaHelper;
+}
 
 @end
