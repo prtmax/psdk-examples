@@ -37,10 +37,10 @@ void main() {
     );
   });
 
-  test('calculateOtaChunkSize_usesConservativeFrameMtuCapacity', () {
-    expect(calculateOtaChunkSize(mtu: 4096), 3054);
-    expect(calculateOtaChunkSize(mtu: 512), 494);
-    expect(calculateOtaChunkSize(mtu: 20), 2);
-    expect(calculateOtaChunkSize(mtu: 10), 1);
+  test('calculateOtaChunkSize_usesReportedMtuCapacity', () {
+    expect(calculateOtaChunkSize(mtu: 4096), 4064);
+    expect(calculateOtaChunkSize(mtu: 512), 480);
+    expect(calculateOtaChunkSize(mtu: 50), 32);
+    expect(() => calculateOtaChunkSize(mtu: 49), throwsArgumentError);
   });
 }

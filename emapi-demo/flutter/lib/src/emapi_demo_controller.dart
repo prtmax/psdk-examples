@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:psdk_bluetooth_traits/psdk_bluetooth_traits.dart';
 import 'package:psdk_device_adapter/psdk_device_adapter.dart';
 import 'package:psdk_fruit_emapi/psdk_fruit_emapi.dart';
+import 'package:psdk_fruit_esc/psdk_fruit_esc.dart' as esc;
 
 import 'bluetooth_printer_connector.dart';
 import 'entities/emapi_demo_log_entry.dart';
@@ -463,6 +464,144 @@ class EmapiDemoController extends ChangeNotifier {
     );
   }
 
+  Future<void> printSelfTestPage() {
+    return _runPrinterAction(
+      '打印自检页',
+      _printSelfTestPageCommand,
+      () async {
+        if (simulationMode) {
+          return '模拟模式：自检页打印指令已接收';
+        }
+        await _requirePrinter().printSelfTestPage();
+        return '打印自检页：已发送';
+      },
+      simulatedResponseBytes: () {
+        return _responseBytes(
+          type: EmapiConstants.typeResponse,
+          parent: EmapiConstants.parentPrinter,
+          child: EmapiConstants.childPrintSelfTestPage,
+        );
+      },
+    );
+  }
+
+  Future<void> setShutdownTime({required int minutes}) {
+    return _runPrinterAction(
+      '设置关机时间',
+      _setShutdownTimeCommand(minutes),
+      () async {
+        if (simulationMode) {
+          return '模拟模式：关机时间已设置为 $minutes 分钟';
+        }
+        await _requirePrinter().setShutdownTime(minutes: minutes);
+        return '关机时间已设置为 $minutes 分钟';
+      },
+      simulatedResponseBytes: () {
+        return _responseBytes(
+          type: EmapiConstants.typeResponse,
+          parent: EmapiConstants.parentSystem,
+          child: EmapiConstants.childSetShutdownTime,
+        );
+      },
+    );
+  }
+
+  Future<void> performWifiFileTransfer(
+    String filePath, {
+    required int fileType,
+  }) {
+    Uint8List? transferBytes;
+    return _runPrinterAction('WIFI 文件传输', null, () async {
+      _validateWifiFileType(fileType);
+      final bytes = simulationMode
+          ? _simulatedWifiFileBytes(fileType)
+          : await _readTransferBytes(
+              filePath,
+              emptyPathMessage: '请选择或输入 WIFI 文件路径',
+            );
+      if (bytes.isEmpty) {
+        throw ArgumentError('WIFI 文件为空');
+      }
+      transferBytes = bytes;
+      final chunkSize = calculateOtaChunkSize(mtu: knownMtu);
+      otaSentBytes = 0;
+      otaTotalBytes = bytes.length;
+      latestUpgradeStatus = 'WIFI 文件传输准备中';
+      _addRequestLog(
+        EmapiDemoLogEntry(
+          title: 'WIFI 文件传输文件',
+          message:
+              'fileType=0x${fileType.toRadixString(16).padLeft(4, '0')}，'
+              '准备发送 ${bytes.length} bytes，chunkSize=$chunkSize',
+          bytes: bytes,
+        ),
+      );
+      _notify();
+      if (!simulationMode) {
+        final printer = _requirePrinter();
+        await printer.startWifiFileDownload(
+          fileType: fileType,
+          totalSize: bytes.length,
+        );
+        await _transferWifiFileBytes(
+          printer: printer,
+          bytes: bytes,
+          chunkSize: chunkSize,
+        );
+        await printer.finishWifiFileDownload();
+      } else {
+        await _simulateWifiFileTransfer(bytes: bytes, chunkSize: chunkSize);
+      }
+      latestUpgradeStatus = 'WIFI 文件传输完成';
+      return '${simulationMode ? '模拟模式：' : ''}WIFI 文件传输已完成\n$otaProgress';
+    }, simulatedResponseBytes: () => transferBytes);
+  }
+
+  Future<void> performEscPrint({
+    Uint8List? imageBytes,
+    String? imagePath,
+    esc.Type paperType = esc.Type.foldedBlackLabelPaper,
+    int printMode = 0,
+    int thickness = 1,
+    bool includePosition = true,
+    bool compress = false,
+    bool reverse = false,
+    int? threshold,
+  }) {
+    Uint8List? escBytes;
+    return _runPrinterAction('ESC 图片打印', null, () async {
+      final image =
+          imageBytes ??
+          (simulationMode
+              ? _simulatedEscImageBytes
+              : await _readTransferBytes(
+                  imagePath ?? '',
+                  emptyPathMessage: '请选择或输入 ESC 图片路径',
+                ));
+      escBytes = _buildEscPrintBytes(
+        imageBytes: image,
+        paperType: paperType,
+        printMode: printMode,
+        thickness: thickness,
+        includePosition: includePosition,
+        compress: compress,
+        reverse: reverse,
+        threshold: threshold,
+      );
+      _addRequestLog(
+        EmapiDemoLogEntry(
+          title: 'ESC 指令数据',
+          message: '生成 ${escBytes!.length} bytes ESC 指令',
+          bytes: escBytes,
+        ),
+      );
+      if (!simulationMode) {
+        await _requirePrinter().printEsc(escBytes!);
+      }
+      return '${simulationMode ? '模拟模式：' : ''}ESC 图片打印指令已完成';
+    }, simulatedResponseBytes: () => escBytes);
+  }
+
   Future<void> performOta(String filePath) {
     Uint8List? otaBytes;
     return _runPrinterAction('OTA 升级', null, () async {
@@ -528,8 +667,15 @@ class EmapiDemoController extends ChangeNotifier {
   }
 
   Future<Uint8List> _readOtaBytes(String filePath) async {
+    return _readTransferBytes(filePath, emptyPathMessage: '请选择或输入 OTA 文件路径');
+  }
+
+  Future<Uint8List> _readTransferBytes(
+    String filePath, {
+    required String emptyPathMessage,
+  }) async {
     if (filePath.trim().isEmpty) {
-      throw ArgumentError('请选择或输入 OTA 文件路径');
+      throw ArgumentError(emptyPathMessage);
     }
     final file = File(filePath.trim());
     return file.readAsBytes();
@@ -540,7 +686,7 @@ class EmapiDemoController extends ChangeNotifier {
     required Uint8List bytes,
     required int chunkSize,
   }) async {
-    var index = 0;
+    var index = 1;
     for (var offset = 0; offset < bytes.length; offset += chunkSize) {
       final end = offset + chunkSize > bytes.length
           ? bytes.length
@@ -571,6 +717,72 @@ class EmapiDemoController extends ChangeNotifier {
     _emitSimulatedReport(
       EmapiUpgradeStatusReport(_simulatedUpgradeReportCommand, status: 0),
     );
+  }
+
+  Future<void> _transferWifiFileBytes({
+    required EmapiPrinter printer,
+    required Uint8List bytes,
+    required int chunkSize,
+  }) async {
+    var index = 1;
+    for (var offset = 0; offset < bytes.length; offset += chunkSize) {
+      final end = offset + chunkSize > bytes.length
+          ? bytes.length
+          : offset + chunkSize;
+      final chunk = Uint8List.sublistView(bytes, offset, end);
+      await printer.transferWifiFileDownloadChunk(index: index, data: chunk);
+      index += 1;
+      otaSentBytes = end;
+      latestUpgradeStatus = 'WIFI 文件传输中';
+      _notify();
+    }
+  }
+
+  Future<void> _simulateWifiFileTransfer({
+    required Uint8List bytes,
+    required int chunkSize,
+  }) async {
+    for (var offset = 0; offset < bytes.length; offset += chunkSize) {
+      await Future<void>.delayed(const Duration(milliseconds: 70));
+      final end = offset + chunkSize > bytes.length
+          ? bytes.length
+          : offset + chunkSize;
+      otaSentBytes = end;
+      latestUpgradeStatus = 'WIFI 文件传输中';
+      _notify();
+    }
+  }
+
+  Uint8List _buildEscPrintBytes({
+    required Uint8List imageBytes,
+    required esc.Type paperType,
+    required int printMode,
+    required int thickness,
+    required bool includePosition,
+    required bool compress,
+    required bool reverse,
+    required int? threshold,
+  }) {
+    final command = esc.ESC
+        .genericWithConnectedDevice(_connectedDevice ?? FakeConnectedDevice())
+        .wakeup()
+        .enable()
+        .paperType(arg: esc.EPaperType(type: paperType))
+        .enableMode(mode: printMode)
+        .thickness(thickness: thickness)
+        .image(
+          arg: esc.EImage(
+            image: imageBytes,
+            compress: compress,
+            reverse: reverse,
+            threshold: threshold,
+          ),
+        );
+    if (includePosition && paperType != esc.Type.continuousReelPaper) {
+      command.position();
+    }
+    command.stopJob();
+    return command.command().binary();
   }
 
   @override
@@ -887,3 +1099,110 @@ final _queryPrintStatusCommand = EmapiCommand(
   parent: EmapiConstants.parentPrinter,
   child: EmapiConstants.childPrintStatus,
 );
+
+final _printSelfTestPageCommand = EmapiCommand(
+  type: EmapiConstants.typeRequest,
+  parent: EmapiConstants.parentPrinter,
+  child: EmapiConstants.childPrintSelfTestPage,
+);
+
+EmapiCommand _setShutdownTimeCommand(int minutes) {
+  return EmapiCommand(
+    type: EmapiConstants.typeRequest,
+    parent: EmapiConstants.parentSystem,
+    child: EmapiConstants.childSetShutdownTime,
+    payload: EmapiPayload.uint16(minutes),
+  );
+}
+
+void _validateWifiFileType(int fileType) {
+  if (fileType != 0x0001 && fileType != 0x0002 && fileType != 0x0003) {
+    throw ArgumentError.value(
+      fileType,
+      'fileType',
+      'must be 0x0001, 0x0002, or 0x0003',
+    );
+  }
+}
+
+Uint8List _simulatedWifiFileBytes(int fileType) {
+  final length = switch (fileType) {
+    0x0001 => 2048,
+    0x0002 => 1024,
+    0x0003 => 1536,
+    _ => 512,
+  };
+  return Uint8List.fromList(
+    List<int>.generate(length, (index) => (fileType + index) & 0xFF),
+  );
+}
+
+final _simulatedEscImageBytes = Uint8List.fromList(const [
+  0x89,
+  0x50,
+  0x4E,
+  0x47,
+  0x0D,
+  0x0A,
+  0x1A,
+  0x0A,
+  0x00,
+  0x00,
+  0x00,
+  0x0D,
+  0x49,
+  0x48,
+  0x44,
+  0x52,
+  0x00,
+  0x00,
+  0x00,
+  0x01,
+  0x00,
+  0x00,
+  0x00,
+  0x01,
+  0x08,
+  0x06,
+  0x00,
+  0x00,
+  0x00,
+  0x1F,
+  0x15,
+  0xC4,
+  0x89,
+  0x00,
+  0x00,
+  0x00,
+  0x0A,
+  0x49,
+  0x44,
+  0x41,
+  0x54,
+  0x78,
+  0x9C,
+  0x63,
+  0x00,
+  0x01,
+  0x00,
+  0x00,
+  0x05,
+  0x00,
+  0x01,
+  0x0D,
+  0x0A,
+  0x2D,
+  0xB4,
+  0x00,
+  0x00,
+  0x00,
+  0x00,
+  0x49,
+  0x45,
+  0x4E,
+  0x44,
+  0xAE,
+  0x42,
+  0x60,
+  0x82,
+]);

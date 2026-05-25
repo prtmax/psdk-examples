@@ -1,6 +1,6 @@
 part of '../../main.dart';
 
-enum _FunctionSheetMode { actions, wifi, ota }
+enum _FunctionSheetMode { actions, wifi, ota, shutdownTime, wifiFile, escPrint }
 
 class _FunctionPage extends StatefulWidget {
   const _FunctionPage({
@@ -10,6 +10,12 @@ class _FunctionPage extends StatefulWidget {
     required this.otaPathController,
     required this.otaFileLabel,
     required this.onPickOtaFile,
+    required this.wifiFilePathController,
+    required this.wifiFileLabel,
+    required this.onPickWifiFile,
+    required this.escImagePathController,
+    required this.escImageLabel,
+    required this.onPickEscImage,
   });
 
   final EmapiDemoController controller;
@@ -18,6 +24,12 @@ class _FunctionPage extends StatefulWidget {
   final TextEditingController otaPathController;
   final String otaFileLabel;
   final Future<void> Function() onPickOtaFile;
+  final TextEditingController wifiFilePathController;
+  final String wifiFileLabel;
+  final Future<void> Function() onPickWifiFile;
+  final TextEditingController escImagePathController;
+  final String escImageLabel;
+  final Future<void> Function() onPickEscImage;
 
   @override
   State<_FunctionPage> createState() => _FunctionPageState();
@@ -45,6 +57,24 @@ class _FunctionPageState extends State<_FunctionPage> {
   void _showOtaForm() {
     setState(() {
       sheetMode = _FunctionSheetMode.ota;
+    });
+  }
+
+  void _showShutdownTimeForm() {
+    setState(() {
+      sheetMode = _FunctionSheetMode.shutdownTime;
+    });
+  }
+
+  void _showWifiFileForm() {
+    setState(() {
+      sheetMode = _FunctionSheetMode.wifiFile;
+    });
+  }
+
+  void _showEscPrintForm() {
+    setState(() {
+      sheetMode = _FunctionSheetMode.escPrint;
     });
   }
 
@@ -110,9 +140,18 @@ class _FunctionPageState extends State<_FunctionPage> {
             otaPathController: widget.otaPathController,
             otaFileLabel: widget.otaFileLabel,
             onPickOtaFile: widget.onPickOtaFile,
+            wifiFilePathController: widget.wifiFilePathController,
+            wifiFileLabel: widget.wifiFileLabel,
+            onPickWifiFile: widget.onPickWifiFile,
+            escImagePathController: widget.escImagePathController,
+            escImageLabel: widget.escImageLabel,
+            onPickEscImage: widget.onPickEscImage,
             onBack: _showActions,
             onOpenWifi: _showWifiForm,
             onOpenOta: _showOtaForm,
+            onOpenShutdownTime: _showShutdownTimeForm,
+            onOpenWifiFile: _showWifiFileForm,
+            onOpenEscPrint: _showEscPrintForm,
           ),
         ],
       ),

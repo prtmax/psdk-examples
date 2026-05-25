@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:psdk_fruit_emapi/psdk_fruit_emapi.dart';
+import 'package:psdk_fruit_esc/psdk_fruit_esc.dart' as esc;
 
 import 'src/bluetooth_printer_connector.dart';
 import 'src/emapi_demo_controller.dart';
@@ -75,6 +76,8 @@ class _EmapiDemoPageState extends State<EmapiDemoPage> {
   final ssidController = TextEditingController();
   final passwordController = TextEditingController();
   final otaPathController = TextEditingController();
+  final wifiFilePathController = TextEditingController();
+  final escImagePathController = TextEditingController();
 
   @override
   void initState() {
@@ -91,6 +94,8 @@ class _EmapiDemoPageState extends State<EmapiDemoPage> {
     ssidController.dispose();
     passwordController.dispose();
     otaPathController.dispose();
+    wifiFilePathController.dispose();
+    escImagePathController.dispose();
     super.dispose();
   }
 
@@ -128,6 +133,12 @@ class _EmapiDemoPageState extends State<EmapiDemoPage> {
                 otaPathController: otaPathController,
                 otaFileLabel: _otaFileLabel,
                 onPickOtaFile: _pickOtaFile,
+                wifiFilePathController: wifiFilePathController,
+                wifiFileLabel: _wifiFileLabel,
+                onPickWifiFile: _pickWifiFile,
+                escImagePathController: escImagePathController,
+                escImageLabel: _escImageLabel,
+                onPickEscImage: _pickEscImage,
               )
             : _ScanPage(controller),
       ),
@@ -143,9 +154,24 @@ class _EmapiDemoPageState extends State<EmapiDemoPage> {
   }
 
   String get _otaFileLabel {
-    final path = otaPathController.text.trim();
+    return _fileLabel(
+      otaPathController.text,
+      emptyLabel: controller.simulationMode ? '未选择，模拟模式可直接开始' : '未选择 OTA 文件',
+    );
+  }
+
+  String get _wifiFileLabel {
+    return _fileLabel(wifiFilePathController.text, emptyLabel: '未选择 WiFi 文件');
+  }
+
+  String get _escImageLabel {
+    return _fileLabel(escImagePathController.text, emptyLabel: '未选择 ESC 图片');
+  }
+
+  String _fileLabel(String rawPath, {required String emptyLabel}) {
+    final path = rawPath.trim();
     if (path.isEmpty) {
-      return controller.simulationMode ? '未选择，模拟模式可直接开始' : '未选择 OTA 文件';
+      return emptyLabel;
     }
     final parts = path.split(RegExp(r'[/\\]'));
     return parts.isEmpty ? path : parts.last;
@@ -168,6 +194,45 @@ class _EmapiDemoPageState extends State<EmapiDemoPage> {
     }
     setState(() {
       otaPathController.text = path;
+    });
+  }
+
+  Future<void> _pickWifiFile() async {
+    await _pickFile(
+      targetController: wifiFilePathController,
+      missingPathMessage: '未获取到 WiFi 文件路径，请重新选择文件',
+    );
+  }
+
+  Future<void> _pickEscImage() async {
+    await _pickFile(
+      targetController: escImagePathController,
+      missingPathMessage: '未获取到 ESC 图片路径，请重新选择文件',
+      type: FileType.image,
+    );
+  }
+
+  Future<void> _pickFile({
+    required TextEditingController targetController,
+    required String missingPathMessage,
+    FileType type = FileType.any,
+  }) async {
+    if (controller.busy) {
+      return;
+    }
+    final result = await FilePicker.pickFiles(allowMultiple: false, type: type);
+    if (!mounted || result == null) {
+      return;
+    }
+    final path = result.files.single.path;
+    if (path == null || path.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(missingPathMessage)));
+      return;
+    }
+    setState(() {
+      targetController.text = path;
     });
   }
 }

@@ -10,6 +10,56 @@ String readProjectFile(String path) {
   return File(path).readAsStringSync();
 }
 
+String methodBody(String source, String methodName) {
+  final declaration = RegExp(
+    r'(?:Future<[^>]+>|Future|Uint8List|void|String|int|bool)\s+' +
+        RegExp.escape(methodName) +
+        r'\s*\(',
+  ).firstMatch(source);
+  final start = declaration?.start ?? source.indexOf(methodName);
+  if (start == -1) {
+    return '';
+  }
+  final parametersStart = source.indexOf('(', start);
+  if (parametersStart == -1) {
+    return '';
+  }
+  var parametersDepth = 0;
+  var parametersEnd = -1;
+  for (var index = parametersStart; index < source.length; index += 1) {
+    final char = source[index];
+    if (char == '(') {
+      parametersDepth += 1;
+    } else if (char == ')') {
+      parametersDepth -= 1;
+      if (parametersDepth == 0) {
+        parametersEnd = index;
+        break;
+      }
+    }
+  }
+  if (parametersEnd == -1) {
+    return '';
+  }
+  final bodyStart = source.indexOf('{', parametersEnd);
+  if (bodyStart == -1) {
+    return '';
+  }
+  var depth = 0;
+  for (var index = bodyStart; index < source.length; index += 1) {
+    final char = source[index];
+    if (char == '{') {
+      depth += 1;
+    } else if (char == '}') {
+      depth -= 1;
+      if (depth == 0) {
+        return source.substring(bodyStart, index + 1);
+      }
+    }
+  }
+  return '';
+}
+
 void main() {
   test('readme_documentsLocalPsdkBootstrapContract', () {
     final readme = readProjectFile('README.md');
@@ -172,6 +222,47 @@ void main() {
     expect(functionPage, contains('onOpenOta'));
   });
 
+  test('main_exposesSelfTestAndShutdownTimeFromOperationSheet', () {
+    final operationSheet = readProjectFile(
+      'lib/src/widgets/operation_sheet.dart',
+    );
+
+    expect(operationSheet, contains('打印自检页'));
+    expect(operationSheet, contains('设置关机时间'));
+    expect(operationSheet, contains('controller.printSelfTestPage'));
+    expect(operationSheet, contains('controller.setShutdownTime'));
+    expect(operationSheet, contains('TextEditingController'));
+    expect(operationSheet, contains('关机时间'));
+  });
+
+  test('main_exposesWifiFileTransferFormAndControllerCall', () {
+    final operationSheet = readProjectFile(
+      'lib/src/widgets/operation_sheet.dart',
+    );
+
+    expect(operationSheet, contains('WiFi 文件传输'));
+    expect(operationSheet, contains('0x0001'));
+    expect(operationSheet, contains('WiFi主控升级文件'));
+    expect(operationSheet, contains('0x0002'));
+    expect(operationSheet, contains('日历图像文件'));
+    expect(operationSheet, contains('0x0003'));
+    expect(operationSheet, contains('待机图像文件'));
+    expect(operationSheet, contains('controller.performWifiFileTransfer'));
+  });
+
+  test('main_exposesEscPrintFormAndControllerCall', () {
+    final operationSheet = readProjectFile(
+      'lib/src/widgets/operation_sheet.dart',
+    );
+
+    expect(operationSheet, contains('ESC 打印'));
+    expect(operationSheet, contains('controller.performEscPrint'));
+    expect(operationSheet, contains('paperType'));
+    expect(operationSheet, contains('enableMode'));
+    expect(operationSheet, contains('thickness'));
+    expect(operationSheet, contains('连续纸'));
+  });
+
   test('bluetoothConnector_checksPermissionStatusesBeforeDiscovery', () {
     final connector = readProjectFile(
       'lib/src/bluetooth_printer_connector.dart',
@@ -261,6 +352,68 @@ void main() {
     expect(controller.reportLogs.first.message, contains('升级状态上报'));
     expect(controller.requestLogs.first.title, 'OTA 升级文件');
     expect(controller.requestLogs.first.bytes, hasLength(2048));
+  });
+
+  test('controller_otaTransferStartsChunkIndexAtOne', () {
+    final controller = readProjectFile('lib/src/emapi_demo_controller.dart');
+    final body = methodBody(controller, '_transferOtaBytes');
+
+    expect(body, contains('var index = 1;'));
+  });
+
+  test('controller_exposesDemoFeatureMethods', () {
+    final controller = readProjectFile('lib/src/emapi_demo_controller.dart');
+
+    expect(controller, contains('Future<void> printSelfTestPage('));
+    expect(controller, contains('Future<void> setShutdownTime('));
+    expect(controller, contains('Future<void> performWifiFileTransfer('));
+    expect(controller, contains('Future<void> performEscPrint('));
+  });
+
+  test('controller_escPrintComposesEscAndSendsViaEmapiPrintEsc', () {
+    final controller = readProjectFile('lib/src/emapi_demo_controller.dart');
+    final printBody = methodBody(controller, 'performEscPrint');
+    final buildBody = methodBody(controller, '_buildEscPrintBytes');
+
+    expect(buildBody, contains('wakeup()'));
+    expect(buildBody, contains('enable()'));
+    expect(buildBody, contains('paperType('));
+    expect(buildBody, contains('enableMode('));
+    expect(buildBody, contains('thickness('));
+    expect(buildBody, contains('image('));
+    expect(buildBody, contains('position()'));
+    expect(buildBody, contains('continuous'));
+    expect(buildBody, contains('stopJob()'));
+    expect(printBody, contains('printEsc('));
+  });
+
+  test('controller_wifiTransferUsesWifiDownloadProtocolOnly', () {
+    final controller = readProjectFile('lib/src/emapi_demo_controller.dart');
+    final transferBody = methodBody(controller, 'performWifiFileTransfer');
+    final chunkBody = methodBody(controller, '_transferWifiFileBytes');
+
+    expect(chunkBody, contains('var index = 1;'));
+    expect(transferBody, contains('startWifiFileDownload'));
+    expect(chunkBody, contains('transferWifiFileDownloadChunk'));
+    expect(transferBody, contains('finishWifiFileDownload'));
+    expect(transferBody, isNot(contains('upgradeMainController')));
+    expect(chunkBody, isNot(contains('upgradeMainController')));
+  });
+
+  test('pubspec_dependsOnEscFruitFromLocalPsdkOrMatchingGitRef', () {
+    final pubspec = readProjectFile('pubspec.yaml');
+
+    expect(pubspec, contains('psdk_fruit_esc:'));
+    expect(
+      pubspec,
+      anyOf(
+        contains('path: ../../../psdk/dart/fruits/esc'),
+        allOf(
+          contains('path: dart/fruits/esc'),
+          contains('ref: feat-emapi-protocol-sdk'),
+        ),
+      ),
+    );
   });
 }
 

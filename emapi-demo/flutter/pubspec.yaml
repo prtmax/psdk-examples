@@ -59,13 +59,14 @@ dependencies:
       path: dart/packages/device_adapter
       ref: feat-emapi-protocol-sdk
   psdk_fruit_emapi:
-    git:
-      url: https://github.com/prtmax/psdk.git
-      path: dart/fruits/emapi
-      ref: feat-emapi-protocol-sdk
+    path: ../../../psdk/dart/fruits/emapi
+  psdk_fruit_esc:
+    path: ../../../psdk/dart/fruits/esc
   file_picker: ^11.0.2
 
 dependency_overrides:
+  psdk_imageb:
+    path: ../../../psdk/dart/algorithms/imageb
   psdk_bluetooth_traits:
     git:
       url: https://github.com/prtmax/psdk.git

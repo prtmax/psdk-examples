@@ -9,9 +9,18 @@ class _OperationSheet extends StatefulWidget {
     required this.otaPathController,
     required this.otaFileLabel,
     required this.onPickOtaFile,
+    required this.wifiFilePathController,
+    required this.wifiFileLabel,
+    required this.onPickWifiFile,
+    required this.escImagePathController,
+    required this.escImageLabel,
+    required this.onPickEscImage,
     required this.onBack,
     required this.onOpenWifi,
     required this.onOpenOta,
+    required this.onOpenShutdownTime,
+    required this.onOpenWifiFile,
+    required this.onOpenEscPrint,
   });
 
   final _FunctionSheetMode mode;
@@ -21,9 +30,18 @@ class _OperationSheet extends StatefulWidget {
   final TextEditingController otaPathController;
   final String otaFileLabel;
   final Future<void> Function() onPickOtaFile;
+  final TextEditingController wifiFilePathController;
+  final String wifiFileLabel;
+  final Future<void> Function() onPickWifiFile;
+  final TextEditingController escImagePathController;
+  final String escImageLabel;
+  final Future<void> Function() onPickEscImage;
   final VoidCallback onBack;
   final VoidCallback onOpenWifi;
   final VoidCallback onOpenOta;
+  final VoidCallback onOpenShutdownTime;
+  final VoidCallback onOpenWifiFile;
+  final VoidCallback onOpenEscPrint;
 
   @override
   State<_OperationSheet> createState() => _OperationSheetState();
@@ -81,6 +99,9 @@ class _OperationSheetState extends State<_OperationSheet> {
                   expanded: expanded,
                   onOpenWifi: widget.onOpenWifi,
                   onOpenOta: widget.onOpenOta,
+                  onOpenShutdownTime: widget.onOpenShutdownTime,
+                  onOpenWifiFile: widget.onOpenWifiFile,
+                  onOpenEscPrint: widget.onOpenEscPrint,
                 )
               else if (widget.mode == _FunctionSheetMode.wifi)
                 _WifiSheetContent(
@@ -89,12 +110,33 @@ class _OperationSheetState extends State<_OperationSheet> {
                   passwordController: widget.passwordController,
                   onBack: widget.onBack,
                 )
-              else
+              else if (widget.mode == _FunctionSheetMode.ota)
                 _OtaSheetContent(
                   controller: widget.controller,
                   otaPathController: widget.otaPathController,
                   otaFileLabel: widget.otaFileLabel,
                   onPickOtaFile: widget.onPickOtaFile,
+                  onBack: widget.onBack,
+                )
+              else if (widget.mode == _FunctionSheetMode.shutdownTime)
+                _ShutdownTimeSheetContent(
+                  controller: widget.controller,
+                  onBack: widget.onBack,
+                )
+              else if (widget.mode == _FunctionSheetMode.wifiFile)
+                _WifiFileTransferSheetContent(
+                  controller: widget.controller,
+                  wifiFilePathController: widget.wifiFilePathController,
+                  wifiFileLabel: widget.wifiFileLabel,
+                  onPickWifiFile: widget.onPickWifiFile,
+                  onBack: widget.onBack,
+                )
+              else
+                _EscPrintSheetContent(
+                  controller: widget.controller,
+                  escImagePathController: widget.escImagePathController,
+                  escImageLabel: widget.escImageLabel,
+                  onPickEscImage: widget.onPickEscImage,
                   onBack: widget.onBack,
                 ),
             ],
@@ -156,12 +198,18 @@ class _ActionSheetContent extends StatelessWidget {
     required this.expanded,
     required this.onOpenWifi,
     required this.onOpenOta,
+    required this.onOpenShutdownTime,
+    required this.onOpenWifiFile,
+    required this.onOpenEscPrint,
   });
 
   final EmapiDemoController controller;
   final bool expanded;
   final VoidCallback onOpenWifi;
   final VoidCallback onOpenOta;
+  final VoidCallback onOpenShutdownTime;
+  final VoidCallback onOpenWifiFile;
+  final VoidCallback onOpenEscPrint;
 
   @override
   Widget build(BuildContext context) {
@@ -198,6 +246,9 @@ class _ActionSheetContent extends StatelessWidget {
                         controller: controller,
                         onOpenWifi: onOpenWifi,
                         onOpenOta: onOpenOta,
+                        onOpenShutdownTime: onOpenShutdownTime,
+                        onOpenWifiFile: onOpenWifiFile,
+                        onOpenEscPrint: onOpenEscPrint,
                       ),
                     ),
                 ],
@@ -224,6 +275,9 @@ class _ActionSheetContent extends StatelessWidget {
                     controller: controller,
                     onOpenWifi: onOpenWifi,
                     onOpenOta: onOpenOta,
+                    onOpenShutdownTime: onOpenShutdownTime,
+                    onOpenWifiFile: onOpenWifiFile,
+                    onOpenEscPrint: onOpenEscPrint,
                   ),
                 );
               },
@@ -353,6 +407,339 @@ class _OtaSheetContent extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         _OtaProgressStrip(progressText: controller.otaProgress),
+      ],
+    );
+  }
+}
+
+class _ShutdownTimeSheetContent extends StatefulWidget {
+  const _ShutdownTimeSheetContent({
+    required this.controller,
+    required this.onBack,
+  });
+
+  final EmapiDemoController controller;
+  final VoidCallback onBack;
+
+  @override
+  State<_ShutdownTimeSheetContent> createState() =>
+      _ShutdownTimeSheetContentState();
+}
+
+class _ShutdownTimeSheetContentState extends State<_ShutdownTimeSheetContent> {
+  final minutesController = TextEditingController(text: '30');
+
+  @override
+  void dispose() {
+    minutesController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SheetTitle(
+          title: '设置关机时间',
+          subtitle: '设置自动关机等待分钟数',
+          onBack: widget.onBack,
+        ),
+        const SizedBox(height: 10),
+        TextField(
+          controller: minutesController,
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          decoration: const InputDecoration(
+            prefixIcon: Icon(Icons.timer_outlined),
+            labelText: '分钟',
+          ),
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            for (final minutes in const [15, 30, 60])
+              OutlinedButton(
+                onPressed: widget.controller.busy
+                    ? null
+                    : () {
+                        setState(() {
+                          minutesController.text = '$minutes';
+                        });
+                      },
+                child: Text('$minutes 分钟'),
+              ),
+            FilledButton.icon(
+              onPressed: widget.controller.busy
+                  ? null
+                  : () => widget.controller.setShutdownTime(
+                      minutes: int.tryParse(minutesController.text) ?? 0,
+                    ),
+              icon: const Icon(Icons.check),
+              label: const Text('提交'),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _WifiFileTransferSheetContent extends StatefulWidget {
+  const _WifiFileTransferSheetContent({
+    required this.controller,
+    required this.wifiFilePathController,
+    required this.wifiFileLabel,
+    required this.onPickWifiFile,
+    required this.onBack,
+  });
+
+  final EmapiDemoController controller;
+  final TextEditingController wifiFilePathController;
+  final String wifiFileLabel;
+  final Future<void> Function() onPickWifiFile;
+  final VoidCallback onBack;
+
+  @override
+  State<_WifiFileTransferSheetContent> createState() =>
+      _WifiFileTransferSheetContentState();
+}
+
+class _WifiFileTransferSheetContentState
+    extends State<_WifiFileTransferSheetContent> {
+  int fileType = 0x0001;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SheetTitle(
+          title: 'WiFi 文件传输',
+          subtitle: '选择文件类型后发送到 WiFi 模块',
+          onBack: widget.onBack,
+        ),
+        const SizedBox(height: 10),
+        _SelectedFileRow(
+          icon: Icons.description_outlined,
+          label: widget.wifiFileLabel,
+        ),
+        const SizedBox(height: 10),
+        DropdownButtonFormField<int>(
+          initialValue: fileType,
+          decoration: const InputDecoration(
+            prefixIcon: Icon(Icons.category_outlined),
+            labelText: '文件类型',
+          ),
+          items: const [
+            DropdownMenuItem(
+              value: 0x0001,
+              child: Text('0x0001 WiFi主控升级文件(.bin)'),
+            ),
+            DropdownMenuItem(value: 0x0002, child: Text('0x0002 日历图像文件')),
+            DropdownMenuItem(value: 0x0003, child: Text('0x0003 待机图像文件')),
+          ],
+          onChanged: widget.controller.busy
+              ? null
+              : (value) {
+                  if (value == null) {
+                    return;
+                  }
+                  setState(() {
+                    fileType = value;
+                  });
+                },
+        ),
+        const SizedBox(height: 10),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            OutlinedButton.icon(
+              onPressed: widget.controller.busy ? null : widget.onPickWifiFile,
+              icon: const Icon(Icons.folder_open),
+              label: const Text('选择文件'),
+            ),
+            FilledButton.icon(
+              onPressed: widget.controller.busy
+                  ? null
+                  : () => widget.controller.performWifiFileTransfer(
+                      widget.wifiFilePathController.text,
+                      fileType: fileType,
+                    ),
+              icon: const Icon(Icons.upload_file),
+              label: const Text('开始传输'),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _EscPrintSheetContent extends StatefulWidget {
+  const _EscPrintSheetContent({
+    required this.controller,
+    required this.escImagePathController,
+    required this.escImageLabel,
+    required this.onPickEscImage,
+    required this.onBack,
+  });
+
+  final EmapiDemoController controller;
+  final TextEditingController escImagePathController;
+  final String escImageLabel;
+  final Future<void> Function() onPickEscImage;
+  final VoidCallback onBack;
+
+  @override
+  State<_EscPrintSheetContent> createState() => _EscPrintSheetContentState();
+}
+
+class _EscPrintSheetContentState extends State<_EscPrintSheetContent> {
+  esc.Type paperType = esc.Type.continuousReelPaper;
+  int enableMode = 0;
+  double thickness = 8;
+
+  bool get includePosition {
+    return paperType != esc.Type.continuousReelPaper;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _SheetTitle(
+          title: 'ESC 打印',
+          subtitle: includePosition ? '间隙/黑标纸会定位' : '连续纸跳过定位',
+          onBack: widget.onBack,
+        ),
+        const SizedBox(height: 10),
+        _SelectedFileRow(
+          icon: Icons.image_outlined,
+          label: widget.escImageLabel,
+        ),
+        const SizedBox(height: 10),
+        Text('纸张类型', style: theme.textTheme.labelMedium),
+        const SizedBox(height: 6),
+        SegmentedButton<esc.Type>(
+          segments: const [
+            ButtonSegment(
+              value: esc.Type.continuousReelPaper,
+              label: Text('连续'),
+            ),
+            ButtonSegment(
+              value: esc.Type.noDryAdhesivePaper,
+              label: Text('间隙'),
+            ),
+            ButtonSegment(
+              value: esc.Type.foldedBlackLabelPaper,
+              label: Text('黑标'),
+            ),
+          ],
+          selected: {paperType},
+          onSelectionChanged: widget.controller.busy
+              ? null
+              : (selected) {
+                  setState(() {
+                    paperType = selected.first;
+                  });
+                },
+        ),
+        const SizedBox(height: 10),
+        Text('打印模式', style: theme.textTheme.labelMedium),
+        const SizedBox(height: 6),
+        SegmentedButton<int>(
+          segments: const [
+            ButtonSegment(value: 0, label: Text('普通')),
+            ButtonSegment(value: 1, label: Text('双重')),
+            ButtonSegment(value: 2, label: Text('灰阶')),
+          ],
+          selected: {enableMode},
+          onSelectionChanged: widget.controller.busy
+              ? null
+              : (selected) {
+                  setState(() {
+                    enableMode = selected.first;
+                  });
+                },
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Text('浓度 ${thickness.round()}', style: theme.textTheme.labelMedium),
+            Expanded(
+              child: Slider(
+                value: thickness,
+                min: 0,
+                max: 15,
+                divisions: 15,
+                label: '${thickness.round()}',
+                onChanged: widget.controller.busy
+                    ? null
+                    : (value) {
+                        setState(() {
+                          thickness = value;
+                        });
+                      },
+              ),
+            ),
+          ],
+        ),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: [
+            OutlinedButton.icon(
+              onPressed: widget.controller.busy ? null : widget.onPickEscImage,
+              icon: const Icon(Icons.folder_open),
+              label: const Text('选择图片'),
+            ),
+            FilledButton.icon(
+              onPressed: widget.controller.busy
+                  ? null
+                  : () => widget.controller.performEscPrint(
+                      imagePath: widget.escImagePathController.text,
+                      paperType: paperType,
+                      printMode: enableMode,
+                      thickness: thickness.round(),
+                      includePosition: includePosition,
+                    ),
+              icon: const Icon(Icons.print),
+              label: const Text('开始打印'),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class _SelectedFileRow extends StatelessWidget {
+  const _SelectedFileRow({required this.icon, required this.label});
+
+  final IconData icon;
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Row(
+      children: [
+        Icon(icon, color: theme.colorScheme.primary),
+        const SizedBox(width: 10),
+        Expanded(
+          child: Text(
+            label,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.bodyMedium,
+          ),
+        ),
       ],
     );
   }
@@ -496,6 +883,9 @@ class _SheetAction {
     required EmapiDemoController controller,
     required VoidCallback onOpenWifi,
     required VoidCallback onOpenOta,
+    required VoidCallback onOpenShutdownTime,
+    required VoidCallback onOpenWifiFile,
+    required VoidCallback onOpenEscPrint,
   })
   invoke;
 }
@@ -505,13 +895,39 @@ final _mainActions = [
     required controller,
     required onOpenWifi,
     required onOpenOta,
+    required onOpenShutdownTime,
+    required onOpenWifiFile,
+    required onOpenEscPrint,
   }) {
     controller.sleepShutdown();
+  }),
+  _SheetAction(Icons.receipt_outlined, '打印自检页', ({
+    required controller,
+    required onOpenWifi,
+    required onOpenOta,
+    required onOpenShutdownTime,
+    required onOpenWifiFile,
+    required onOpenEscPrint,
+  }) {
+    controller.printSelfTestPage();
+  }),
+  _SheetAction(Icons.timer_outlined, '设置关机时间', ({
+    required controller,
+    required onOpenWifi,
+    required onOpenOta,
+    required onOpenShutdownTime,
+    required onOpenWifiFile,
+    required onOpenEscPrint,
+  }) {
+    onOpenShutdownTime();
   }),
   _SheetAction(Icons.nfc, 'RFID UID', ({
     required controller,
     required onOpenWifi,
     required onOpenOta,
+    required onOpenShutdownTime,
+    required onOpenWifiFile,
+    required onOpenEscPrint,
   }) {
     controller.queryRfidUid();
   }),
@@ -519,6 +935,9 @@ final _mainActions = [
     required controller,
     required onOpenWifi,
     required onOpenOta,
+    required onOpenShutdownTime,
+    required onOpenWifiFile,
+    required onOpenEscPrint,
   }) {
     controller.queryRfidCardInfo();
   }),
@@ -526,6 +945,9 @@ final _mainActions = [
     required controller,
     required onOpenWifi,
     required onOpenOta,
+    required onOpenShutdownTime,
+    required onOpenWifiFile,
+    required onOpenEscPrint,
   }) {
     controller.queryRfidPaperLength();
   }),
@@ -533,6 +955,9 @@ final _mainActions = [
     required controller,
     required onOpenWifi,
     required onOpenOta,
+    required onOpenShutdownTime,
+    required onOpenWifiFile,
+    required onOpenEscPrint,
   }) {
     controller.setRfidAuthFailureHandling(
       EmapiRfidAuthFailurePolicy.forbidPrint,
@@ -542,6 +967,9 @@ final _mainActions = [
     required controller,
     required onOpenWifi,
     required onOpenOta,
+    required onOpenShutdownTime,
+    required onOpenWifiFile,
+    required onOpenEscPrint,
   }) {
     onOpenWifi();
   }),
@@ -549,6 +977,9 @@ final _mainActions = [
     required controller,
     required onOpenWifi,
     required onOpenOta,
+    required onOpenShutdownTime,
+    required onOpenWifiFile,
+    required onOpenEscPrint,
   }) {
     controller.queryWifiConnectionState();
   }),
@@ -556,13 +987,29 @@ final _mainActions = [
     required controller,
     required onOpenWifi,
     required onOpenOta,
+    required onOpenShutdownTime,
+    required onOpenWifiFile,
+    required onOpenEscPrint,
   }) {
     controller.queryWifiHotspotInfo();
+  }),
+  _SheetAction(Icons.upload_file, 'WiFi 文件传输', ({
+    required controller,
+    required onOpenWifi,
+    required onOpenOta,
+    required onOpenShutdownTime,
+    required onOpenWifiFile,
+    required onOpenEscPrint,
+  }) {
+    onOpenWifiFile();
   }),
   _SheetAction(Icons.info_outline, '基本参数', ({
     required controller,
     required onOpenWifi,
     required onOpenOta,
+    required onOpenShutdownTime,
+    required onOpenWifiFile,
+    required onOpenEscPrint,
   }) {
     controller.queryDeviceInfo();
   }),
@@ -570,13 +1017,29 @@ final _mainActions = [
     required controller,
     required onOpenWifi,
     required onOpenOta,
+    required onOpenShutdownTime,
+    required onOpenWifiFile,
+    required onOpenEscPrint,
   }) {
     controller.queryPrintStatus();
+  }),
+  _SheetAction(Icons.print_outlined, 'ESC 打印', ({
+    required controller,
+    required onOpenWifi,
+    required onOpenOta,
+    required onOpenShutdownTime,
+    required onOpenWifiFile,
+    required onOpenEscPrint,
+  }) {
+    onOpenEscPrint();
   }),
   _SheetAction(Icons.system_update_alt, 'OTA 升级', ({
     required controller,
     required onOpenWifi,
     required onOpenOta,
+    required onOpenShutdownTime,
+    required onOpenWifiFile,
+    required onOpenEscPrint,
   }) {
     onOpenOta();
   }),
