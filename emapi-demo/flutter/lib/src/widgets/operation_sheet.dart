@@ -602,6 +602,7 @@ class _EscPrintSheetContentState extends State<_EscPrintSheetContent> {
   esc.Type paperType = esc.Type.continuousReelPaper;
   int enableMode = 0;
   double thickness = 8;
+  bool compress = false;
 
   bool get includePosition {
     return paperType != esc.Type.continuousReelPaper;
@@ -627,18 +628,18 @@ class _EscPrintSheetContentState extends State<_EscPrintSheetContent> {
         Text('纸张类型', style: theme.textTheme.labelMedium),
         const SizedBox(height: 6),
         SegmentedButton<esc.Type>(
-          segments: const [
+          segments: [
             ButtonSegment(
               value: esc.Type.continuousReelPaper,
-              label: Text('连续'),
+              label: const Text('连续'),
             ),
             ButtonSegment(
               value: esc.Type.noDryAdhesivePaper,
-              label: Text('间隙'),
+              label: const Text('间隙'),
             ),
             ButtonSegment(
               value: esc.Type.foldedBlackLabelPaper,
-              label: Text('黑标'),
+              label: const Text('黑标'),
             ),
           ],
           selected: {paperType},
@@ -690,6 +691,24 @@ class _EscPrintSheetContentState extends State<_EscPrintSheetContent> {
             ),
           ],
         ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            Expanded(
+              child: Text('图像压缩', style: theme.textTheme.labelMedium),
+            ),
+            Switch(
+              value: compress,
+              onChanged: widget.controller.busy
+                  ? null
+                  : (value) {
+                      setState(() {
+                        compress = value;
+                      });
+                    },
+            ),
+          ],
+        ),
         Wrap(
           spacing: 8,
           runSpacing: 8,
@@ -703,12 +722,13 @@ class _EscPrintSheetContentState extends State<_EscPrintSheetContent> {
               onPressed: widget.controller.busy
                   ? null
                   : () => widget.controller.performEscPrint(
-                      imagePath: widget.escImagePathController.text,
-                      paperType: paperType,
-                      printMode: enableMode,
-                      thickness: thickness.round(),
-                      includePosition: includePosition,
-                    ),
+                        imagePath: widget.escImagePathController.text,
+                        paperType: paperType,
+                        printMode: enableMode,
+                        thickness: thickness.round(),
+                        includePosition: includePosition,
+                        compress: compress,
+                      ),
               icon: const Icon(Icons.print),
               label: const Text('开始打印'),
             ),

@@ -19,7 +19,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: ^3.11.1
+  sdk: ^3.10.0
 
 # Dependencies specify other packages that your package needs in order to work.
 # To automatically upgrade your package dependencies to the latest versions
@@ -59,14 +59,28 @@ dependencies:
       path: dart/packages/device_adapter
       ref: feat-emapi-protocol-sdk
   psdk_fruit_emapi:
-    path: ../../../psdk/dart/fruits/emapi
+    git:
+      url: https://github.com/prtmax/psdk.git
+      path: dart/fruits/emapi
+      ref: feat-emapi-protocol-sdk
   psdk_fruit_esc:
-    path: ../../../psdk/dart/fruits/esc
+    git:
+      url: https://github.com/prtmax/psdk.git
+      path: dart/fruits/esc
+      ref: feat-emapi-protocol-sdk
+
   file_picker: ^11.0.2
 
 dependency_overrides:
+  archive:
+    git:
+      url: https://github.com/prtmax/archive.git
+      ref: fix/agp8-namespace-support
   psdk_imageb:
-    path: ../../../psdk/dart/algorithms/imageb
+    git:
+      url: https://github.com/prtmax/psdk.git
+      path: dart/algorithms/imageb
+      ref: feat-emapi-protocol-sdk
   psdk_bluetooth_traits:
     git:
       url: https://github.com/prtmax/psdk.git
