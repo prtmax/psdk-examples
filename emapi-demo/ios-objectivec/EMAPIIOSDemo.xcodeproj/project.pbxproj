@@ -1,0 +1,241 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		100000000000000000000001 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000101 /* main.m */; };
+		100000000000000000000002 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000103 /* AppDelegate.m */; };
+		100000000000000000000003 /* EMAPIDemoDevice.m in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000105 /* EMAPIDemoDevice.m */; };
+		100000000000000000000004 /* EMAPIDemoLogEntry.m in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000107 /* EMAPIDemoLogEntry.m */; };
+		100000000000000000000005 /* EMAPIDemoESCBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000109 /* EMAPIDemoESCBuilder.m */; };
+		100000000000000000000006 /* EMAPIDemoController.m in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000111 /* EMAPIDemoController.m */; };
+		100000000000000000000007 /* EMAPIDemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000113 /* EMAPIDemoViewController.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		100000000000000000000020 /* EMAPIIOSDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = EMAPIIOSDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		100000000000000000000100 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		100000000000000000000101 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		100000000000000000000102 /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		100000000000000000000103 /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
+		100000000000000000000104 /* EMAPIDemoDevice.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EMAPIDemoDevice.h; sourceTree = "<group>"; };
+		100000000000000000000105 /* EMAPIDemoDevice.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EMAPIDemoDevice.m; sourceTree = "<group>"; };
+		100000000000000000000106 /* EMAPIDemoLogEntry.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EMAPIDemoLogEntry.h; sourceTree = "<group>"; };
+		100000000000000000000107 /* EMAPIDemoLogEntry.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EMAPIDemoLogEntry.m; sourceTree = "<group>"; };
+		100000000000000000000108 /* EMAPIDemoESCBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EMAPIDemoESCBuilder.h; sourceTree = "<group>"; };
+		100000000000000000000109 /* EMAPIDemoESCBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EMAPIDemoESCBuilder.m; sourceTree = "<group>"; };
+		100000000000000000000110 /* EMAPIDemoController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EMAPIDemoController.h; sourceTree = "<group>"; };
+		100000000000000000000111 /* EMAPIDemoController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EMAPIDemoController.m; sourceTree = "<group>"; };
+		100000000000000000000112 /* EMAPIDemoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EMAPIDemoViewController.h; sourceTree = "<group>"; };
+		100000000000000000000113 /* EMAPIDemoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EMAPIDemoViewController.m; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		100000000000000000000030 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		100000000000000000000040 = {
+			isa = PBXGroup;
+			children = (
+				100000000000000000000050 /* EMAPIIOSDemo */,
+				100000000000000000000060 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		100000000000000000000050 /* EMAPIIOSDemo */ = {
+			isa = PBXGroup;
+			children = (
+				100000000000000000000100 /* Info.plist */,
+				100000000000000000000101 /* main.m */,
+				100000000000000000000102 /* AppDelegate.h */,
+				100000000000000000000103 /* AppDelegate.m */,
+				100000000000000000000104 /* EMAPIDemoDevice.h */,
+				100000000000000000000105 /* EMAPIDemoDevice.m */,
+				100000000000000000000106 /* EMAPIDemoLogEntry.h */,
+				100000000000000000000107 /* EMAPIDemoLogEntry.m */,
+				100000000000000000000108 /* EMAPIDemoESCBuilder.h */,
+				100000000000000000000109 /* EMAPIDemoESCBuilder.m */,
+				100000000000000000000110 /* EMAPIDemoController.h */,
+				100000000000000000000111 /* EMAPIDemoController.m */,
+				100000000000000000000112 /* EMAPIDemoViewController.h */,
+				100000000000000000000113 /* EMAPIDemoViewController.m */,
+			);
+			path = EMAPIIOSDemo;
+			sourceTree = "<group>";
+		};
+		100000000000000000000060 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				100000000000000000000020 /* EMAPIIOSDemo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		100000000000000000000070 /* EMAPIIOSDemo */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 100000000000000000000071 /* Build configuration list for PBXNativeTarget "EMAPIIOSDemo" */;
+			buildPhases = (
+				100000000000000000000090 /* Sources */,
+				100000000000000000000030 /* Frameworks */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = EMAPIIOSDemo;
+			productName = EMAPIIOSDemo;
+			productReference = 100000000000000000000020 /* EMAPIIOSDemo.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		100000000000000000000080 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastUpgradeCheck = 1530;
+				TargetAttributes = {
+					100000000000000000000070 = {
+						CreatedOnToolsVersion = 15.3;
+					};
+				};
+			};
+			buildConfigurationList = 100000000000000000000081 /* Build configuration list for PBXProject "EMAPIIOSDemo" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 100000000000000000000040;
+			productRefGroup = 100000000000000000000060 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				100000000000000000000070 /* EMAPIIOSDemo */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		100000000000000000000090 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				100000000000000000000001 /* main.m in Sources */,
+				100000000000000000000002 /* AppDelegate.m in Sources */,
+				100000000000000000000003 /* EMAPIDemoDevice.m in Sources */,
+				100000000000000000000004 /* EMAPIDemoLogEntry.m in Sources */,
+				100000000000000000000005 /* EMAPIDemoESCBuilder.m in Sources */,
+				100000000000000000000006 /* EMAPIDemoController.m in Sources */,
+				100000000000000000000007 /* EMAPIDemoViewController.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		100000000000000000000082 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../../psdk/objectivec/fruits/emapi",
+					"$(SRCROOT)/../../../psdk/objectivec/fruits/esc",
+					"$(SRCROOT)/../../../psdk/objectivec/device/adapter",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		100000000000000000000083 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				HEADER_SEARCH_PATHS = (
+					"$(SRCROOT)/../../../psdk/objectivec/fruits/emapi",
+					"$(SRCROOT)/../../../psdk/objectivec/fruits/esc",
+					"$(SRCROOT)/../../../psdk/objectivec/device/adapter",
+				);
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		100000000000000000000072 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = EMAPIIOSDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.prtmax.emapi.iosdemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		100000000000000000000073 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				INFOPLIST_FILE = EMAPIIOSDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.prtmax.emapi.iosdemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		100000000000000000000081 /* Build configuration list for PBXProject "EMAPIIOSDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				100000000000000000000082 /* Debug */,
+				100000000000000000000083 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		100000000000000000000071 /* Build configuration list for PBXNativeTarget "EMAPIIOSDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				100000000000000000000072 /* Debug */,
+				100000000000000000000073 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 100000000000000000000080 /* Project object */;
+}
