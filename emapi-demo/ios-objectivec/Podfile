@@ -1,0 +1,10 @@
+platform :ios, '13.0'
+use_frameworks!
+
+target 'EMAPIIOSDemo' do
+  # Add the published EMAPI/ESC pods here when they are available.
+  # Until then, add the local Objective-C PSDK source folders or frameworks in Xcode:
+  #   ../../../psdk/objectivec/fruits/emapi
+  #   ../../../psdk/objectivec/fruits/esc
+  #   ../../../psdk/objectivec/device/adapter
+end
