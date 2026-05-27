@@ -1,0 +1,6 @@
+<resources>
+    <color name="emapi_bg">#F6F7F2</color>
+    <color name="emapi_panel">#FFFFFF</color>
+    <color name="emapi_primary">#176B5B</color>
+    <color name="emapi_text">#18201D</color>
+</resources>
