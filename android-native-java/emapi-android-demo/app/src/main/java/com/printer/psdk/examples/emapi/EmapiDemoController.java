@@ -2,40 +2,24 @@ package com.printer.psdk.examples.emapi;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Looper;
 
-import com.printer.psdk.emapi.EmapiBluetoothConnectionReport;
-import com.printer.psdk.emapi.EmapiCommand;
-import com.printer.psdk.emapi.EmapiFlowControlReport;
-import com.printer.psdk.emapi.EmapiPayload;
-import com.printer.psdk.emapi.EmapiPrintResultReport;
-import com.printer.psdk.emapi.EmapiPrintStatus;
-import com.printer.psdk.emapi.EmapiPrinter;
-import com.printer.psdk.emapi.EmapiPrinterInfo;
-import com.printer.psdk.emapi.EmapiPrinterStatusReport;
-import com.printer.psdk.emapi.EmapiReport;
-import com.printer.psdk.emapi.EmapiRfidAuthFailurePolicy;
-import com.printer.psdk.emapi.EmapiRfidCardInfo;
-import com.printer.psdk.emapi.EmapiUnknownReport;
-import com.printer.psdk.emapi.EmapiUpgradeStatusReport;
-import com.printer.psdk.emapi.EmapiWifiConfigStatusReport;
-import com.printer.psdk.emapi.EmapiWifiConnectionState;
-import com.printer.psdk.emapi.EmapiWifiHotspotInfo;
+import com.printer.psdk.device.adapter.ConnectedDevice;
+import com.printer.psdk.device.bluetooth.Bluetooth;
+import com.printer.psdk.device.bluetooth.ConnectListener;
+import com.printer.psdk.device.bluetooth.Connection;
+import com.printer.psdk.device.bluetooth.DiscoveryListen;
+import com.printer.psdk.emapi.*;
 import com.printer.psdk.emapi.protocol.EmapiConstants;
 import com.printer.psdk.emapi.protocol.FrameCodec;
-import com.printer.psdk.emapi.protocol.Tlv;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -65,7 +49,65 @@ final class EmapiDemoController {
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
     private final Listener listener;
     private BluetoothAdapter bluetoothAdapter;
-    private BroadcastReceiver scanReceiver;
+    private final DiscoveryListen discoveryListener = new DiscoveryListen() {
+        @Override
+        public void onDiscoveryStart() {
+            addCommandLog("SDK 开始扫描蓝牙设备");
+        }
+
+        @Override
+        public void onDiscoveryStop() {
+            addCommandLog("SDK 停止扫描");
+        }
+
+        @Override
+        public void onDiscoveryError(int errorCode, String errorMsg) {
+            scanning = false;
+            switch (errorCode) {
+                case DiscoveryListen.ERROR_LACK_LOCATION_PERMISSION:
+                    addCommandLog("扫描失败：缺少定位权限");
+                    break;
+                case DiscoveryListen.ERROR_LOCATION_SERVICE_CLOSED:
+                    addCommandLog("扫描失败：位置服务未开启，请打开 GPS");
+                    break;
+                case DiscoveryListen.ERROR_LACK_SCAN_PERMISSION:
+                    addCommandLog("扫描失败：缺少 BLUETOOTH_SCAN 权限");
+                    break;
+                case DiscoveryListen.ERROR_SCAN_FAILED:
+                default:
+                    addCommandLog("扫描失败：" + errorMsg);
+                    break;
+            }
+            notifyChanged();
+        }
+
+        @Override
+        public void onDeviceFound(BluetoothDevice device, int rssi) {
+            if (device != null) {
+                try {
+                    // 只显示经典蓝牙，过滤掉 BLE 设备
+                    if (device.getType() == BluetoothDevice.DEVICE_TYPE_LE) {
+                        return;
+                    }
+                    // 过滤掉无名称的设备
+                    String name = device.getName();
+                    if (name == null || name.trim().isEmpty()) {
+                        return;
+                    }
+                    // 避免重复添加
+                    String addr = device.getAddress();
+                    for (DeviceModel d : devices) {
+                        if (d.address.equals(addr)) {
+                            return;
+                        }
+                    }
+                    devices.add(new DeviceModel(name, addr, "Bluetooth Classic", false));
+                    notifyChanged();
+                } catch (SecurityException ignored) {
+                }
+            }
+        }
+    };
     private TracingEmapiConnection tracingConnection;
     private EmapiPrinter printer;
     private volatile boolean reportLoopRunning;
@@ -89,6 +131,10 @@ final class EmapiDemoController {
     void init(Context context) {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         bluetoothEnabled = bluetoothAdapter != null && bluetoothAdapter.isEnabled();
+        // 初始化 PSDK 蓝牙模块
+        Bluetooth.getInstance().initialize(context.getApplicationContext());
+        Bluetooth.getInstance().setDiscoveryListener(discoveryListener);
+        addCommandLog("PSDK 蓝牙模块已初始化");
         notifyChanged();
     }
 
@@ -110,27 +156,21 @@ final class EmapiDemoController {
             notifyChanged();
             return;
         }
-        addBondedDevices();
-        registerScanReceiver(context.getApplicationContext());
-        scanning = true;
-        try {
-            bluetoothAdapter.startDiscovery();
-            addCommandLog("开始扫描蓝牙设备");
-        } catch (SecurityException error) {
-            scanning = false;
-            addCommandLog("扫描失败：" + error.getMessage());
+        // 使用 PSDK 蓝牙扫描
+        if (!Bluetooth.getInstance().isInitialized()) {
+            Bluetooth.getInstance().initialize(context.getApplicationContext());
+            Bluetooth.getInstance().setDiscoveryListener(discoveryListener);
         }
+        scanning = true;
+        Bluetooth.getInstance().startDiscovery();
+        addCommandLog("PSDK 开始扫描蓝牙设备");
         notifyChanged();
     }
 
-    void stopScan(Context context) {
-        if (bluetoothAdapter != null) {
-            try {
-                bluetoothAdapter.cancelDiscovery();
-            } catch (SecurityException ignored) {
-            }
+    void stopScan() {
+        if (Bluetooth.getInstance().isInitialized()) {
+            Bluetooth.getInstance().stopDiscovery();
         }
-        unregisterScanReceiver(context.getApplicationContext());
         scanning = false;
         addCommandLog(simulationMode ? "模拟模式：扫描已停止" : "已停止扫描");
         notifyChanged();
@@ -140,32 +180,103 @@ final class EmapiDemoController {
         if (busy()) {
             return;
         }
-        connecting = true;
-        notifyChanged();
-        executor.execute(new Runnable() {
-            @Override
-            public void run() {
+        if (simulationMode || device.simulated) {
+            connecting = true;
+            notifyChanged();
+            executor.execute(() -> {
                 try {
-                    if (simulationMode || device.simulated) {
-                        emitSimulatedReport(new EmapiBluetoothConnectionReport(reportCommand(EmapiConstants.CHILD_REPORT_BLUETOOTH_CONNECTION), 1));
-                    } else {
-                        BluetoothDevice bluetoothDevice = bluetoothAdapter.getRemoteDevice(device.address);
-                        tracingConnection = new TracingEmapiConnection(new BluetoothEmapiConnection(bluetoothDevice));
-                        printer = EmapiPrinter.builder().connection(tracingConnection).fallbackMtu(512).build();
-                        startReportLoop();
-                    }
+                    emitSimulatedReport(new EmapiBluetoothConnectionReport(reportCommand(EmapiConstants.CHILD_REPORT_BLUETOOTH_CONNECTION), 1));
                     connected = true;
                     connectedDeviceName = device.name;
-                    addCommandLog("已连接：" + device.name);
+                    addCommandLog("模拟模式：已连接 " + device.name);
                 } catch (Exception error) {
-                    addCommandLog("连接失败：" + formatError(error));
+                    addCommandLog("模拟连接失败：" + formatError(error));
                 } finally {
                     connecting = false;
                     scanning = false;
                     notifyChanged();
                 }
+            });
+            return;
+        }
+
+        // 使用 PSDK createConnectionClassic 进行连接
+        final BluetoothDevice bluetoothDevice = bluetoothAdapter.getRemoteDevice(device.address);
+        connecting = true;
+        notifyChanged();
+
+        final Connection connection = Bluetooth.getInstance().createConnectionClassic(bluetoothDevice, new ConnectListener() {
+            @Override
+            public void onConnectSuccess(ConnectedDevice connectedDevice) {
+                mainHandler.post(() -> {
+                    try {
+                        tracingConnection = new TracingEmapiConnection(new ConnectedDeviceEmapiConnection(connectedDevice));
+                        printer = EmapiPrinter.builder().connection(tracingConnection).fallbackMtu(512).build();
+                        startReportLoop();
+                        connected = true;
+                        connectedDeviceName = device.name;
+                        addCommandLog("已连接：" + device.name);
+                    } catch (Exception error) {
+                        addCommandLog("连接初始化失败：" + formatError(error));
+                    } finally {
+                        connecting = false;
+                        scanning = false;
+                        notifyChanged();
+                    }
+                });
+            }
+
+            @Override
+            public void onConnectFail(String errMsg, Throwable e) {
+                mainHandler.post(() -> {
+                    connecting = false;
+                    scanning = false;
+                    addCommandLog("连接失败：" + errMsg);
+                    notifyChanged();
+                });
+            }
+
+            @Override
+            public void onConnectionStateChanged(BluetoothDevice btDevice, int state) {
+                String msg;
+                switch (state) {
+                    case Connection.STATE_CONNECTING:
+                        msg = "连接中...";
+                        break;
+                    case Connection.STATE_PAIRING:
+                        msg = "配对中...";
+                        break;
+                    case Connection.STATE_PAIRED:
+                        msg = "配对成功";
+                        break;
+                    case Connection.STATE_CONNECTED:
+                        msg = "已连接";
+                        break;
+                    case Connection.STATE_DISCONNECTED:
+                        msg = "连接断开";
+                        break;
+                    case Connection.STATE_RELEASED:
+                        msg = "连接已销毁";
+                        break;
+                    default:
+                        msg = null;
+                        break;
+                }
+                if (msg != null) {
+                    final String statusMsg = msg;
+                    mainHandler.post(() -> addCommandLog(device.name + "：" + statusMsg));
+                }
             }
         });
+
+        if (connection == null) {
+            connecting = false;
+            addCommandLog("连接失败：无法创建连接对象");
+            notifyChanged();
+            return;
+        }
+
+        executor.execute(() -> connection.connect(null));
     }
 
     void disconnect() {
@@ -174,6 +285,11 @@ final class EmapiDemoController {
             if (printer != null) {
                 printer.close();
             }
+        } catch (Exception ignored) {
+        }
+        // 释放所有 PSDK 蓝牙连接
+        try {
+            Bluetooth.getInstance().clearConnections();
         } catch (Exception ignored) {
         }
         tracingConnection = null;
@@ -426,8 +542,12 @@ final class EmapiDemoController {
         });
     }
 
-    void destroy(Context context) {
-        stopScan(context);
+    void destroy() {
+        if (Bluetooth.getInstance().isInitialized()) {
+            Bluetooth.getInstance().stopDiscovery();
+            Bluetooth.getInstance().setDiscoveryListener(null);
+        }
+        scanning = false;
         reportLoopRunning = false;
         disconnect();
         executor.shutdownNow();
@@ -498,49 +618,6 @@ final class EmapiDemoController {
         return printer;
     }
 
-    private void addBondedDevices() {
-        try {
-            Set<BluetoothDevice> bondedDevices = bluetoothAdapter.getBondedDevices();
-            for (BluetoothDevice device : bondedDevices) {
-                devices.add(new DeviceModel(device.getName(), device.getAddress(), "Bluetooth Classic", false));
-            }
-        } catch (SecurityException error) {
-            addCommandLog("读取已配对设备失败：" + error.getMessage());
-        }
-    }
-
-    private void registerScanReceiver(Context context) {
-        if (scanReceiver != null) {
-            return;
-        }
-        scanReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                if (BluetoothDevice.ACTION_FOUND.equals(intent.getAction())) {
-                    BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                    if (device != null) {
-                        try {
-                            devices.add(new DeviceModel(device.getName(), device.getAddress(), "Bluetooth Classic", false));
-                            notifyChanged();
-                        } catch (SecurityException ignored) {
-                        }
-                    }
-                }
-            }
-        };
-        context.registerReceiver(scanReceiver, new IntentFilter(BluetoothDevice.ACTION_FOUND));
-    }
-
-    private void unregisterScanReceiver(Context context) {
-        if (scanReceiver == null) {
-            return;
-        }
-        try {
-            context.unregisterReceiver(scanReceiver);
-        } catch (IllegalArgumentException ignored) {
-        }
-        scanReceiver = null;
-    }
 
     private void addActualOutboundLog(String label, int traceStart) {
         if (tracingConnection == null) {

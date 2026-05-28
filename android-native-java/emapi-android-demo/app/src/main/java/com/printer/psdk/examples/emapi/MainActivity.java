@@ -1,17 +1,22 @@
 package com.printer.psdk.examples.emapi;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.text.InputType;
+import android.widget.Toast;
+
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -35,10 +40,13 @@ public final class MainActivity extends Activity implements EmapiDemoController.
     private static final int PICK_WIFI_FILE = 1;
     private static final int PICK_OTA_FILE = 2;
     private static final int PICK_ESC_IMAGE = 3;
+    private static final int REQUEST_BLUETOOTH_PERMISSIONS = 100;
 
     private EmapiDemoController controller;
     private LinearLayout root;
     private LinearLayout content;
+    private LinearLayout bottomPanel;
+    private boolean operationExpanded = true;
     private int page = 0;
     private int logTab = 0;
     private EditText activePathField;
@@ -53,8 +61,56 @@ public final class MainActivity extends Activity implements EmapiDemoController.
 
     @Override
     protected void onDestroy() {
-        controller.destroy(this);
+        controller.destroy();
         super.onDestroy();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == REQUEST_BLUETOOTH_PERMISSIONS) {
+            boolean allGranted = true;
+            for (int result : grantResults) {
+                if (result != PackageManager.PERMISSION_GRANTED) {
+                    allGranted = false;
+                    break;
+                }
+            }
+            if (allGranted) {
+                Toast.makeText(this, "蓝牙权限已获取", Toast.LENGTH_SHORT).show();
+                // 权限获取后自动开始扫描
+                controller.startScan(this);
+            } else {
+                Toast.makeText(this, "缺少蓝牙权限，扫描可能失败", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    private boolean checkBluetoothPermissions() {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.S) {
+            // Android 11 及以下需要定位权限
+            if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                    != PackageManager.PERMISSION_GRANTED) {
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION,
+                                Manifest.permission.ACCESS_COARSE_LOCATION},
+                        REQUEST_BLUETOOTH_PERMISSIONS);
+                return false;
+            }
+            return true;
+        }
+        // Android 12+ 需要 BLUETOOTH_SCAN 和 BLUETOOTH_CONNECT 权限
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN)
+                != PackageManager.PERMISSION_GRANTED
+                || ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_CONNECT)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.BLUETOOTH_SCAN,
+                            Manifest.permission.BLUETOOTH_CONNECT},
+                    REQUEST_BLUETOOTH_PERMISSIONS);
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -80,7 +136,7 @@ public final class MainActivity extends Activity implements EmapiDemoController.
         if (page == 1) {
             renderSettingsPage();
         } else if (controller.connected) {
-            renderFunctionPage();
+            renderFunctionPage(scrollView);
         } else {
             renderScanPage();
         }
@@ -133,7 +189,10 @@ public final class MainActivity extends Activity implements EmapiDemoController.
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                controller.startScan(MainActivity.this);
+                // 先检查蓝牙权限
+                if (checkBluetoothPermissions()) {
+                    controller.startScan(MainActivity.this);
+                }
             }
         });
         row.addView(start, new LinearLayout.LayoutParams(0, dp(48), 1));
@@ -142,7 +201,7 @@ public final class MainActivity extends Activity implements EmapiDemoController.
         stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                controller.stopScan(MainActivity.this);
+                controller.stopScan();
             }
         });
         row.addView(stop, new LinearLayout.LayoutParams(0, dp(48), 1));
@@ -194,11 +253,42 @@ public final class MainActivity extends Activity implements EmapiDemoController.
         content.addView(panel);
     }
 
-    private void renderFunctionPage() {
+    private void renderFunctionPage(ScrollView scrollView) {
         addPanel(controller.connectedDeviceName == null ? "EMAPI printer" : controller.connectedDeviceName,
             (controller.pendingActionLabel == null ? "等待操作" : "正在执行：" + controller.pendingActionLabel) + "\n" + (controller.simulationMode ? "模拟模式" : "真实蓝牙连接"));
         renderLogTabs();
-        renderOperationArea();
+
+        // 底部功能区，可收起展开
+        if (bottomPanel != null) {
+            root.removeView(bottomPanel);
+        }
+        bottomPanel = new LinearLayout(this);
+        bottomPanel.setOrientation(LinearLayout.VERTICAL);
+        bottomPanel.setBackgroundColor(0xffffffff);
+
+        // 切换按钮
+        final Button toggleBtn = compactButton(operationExpanded ? "功能区 ▲" : "功能区 ▼");
+        toggleBtn.setBackgroundColor(0xffe8e8e8);
+        toggleBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                operationExpanded = !operationExpanded;
+                render();
+            }
+        });
+        bottomPanel.addView(toggleBtn);
+
+        // 功能区内容
+        if (operationExpanded) {
+            LinearLayout wrapper = new LinearLayout(this);
+            wrapper.setOrientation(LinearLayout.VERTICAL);
+            wrapper.setPadding(dp(12), dp(8), dp(12), dp(12));
+            renderOperationArea(wrapper);
+            bottomPanel.addView(wrapper);
+        }
+
+        root.addView(bottomPanel, new LinearLayout.LayoutParams(
+            ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
     }
 
     private void renderLogTabs() {
@@ -238,8 +328,10 @@ public final class MainActivity extends Activity implements EmapiDemoController.
         }
     }
 
-    private void renderOperationArea() {
-        sectionTitle("功能区");
+    private void renderOperationArea(ViewGroup parent) {
+        TextView title = title("功能区");
+        title.setPadding(0, 0, 0, dp(6));
+        parent.addView(title);
         String[] labels = {"休眠关机", "打印自检页", "设置关机时间", "RFID UID", "RFID 信息", "纸张长度", "RFID 失败处理", "配网信息", "WIFI 状态", "热点信息", "WiFi 文件传输", "基本参数", "打印状态", "ESC 打印", "OTA 升级"};
         View.OnClickListener[] handlers = {
             new View.OnClickListener() { public void onClick(View v) { controller.sleepShutdown(); } },
@@ -267,15 +359,15 @@ public final class MainActivity extends Activity implements EmapiDemoController.
                 item.setOnClickListener(handlers[j]);
                 row.addView(item, new LinearLayout.LayoutParams(0, dp(54), 1));
             }
-            content.addView(row);
+            parent.addView(row);
         }
         TextView progress = body(controller.transferProgress());
         progress.setGravity(Gravity.CENTER);
-        content.addView(progress);
+        parent.addView(progress);
         ProgressBar bar = new ProgressBar(this, null, android.R.attr.progressBarStyleHorizontal);
         bar.setMax(Math.max(controller.transferTotalBytes, 1));
         bar.setProgress(controller.transferSentBytes);
-        content.addView(bar, matchWrap());
+        parent.addView(bar, matchWrap());
     }
 
     private void showShutdownDialog() {

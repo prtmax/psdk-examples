@@ -12,4 +12,5 @@ final class EscPrintOptions {
     int printMode = MODE_NORMAL;
     int thickness = 8;
     boolean compress = true;
+    boolean includePosition = false;
 }

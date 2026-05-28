@@ -3,6 +3,7 @@ plugins {
 }
 
 android {
+    namespace 'com.printer.psdk.examples.emapi'
     compileSdk 32
 
     defaultConfig {
@@ -13,12 +14,6 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-    }
-
-    sourceSets {
-        main {
-            java.srcDirs += '../../../../../../psdk/java/fruits/emapi/src/main/java'
-        }
     }
 
     buildTypes {
@@ -35,7 +30,10 @@ android {
 }
 
 dependencies {
+    implementation fileTree(dir: "libs", include: ["*.aar"])
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.2'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation files('libs/fat-generic-super-fat-sdk-0.1.18-GA.jar')
 }
