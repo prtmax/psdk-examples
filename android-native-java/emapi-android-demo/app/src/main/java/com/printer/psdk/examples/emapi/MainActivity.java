@@ -30,6 +30,7 @@ import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
+import com.printer.psdk.frame.father.types.HexOutput;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -320,7 +321,7 @@ public final class MainActivity extends Activity implements EmapiDemoController.
             card.addView(title(entry.title));
             card.addView(body(entry.message));
             if (entry.bytes != null) {
-                TextView bytes = body(Hex.command(entry.bytes));
+                TextView bytes = body(HexOutput.def().format(entry.bytes));
                 bytes.setTextSize(12);
                 card.addView(bytes);
             }
