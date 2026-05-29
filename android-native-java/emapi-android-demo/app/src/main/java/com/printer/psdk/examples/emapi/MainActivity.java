@@ -477,13 +477,13 @@ public final class MainActivity extends Activity implements EmapiDemoController.
             }
         });
         final RadioGroup paper = radioGroup(new String[]{"连续", "间隙", "黑标"});
-        final RadioGroup mode = radioGroup(new String[]{"普通", "双重", "灰阶"});
+        final RadioGroup mode = radioGroup(new String[]{"普通", "双色", "灰阶"});
         final SeekBar thickness = new SeekBar(this);
         thickness.setMax(15);
         thickness.setProgress(8);
-        final TextView thicknessLabel = body("厚度：8");
+        final TextView thicknessLabel = body("浓度：8");
         thickness.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-            @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) { thicknessLabel.setText("厚度：" + progress); }
+            @Override public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) { thicknessLabel.setText("浓度：" + progress); }
             @Override public void onStartTrackingTouch(SeekBar seekBar) { }
             @Override public void onStopTrackingTouch(SeekBar seekBar) { }
         });

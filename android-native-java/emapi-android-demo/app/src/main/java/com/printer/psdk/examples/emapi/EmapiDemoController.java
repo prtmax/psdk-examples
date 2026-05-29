@@ -590,8 +590,10 @@ final class EmapiDemoController {
                 while (reportLoopRunning && printer != null) {
                     try {
                         handleReport(printer.readNextReport());
-                    } catch (Exception ignored) {
-                        return;
+                    } catch (EmapiProtocolException e) {
+                      // 超时正常，继续等
+                    } catch (EmapiConnectionException e) {
+                        break;     // 连接断开才退出
                     }
                 }
             }

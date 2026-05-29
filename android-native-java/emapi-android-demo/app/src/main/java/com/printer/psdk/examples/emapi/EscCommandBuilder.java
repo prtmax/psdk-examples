@@ -48,7 +48,7 @@ final class EscCommandBuilder {
             .wakeup()
             .enable()
             .paperType(EPaperType.builder().type(paperTypeEnum).build())
-//            .enableGray(imageMode)
+            .enableMode(actual.printMode)
             .thickness(actual.thickness)
             .image(EImage.builder()
                 .image(sourceImage)
