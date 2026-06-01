@@ -358,7 +358,7 @@ typedef NS_ENUM(NSInteger, EMAPIDemoPage) {
     UIButton *pick = [self buttonWithTitle:@"选择图片" action:@selector(pickEscImage)];
     self.escPaperControl = [[UISegmentedControl alloc] initWithItems:@[@"连续", @"间隙", @"黑标"]];
     self.escPaperControl.selectedSegmentIndex = 0;
-    self.escModeControl = [[UISegmentedControl alloc] initWithItems:@[@"普通", @"双重", @"灰阶"]];
+    self.escModeControl = [[UISegmentedControl alloc] initWithItems:@[@"普通", @"双色", @"灰阶"]];
     self.escModeControl.selectedSegmentIndex = 0;
     self.escThicknessSlider = [[UISlider alloc] init];
     self.escThicknessSlider.minimumValue = 0;
