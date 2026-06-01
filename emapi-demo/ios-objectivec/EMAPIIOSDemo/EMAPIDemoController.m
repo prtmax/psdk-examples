@@ -2,6 +2,10 @@
 
 #if __has_include(<emapi/emapi.h>)
 #import <emapi/emapi.h>
+
+@interface EMAPIPrinter (EMAPIDemoReportReading)
+- (nullable EMAPIReport *)readNextReportWithError:(NSError **)error;
+@end
 #endif
 
 NSString * const EMAPIDemoControllerDidChangeNotification = @"EMAPIDemoControllerDidChangeNotification";
@@ -14,10 +18,18 @@ NSString * const EMAPIDemoControllerDidChangeNotification = @"EMAPIDemoControlle
 @property(nonatomic, strong) NSMutableArray<EMAPIDemoLogEntry *> *reportLogs;
 @property(nonatomic, strong, nullable) EMAPIDemoDevice *activeDevice;
 @property(nonatomic, strong, nullable) id printer;
+@property(nonatomic, strong) dispatch_queue_t reportQueue;
+@property(nonatomic, assign) BOOL reportLoopRunning;
+@property(nonatomic, assign) NSUInteger reportLoopGeneration;
 
 @end
 
 @implementation EMAPIDemoController
+
+- (void)dealloc
+{
+    [self stopReportLoop];
+}
 
 - (instancetype)init
 {
@@ -28,6 +40,7 @@ NSString * const EMAPIDemoControllerDidChangeNotification = @"EMAPIDemoControlle
         _commandLogs = [NSMutableArray array];
         _reportLogs = [NSMutableArray array];
         _bluetoothEnabled = YES;
+        _reportQueue = dispatch_queue_create("com.prtmax.emapi.demo.report-loop", DISPATCH_QUEUE_SERIAL);
     }
     return self;
 }
@@ -90,11 +103,8 @@ NSString * const EMAPIDemoControllerDidChangeNotification = @"EMAPIDemoControlle
 #if __has_include(<emapi/emapi.h>)
         if (device.connectedDevice) {
             EMAPIPrinter *printer = [EMAPIPrinter printerWithConnectedDevice:device.connectedDevice timeout:3 maxRetries:1 mtu:self.knownMtu fallbackMtu:512];
-            __weak typeof(self) weakSelf = self;
-            printer.reportHandler = ^(EMAPIReport *report) {
-                [weakSelf handleReport:report];
-            };
             self.printer = printer;
+            [self startReportLoopForPrinter:printer];
         } else {
             [self addCommandLog:@"真实设备连接需要注入 PSDK ConnectedDevice；当前仅保留 EMAPI 调用边界"];
         }
@@ -112,6 +122,7 @@ NSString * const EMAPIDemoControllerDidChangeNotification = @"EMAPIDemoControlle
 
 - (void)disconnect
 {
+    [self stopReportLoop];
     self.activeDevice = nil;
     self.printer = nil;
     self.connected = NO;
@@ -426,6 +437,42 @@ NSString * const EMAPIDemoControllerDidChangeNotification = @"EMAPIDemoControlle
     }];
 }
 
+- (void)startReportLoopForPrinter:(id)printer
+{
+#if __has_include(<emapi/emapi.h>)
+    [self stopReportLoop];
+    self.reportLoopRunning = YES;
+    self.reportLoopGeneration += 1;
+    NSUInteger generation = self.reportLoopGeneration;
+    __weak typeof(self) weakSelf = self;
+    dispatch_async(self.reportQueue, ^{
+        while (YES) {
+            __strong typeof(weakSelf) self = weakSelf;
+            if (!self || !self.reportLoopRunning || self.reportLoopGeneration != generation || self.printer != printer) {
+                break;
+            }
+
+            NSError *error = nil;
+            EMAPIReport *report = [(EMAPIPrinter *)printer readNextReportWithError:&error];
+            if (report) {
+                [self handleReport:report fromGeneration:generation];
+                continue;
+            }
+            if ([error.domain isEqualToString:EMAPIErrorDomain] && error.code == EMAPIErrorTimeout) {
+                continue;
+            }
+            break;
+        }
+    });
+#endif
+}
+
+- (void)stopReportLoop
+{
+    self.reportLoopRunning = NO;
+    self.reportLoopGeneration += 1;
+}
+
 - (void)runPrinterAction:(NSString *)label requestBytes:(NSData *)requestBytes block:(NSString *(^)(NSError **error))block
 {
     if ([self isBusy]) {
@@ -537,6 +584,20 @@ NSString * const EMAPIDemoControllerDidChangeNotification = @"EMAPIDemoControlle
 
 - (void)handleReport:(id)report
 {
+    [self handleReport:report fromGeneration:self.reportLoopGeneration];
+}
+
+- (void)handleReport:(id)report fromGeneration:(NSUInteger)generation
+{
+    if (!NSThread.isMainThread) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self handleReport:report fromGeneration:generation];
+        });
+        return;
+    }
+    if (!self.connected || self.reportLoopGeneration != generation) {
+        return;
+    }
 #if __has_include(<emapi/emapi.h>)
     NSString *message = @"未知上报";
     NSData *bytes = nil;
