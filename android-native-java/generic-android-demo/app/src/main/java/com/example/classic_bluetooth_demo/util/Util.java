@@ -58,6 +58,76 @@ public class Util {
     return strBuilder.toString();
   }
 
+  /**
+   * 解析 TSPL 打印机状态
+   * @return 状态描述字符串
+   */
+  public static String parseTsplStatus(byte[] bytes) {
+    if (bytes == null || bytes.length == 0) {
+      return "失败";
+    }
+    if (bytes.length == 1) {
+      if (bytes[0] == 0x00) {
+        return "打印机正常";
+      }
+      StringBuilder sb = new StringBuilder();
+      if ((bytes[0] & 0x01) == 0x01) sb.append("打印机开盖 ");
+      if ((bytes[0] & 0x02) == 0x02) sb.append("纸张错误 ");
+      if ((bytes[0] & 0x04) == 0x04) sb.append("打印机缺纸 ");
+      if ((bytes[0] & 0x10) == 0x10) sb.append("打印机暂停 ");
+      if ((bytes[0] & 0x20) == 0x20) sb.append("打印机打印中 ");
+      if ((bytes[0] & 0x80) == 0x80) sb.append("打印机过热 ");
+      if (sb.length() > 0) return sb.toString().trim();
+      return "打印机正常";
+    }
+    return "未知状态";
+  }
+
+  /**
+   * 解析 CPCL 打印机状态
+   * @return 状态描述字符串
+   */
+  public static String parseCpclStatus(byte[] bytes) {
+    if (bytes == null || bytes.length == 0) {
+      return "失败";
+    }
+    if (bytes.length >= 2 && bytes[0] == 0x4f && bytes[1] == 0x4b) {
+      return "打印机正常";
+    }
+    if (bytes[0] == 0x00) {
+      return "打印机正常";
+    }
+    StringBuilder sb = new StringBuilder();
+    if ((bytes[0] & 1) != 0) sb.append("缺纸 ");
+    if ((bytes[0] & 4) != 0) sb.append("低电压 ");
+    if ((bytes[0] & 8) != 0) sb.append("打印中 ");
+    if ((bytes[0] & 16) != 0) sb.append("纸舱盖打开 ");
+    if (sb.length() > 0) return sb.toString().trim();
+    return "打印机正常";
+  }
+
+  /**
+   * 解析 ESC 打印机状态
+   * @return 状态描述字符串
+   */
+  public static String parseEscStatus(byte[] bytes) {
+    if (bytes == null || bytes.length == 0) {
+      return "失败";
+    }
+    if (bytes.length == 1) {
+      String s = "状态：";
+      boolean isok = true;
+      if ((bytes[0] & 0x01) == 0x01) { s += "正在打印 "; isok = false; }
+      if ((bytes[0] & 0x02) == 0x02) { s += "纸舱盖开 "; isok = false; }
+      if ((bytes[0] & 0x04) == 0x04) { s += "缺纸 "; isok = false; }
+      if ((bytes[0] & 0x08) == 0x08) { s += "电池电压低 "; isok = false; }
+      if ((bytes[0] & 0x10) == 0x10) { s += "打印头过热 "; isok = false; }
+      if (isok) s += "良好";
+      return s;
+    }
+    return "未知状态";
+  }
+
   /// 缩放
   public static Bitmap resize(Bitmap bitmap, int width, int height) {
     if (width == 0 && height == 0) {

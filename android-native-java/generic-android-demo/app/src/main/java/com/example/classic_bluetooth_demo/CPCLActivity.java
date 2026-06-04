@@ -142,7 +142,7 @@ public class CPCLActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(CPCLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(CPCLActivity.this, "请先连接设备");
           return;
         }
         GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().page(CPage.builder().width(100).height(100).build())
@@ -157,7 +157,7 @@ public class CPCLActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(CPCLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(CPCLActivity.this, "请先连接设备");
           return;
         }
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.raw.logo);
@@ -177,7 +177,7 @@ public class CPCLActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(CPCLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(CPCLActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.OPERATE_STATUS;
@@ -191,7 +191,7 @@ public class CPCLActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(CPCLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(CPCLActivity.this, "请先连接设备");
           return;
         }
         GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().page(CPage.builder().width(500).height(100).build())
@@ -205,7 +205,7 @@ public class CPCLActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(CPCLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(CPCLActivity.this, "请先连接设备");
           return;
         }
         GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().page(CPage.builder().width(100).height(100).build())
@@ -219,7 +219,7 @@ public class CPCLActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(CPCLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(CPCLActivity.this, "请先连接设备");
           return;
         }
         if (sampleEdit.getText().toString().trim().equals("")) {
@@ -256,7 +256,7 @@ public class CPCLActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(CPCLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(CPCLActivity.this, "请先连接设备");
           return;
         }
         if (sampleEdit.getText().toString().trim().equals("")) {
@@ -318,7 +318,7 @@ public class CPCLActivity extends Activity {
           UpdatePrinterCPCL updatePrinter = new UpdatePrinterCPCL(connection, firmwareData, otaHandler);
           updatePrinter.startUpdate();
         } else {
-          Toast.makeText(CPCLActivity.this, "读取固件文件失败", Toast.LENGTH_SHORT).show();
+          Util.show(CPCLActivity.this, "读取固件文件失败");
           if (progressDialog != null) {
             progressDialog.dismiss();
             progressDialog = null;
@@ -428,7 +428,7 @@ public class CPCLActivity extends Activity {
           if (progressDialog != null) {
             progressDialog.dismiss();
           }
-          Toast.makeText(CPCLActivity.this, "打印机升级失败", Toast.LENGTH_SHORT).show();
+          Util.show(CPCLActivity.this, "打印机升级失败");
           break;
         }
         case MSG_OTA_DATA_START_PRINTER: {
@@ -443,7 +443,7 @@ public class CPCLActivity extends Activity {
             progressDialog.dismiss();
             progressDialog = null;
           }
-          Toast.makeText(CPCLActivity.this, "打印机升级完成", Toast.LENGTH_SHORT).show();
+          Util.show(CPCLActivity.this, "打印机升级完成");
           break;
         }
       }
@@ -489,8 +489,7 @@ public class CPCLActivity extends Activity {
     switch (readMark) {
       case OPERATE_STATUS:
         readMark = ReadMark.NONE;
-        String status = printerStatus(bytes);
-        Util.show(CPCLActivity.this, status);
+        Util.show(CPCLActivity.this, Util.parseCpclStatus(bytes));
         break;
       case OPERATE_PRINTERSN:
         readMark = ReadMark.NONE;
@@ -567,29 +566,9 @@ public class CPCLActivity extends Activity {
    *
    * @return OK：准备就绪  CoverOpened：纸舱盖打开 NoPaper：缺纸  Printing：正在打印中 BatteryLow：低电压
    */
+  @Deprecated
   public String printerStatus(byte[] Rep) {
-    if (Rep == null) {
-      return "失败";
-    }
-    if (Rep[0] == 0x00) {
-      return "OK";
-    }
-    if ((Rep[0] == 0x4f) && (Rep[1] == 0x4b)) {
-      return "OK";
-    }
-    if ((Rep[0] & 16) != 0) {
-      return "CoverOpened";
-    }
-    if ((Rep[0] & 1) != 0) {
-      return "NoPaper";
-    }
-    if ((Rep[0] & 8) != 0) {
-      return "Printing";
-    }
-    if ((Rep[0] & 4) != 0) {
-      return "BatteryLow";
-    }
-    return "OK";
+    return Util.parseCpclStatus(Rep);
   }
 
   @Override

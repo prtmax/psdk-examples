@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.example.classic_bluetooth_demo.util.PrintUtil;
+import com.example.classic_bluetooth_demo.util.Util;
 import com.printer.psdk.device.adapter.ConnectedDevice;
 import com.printer.psdk.device.adapter.types.WroteReporter;
 import com.printer.psdk.device.bluetooth.Bluetooth;
@@ -92,7 +93,7 @@ public class ZPLActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(ZPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(ZPLActivity.this, "请先连接设备");
           return;
         }
         //传入zpl指令字符串 生成byte数据
@@ -205,7 +206,7 @@ public class ZPLActivity extends Activity {
           "^FH\\^FD1^FS\n" +
           "^XZ").build()).command().binary();
         boolean result = safeWrite(printData);
-        show(result ? "成功" : "失败");
+        Util.show(ZPLActivity.this, result ? "成功" : "失败");
       }
     });
   }
@@ -220,10 +221,7 @@ public class ZPLActivity extends Activity {
     }
   }
 
-  private void show(String message) {
-    if (message == null) return;
-    Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-  }
+
 
   private boolean isConnected() {
     try {

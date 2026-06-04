@@ -165,7 +165,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(ESCActivity.this, "请先连接设备");
           return;
         }
         if (sampleEdit.getText().toString().trim().equals("")) {
@@ -203,7 +203,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(ESCActivity.this, "请先连接设备");
           return;
         }
         if (sampleEdit.getText().toString().trim().equals("")) {
@@ -241,7 +241,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(ESCActivity.this, "请先连接设备");
           return;
         }
         if (sampleEdit.getText().toString().trim().equals("")) {
@@ -280,7 +280,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(ESCActivity.this, "请先连接设备");
           return;
         }
         if (thickness.getText() != null && thickness.length() != 0) {
@@ -369,7 +369,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(ESCActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.NONE;
@@ -381,7 +381,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(ESCActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.OPERATE_TIME;
@@ -393,7 +393,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(ESCActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.OPERATE_PAPERTYPE;
@@ -407,7 +407,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(ESCActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.OPERATE_PAPERTYPE;
@@ -421,7 +421,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(ESCActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.OPERATE_NFC_PAPER;
@@ -433,7 +433,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(ESCActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.OPERATE_NFC_UID;
@@ -445,7 +445,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(ESCActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.OPERATE_NFC_USED_LENGTH;
@@ -457,7 +457,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(ESCActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.OPERATE_NFC_REST_LENGTH;
@@ -469,7 +469,7 @@ public class ESCActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(ESCActivity.this, "请先连接设备");
           return;
         }
         // 打开文件选择器选择固件文件
@@ -498,7 +498,7 @@ public class ESCActivity extends Activity {
           updatePrinter.setStartAddress(0x1020000);
           updatePrinter.startUpdate();
         } else {
-          Toast.makeText(ESCActivity.this, "读取固件文件失败", Toast.LENGTH_SHORT).show();
+          Util.show(ESCActivity.this, "读取固件文件失败");
           if (progressDialog != null) {
             progressDialog.dismiss();
             progressDialog = null;
@@ -596,7 +596,7 @@ public class ESCActivity extends Activity {
           if (progressDialog != null) {
             progressDialog.dismiss();
           }
-          Toast.makeText(ESCActivity.this, "打印机升级失败", Toast.LENGTH_SHORT).show();
+          Util.show(ESCActivity.this, "打印机升级失败");
           break;
         }
         case MSG_OTA_DATA_START_PRINTER: {
@@ -611,7 +611,7 @@ public class ESCActivity extends Activity {
             progressDialog.dismiss();
             progressDialog = null;
           }
-          Toast.makeText(ESCActivity.this, "打印机升级完成", Toast.LENGTH_SHORT).show();
+          Util.show(ESCActivity.this, "打印机升级完成");
           break;
         }
       }
@@ -730,35 +730,7 @@ public class ESCActivity extends Activity {
     switch (readMark) {
       case OPERATE_STATUS://主动查询状态的时候走这里
         readMark = ReadMark.NONE;
-        if (bytes.length == 1) {
-          String s = "状态：";
-          boolean isok = true;
-          if ((bytes[0] & 0x01) == 0x01) {
-            s += "正在打印 ";
-            isok = false;
-          }
-          if ((bytes[0] & 0x02) == 0x02) {
-            s += "纸舱盖开 ";
-            isok = false;
-          }
-          if ((bytes[0] & 0x04) == 0x04) {
-            s += "缺纸 ";
-            isok = false;
-          }
-          if ((bytes[0] & 0x08) == 0x08) {
-            s += "电池电压低 ";
-            isok = false;
-          }
-          if ((bytes[0] & 0x10) == 0x10) {
-            s += "打印头过热 ";
-            isok = false;
-          }
-          if (isok) {
-            s += "良好";
-          }
-          Util.show(ESCActivity.this, s);
-        }
-
+        Util.show(ESCActivity.this, Util.parseEscStatus(bytes));
         break;
       case OPERATE_BATVOL:
         readMark = ReadMark.NONE;

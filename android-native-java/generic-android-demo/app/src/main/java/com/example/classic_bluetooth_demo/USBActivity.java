@@ -11,8 +11,10 @@ import android.os.Message;
 import android.view.View;
 import android.widget.*;
 import com.example.classic_bluetooth_demo.util.PrintUtil;
+import com.example.classic_bluetooth_demo.util.Util;
 import com.printer.psdk.cpcl.GenericCPCL;
 import com.printer.psdk.cpcl.args.*;
+import com.printer.psdk.esc.GenericESC;
 import com.printer.psdk.cpcl.mark.CodeRotation;
 import com.printer.psdk.device.adapter.ReadOptions;
 import com.printer.psdk.device.adapter.types.WroteReporter;
@@ -76,15 +78,28 @@ public class USBActivity extends Activity {
           switch_Usb.setText("打开USB");
           isOpen = false;
         } else {
-          USBConnectedDevice usbConnectedDevice = usb.openUsb();
-          if (usbConnectedDevice != null) {
-            PrintUtil.getInstance().init(usbConnectedDevice);
-            switch_Usb.setText("关闭USB");
-            isOpen = true;
-          } else {
-            showMessage("打开失败，检查是否有可用的USB端口");
-          }
-
+          switch_Usb.setEnabled(false);
+          switch_Usb.setText("正在打开...");
+          new Thread(new Runnable() {
+            @Override
+            public void run() {
+              USBConnectedDevice usbConnectedDevice = usb.openUsb();
+              runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                  if (usbConnectedDevice != null) {
+                    PrintUtil.getInstance().init(usbConnectedDevice);
+                    switch_Usb.setText("关闭USB");
+                    isOpen = true;
+                  } else {
+                    Util.show(USBActivity.this, "打开失败，检查是否有可用的USB端口");
+                    switch_Usb.setText("打开USB");
+                  }
+                  switch_Usb.setEnabled(true);
+                }
+              });
+            }
+          }).start();
         }
       }
 
@@ -93,7 +108,7 @@ public class USBActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isOpen) {
-          showMessage("未打开USB端口");
+          Util.show(USBActivity.this, "未打开USB端口");
           return;
         }
         Intent intent = new Intent(USBActivity.this, PDFActivity.class);
@@ -104,7 +119,7 @@ public class USBActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isOpen) {
-          showMessage("未打开USB端口");
+          Util.show(USBActivity.this, "未打开USB端口");
           return;
         }
         imageTest(1);
@@ -114,7 +129,7 @@ public class USBActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isOpen) {
-          showMessage("未打开USB端口");
+          Util.show(USBActivity.this, "未打开USB端口");
           return;
         }
         if (curCmd.equals("tspl")) {
@@ -206,17 +221,34 @@ public class USBActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isOpen) {
-          showMessage("未打开USB端口");
+          Util.show(USBActivity.this, "未打开USB端口");
           return;
         }
-        GenericTSPL _gtspl = PrintUtil.getInstance().tspl().clear().status();
-        byte[] result = safeWriteAndRead(_gtspl);
-        if(result !=null){
-          printerStatus(result);
-        }else {
-          showMessage("未查到状态信息");
+        if ("tspl".equals(curCmd)) {
+          GenericTSPL _gtspl = PrintUtil.getInstance().tspl().clear().status();
+          byte[] result = safeWriteAndRead(_gtspl);
+          if (result != null) {
+            tsplStatus(result);
+          } else {
+            Util.show(USBActivity.this, "未查到状态信息");
+          }
+        } else if ("cpcl".equals(curCmd)) {
+          GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().status();
+          byte[] result = safeWriteAndRead(_gcpcl);
+          if (result != null) {
+            cpclStatus(result);
+          } else {
+            Util.show(USBActivity.this, "未查到状态信息");
+          }
+        } else if ("esc".equals(curCmd)) {
+          GenericESC _gesc = PrintUtil.getInstance().esc().state();
+          byte[] result = safeWriteAndRead(_gesc);
+          if (result != null) {
+            escStatus(result);
+          } else {
+            Util.show(USBActivity.this, "未查到状态信息");
+          }
         }
-
       }
     });
 
@@ -225,12 +257,27 @@ public class USBActivity extends Activity {
   protected void onResume() {
     super.onResume();
     if(!isOpen){
-      USBConnectedDevice usbConnectedDevice = usb.openUsb();
-      if (usbConnectedDevice != null) {
-        PrintUtil.getInstance().init(usbConnectedDevice);
-        switch_Usb.setText("关闭USB");
-        isOpen = true;
-      }
+      switch_Usb.setEnabled(false);
+      switch_Usb.setText("正在打开...");
+      new Thread(new Runnable() {
+        @Override
+        public void run() {
+          USBConnectedDevice usbConnectedDevice = usb.openUsb();
+          runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+              if (usbConnectedDevice != null) {
+                PrintUtil.getInstance().init(usbConnectedDevice);
+                switch_Usb.setText("关闭USB");
+                isOpen = true;
+              } else {
+                switch_Usb.setText("打开USB");
+              }
+              switch_Usb.setEnabled(true);
+            }
+          });
+        }
+      }).start();
     }
   }
   public void imageTest(int i) {
@@ -329,12 +376,12 @@ public class USBActivity extends Activity {
     public void handleMessage(Message msg) {
       switch (msg.what) {
         case USB.OPEN:
-          showMessage("USB已打开！");
+          Util.show(USBActivity.this, "USB已打开！");
           switch_Usb.setText("关闭USB");
           isOpen = true;
           break;
         case USB.ATTACHED:
-          showMessage("监测到设备！");
+          Util.show(USBActivity.this, "监测到设备！");
           USBConnectedDevice usbConnectedDevice = usb.openUsb();
           if (usbConnectedDevice != null) {
             PrintUtil.getInstance().init(usbConnectedDevice);
@@ -343,7 +390,7 @@ public class USBActivity extends Activity {
           }
           break;
         case USB.DETACHED:
-          showMessage("设备已移除！");
+          Util.show(USBActivity.this, "设备已移除！");
           switch_Usb.setText("打开USB");
           isOpen = false;
           break;
@@ -352,31 +399,18 @@ public class USBActivity extends Activity {
     }
 
   }
-  public void printerStatus(byte[] bytes) {
-    if (bytes.length == 1) {
-      if (bytes[0] == 0x00) {
-        showMessage("打印机正常");
-      }
-      if ((bytes[0] & 0x01) == 0x01) {
-        showMessage("打印机开盖");
-      }
-      if ((bytes[0] & 0x02) == 0x02) {
-        showMessage("纸张错误");
-      }
-      if ((bytes[0] & 0x04) == 0x04) {
-        showMessage("打印机缺纸");
-      }
-      if ((bytes[0] & 0x20) == 0x20) {
-        showMessage("打印机打印中");
-      }
-      if ((bytes[0] & 0x10) == 0x10) {
-        showMessage("打印机暂停");
-      }
-      if ((bytes[0] & 0x80) == 0x80) {
-        showMessage("打印机过热");
-      }
-    }
+  public void tsplStatus(byte[] bytes) {
+    Util.show(USBActivity.this, Util.parseTsplStatus(bytes));
   }
+
+  private void cpclStatus(byte[] bytes) {
+    Util.show(USBActivity.this, Util.parseCpclStatus(bytes));
+  }
+
+  private void escStatus(byte[] bytes) {
+    Util.show(USBActivity.this, Util.parseEscStatus(bytes));
+  }
+
   //    private void dataListen(ConnectedDevice connectedDevice) {
 //        DataListener.with(connectedDevice).listen(new ListenAction() {
 //            @Override
@@ -408,10 +442,6 @@ public class USBActivity extends Activity {
     } catch (Exception e) {
       e.printStackTrace();
     }
-  }
-
-  private void showMessage(String s) {
-    Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
   }
 
   @Override

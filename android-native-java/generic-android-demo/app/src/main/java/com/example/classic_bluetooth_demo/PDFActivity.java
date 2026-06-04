@@ -10,10 +10,7 @@ import android.provider.MediaStore;
 import android.view.View;
 import android.widget.*;
 import androidx.viewpager.widget.ViewPager;
-import com.example.classic_bluetooth_demo.util.FileChooseUtil;
-import com.example.classic_bluetooth_demo.util.ImagePagerAdapter;
-import com.example.classic_bluetooth_demo.util.PdfUtil;
-import com.example.classic_bluetooth_demo.util.PrintUtil;
+import com.example.classic_bluetooth_demo.util.*;
 import com.printer.psdk.cpcl.GenericCPCL;
 import com.printer.psdk.cpcl.args.*;
 import com.printer.psdk.device.adapter.types.WroteReporter;
@@ -86,7 +83,7 @@ public class PDFActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (bitmaps == null) {
-          showMessage("未选择PDF");
+          Util.show(PDFActivity.this, "未选择PDF");
           return;
         }
         for (Bitmap bitmap : bitmaps) {
@@ -106,7 +103,7 @@ public class PDFActivity extends Activity {
       switch (requestCode) {
         case PICK_PDF:
           if (!file_path.toLowerCase().contains("pdf")) {
-            showMessage("请选择后缀为pdf文件");
+            Util.show(PDFActivity.this, "请选择后缀为pdf文件");
             return;
           }
           PdfUtil.showLoading(this, "加载中。。。");
@@ -141,7 +138,7 @@ public class PDFActivity extends Activity {
           break;
       }
     } else {
-      showMessage("未选择文件");
+      Util.show(PDFActivity.this, "未选择文件");
     }
   }
 
@@ -152,7 +149,7 @@ public class PDFActivity extends Activity {
 
   public void imageTest(Bitmap rawBitmap) {
     if (et_width.getText().toString().isEmpty() || et_height.getText().toString().isEmpty()) {
-      showMessage("纸张宽高不能为空");
+      Util.show(PDFActivity.this, "纸张宽高不能为空");
       return;
     }
     int pageWidth = Integer.parseInt(et_width.getText().toString());
@@ -241,16 +238,14 @@ public class PDFActivity extends Activity {
       if (!reporter.isOk()) {
         throw new IOException("写入数据失败", reporter.getException());
       }
-      showMessage("发送成功");
+      Util.show(PDFActivity.this, "发送成功");
     } catch (Exception e) {
       e.printStackTrace();
-      showMessage("发送失败,请尝试重新连接");
+      Util.show(PDFActivity.this, "发送失败,请尝试重新连接");
     }
   }
 
-  private void showMessage(String s) {
-    Toast.makeText(this, s, Toast.LENGTH_SHORT).show();
-  }
+
 
   @Override
   protected void onDestroy() {

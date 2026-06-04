@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
 import com.example.classic_bluetooth_demo.util.ReadMark;
+import com.example.classic_bluetooth_demo.util.Util;
 import com.printer.psdk.device.adapter.ConnectedDevice;
 import com.printer.psdk.device.adapter.types.WroteReporter;
 import com.printer.psdk.device.bluetooth.Bluetooth;
@@ -127,7 +128,7 @@ public class ESCWIFIActivity extends Activity {
       @Override
       public void onClick(View view) {
         if (!isConnected()) {
-          Toast.makeText(ESCWIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(ESCWIFIActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.OPERATE_WIFI_LINK_STATE;
@@ -139,7 +140,7 @@ public class ESCWIFIActivity extends Activity {
       @Override
       public void onClick(View view) {
         if (!isConnected()) {
-          Toast.makeText(ESCWIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(ESCWIFIActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.OPERATE_GET_KEY;
@@ -151,7 +152,7 @@ public class ESCWIFIActivity extends Activity {
       @Override
       public void onClick(View view) {
         if (!isConnected()) {
-          Toast.makeText(ESCWIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(ESCWIFIActivity.this, "请先连接设备");
           return;
         }
         String wifiName = wifi_name.getText().toString().trim();
@@ -161,7 +162,7 @@ public class ESCWIFIActivity extends Activity {
           GenericESC _gesc = esc.setWifi(ESetWifi.builder().ssid(wifiName).password(wifiPwd).build());
           safeWrite(_gesc);
         } else {
-          Toast.makeText(ESCWIFIActivity.this, "名称或密码为空", Toast.LENGTH_LONG).show();
+          Util.show(ESCWIFIActivity.this, "名称或密码为空");
         }
       }
     });
@@ -169,7 +170,7 @@ public class ESCWIFIActivity extends Activity {
       @Override
       public void onClick(View view) {
         if (!isConnected()) {
-          Toast.makeText(ESCWIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(ESCWIFIActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.OPERATE_PRINTERSN;
@@ -182,12 +183,12 @@ public class ESCWIFIActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(ESCWIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(ESCWIFIActivity.this, "请先连接设备");
           return;
         }
         String key = et_key.getText().toString().trim();
         if (key.isEmpty()) {
-          Toast.makeText(ESCWIFIActivity.this, "请输入设备秘钥", Toast.LENGTH_SHORT).show();
+          Util.show(ESCWIFIActivity.this, "请输入设备秘钥");
           return;
         }
         readMark = ReadMark.OPERATE_SET_KEY;
@@ -200,7 +201,7 @@ public class ESCWIFIActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(ESCWIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(ESCWIFIActivity.this, "请先连接设备");
           return;
         }
         List<String> hosts = new ArrayList<>();
@@ -221,7 +222,7 @@ public class ESCWIFIActivity extends Activity {
           }
         }
         if (hosts.isEmpty()) {
-          Toast.makeText(ESCWIFIActivity.this, "请至少选择或输入一个域名", Toast.LENGTH_SHORT).show();
+          Util.show(ESCWIFIActivity.this, "请至少选择或输入一个域名");
           return;
         }
         readMark = ReadMark.OPERATE_SET_HOST;

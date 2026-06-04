@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
 import com.example.classic_bluetooth_demo.util.ReadMark;
+import com.example.classic_bluetooth_demo.util.Util;
 import com.printer.psdk.device.adapter.ConnectedDevice;
 import com.printer.psdk.device.adapter.types.WroteReporter;
 import com.printer.psdk.device.bluetooth.Bluetooth;
@@ -128,7 +129,7 @@ public class WIFIActivity extends Activity {
       @Override
       public void onClick(View view) {
         if (!isConnected()) {
-          Toast.makeText(WIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(WIFIActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.OPERATE_WIFI_NAME;
@@ -140,7 +141,7 @@ public class WIFIActivity extends Activity {
       @Override
       public void onClick(View view) {
         if (!isConnected()) {
-          Toast.makeText(WIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(WIFIActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.OPERATE_WIFI_PASSWORD;
@@ -152,7 +153,7 @@ public class WIFIActivity extends Activity {
       @Override
       public void onClick(View view) {
         if (!isConnected()) {
-          Toast.makeText(WIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(WIFIActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.OPERATE_WIFI_LINK_STATE;
@@ -164,7 +165,7 @@ public class WIFIActivity extends Activity {
       @Override
       public void onClick(View view) {
         if (!isConnected()) {
-          Toast.makeText(WIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(WIFIActivity.this, "请先连接设备");
           return;
         }
         GenericWIFI _gesc = wifi.reset();
@@ -175,7 +176,7 @@ public class WIFIActivity extends Activity {
       @Override
       public void onClick(View view) {
         if (!isConnected()) {
-          Toast.makeText(WIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(WIFIActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.OPERATE_WIFI_DHCP;
@@ -187,7 +188,7 @@ public class WIFIActivity extends Activity {
       @Override
       public void onClick(View view) {
         if (!isConnected()) {
-          Toast.makeText(WIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(WIFIActivity.this, "请先连接设备");
           return;
         }
         String wifiName = wifi_name.getText().toString().trim();
@@ -196,7 +197,7 @@ public class WIFIActivity extends Activity {
           GenericWIFI _gesc = wifi.setSSID(WSetSSID.builder().name(wifiName).password(wifiPwd).build());
           safeWrite(_gesc);
         } else {
-          Toast.makeText(WIFIActivity.this, "名称或密码为空", Toast.LENGTH_LONG).show();
+          Util.show(WIFIActivity.this, "名称或密码为空");
         }
       }
     });
@@ -204,7 +205,7 @@ public class WIFIActivity extends Activity {
       @Override
       public void onClick(View view) {
         if (!isConnected()) {
-          Toast.makeText(WIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(WIFIActivity.this, "请先连接设备");
           return;
         }
         if(dhcp_radio.isChecked()){
@@ -216,15 +217,15 @@ public class WIFIActivity extends Activity {
         String mask = etNetmask.getText().toString();
         String gateway = etGateway.getText().toString();
         if (!isValidInput(ip)) {
-          Toast.makeText(WIFIActivity.this, "检查输入的ip", Toast.LENGTH_LONG).show();
+          Util.show(WIFIActivity.this, "检查输入的ip");
           return;
         }
         if (!isValidInput(mask)) {
-          Toast.makeText(WIFIActivity.this, "检查输入的子网掩码", Toast.LENGTH_LONG).show();
+          Util.show(WIFIActivity.this, "检查输入的子网掩码");
           return;
         }
         if (!isValidInput(gateway)) {
-          Toast.makeText(WIFIActivity.this, "检查输入的网关", Toast.LENGTH_LONG).show();
+          Util.show(WIFIActivity.this, "检查输入的网关");
           return;
         }
         //设置成静态ip需传入相关信息
@@ -236,7 +237,7 @@ public class WIFIActivity extends Activity {
       @Override
       public void onClick(View view) {
         if (!isConnected()) {
-          Toast.makeText(WIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(WIFIActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.OPERATE_ALL_IP_INFO;
@@ -248,7 +249,7 @@ public class WIFIActivity extends Activity {
       @Override
       public void onClick(View view) {
         if (!isConnected()) {
-          Toast.makeText(WIFIActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(WIFIActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.OPERATE_ALL_WIFI_INFO;

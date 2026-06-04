@@ -155,7 +155,7 @@ public class ScanActivity extends Activity {
               break;
           }
         }
-        Toast.makeText(ScanActivity.this, items[i], Toast.LENGTH_SHORT).show();
+        Util.show(ScanActivity.this, items[i]);
         alertDialog.dismiss();
       }
     });

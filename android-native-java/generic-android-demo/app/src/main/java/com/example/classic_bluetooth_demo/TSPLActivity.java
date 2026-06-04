@@ -140,7 +140,7 @@ public class TSPLActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(TSPLActivity.this, "请先连接设备");
           return;
         }
         GenericTSPL _gtspl = PrintUtil.getInstance().tspl().page(TPage.builder().width(100).height(100).build())
@@ -164,7 +164,7 @@ public class TSPLActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(TSPLActivity.this, "请先连接设备");
           return;
         }
         Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.logo);
@@ -192,7 +192,7 @@ public class TSPLActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(TSPLActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.OPERATE_PRINTERSN;
@@ -205,7 +205,7 @@ public class TSPLActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(TSPLActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.OPERATE_PRINTERVER;
@@ -218,7 +218,7 @@ public class TSPLActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(TSPLActivity.this, "请先连接设备");
           return;
         }
         readMark = ReadMark.OPERATE_STATUS;
@@ -231,7 +231,7 @@ public class TSPLActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(TSPLActivity.this, "请先连接设备");
           return;
         }
         GenericTSPL _gtspl = PrintUtil.getInstance().tspl().raw(Raw.builder().command("\u001B\u001B! U1 setvar \"speed\" \"" + 10 + "\"").build());
@@ -243,7 +243,7 @@ public class TSPLActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(TSPLActivity.this, "请先连接设备");
           return;
         }
         GenericTSPL _gtspl = PrintUtil.getInstance().tspl().page(TPage.builder().width(100).height(100).build())
@@ -266,7 +266,7 @@ public class TSPLActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(TSPLActivity.this, "请先连接设备");
           return;
         }
         GenericTSPL _gtspl = PrintUtil.getInstance().tspl().page(TPage.builder().width(100).height(100).build())
@@ -289,7 +289,7 @@ public class TSPLActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(TSPLActivity.this, "请先连接设备");
           return;
         }
         BitmapFactory.Options options = new BitmapFactory.Options();
@@ -332,7 +332,7 @@ public class TSPLActivity extends Activity {
       @Override
       public void onClick(View v) {
         if (!isConnected()) {
-          Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
+          Util.show(TSPLActivity.this, "请先连接设备");
           return;
         }
         //page宽高的单位是mm 下面坐标的xy单位是dot 1mm=8dot(分辨率203) 1mm=12dot(分辨率300) 开发者根据自己使用的打印机来适配
@@ -418,7 +418,7 @@ public class TSPLActivity extends Activity {
           UpdatePrinterTSPL updatePrinter = new UpdatePrinterTSPL(connection, firmwareData, otaHandler);
           updatePrinter.startUpdate();
         } else {
-          Toast.makeText(TSPLActivity.this, "读取固件文件失败", Toast.LENGTH_SHORT).show();
+          Util.show(TSPLActivity.this, "读取固件文件失败");
           if (progressDialog != null) {
             progressDialog.dismiss();
             progressDialog = null;
@@ -445,7 +445,7 @@ public class TSPLActivity extends Activity {
           if (progressDialog != null) {
             progressDialog.dismiss();
           }
-          Toast.makeText(TSPLActivity.this, "打印机升级失败", Toast.LENGTH_SHORT).show();
+          Util.show(TSPLActivity.this, "打印机升级失败");
           break;
         }
         case MSG_OTA_DATA_START_PRINTER: {
@@ -460,7 +460,7 @@ public class TSPLActivity extends Activity {
             progressDialog.dismiss();
             progressDialog = null;
           }
-          Toast.makeText(TSPLActivity.this, "打印机升级完成", Toast.LENGTH_SHORT).show();
+          Util.show(TSPLActivity.this, "打印机升级完成");
           break;
         }
       }
