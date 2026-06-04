@@ -38,6 +38,7 @@ import com.printer.psdk.frame.father.listener.ListenAction;
 import com.printer.psdk.imagep.android.AndroidSourceImage;
 import comprinter.psdk.frame.ota.types.cpcl.UpdatePrinterCPCL;
 import comprinter.psdk.frame.ota.types.mark.UpgradeMarker;
+import android.net.Uri;
 
 import java.io.UnsupportedEncodingException;
 
@@ -56,6 +57,8 @@ public class CPCLActivity extends Activity {
   private final int StatusFLAG = 0x11;
   private ProgressDialog progressDialog;
   private DataListenerRunner dataListenerRunner;
+  private static final int REQUEST_CODE_PICK_FIRMWARE = 1001;
+
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -285,6 +288,21 @@ public class CPCLActivity extends Activity {
     btnOta.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        // 打开文件选择器选择固件文件
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.setType("*/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(intent, REQUEST_CODE_PICK_FIRMWARE);
+      }
+    });
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (requestCode == REQUEST_CODE_PICK_FIRMWARE && resultCode == RESULT_OK) {
+      if (data != null && data.getData() != null) {
+        Uri uri = data.getData();
         progressDialog = new ProgressDialog(CPCLActivity.this);
         progressDialog.setMessage("打印机正在进入升级模式，此过程可能需要几分钟，请耐心等待......");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -293,12 +311,21 @@ public class CPCLActivity extends Activity {
         progressDialog.setIcon(R.mipmap.ic_launcher);
         progressDialog.setTitle("提示");
         progressDialog.show();
-        //调用更新方法前一定要先调用该方法停止
-        dataListenerRunner.stop();
-        UpdatePrinterCPCL updatePrinter = new UpdatePrinterCPCL(connection, Util.readResources(CPCLActivity.this, R.raw.mc240v219), otaHandler);
-        updatePrinter.startUpdate();
+        byte[] firmwareData = Util.readUri(CPCLActivity.this, uri);
+        if (firmwareData != null) {
+          //调用更新方法前一定要先调用该方法停止
+          dataListenerRunner.stop();
+          UpdatePrinterCPCL updatePrinter = new UpdatePrinterCPCL(connection, firmwareData, otaHandler);
+          updatePrinter.startUpdate();
+        } else {
+          Toast.makeText(CPCLActivity.this, "读取固件文件失败", Toast.LENGTH_SHORT).show();
+          if (progressDialog != null) {
+            progressDialog.dismiss();
+            progressDialog = null;
+          }
+        }
       }
-    });
+    }
   }
 
   /**

@@ -2,6 +2,7 @@ package com.example.classic_bluetooth_demo.util;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.widget.Toast;
 
 import java.io.InputStream;
@@ -18,6 +19,21 @@ public class Util {
   public static byte[] readResources(Context context, int ID) {
     try {
       InputStream in = context.getResources().openRawResource(ID);
+      int length = in.available();
+      byte[] buffer = new byte[length];
+      in.read(buffer);
+      in.close();
+      return buffer;
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    return null;
+  }
+
+  public static byte[] readUri(Context context, Uri uri) {
+    try {
+      InputStream in = context.getContentResolver().openInputStream(uri);
+      if (in == null) return null;
       int length = in.available();
       byte[] buffer = new byte[length];
       in.read(buffer);

@@ -26,6 +26,7 @@ import com.printer.psdk.device.bluetooth.Bluetooth;
 import com.printer.psdk.device.bluetooth.ConnectListener;
 import com.printer.psdk.device.bluetooth.Connection;
 import com.printer.psdk.frame.father.PSDK;
+import com.printer.psdk.frame.father.args.common.Raw;
 import com.printer.psdk.frame.father.listener.DataListener;
 import com.printer.psdk.frame.father.listener.DataListenerRunner;
 import com.printer.psdk.frame.father.listener.ListenAction;
@@ -38,6 +39,7 @@ import com.printer.psdk.tspl.mark.Font;
 import com.printer.psdk.tspl.mark.ShowType;
 import comprinter.psdk.frame.ota.types.mark.UpgradeMarker;
 import comprinter.psdk.frame.ota.types.tspl.UpdatePrinterTSPL;
+import android.net.Uri;
 
 import java.io.UnsupportedEncodingException;
 
@@ -52,6 +54,7 @@ public class TSPLActivity extends Activity {
   private final int ReceiveFLAG = 0x10;
   private ProgressDialog progressDialog;
   private DataListenerRunner dataListenerRunner;
+  private static final int REQUEST_CODE_PICK_FIRMWARE = 1001;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -231,7 +234,7 @@ public class TSPLActivity extends Activity {
           Toast.makeText(TSPLActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
           return;
         }
-        GenericTSPL _gtspl = PrintUtil.getInstance().tspl().density(Integer.parseInt(etDensity.getText().toString()));
+        GenericTSPL _gtspl = PrintUtil.getInstance().tspl().raw(Raw.builder().command("\u001B\u001B! U1 setvar \"speed\" \"" + 10 + "\"").build());
         boolean result = safeWrite(_gtspl);
         Util.show(TSPLActivity.this, result ? "成功" : "失败");
       }
@@ -385,6 +388,21 @@ public class TSPLActivity extends Activity {
     btnOta.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
+        // 打开文件选择器选择固件文件
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.setType("*/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(intent, REQUEST_CODE_PICK_FIRMWARE);
+      }
+    });
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (requestCode == REQUEST_CODE_PICK_FIRMWARE && resultCode == RESULT_OK) {
+      if (data != null && data.getData() != null) {
+        Uri uri = data.getData();
         progressDialog = new ProgressDialog(TSPLActivity.this);
         progressDialog.setMessage("打印机正在进入升级模式，此过程可能需要几分钟，请耐心等待......");
         progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
@@ -393,12 +411,21 @@ public class TSPLActivity extends Activity {
         progressDialog.setIcon(R.mipmap.ic_launcher);
         progressDialog.setTitle("提示");
         progressDialog.show();
-        //调用更新方法前一定要先调用该方法停止
-        dataListenerRunner.stop();
-        UpdatePrinterTSPL updatePrinter = new UpdatePrinterTSPL(connection, Util.readResources(TSPLActivity.this, R.raw.mc240v219), otaHandler);
-        updatePrinter.startUpdate();
+        byte[] firmwareData = Util.readUri(TSPLActivity.this, uri);
+        if (firmwareData != null) {
+          //调用更新方法前一定要先调用该方法停止
+          dataListenerRunner.stop();
+          UpdatePrinterTSPL updatePrinter = new UpdatePrinterTSPL(connection, firmwareData, otaHandler);
+          updatePrinter.startUpdate();
+        } else {
+          Toast.makeText(TSPLActivity.this, "读取固件文件失败", Toast.LENGTH_SHORT).show();
+          if (progressDialog != null) {
+            progressDialog.dismiss();
+            progressDialog = null;
+          }
+        }
       }
-    });
+    }
   }
 
   //打印机固件升级部分

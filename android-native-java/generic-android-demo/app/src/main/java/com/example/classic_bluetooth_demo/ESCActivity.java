@@ -34,6 +34,8 @@ import com.printer.psdk.frame.father.listener.ListenAction;
 import com.printer.psdk.imagep.android.AndroidSourceImage;
 import comprinter.psdk.frame.ota.types.esc.UpdatePrinterESC;
 import comprinter.psdk.frame.ota.types.mark.UpgradeMarker;
+import android.content.Intent;
+import android.net.Uri;
 
 import java.io.*;
 import java.util.Arrays;
@@ -69,6 +71,7 @@ public class ESCActivity extends Activity {
   private boolean isSending = false;
   private ProgressDialog progressDialog;
   private DataListenerRunner dataListenerRunner;
+  private static final int REQUEST_CODE_PICK_FIRMWARE = 1001;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -469,16 +472,40 @@ public class ESCActivity extends Activity {
           Toast.makeText(ESCActivity.this, "请先连接设备", Toast.LENGTH_SHORT).show();
           return;
         }
+        // 打开文件选择器选择固件文件
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.setType("*/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(intent, REQUEST_CODE_PICK_FIRMWARE);
+      }
+    });
+  }
+
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (requestCode == REQUEST_CODE_PICK_FIRMWARE && resultCode == RESULT_OK) {
+      if (data != null && data.getData() != null) {
+        Uri uri = data.getData();
         progressDialog = new ProgressDialog(ESCActivity.this);
         progressDialog.setMessage("打印机正在进入升级模式，此过程可能需要几分钟，请耐心等待......");
         showprogress();
-        //调用更新方法前一定要先调用该方法停止
-        dataListenerRunner.stop();
-        UpdatePrinterESC updatePrinter = new UpdatePrinterESC(connection, Util.readResources(ESCActivity.this, R.raw.x8prov1099hd2024423), otaHandler);
-        updatePrinter.setStartAddress(0x1020000);
-        updatePrinter.startUpdate();
+        byte[] firmwareData = Util.readUri(ESCActivity.this, uri);
+        if (firmwareData != null) {
+          //调用更新方法前一定要先调用该方法停止
+          dataListenerRunner.stop();
+          UpdatePrinterESC updatePrinter = new UpdatePrinterESC(connection, firmwareData, otaHandler);
+          updatePrinter.setStartAddress(0x1020000);
+          updatePrinter.startUpdate();
+        } else {
+          Toast.makeText(ESCActivity.this, "读取固件文件失败", Toast.LENGTH_SHORT).show();
+          if (progressDialog != null) {
+            progressDialog.dismiss();
+            progressDialog = null;
+          }
+        }
       }
-    });
+    }
   }
 
   private void dataListen(ConnectedDevice connectedDevice) {
