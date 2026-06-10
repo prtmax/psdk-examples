@@ -14,6 +14,7 @@
 		100000000000000000000005 /* EMAPIDemoESCBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000109 /* EMAPIDemoESCBuilder.m */; };
 		100000000000000000000006 /* EMAPIDemoController.m in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000111 /* EMAPIDemoController.m */; };
 		100000000000000000000007 /* EMAPIDemoViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 100000000000000000000113 /* EMAPIDemoViewController.m */; };
+		E15B356C801B4F6FFE9B1912 /* Pods_EMAPIIOSDemo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 660C77AEBBFE5EEBBE23E55F /* Pods_EMAPIIOSDemo.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -32,6 +33,9 @@
 		100000000000000000000111 /* EMAPIDemoController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EMAPIDemoController.m; sourceTree = "<group>"; };
 		100000000000000000000112 /* EMAPIDemoViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EMAPIDemoViewController.h; sourceTree = "<group>"; };
 		100000000000000000000113 /* EMAPIDemoViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EMAPIDemoViewController.m; sourceTree = "<group>"; };
+		390778215AC9FCD9AAABAA24 /* Pods-EMAPIIOSDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EMAPIIOSDemo.release.xcconfig"; path = "Target Support Files/Pods-EMAPIIOSDemo/Pods-EMAPIIOSDemo.release.xcconfig"; sourceTree = "<group>"; };
+		42B8FE8E1E05A1ECEAD2352E /* Pods-EMAPIIOSDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-EMAPIIOSDemo.debug.xcconfig"; path = "Target Support Files/Pods-EMAPIIOSDemo/Pods-EMAPIIOSDemo.debug.xcconfig"; sourceTree = "<group>"; };
+		660C77AEBBFE5EEBBE23E55F /* Pods_EMAPIIOSDemo.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_EMAPIIOSDemo.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -39,6 +43,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				E15B356C801B4F6FFE9B1912 /* Pods_EMAPIIOSDemo.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -50,6 +55,8 @@
 			children = (
 				100000000000000000000050 /* EMAPIIOSDemo */,
 				100000000000000000000060 /* Products */,
+				C19A0EAC460394D67788D278 /* Pods */,
+				46023E7D6E12DC75C0C8213A /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -82,6 +89,24 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		46023E7D6E12DC75C0C8213A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				660C77AEBBFE5EEBBE23E55F /* Pods_EMAPIIOSDemo.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		C19A0EAC460394D67788D278 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				42B8FE8E1E05A1ECEAD2352E /* Pods-EMAPIIOSDemo.debug.xcconfig */,
+				390778215AC9FCD9AAABAA24 /* Pods-EMAPIIOSDemo.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -89,6 +114,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 100000000000000000000071 /* Build configuration list for PBXNativeTarget "EMAPIIOSDemo" */;
 			buildPhases = (
+				C327F684FA5830512D386DFB /* [CP] Check Pods Manifest.lock */,
 				100000000000000000000090 /* Sources */,
 				100000000000000000000030 /* Frameworks */,
 			);
@@ -133,6 +159,31 @@
 		};
 /* End PBXProject section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		C327F684FA5830512D386DFB /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-EMAPIIOSDemo-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		100000000000000000000090 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -151,6 +202,32 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
+		100000000000000000000072 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 42B8FE8E1E05A1ECEAD2352E /* Pods-EMAPIIOSDemo.debug.xcconfig */;
+			buildSettings = {
+				DEVELOPMENT_TEAM = 76F7233WS7;
+				INFOPLIST_FILE = EMAPIIOSDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.prtmax.emapi.iosdemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		100000000000000000000073 /* Release */ = {
+			isa = XCBuildConfiguration;
+			baseConfigurationReference = 390778215AC9FCD9AAABAA24 /* Pods-EMAPIIOSDemo.release.xcconfig */;
+			buildSettings = {
+				DEVELOPMENT_TEAM = 76F7233WS7;
+				INFOPLIST_FILE = EMAPIIOSDemo/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.prtmax.emapi.iosdemo;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		100000000000000000000082 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -192,45 +269,23 @@
 			};
 			name = Release;
 		};
-		100000000000000000000072 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				INFOPLIST_FILE = EMAPIIOSDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.prtmax.emapi.iosdemo;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Debug;
-		};
-		100000000000000000000073 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				INFOPLIST_FILE = EMAPIIOSDemo/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.prtmax.emapi.iosdemo;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				TARGETED_DEVICE_FAMILY = "1,2";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		100000000000000000000081 /* Build configuration list for PBXProject "EMAPIIOSDemo" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				100000000000000000000082 /* Debug */,
-				100000000000000000000083 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
 		100000000000000000000071 /* Build configuration list for PBXNativeTarget "EMAPIIOSDemo" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				100000000000000000000072 /* Debug */,
 				100000000000000000000073 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		100000000000000000000081 /* Build configuration list for PBXProject "EMAPIIOSDemo" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				100000000000000000000082 /* Debug */,
+				100000000000000000000083 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
