@@ -2,24 +2,13 @@
 
 Flutter demo for scanning a Bluetooth printer, connecting through the PSDK `ConnectedDevice` adapter, and calling the EMAPI SDK facade.
 
-This demo currently targets Android Bluetooth. Future iOS, Windows, and OC demos can be added separately when those platform scopes are ready.
+> 📖 **开发接入文档**：详见 [DEV_GUIDE.md](./DEV_GUIDE.md)，包含完整的接入步骤、API 说明、架构设计与常见问题。
+
+This demo targets Android (Classic + BLE) and iOS (BLE) Bluetooth.
 
 ## Run
 
-This demo uses local PSDK packages because `psdk_fruit_emapi` is not published
-yet. Check out `psdk` as a sibling of `psdk-examples`; in other words, the PSDK
-repo should be available at `/same-parent/psdk` so the default path dependencies
-resolve:
-
-```text
-/same-parent/
-  psdk/
-  psdk-examples/
-```
-
-If your checkout layout is different, adjust the path dependencies that point to
-`../../../psdk/...` in `pubspec.yaml` before running `flutter pub get`. Do not replace
-them with hosted versions until the EMAPI package is published.
+All PSDK dependencies are published on pub.dev — no sibling `psdk` repo needed.
 
 ```sh
 flutter pub get
@@ -37,6 +26,7 @@ flutter build apk --debug
 
 ## Notes
 
-- Uses the local EMAPI SDK at `../../../psdk/dart/fruits/emapi`.
-- Android uses classic Bluetooth through the local PSDK packages.
+- All `psdk_*` packages are hosted on pub.dev; no local path overrides required.
+- Android uses classic Bluetooth; iOS uses BLE.
 - OTA reads bytes from the file path entered in the app before running start, chunk transfer, finish, and upgrade commands.
+- Enable **模拟模式** (simulation mode) in Settings to test without real hardware.

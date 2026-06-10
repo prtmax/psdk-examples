@@ -199,15 +199,6 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
-  flutter_bluetooth_serial:
-    dependency: transitive
-    description:
-      path: "."
-      ref: master
-      resolved-ref: "0d8bdc1a6e92458283046c852dc23404c6998a3f"
-      url: "https://github.com/vashukarn/flutter_bluetooth_serial.git"
-    source: git
-    version: "1.0.0"
   flutter_lints:
     dependency: "direct dev"
     description:
@@ -224,6 +215,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.34"
+  flutter_spp_bluetooth_serial:
+    dependency: transitive
+    description:
+      name: flutter_spp_bluetooth_serial
+      sha256: "15a5337edc7671a73ee332bc1bac00a42c0fb293b1f8cc9ce764f962e35c62f0"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5"
   flutter_test:
     dependency: "direct dev"
     description: flutter
@@ -397,83 +396,75 @@ packages:
   psdk_bluetooth_ble:
     dependency: "direct main"
     description:
-      path: "dart/devices/bluetooth_ble"
-      ref: feat-emapi-protocol-sdk
-      resolved-ref: a9801150c580c5c0af3ad49af6ce65f02ceea2a8
-      url: "https://github.com/prtmax/psdk.git"
-    source: git
-    version: "0.1.4"
+      name: psdk_bluetooth_ble
+      sha256: "1967b36f391cd90688e28bf311ab4f48695aa00a64318f8829ec124cb17a4ad4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5"
   psdk_bluetooth_classic:
     dependency: "direct main"
     description:
-      path: "dart/devices/bluetooth_classic"
-      ref: feat-emapi-protocol-sdk
-      resolved-ref: a9801150c580c5c0af3ad49af6ce65f02ceea2a8
-      url: "https://github.com/prtmax/psdk.git"
-    source: git
-    version: "0.1.4"
+      name: psdk_bluetooth_classic
+      sha256: "7c872755ac184bf6bd58617613cabb4596cf5b34bdb37adc5ea1df195bf1fc73"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5"
   psdk_bluetooth_traits:
     dependency: "direct main"
     description:
-      path: "dart/devices/bluetooth_traits"
-      ref: feat-emapi-protocol-sdk
-      resolved-ref: a9801150c580c5c0af3ad49af6ce65f02ceea2a8
-      url: "https://github.com/prtmax/psdk.git"
-    source: git
-    version: "0.1.4"
+      name: psdk_bluetooth_traits
+      sha256: "81fb4cd66cf44fdc91f79720adf8f85af732d9f1c1f3a3475654b7d73c2ef45b"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5"
   psdk_bluetooth_windows:
     dependency: "direct main"
     description:
-      path: "dart/devices/bluetooth_windows"
-      ref: feat-emapi-protocol-sdk
-      resolved-ref: a9801150c580c5c0af3ad49af6ce65f02ceea2a8
-      url: "https://github.com/prtmax/psdk.git"
-    source: git
-    version: "0.1.4"
+      name: psdk_bluetooth_windows
+      sha256: "4d3375418a6e7ad43981ff78da701a8573bc2f95b047a5b459e6aa816cadcbbc"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5"
   psdk_device_adapter:
     dependency: "direct main"
     description:
-      path: "dart/packages/device_adapter"
-      ref: feat-emapi-protocol-sdk
-      resolved-ref: a9801150c580c5c0af3ad49af6ce65f02ceea2a8
-      url: "https://github.com/prtmax/psdk.git"
-    source: git
-    version: "0.1.4"
+      name: psdk_device_adapter
+      sha256: "9ba7f379b6c3d58b7bad5b9a5435bd987630446fd8785b937ba507ff3e9b0648"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5"
   psdk_frame_father:
     dependency: transitive
     description:
       name: psdk_frame_father
-      sha256: bb3df42a7d0ef56dcb6c0146604518c07870871e764c73fd4410a27191e41760
+      sha256: "8a3ff1869ab638f6c5361b8fd726b7905bd5dd729288e66f9ef5b36961a75c38"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.4"
+    version: "0.1.5"
   psdk_fruit_emapi:
     dependency: "direct main"
     description:
-      path: "dart/fruits/emapi"
-      ref: feat-emapi-protocol-sdk
-      resolved-ref: a9801150c580c5c0af3ad49af6ce65f02ceea2a8
-      url: "https://github.com/prtmax/psdk.git"
-    source: git
-    version: "0.1.4"
+      name: psdk_fruit_emapi
+      sha256: abaab0cf44b24ff4c6156ec90ae9c7f2c47bac78b4326a29313dacf5eb91fc55
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5"
   psdk_fruit_esc:
     dependency: "direct main"
     description:
-      path: "dart/fruits/esc"
-      ref: feat-emapi-protocol-sdk
-      resolved-ref: a9801150c580c5c0af3ad49af6ce65f02ceea2a8
-      url: "https://github.com/prtmax/psdk.git"
-    source: git
-    version: "0.1.4"
+      name: psdk_fruit_esc
+      sha256: a3b9c6783cac48e2723050f718ff8517346a270af4cff29cbc0cd300c7f5772d
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5"
   psdk_imageb:
-    dependency: "direct overridden"
+    dependency: "direct main"
     description:
-      path: "dart/algorithms/imageb"
-      ref: feat-emapi-protocol-sdk
-      resolved-ref: a9801150c580c5c0af3ad49af6ce65f02ceea2a8
-      url: "https://github.com/prtmax/psdk.git"
-    source: git
-    version: "0.1.4"
+      name: psdk_imageb
+      sha256: "17adcaeef04284fb17258352e319745aff953aca7c72733cddc2d240d8b26610"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.5"
   sky_engine:
     dependency: transitive
     description: flutter
