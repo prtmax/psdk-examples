@@ -6,6 +6,7 @@ import android.app.ProgressDialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,6 +32,7 @@ import com.printer.psdk.frame.father.listener.ListenAction;
 import com.printer.psdk.frame.father.types.lifecycle.Lifecycle;
 import com.printer.psdk.imagep.android.AndroidSourceImage;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
@@ -48,6 +50,8 @@ public class MainActivity extends Activity {
   private Button set_off_time;
   private Button ink_box_info, ejectPaper, printerClean;
   private Button updatePrinterButton;
+  private Button snPrintButton;
+  private Button cancelPrintButton;
   private EditText sampleEdit;
   private int sampleNumber;
   private final int ReceiveFLAG = 0x10;
@@ -58,6 +62,8 @@ public class MainActivity extends Activity {
   private ProgressDialog progressDialog;
   private DataListenerRunner dataListenerRunner;
   private CompatibleInkJet compatibleInkJet;
+  /** 当前 BITMAP_SN 图片实例，用于 notifyResponse 重发回调 */
+  private IImageSN<?> activeSNImage;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +81,8 @@ public class MainActivity extends Activity {
     ejectPaper = (Button) findViewById(R.id.ejectPaper);
     printerClean = (Button) findViewById(R.id.printerClean);
     updatePrinterButton = (Button) findViewById(R.id.updatePrinter);
+    snPrintButton = (Button) findViewById(R.id.printer_sn);
+    cancelPrintButton = (Button) findViewById(R.id.printer_cancel);
     BluetoothDevice device = getIntent().getParcelableExtra("device");
 
     connection = Bluetooth.getInstance().createConnectionClassic(device, new ConnectListener() {
@@ -239,6 +247,77 @@ public class MainActivity extends Activity {
         safeWrite(_compatibleInkJet);
       }
     });
+
+    // ──────────── BITMAP_SN 打印按钮 ────────────
+    snPrintButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        new Thread(new Runnable() {
+          @Override
+          public void run() {
+            if (!connection.isConnected()) {
+              show("设备未连接");
+              return;
+            }
+            try {
+              // 1. 加载并缩放图片
+              InputStream is = getResources().openRawResource(R.raw.caomei);
+              BitmapDrawable bmpDraw = new BitmapDrawable(is);
+              Bitmap rawBitmap = bmpDraw.getBitmap();
+              int targetWidth = 1052;
+              int originalWidth = rawBitmap.getWidth();
+              int originalHeight = rawBitmap.getHeight();
+              int targetHeight = (int) ((float) originalHeight * targetWidth / originalWidth);
+              rawBitmap = Bitmap.createScaledBitmap(rawBitmap, targetWidth, targetHeight, true);
+
+              // 2. 将 Bitmap 转为 JPEG 字节数组
+              ByteArrayOutputStream baos = new ByteArrayOutputStream();
+              rawBitmap.compress(Bitmap.CompressFormat.JPEG, 90, baos);
+              byte[] imageBytes = baos.toByteArray();
+
+              // 3. 压缩到 400KB 以内
+              byte[] compressed = compressImageForSN(imageBytes);
+              Log.e(TAG, "SN打印: 原始 " + imageBytes.length + " bytes → 压缩后 " + compressed.length + " bytes");
+
+              // 4. 构建 BITMAP_SN 图片参数
+              AndroidSourceImage sourceImage = new AndroidSourceImage(
+                BitmapFactory.decodeByteArray(compressed, 0, compressed.length)
+              );
+              activeSNImage = IImageSN.builder()
+                .image(sourceImage)
+                .mode(ImageMode.JPG)
+                .build();
+
+              // 5. 标记打印操作，发送 BITMAP_SN
+              readMark = ReadMark.OPERATE_PRINT_SN;
+              compatibleInkJet.imageSN(activeSNImage);
+              Log.e(TAG, "SN打印: BITMAP_SN 发送完成");
+            } catch (Exception e) {
+              Log.e(TAG, "SN打印异常: " + e.getMessage(), e);
+              show("SN打印失败: " + e.getMessage());
+            }
+          }
+        }).start();
+      }
+    });
+
+    // ──────────── 取消打印按钮 ────────────
+    cancelPrintButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        new Thread(new Runnable() {
+          @Override
+          public void run() {
+            if (!connection.isConnected()) {
+              show("设备未连接");
+              return;
+            }
+            //要等打印数据发送完成后再等2s以上执行才能成功的取消打印
+            onCancelPrint();
+          }
+        }).start();
+      }
+    });
   }
 
   private void dataListen(ConnectedDevice connectedDevice) {
@@ -248,6 +327,12 @@ public class MainActivity extends Activity {
               public void action(byte[] received) {
                 if (received.length == 0) return;
                 Log.e(TAG, ByteArrToHex(received));
+
+                // ── BITMAP_SN 重发处理：转发给 IImageSN.notifyResponse ──
+                if (activeSNImage != null) {
+                  activeSNImage.notifyResponse(received);
+                }
+
                 // 根据数据类型处理
                 switch (received[0]) {
                   case (byte) 0xFF:
@@ -586,6 +671,40 @@ public class MainActivity extends Activity {
     }
   }
 
+  /**
+   * 确保图片数据在 400KB 以内。
+   * 超过限制时逐步降低 JPEG 质量直至满足要求（最低 quality=25）。
+   *
+   * @param imageData 原始 JPEG 字节数组
+   * @return 压缩后的 JPEG 字节数组
+   */
+  private byte[] compressImageForSN(byte[] imageData) {
+    final int MAX_SIZE_BYTES = 400 * 1024; // 400KB
+    if (imageData.length <= MAX_SIZE_BYTES) {
+      return imageData;
+    }
+
+    // 从原始数据解码 Bitmap，每次从原始数据压缩避免质量累积损失
+    Bitmap originalBitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
+    if (originalBitmap == null) {
+      Log.e(TAG, "compressImageForSN: 解码失败，返回原始数据");
+      return imageData;
+    }
+
+    int quality = 90;
+    byte[] compressed = imageData;
+    while (compressed.length > MAX_SIZE_BYTES && quality > 20) {
+      quality -= 5;
+      ByteArrayOutputStream baos = new ByteArrayOutputStream();
+      originalBitmap.compress(Bitmap.CompressFormat.JPEG, quality, baos);
+      compressed = baos.toByteArray();
+      Log.e(TAG, "compressImageForSN: quality=" + quality + " → " + compressed.length + " bytes");
+    }
+
+    originalBitmap.recycle();
+    return compressed;
+  }
+
   public void onCancelPrint() {
     CompatibleInkJet _compatibleInkJet = compatibleInkJet.cancel();
     safeWrite(_compatibleInkJet);
@@ -660,6 +779,13 @@ public class MainActivity extends Activity {
               }
             }).start();
           }
+        }
+        break;
+      case OPERATE_PRINT_SN:
+        readMark = ReadMark.NONE;
+        if (ByteArrToHex(bytes).contains("AA")) {
+          show("分包打印成功");
+          Log.e(TAG, "分包打印成功");
         }
         break;
       default:
