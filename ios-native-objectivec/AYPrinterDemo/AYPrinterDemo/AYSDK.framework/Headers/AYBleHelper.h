@@ -11,6 +11,7 @@
 #import <AYSDK/ETypes.h>
 #import <AYSDK/TTypes.h>
 #import <AYSDK/CTypes.h>
+#import <AYSDK/Command.h>
 
 #define BlueManager [AYBleHelper shareInstance]
 
@@ -71,6 +72,8 @@ typedef void(^OnWriteComplete)(void);
 - (void)disconnect;
 
 - (void)writeCommands:(NSMutableArray<NSData *> *)commands;
+
+- (void)writeImageSN:(Command *)command;
 
 @end
 
