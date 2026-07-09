@@ -129,6 +129,15 @@ typedef NS_ENUM(NSInteger, ReadMark) {
   [self.bleHelper writeCommands:self.rgbCommand.commands];
 }
 
+/**
+ * 执行关机
+ */
+- (IBAction)powerOff {
+  [self.rgbCommand clean];
+  [self.rgbCommand powerOff];
+  [self.bleHelper writeCommands:self.rgbCommand.commands];
+}
+
 /// 查询打印机配置信息
 - (IBAction)info:(UIButton *)sender {
   self.readMark = ReadMarkOperateInfo;
@@ -271,7 +280,8 @@ static NSArray<NSDictionary<NSString *, id> *> *PrinterStatusMasks(void) {
             @{ @"mask": @(0x00000200), @"desc": @"数据异常" },
             @{ @"mask": @(0x00000400), @"desc": @"机电错误" },
             @{ @"mask": @(0x00000800), @"desc": @"纸道有纸" },
-            @{ @"mask": @(0x00001000), @"desc": @"无墨盒" }
+            @{ @"mask": @(0x00001000), @"desc": @"无墨盒" },
+            @{ @"mask": @(0x40000000), @"desc": @"极低电量" }
         ];
     });
     return masks;
@@ -393,6 +403,9 @@ static NSArray<NSDictionary<NSString *, id> *> *PrinterStatusMasks(void) {
     }
     if (statusType & 0x20000000) {
         [statusList addObject:@"充电完成"];
+    }
+    if (statusType & 0x40000000) {
+        [statusList addObject:@"极低电量"];
     }
 
     if (statusList.count > 0) {

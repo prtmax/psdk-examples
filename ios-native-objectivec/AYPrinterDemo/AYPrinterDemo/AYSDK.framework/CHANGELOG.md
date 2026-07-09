@@ -1,3 +1,10 @@
+## 2026-07-09
+
+### Changed
+
+- Add shutdown interface for color printing
+- Color printing adds extremely low battery report
+
 ## 2026-06-30
 
 ### Changed

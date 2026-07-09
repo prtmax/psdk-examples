@@ -119,6 +119,11 @@
  */
 - (void)setShutdownTime:(int)time;
 
+/**
+ * 执行关机
+ */
+- (void)powerOff;
+
 #pragma mark - OTA 升级
 /**
  * OTA 升级
