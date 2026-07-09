@@ -1,5 +1,38 @@
 # 变更记录 (CHANGELOG)
 
+## (2026-07-08)
+
+### 修复
+
+- **OTA 升级卡死（ANR）**
+  - 固件文件读取 (`readResources`) 和蓝牙写入 (`safeWrite`) 原在主线程执行，大固件文件导致 UI 阻塞卡死
+  - 改为后台线程执行，与「打印」按钮处理方式保持一致
+
+### 新增
+
+- **固件文件选择器**
+  - 「升级打印机」不再硬编码 `res/raw/v138885.RM`，改为弹出系统文件选择器 (`ACTION_OPEN_DOCUMENT`)
+  - 支持从手机任意目录选取 `.RM` / `.bin` 等固件文件
+  - 新增 `readBytesFromUri()` 方法，通过 `ContentResolver` 读取选中文件
+
+- **一键关机按钮**
+  - 新增「一键关机」按钮，调用 `compatibleInkJet.powerOff()` 远程关闭打印机
+  - 后台线程执行，不阻塞 UI
+
+- **极低电量状态识别**
+  - `STATUS_MASKS` 映射表新增 `0x40000000 → "极低电量"`
+  - `mapStatusToString()` 同步新增对应判断分支
+  - 主动查询和主动上报两条路径均已覆盖
+
+### Demo 变更
+
+| 文件 | 变更内容 |
+|------|---------|
+| `MainActivity.java` | 新增 `powerOffButton` 字段及一键关机逻辑；OTA 升级改为后台线程 + 文件选择器；新增 `onActivityResult()`、`readBytesFromUri()` 方法；`STATUS_MASKS` 和 `mapStatusToString()` 新增极低电量；
+| `activity_main.xml` | 新增「一键关机」按钮行；
+
+---
+
 ## v0.1.19-GA (2026-06)
 
 ### 新增

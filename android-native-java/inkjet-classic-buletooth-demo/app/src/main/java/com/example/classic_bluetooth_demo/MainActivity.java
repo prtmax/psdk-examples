@@ -5,9 +5,11 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -52,11 +54,13 @@ public class MainActivity extends Activity {
   private Button updatePrinterButton;
   private Button snPrintButton;
   private Button cancelPrintButton;
+  private Button powerOffButton;
   private EditText sampleEdit;
   private int sampleNumber;
   private final int ReceiveFLAG = 0x10;
   private final int StatusFLAG = 0x11;
   private final int PrintProcessFLAG = 0x12;
+  private final int PICK_FIRMWARE_FILE = 0x20;
   private ReadMark readMark = ReadMark.NONE;
   private boolean isSending = false;
   private ProgressDialog progressDialog;
@@ -83,6 +87,7 @@ public class MainActivity extends Activity {
     updatePrinterButton = (Button) findViewById(R.id.updatePrinter);
     snPrintButton = (Button) findViewById(R.id.printer_sn);
     cancelPrintButton = (Button) findViewById(R.id.printer_cancel);
+    powerOffButton = (Button) findViewById(R.id.powerOff);
     BluetoothDevice device = getIntent().getParcelableExtra("device");
 
     connection = Bluetooth.getInstance().createConnectionClassic(device, new ConnectListener() {
@@ -239,12 +244,13 @@ public class MainActivity extends Activity {
     updatePrinterButton.setOnClickListener(new View.OnClickListener() {
       @Override
       public void onClick(View v) {
-        progressDialog = new ProgressDialog(MainActivity.this);
-        progressDialog.setMessage("打印机正在进入升级模式，此过程可能需要几分钟，请耐心等待......");
-        showprogress();
-        readMark = ReadMark.OPERATE_OTA;
-        CompatibleInkJet _compatibleInkJet = compatibleInkJet.ota(IOta.builder().data(readResources(getApplication(), R.raw.v138885)).build());
-        safeWrite(_compatibleInkJet);
+        // 打开系统文件选择器，从手机中选取固件文件
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        intent.setType("*/*");
+        String[] mimeTypes = {"application/octet-stream", "*/*"};
+        intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+        startActivityForResult(intent, PICK_FIRMWARE_FILE);
       }
     });
 
@@ -318,6 +324,63 @@ public class MainActivity extends Activity {
         }).start();
       }
     });
+
+    // ──────────── 一键关机按钮 ────────────
+    powerOffButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        new Thread(new Runnable() {
+          @Override
+          public void run() {
+            if (!connection.isConnected()) {
+              show("设备未连接");
+              return;
+            }
+            CompatibleInkJet _compatibleInkJet = compatibleInkJet.powerOff();
+            safeWrite(_compatibleInkJet);
+            Log.e(TAG, "一键关机");
+          }
+        }).start();
+      }
+    });
+  }
+
+  // ──────────── 固件文件选择回调 ────────────
+  @Override
+  protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+    super.onActivityResult(requestCode, resultCode, data);
+    if (requestCode == PICK_FIRMWARE_FILE && resultCode == RESULT_OK && data != null) {
+      Uri uri = data.getData();
+      if (uri != null) {
+        // 在主线程显示进度框
+        progressDialog = new ProgressDialog(MainActivity.this);
+        progressDialog.setMessage("打印机正在进入升级模式，此过程可能需要几分钟，请耐心等待......");
+        showprogress();
+        // 在后台线程读取固件文件并执行 OTA 升级
+        new Thread(new Runnable() {
+          @Override
+          public void run() {
+            byte[] firmwareBytes = readBytesFromUri(uri);
+            if (firmwareBytes == null || firmwareBytes.length == 0) {
+              runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                  if (progressDialog != null && progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                  }
+                  show("固件文件读取失败，请检查文件是否有效");
+                }
+              });
+              return;
+            }
+            Log.e(TAG, "固件文件大小: " + firmwareBytes.length + " bytes");
+            readMark = ReadMark.OPERATE_OTA;
+            CompatibleInkJet _compatibleInkJet = compatibleInkJet.ota(IOta.builder().data(firmwareBytes).build());
+            safeWrite(_compatibleInkJet);
+          }
+        }).start();
+      }
+    }
   }
 
   private void dataListen(ConnectedDevice connectedDevice) {
@@ -391,6 +454,7 @@ public class MainActivity extends Activity {
     put(0x00000400, "机电错误");
     put(0x00000800, "纸道有纸");
     put(0x00001000, "无墨盒");
+    put(0x40000000, "极低电量");
   }};
 
   /**
@@ -498,6 +562,9 @@ public class MainActivity extends Activity {
     }
     if ((statusType & 0x20000000) != 0) {
       statusList.add("充电完成");
+    }
+    if ((statusType & 0x40000000) != 0) {
+      statusList.add("极低电量");
     }
 
     if (!statusList.isEmpty()) {
@@ -848,13 +915,32 @@ public class MainActivity extends Activity {
     return null;
   }
 
+  /**
+   * 从 Uri 读取文件内容到字节数组（用于读取用户选择的固件文件）
+   */
+  private byte[] readBytesFromUri(Uri uri) {
+    try {
+      InputStream inputStream = getContentResolver().openInputStream(uri);
+      if (inputStream == null) return null;
+      ByteArrayOutputStream byteBuffer = new ByteArrayOutputStream();
+      byte[] buffer = new byte[4096];
+      int len;
+      while ((len = inputStream.read(buffer)) != -1) {
+        byteBuffer.write(buffer, 0, len);
+      }
+      inputStream.close();
+      return byteBuffer.toByteArray();
+    } catch (IOException e) {
+      Log.e(TAG, "读取固件文件失败: " + e.getMessage(), e);
+      return null;
+    }
+  }
+
   private void showprogress() {
-    progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);// 设置水平进度条
-    progressDialog.setCancelable(true);// 设置是否可以通过点击Back键取消
-    progressDialog.setCanceledOnTouchOutside(false);// 设置在点击Dialog外是否取消Dialog进度条
-    progressDialog.setIcon(R.mipmap.ic_launcher);// 设置提示的title的图标，默认是没有的
+    progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);// 圆形转圈样式
+    progressDialog.setCancelable(false);// 升级过程不可取消
+    progressDialog.setCanceledOnTouchOutside(false);
     progressDialog.setTitle("提示");
-    progressDialog.setMax(100);
     progressDialog.show();
   }
 

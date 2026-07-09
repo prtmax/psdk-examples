@@ -192,6 +192,19 @@
             android:text="取消打印"
             android:textSize="25sp"/>
         </LinearLayout>
+        <LinearLayout
+          android:layout_width="match_parent"
+          android:layout_height="wrap_content"
+          android:orientation="horizontal">
+          <Button
+            android:id="@+id/powerOff"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="一键关机"
+            android:textSize="25sp"/>
+        </LinearLayout>
       </LinearLayout>
     </RelativeLayout>
   </ScrollView>
