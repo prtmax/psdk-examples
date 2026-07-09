@@ -87,14 +87,27 @@
                                 <action selector="selfTest" destination="-1" eventType="touchUpInside" id="Jua-cl-5pV"/>
                             </connections>
                         </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LRP-yE-AnP">
+                        <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hfd-Wv-KSQ">
                             <rect key="frame" x="0.0" y="354.66666666666669" width="393" height="34.333333333333314"/>
-                            <state key="normal" title="Button"/>
-                            <buttonConfiguration key="configuration" style="plain" title="打印"/>
-                            <connections>
-                                <action selector="print:" destination="-1" eventType="touchUpInside" id="uQJ-FS-PDf"/>
-                            </connections>
-                        </button>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="LRP-yE-AnP">
+                                    <rect key="frame" x="0.0" y="0.0" width="196.66666666666666" height="34.333333333333336"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="打印"/>
+                                    <connections>
+                                        <action selector="print:" destination="-1" eventType="touchUpInside" id="uQJ-FS-PDf"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="6fh-hL-OBf">
+                                    <rect key="frame" x="196.66666666666663" y="0.0" width="196.33333333333337" height="34.333333333333336"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="打印-防丢包"/>
+                                    <connections>
+                                        <action selector="printEnhance:" destination="-1" eventType="touchUpInside" id="cfW-t6-5ZM"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </stackView>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="64C-lj-I0f">
                             <rect key="frame" x="0.0" y="399" width="393" height="34.333333333333314"/>
                             <state key="normal" title="Button"/>

@@ -33,6 +33,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)direction:(TOutDirection)direction mirror:(BOOL)mirror;
 
+/**
+ * 设定标签参考点（起始点）
+ * @param x 横向起始坐标（单位：点）
+ * @param y 纵向起始坐标（单位：点）
+ */
 - (void)reference:(int)x y:(int)y;
 
 /**

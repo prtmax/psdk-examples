@@ -61,6 +61,7 @@
 		B5B824DF2E25E25E00085502 /* lion.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B5B824DE2E25E25E00085502 /* lion.jpg */; };
 		B5B825332E262C6D00085502 /* 6914eca2ce152eaec1ef818c90691004.jpeg in Resources */ = {isa = PBXBuildFile; fileRef = B5B825322E262C6D00085502 /* 6914eca2ce152eaec1ef818c90691004.jpeg */; };
 		B5C147902DCD825A00AD5CC6 /* image.png in Resources */ = {isa = PBXBuildFile; fileRef = B5C1478F2DCD825A00AD5CC6 /* image.png */; };
+		B5DAB4702FC5A7D500E5C7CE /* NN0000581_T61_V4.99RC_KTA_20260526.PRTU in Resources */ = {isa = PBXBuildFile; fileRef = B5DAB46F2FC5A7D500E5C7CE /* NN0000581_T61_V4.99RC_KTA_20260526.PRTU */; };
 		B5DAE1572F2DE55700D4403C /* RGBPrintVC.xib in Resources */ = {isa = PBXBuildFile; fileRef = B5DAE1562F2DE55700D4403C /* RGBPrintVC.xib */; };
 		B5DAE1582F2DE55700D4403C /* RGBPrintVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DAE1552F2DE55700D4403C /* RGBPrintVC.m */; };
 		B5DAE15B2F2DE57000D4403C /* RGBConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DAE15A2F2DE57000D4403C /* RGBConfig.m */; };
@@ -170,6 +171,7 @@
 		B5B824DE2E25E25E00085502 /* lion.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = lion.jpg; sourceTree = "<group>"; };
 		B5B825322E262C6D00085502 /* 6914eca2ce152eaec1ef818c90691004.jpeg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = 6914eca2ce152eaec1ef818c90691004.jpeg; sourceTree = "<group>"; };
 		B5C1478F2DCD825A00AD5CC6 /* image.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = image.png; sourceTree = "<group>"; };
+		B5DAB46F2FC5A7D500E5C7CE /* NN0000581_T61_V4.99RC_KTA_20260526.PRTU */ = {isa = PBXFileReference; lastKnownFileType = file; path = NN0000581_T61_V4.99RC_KTA_20260526.PRTU; sourceTree = "<group>"; };
 		B5DAE1542F2DE55700D4403C /* RGBPrintVC.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RGBPrintVC.h; sourceTree = "<group>"; };
 		B5DAE1552F2DE55700D4403C /* RGBPrintVC.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RGBPrintVC.m; sourceTree = "<group>"; };
 		B5DAE1562F2DE55700D4403C /* RGBPrintVC.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = RGBPrintVC.xib; sourceTree = "<group>"; };
@@ -239,6 +241,7 @@
 		B56455DC2BC38C9F0076C82F /* ota */ = {
 			isa = PBXGroup;
 			children = (
+				B5DAB46F2FC5A7D500E5C7CE /* NN0000581_T61_V4.99RC_KTA_20260526.PRTU */,
 				B5467B1E2F306DF9005D910A /* v138868.RM */,
 				B56455DD2BC38C9F0076C82F /* DL-Q2 V1.12.PRTU */,
 				B56455DE2BC38C9F0076C82F /* DL-Q2 V1.12MH.PRTU */,
@@ -510,6 +513,7 @@
 				B50C1AE02BC78C2C00292025 /* a4.jpg in Resources */,
 				B56456012BC38C9F0076C82F /* test.jpg in Resources */,
 				B5694DD12E29DF7A00B26E03 /* lion-org.jpg in Resources */,
+				B5DAB4702FC5A7D500E5C7CE /* NN0000581_T61_V4.99RC_KTA_20260526.PRTU in Resources */,
 				B56456022BC38C9F0076C82F /* longPic.jpg in Resources */,
 				B57B35B72C0D942B00BBBD13 /* rgb1.jpg in Resources */,
 				B5101EF12C12D0AC001B38E0 /* one.jpeg in Resources */,

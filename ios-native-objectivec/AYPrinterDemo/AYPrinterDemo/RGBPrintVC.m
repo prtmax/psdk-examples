@@ -188,6 +188,17 @@ typedef NS_ENUM(NSInteger, ReadMark) {
   [self.bleHelper writeCommands:self.rgbCommand.commands];
 }
 
+/// 打印图片
+- (IBAction)printEnhance:(id)sender {
+  UIImage *image = [UIImage imageNamed:@"caomei.jpg"];
+  image = [self compressImageForSN:image];
+  self.readMark = ReadMarkOperatePrint;
+  [self.rgbCommand clean];
+  [self.rgbCommand imageSN:image x:0 y:0 quality:0 mode:4];
+  
+  [self.bleHelper writeImageSN:self.rgbCommand];
+}
+
 /// ota 升级
 - (IBAction)ota:(id)sender{
   NSString *filepath = [[NSBundle mainBundle] pathForResource:@"v138868.RM" ofType:nil];
@@ -540,5 +551,39 @@ static NSArray<NSDictionary<NSString *, id> *> *PrinterStatusMasks(void) {
 }
 
 
+#pragma mark - payload
+/**
+ * 确保图片数据在 400KB 以内。
+ * 超过限制时逐步降低 JPEG 质量直至满足要求（最低 quality=25）。
+ *
+ * @param image 原始 UIImage
+ * @return 压缩后的 JPEG 数据
+ */
+- (UIImage *)compressImageForSN:(UIImage *)image {
+    if (!image) {
+        return nil;
+    }
+
+    const NSUInteger kMaxSize = 400 * 1024;
+    NSInteger quality = 90;
+    NSData *compressedData = nil;
+
+    do {
+        compressedData = UIImageJPEGRepresentation(image, quality / 100.0);
+
+        NSLog(@"quality=%ld size=%lu",
+              (long)quality,
+              (unsigned long)compressedData.length);
+
+        if (compressedData.length <= kMaxSize || quality <= 25) {
+            break;
+        }
+
+        quality -= 5;
+    } while (YES);
+
+    // 转回 UIImage 返回
+    return [UIImage imageWithData:compressedData];
+}
 
 @end

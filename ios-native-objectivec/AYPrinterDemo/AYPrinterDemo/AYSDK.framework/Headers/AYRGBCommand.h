@@ -53,6 +53,21 @@
       quality:(int)quality
          mode:(int)mode;
 
+/**
+ * 打印图片
+ *
+ * @param image   UIImage 图片对象
+ * @param x       起始 X 坐标
+ * @param y       起始 Y 坐标
+ * @param quality  图片质量（0:快速 1:精细 2:照片）
+ * @param mode  0:覆盖 1:或 2:异或 3:自定义 4:JPG 5:PNG 6:BMP
+ */
+- (void)imageSN:(UIImage *)image
+            x:(int)x
+            y:(int)y
+      quality:(int)quality
+         mode:(int)mode;
+
 #pragma mark - 打印机信息查询
 
 /**

@@ -277,7 +277,7 @@
 
 #warning 仅适用于部分机型，请勿随意升级
 - (IBAction)otaUpdate:(id)sender {
-   NSString *filepath = [[NSBundle mainBundle] pathForResource:@"QR-888 FWQR_SFUBE_BQ_VER_01_240201.ALLAY" ofType:nil];
+   NSString *filepath = [[NSBundle mainBundle] pathForResource:@"NN0000581_T61_V4.99RC_KTA_20260526.PRTU" ofType:nil];
 
     NSLog(@"%@", filepath);
     NSData* filedata = [NSData dataWithContentsOfFile:filepath];
@@ -290,12 +290,15 @@
     switch (state) {
       case OtaStateStart:
         NSLog(@"开始升级");
+        self.displayLabel.text = @"开始升级";
         break;
       case OtaStateFail:
         NSLog(@"升级失败");
+        self.displayLabel.text = @"开始失败";
         break;
       case OtaStateSuccess:
         NSLog(@"升级成功");
+        self.displayLabel.text = @"开始成功";
         break;
     }
   };

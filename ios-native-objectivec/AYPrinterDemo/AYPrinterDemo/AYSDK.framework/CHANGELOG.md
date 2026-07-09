@@ -1,3 +1,9 @@
+## 2026-06-30
+
+### Changed
+
+- Color printing optimization
+
 ## 2025-08-25
 
 ### Changed
