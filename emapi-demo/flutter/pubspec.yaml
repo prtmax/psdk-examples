@@ -33,14 +33,14 @@ dependencies:
 
   cupertino_icons: ^1.0.8
   permission_handler: ^12.0.1
-  psdk_bluetooth_ble: ^0.1.5
-  psdk_bluetooth_classic: ^0.1.5
-  psdk_bluetooth_traits: ^0.1.5
-  psdk_bluetooth_windows: ^0.1.5
-  psdk_device_adapter: ^0.1.5
-  psdk_fruit_emapi: ^0.1.5
-  psdk_fruit_esc: ^0.1.5
-  psdk_imageb: ^0.1.5
+  psdk_bluetooth_ble: ^0.1.8
+  psdk_bluetooth_classic: ^0.1.8
+  psdk_bluetooth_traits: ^0.1.8
+  psdk_bluetooth_windows: ^0.1.8
+  psdk_device_adapter: ^0.1.8
+  psdk_fruit_emapi: ^0.1.8
+  psdk_fruit_esc: ^0.1.8
+  psdk_imageb: ^0.1.8
 
   file_picker: ^11.0.2
 
