@@ -234,7 +234,7 @@ public class TSPLActivity extends Activity {
           Util.show(TSPLActivity.this, "请先连接设备");
           return;
         }
-        GenericTSPL _gtspl = PrintUtil.getInstance().tspl().raw(Raw.builder().command("\u001B\u001B! U1 setvar \"speed\" \"" + 10 + "\"").build());
+        GenericTSPL _gtspl = PrintUtil.getInstance().tspl().density(Integer.parseInt(etDensity.getText().toString()));
         boolean result = safeWrite(_gtspl);
         Util.show(TSPLActivity.this, result ? "成功" : "失败");
       }

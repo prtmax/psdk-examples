@@ -2,9 +2,12 @@ package com.example.classic_bluetooth_demo;
 
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothDevice;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,6 +29,7 @@ import com.printer.psdk.device.bluetooth.ConnectListener;
 import com.printer.psdk.device.bluetooth.Connection;
 import com.printer.psdk.esc.GenericESC;
 import com.printer.psdk.esc.args.*;
+import com.printer.psdk.esc.args.ESetStandbyImage.ESetStandbyImageException;
 import com.printer.psdk.esc.mark.Location;
 import com.printer.psdk.frame.father.PSDK;
 import com.printer.psdk.frame.father.listener.DataListener;
@@ -60,6 +64,8 @@ public class ESCActivity extends Activity {
   private Button bottom_stock;
   private Button bottom_label;
   private Button paper_info, paper_uid, paper_used_length, paper_rest_length, setThickness, updatePrinterButton, printGray;
+  private Button setStandbyModeBtn, setSystemLanguageBtn, getSystemLanguageBtn, setStandbyImageBtn, setCalendarModeBtn;
+  private Button getDeviceInfoBtn, bindDeviceBtn;
   private EditText sampleEdit, thickness;
   private int sampleNumber;
   private final int ReceiveFLAG = 0x10;
@@ -72,6 +78,7 @@ public class ESCActivity extends Activity {
   private ProgressDialog progressDialog;
   private DataListenerRunner dataListenerRunner;
   private static final int REQUEST_CODE_PICK_FIRMWARE = 1001;
+  private static final int REQUEST_CODE_PICK_STANDBY_IMAGE = 1002;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -103,6 +110,14 @@ public class ESCActivity extends Activity {
     paper_rest_length = findViewById(R.id.paper_rest_length);
     updatePrinterButton = findViewById(R.id.updatePrinter);
     printGray = findViewById(R.id.printGray);
+    // AI打印机专属按钮
+    setStandbyModeBtn = findViewById(R.id.set_standby_mode);
+    setSystemLanguageBtn = findViewById(R.id.set_system_language);
+    getSystemLanguageBtn = findViewById(R.id.get_system_language);
+    setStandbyImageBtn = findViewById(R.id.set_standby_image);
+    setCalendarModeBtn = findViewById(R.id.set_calendar_mode);
+    getDeviceInfoBtn = findViewById(R.id.get_device_info);
+    bindDeviceBtn = findViewById(R.id.bind_device);
     BluetoothDevice device = getIntent().getParcelableExtra("device");
 
     connection = Bluetooth.getInstance().createConnectionClassic(device, new ConnectListener() {
@@ -479,6 +494,132 @@ public class ESCActivity extends Activity {
         startActivityForResult(intent, REQUEST_CODE_PICK_FIRMWARE);
       }
     });
+    // ─────────── AI打印机专属功能 ───────────
+    setStandbyModeBtn.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (!isConnected()) {
+          Util.show(ESCActivity.this, "请先连接设备");
+          return;
+        }
+        final String[] items = {"图片(1)", "日历(2)"};
+        final int[] modes = {1, 2};
+        final String[] labels = {"图片", "日历"};
+        new AlertDialog.Builder(ESCActivity.this)
+          .setTitle("选择待机样式")
+          .setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              GenericESC _gesc = PrintUtil.getInstance().esc().setStandbyMode(modes[which]);
+              safeWrite(_gesc);
+              Util.show(ESCActivity.this, "已发送设置待机样式(" + labels[which] + ")");
+            }
+          })
+          .show();
+      }
+    });
+    setSystemLanguageBtn.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (!isConnected()) {
+          Util.show(ESCActivity.this, "请先连接设备");
+          return;
+        }
+        final String[] items = {"英文(1)", "中文(2)"};
+        final int[] values = {1, 2};
+        new AlertDialog.Builder(ESCActivity.this)
+          .setTitle("选择系统语言")
+          .setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              GenericESC _gesc = PrintUtil.getInstance().esc().setSystemLanguage(values[which]);
+              safeWrite(_gesc);
+              Util.show(ESCActivity.this, "已发送设置系统语言(" + items[which] + ")");
+            }
+          })
+          .show();
+      }
+    });
+    getSystemLanguageBtn.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (!isConnected()) {
+          Util.show(ESCActivity.this, "请先连接设备");
+          return;
+        }
+        readMark = ReadMark.OPERATE_GET_SYSTEM_LANGUAGE;
+        GenericESC _gesc = PrintUtil.getInstance().esc().getSystemLanguage();
+        safeWrite(_gesc);
+      }
+    });
+    setStandbyImageBtn.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (!isConnected()) {
+          Util.show(ESCActivity.this, "请先连接设备");
+          return;
+        }
+        // 打开文件选择器选择待机图片
+        Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+        intent.setType("image/*");
+        intent.addCategory(Intent.CATEGORY_OPENABLE);
+        startActivityForResult(intent, REQUEST_CODE_PICK_STANDBY_IMAGE);
+      }
+    });
+    setCalendarModeBtn.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (!isConnected()) {
+          Util.show(ESCActivity.this, "请先连接设备");
+          return;
+        }
+        final String[] items = {"图案1", "图案2", "图案3"};
+        new AlertDialog.Builder(ESCActivity.this)
+          .setTitle("选择日历图案类型")
+          .setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              int calMode = which + 1;
+              GenericESC _gesc = PrintUtil.getInstance().esc().setCalendarMode(calMode);
+              safeWrite(_gesc);
+              Util.show(ESCActivity.this, "已发送设置日历样式(图案" + calMode + ")");
+            }
+          })
+          .show();
+      }
+    });
+    // ─────────── 查询设备信息 / 绑定设备 ───────────
+    getDeviceInfoBtn.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (!isConnected()) {
+          Util.show(ESCActivity.this, "请先连接设备");
+          return;
+        }
+        readMark = ReadMark.OPERATE_GET_DEVICE_INFO;
+        GenericESC _gesc = PrintUtil.getInstance().esc().getDeviceInfo();
+        safeWrite(_gesc);
+      }
+    });
+    bindDeviceBtn.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        if (!isConnected()) {
+          Util.show(ESCActivity.this, "请先连接设备");
+          return;
+        }
+        // 值先写死，时间戳按字符串传
+        EBindDevice bindArg = EBindDevice.builder()
+          .onceCode("123456")
+          .serverBaseUrl("https://api.example.com")
+          .bindExpireTime("1719980000000")
+          .build();
+        GenericESC _gesc = PrintUtil.getInstance().esc()
+          .bindDevice(bindArg);
+        safeWrite(_gesc);
+        Util.show(ESCActivity.this, "已发送绑定设备");
+      }
+    });
   }
 
   @Override
@@ -504,6 +645,50 @@ public class ESCActivity extends Activity {
             progressDialog = null;
           }
         }
+      }
+    } else if (requestCode == REQUEST_CODE_PICK_STANDBY_IMAGE && resultCode == RESULT_OK) {
+      if (data != null && data.getData() != null) {
+        final Uri uri = data.getData();
+        // 停止监听，避免与 setStandbyImage 内部读写互抢
+        dataListenerRunner.stop();
+        new Thread(new Runnable() {
+          @Override
+          public void run() {
+            try {
+              InputStream is = getContentResolver().openInputStream(uri);
+              Bitmap original = BitmapFactory.decodeStream(is);
+              if (is != null) is.close();
+              if (original == null) {
+                runOnUiThread(new Runnable() {
+                  @Override
+                  public void run() { Util.show(ESCActivity.this, "无法解码图片"); }
+                });
+                return;
+              }
+              // 缩放到目标分辨率 792x528
+              Bitmap scaled = Bitmap.createScaledBitmap(original, 792, 528, true);
+              if (scaled != original) original.recycle();
+              PrintUtil.getInstance().esc().setStandbyImage(new AndroidSourceImage(scaled));
+              scaled.recycle();
+              runOnUiThread(new Runnable() {
+                @Override
+                public void run() { Util.show(ESCActivity.this, "待机图片发送完成 (792x528)"); }
+              });
+            } catch (IOException e) {
+              runOnUiThread(new Runnable() {
+                @Override
+                public void run() { Util.show(ESCActivity.this, "待机图片发送失败: " + e.getMessage()); }
+              });
+            } catch (ESetStandbyImageException e) {
+              runOnUiThread(new Runnable() {
+                @Override
+                public void run() { Util.show(ESCActivity.this, "待机图片协议错误: " + e.getMessage()); }
+              });
+            } finally {
+              dataListen(PrintUtil.getInstance().connectedDevice());
+            }
+          }
+        }).start();
       }
     }
   }
@@ -871,6 +1056,30 @@ public class ESCActivity extends Activity {
         String rest_length = String.valueOf(Long.parseLong(Util.ByteArrToHex(bytes), 16));
         Util.show(ESCActivity.this, rest_length);
         Log.e(TAG, "纸张剩余长度: " + rest_length);
+        break;
+      // ─────────── AI打印机专属 ───────────
+      case OPERATE_GET_SYSTEM_LANGUAGE:
+        readMark = ReadMark.NONE;
+        if (bytes.length >= 2) {
+          int lang = bytes[1] & 0xFF;
+          String langStr = lang == 0 ? "中文" : "英文(" + lang + ")";
+          Util.show(ESCActivity.this, "当前语言: " + langStr);
+          Log.e(TAG, "当前语言: " + langStr);
+        } else {
+          Util.show(ESCActivity.this, "当前语言: " + Util.ByteArrToHex(bytes));
+        }
+        break;
+      // ─────────── 查询设备信息 ───────────
+      case OPERATE_GET_DEVICE_INFO:
+        readMark = ReadMark.NONE;
+        String deviceInfoRaw;
+        try {
+          deviceInfoRaw = new String(bytes, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+          deviceInfoRaw = Util.ByteArrToHex(bytes);
+        }
+        Util.show(ESCActivity.this, "设备信息:\n" + deviceInfoRaw);
+        Log.e(TAG, "设备信息: " + deviceInfoRaw);
         break;
       case OPERATE_PRINT:
         readMark = ReadMark.NONE;

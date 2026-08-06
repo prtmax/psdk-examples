@@ -59,6 +59,23 @@ public class Util {
   }
 
   /**
+   * 将十六进制字符串转换为 byte 数组
+   * @param hexStr 十六进制字符串（可包含换行、空格等空白字符，会被自动忽略）
+   * @return 转换后的 byte 数组
+   */
+  public static byte[] HexToByteArr(String hexStr) {
+    // 去除所有空白字符（换行、空格、回车等）
+    String cleanHex = hexStr.replaceAll("\\s+", "");
+    int len = cleanHex.length();
+    byte[] data = new byte[len / 2];
+    for (int i = 0; i < len; i += 2) {
+      data[i / 2] = (byte) ((Character.digit(cleanHex.charAt(i), 16) << 4)
+          + Character.digit(cleanHex.charAt(i + 1), 16));
+    }
+    return data;
+  }
+
+  /**
    * 解析 TSPL 打印机状态
    * @return 状态描述字符串
    */

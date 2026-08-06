@@ -88,6 +88,50 @@
               android:text="重置配网信息"
               android:textSize="18sp"/>
     </LinearLayout>
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="horizontal">
+      <Button
+        android:id="@+id/button_set_wifi_role"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:text="设置WIFI模式"
+        android:textSize="18sp"/>
+      <Button
+        android:id="@+id/button_get_wifi_role"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="获取WIFI工作模式"
+        android:textSize="18sp"/>
+    </LinearLayout>
+    <LinearLayout android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:orientation="horizontal">
+      <Button
+        android:id="@+id/button_set_wifi_lap"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="设置AP参数"
+        android:textSize="18sp"/>
+      <Button
+        android:id="@+id/button_get_apssid"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="查询AP SSID"
+        android:textSize="18sp"/>
+      <Button
+        android:id="@+id/button_get_appassword"
+        android:layout_weight="1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="查询AP密码"
+        android:textSize="18sp"/>
+    </LinearLayout>
 
     <!-- IP设置部分 (新增) -->
     <LinearLayout

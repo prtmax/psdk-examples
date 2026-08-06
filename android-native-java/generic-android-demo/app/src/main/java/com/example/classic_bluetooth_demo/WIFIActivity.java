@@ -1,7 +1,9 @@
 package com.example.classic_bluetooth_demo;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothDevice;
+import android.content.DialogInterface;
 import android.content.Context;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
@@ -16,6 +18,7 @@ import com.printer.psdk.device.bluetooth.Bluetooth;
 import com.printer.psdk.device.bluetooth.ConnectListener;
 import com.printer.psdk.device.bluetooth.Connection;
 import com.printer.psdk.frame.father.PSDK;
+import com.printer.psdk.frame.father.args.common.Raw;
 import com.printer.psdk.frame.father.listener.DataListener;
 import com.printer.psdk.frame.father.listener.DataListenerRunner;
 import com.printer.psdk.frame.father.listener.ListenAction;
@@ -23,6 +26,10 @@ import com.printer.psdk.wifi.GenericWIFI;
 import com.printer.psdk.wifi.WIFI;
 import com.printer.psdk.wifi.args.WSetSSID;
 import com.printer.psdk.wifi.args.WSetWifiIP;
+import com.printer.psdk.wifi.args.WSetWifiRole;
+import com.printer.psdk.wifi.args.WSetWifiLAP;
+import com.printer.psdk.wifi.args.WGetWifiAPSSID;
+import com.printer.psdk.wifi.args.WGetWifiAPPASSWORD;
 
 import java.io.IOException;
 import java.util.regex.Matcher;
@@ -33,6 +40,8 @@ public class WIFIActivity extends Activity {
   private EditText etIpAddress, etGateway, etNetmask;
   private Button button_send, button_search_name, button_search_pwd, button_status, button_search_dhcp, button_reset;
   private Button btnSetIp, btnGetIp, btnInfo;
+  private Button button_set_wifi_role, button_get_wifi_role;
+  private Button button_set_wifi_lap, button_get_apssid, button_get_appassword;
   private RadioGroup rgIpType;
   private RadioButton dhcp_radio, static_ip_radio;
   private View staticIpSettings;
@@ -66,6 +75,11 @@ public class WIFIActivity extends Activity {
     btnSetIp = findViewById(R.id.button_set_ip);
     btnGetIp = findViewById(R.id.button_get_ip);
     btnInfo = findViewById(R.id.button_get_info);
+    button_set_wifi_role = findViewById(R.id.button_set_wifi_role);
+    button_get_wifi_role = findViewById(R.id.button_get_wifi_role);
+    button_set_wifi_lap = findViewById(R.id.button_set_wifi_lap);
+    button_get_apssid = findViewById(R.id.button_get_apssid);
+    button_get_appassword = findViewById(R.id.button_get_appassword);
     BluetoothDevice device = getIntent().getParcelableExtra("device");
     connection = Bluetooth.getInstance().createConnectionBle(device, new ConnectListener() {
       @Override
@@ -257,6 +271,118 @@ public class WIFIActivity extends Activity {
         safeWrite(_gesc);
       }
     });
+    button_set_wifi_role.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        if (!isConnected()) {
+          Util.show(WIFIActivity.this, "请先连接设备");
+          return;
+        }
+        final String[] items = {"STA模式(1)", "AP模式(2)", "共享模式(3)"};
+        final int[] proles = {1, 2, 3};
+        new AlertDialog.Builder(WIFIActivity.this)
+          .setTitle("选择WIFI工作模式")
+          .setItems(items, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              GenericWIFI _gesc = wifi.setWifiRole(proles[which]);
+              safeWrite(_gesc);
+              Util.show(WIFIActivity.this, "已发送设置WIFI模式(" + items[which] + ")，模块会自动重启");
+            }
+          })
+          .show();
+      }
+    });
+    button_get_wifi_role.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        if (!isConnected()) {
+          Util.show(WIFIActivity.this, "请先连接设备");
+          return;
+        }
+        readMark = ReadMark.OPERATE_WIFI_ROLE;
+        GenericWIFI _gesc = wifi.getWifiRole();//查询WIFI工作模式
+        safeWrite(_gesc);
+      }
+    });
+    button_set_wifi_lap.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        if (!isConnected()) {
+          Util.show(WIFIActivity.this, "请先连接设备");
+          return;
+        }
+        final EditText etSsid = new EditText(WIFIActivity.this);
+        etSsid.setHint("AP模式WiFi名称(SSID)");
+        // 默认填入蓝牙设备名称
+        try {
+          if (device != null && device.getName() != null) {
+            etSsid.setText(device.getName());
+          }
+        } catch (Exception e) {
+          // 获取名称失败时忽略，让用户手动输入
+        }
+        final EditText etPwd = new EditText(WIFIActivity.this);
+        etPwd.setHint("AP模式WiFi密码(可为空)");
+        final EditText etIp = new EditText(WIFIActivity.this);
+        etIp.setHint("AP模式IP地址(默认192.168.1.1)");
+        etIp.setText("192.168.1.1");
+        LinearLayout layout = new LinearLayout(WIFIActivity.this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(50, 20, 50, 20);
+        layout.addView(etSsid);
+        layout.addView(etPwd);
+        layout.addView(etIp);
+        new AlertDialog.Builder(WIFIActivity.this)
+          .setTitle("设置AP模式WIFI参数")
+          .setView(layout)
+          .setPositiveButton("发送", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+              String ssid = etSsid.getText().toString().trim();
+              String pwd = etPwd.getText().toString().trim();
+              String ip = etIp.getText().toString().trim();
+              if (ssid.isEmpty()) {
+                Util.show(WIFIActivity.this, "SSID不能为空");
+                return;
+              }
+              if (ip.isEmpty()) {
+                ip = "192.168.1.1";
+              }
+              GenericWIFI _gesc = wifi.setWifiLAP(
+                WSetWifiLAP.builder().ssid(ssid).password(pwd).ip(ip).build());
+              safeWrite(_gesc);
+              Util.show(WIFIActivity.this, "已发送设置AP模式WIFI参数(SSID/密码/IP)");
+            }
+          })
+          .setNegativeButton("取消", null)
+          .show();
+      }
+    });
+    button_get_apssid.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        if (!isConnected()) {
+          Util.show(WIFIActivity.this, "请先连接设备");
+          return;
+        }
+        readMark = ReadMark.OPERATE_WIFI_APSSID;
+        GenericWIFI _gesc = wifi.getWifiAPSSID();//查询AP模式SSID
+        safeWrite(_gesc);
+      }
+    });
+    button_get_appassword.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        if (!isConnected()) {
+          Util.show(WIFIActivity.this, "请先连接设备");
+          return;
+        }
+        readMark = ReadMark.OPERATE_WIFI_APPASSWORD;
+        GenericWIFI _gesc = wifi.getWifiAPPASSWORD();//查询AP模式密码
+        safeWrite(_gesc);
+      }
+    });
     rgIpType.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
       @Override
       public void onCheckedChanged(RadioGroup group, int checkedId) {
@@ -393,6 +519,54 @@ public class WIFIActivity extends Activity {
               }
               String contentWifiInfo = "WIFI相关信息:" + wifiInfo;
               runOnUiThread(() -> tv_content.setText(contentWifiInfo));
+              break;
+            case OPERATE_WIFI_ROLE:
+              readMark = ReadMark.NONE;
+              String role = "";
+              try {
+                role = new String(received, "GB2312").replace("\r\n", "");
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+              String roleDesc;
+              switch (role) {
+                case "1":
+                  roleDesc = "STA模式(1)";
+                  break;
+                case "2":
+                  roleDesc = "AP模式(2)";
+                  break;
+                case "3":
+                  roleDesc = "共享模式(3)";
+                  break;
+                default:
+                  roleDesc = role;
+                  break;
+              }
+              String contentRole = "WIFI工作模式:" + roleDesc;
+              runOnUiThread(() -> tv_content.setText(contentRole));
+              break;
+            case OPERATE_WIFI_APSSID:
+              readMark = ReadMark.NONE;
+              String apSsid = "";
+              try {
+                apSsid = new String(received, "GB2312");
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+              String contentApSsid = "AP模式SSID:" + apSsid;
+              runOnUiThread(() -> tv_content.setText(contentApSsid));
+              break;
+            case OPERATE_WIFI_APPASSWORD:
+              readMark = ReadMark.NONE;
+              String apPwd = "";
+              try {
+                apPwd = new String(received, "GB2312");
+              } catch (Exception e) {
+                e.printStackTrace();
+              }
+              String contentApPwd = "AP模式密码:" + apPwd;
+              runOnUiThread(() -> tv_content.setText(contentApPwd));
               break;
             default:
               break;
