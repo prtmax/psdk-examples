@@ -350,13 +350,6 @@
             </constraints>
             <point key="canvasLocation" x="-4048.0916030534349" y="-563.38028169014092"/>
         </view>
-        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="w4i-3c-YKA">
-            <rect key="frame" x="0.0" y="0.0" width="75" height="35"/>
-            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-            <state key="normal" title="Button"/>
-            <buttonConfiguration key="configuration" style="plain" title="Button"/>
-            <point key="canvasLocation" x="-4564" y="-421"/>
-        </button>
     </objects>
     <resources>
         <systemColor name="systemBackgroundColor">
