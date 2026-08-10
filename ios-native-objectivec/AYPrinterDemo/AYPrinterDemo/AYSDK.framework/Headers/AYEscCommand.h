@@ -136,7 +136,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)nfcRestLength;
 
-
 #pragma mark - 设置指令/setting command
 /**
  * 设置关机时间
@@ -148,7 +147,7 @@ NS_ASSUME_NONNULL_BEGIN
  * 设置浓度
  * @param thickness 浓度
  */
--(void)thickness:(EThickness)thickness;
+- (void)thickness:(EThickness)thickness;
 
 /**
  * 设置纸张类型
@@ -166,7 +165,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (void)paperTypeQX:(EPaperTypeQX)type;
 
-
 #pragma mark - 配网
 /**
  * APP设置配网信息
@@ -174,7 +172,7 @@ NS_ASSUME_NONNULL_BEGIN
  * @param pwd 密码
  * @param mode 加密方式  (0, 1, 2)
  */
--(void)setWifiName:(NSString *)name pwd:(NSString *)pwd mode:(int)mode;
+- (void)setWifiName:(NSString *)name pwd:(NSString *)pwd mode:(int)mode;
 
 /**
  * 查询配网是否成功
@@ -196,6 +194,62 @@ NS_ASSUME_NONNULL_BEGIN
  * 设置服务器域名 成功返回OK，失败返回ER
  */
 - (void)setHosts:(NSArray<NSString *> *)hosts;
+
+#pragma mark - ai 打印机接口
+
+/**
+ * 设置待机样式
+ *
+ * @param model 待机样式  1 图片  2 日历
+ */
+- (void)setStandbyMode:(int)model;
+
+/**
+ * 设置系统语言
+ *
+ * @param language 系统语言  1 英文  2 中文
+ */
+- (void)setSystemLanguage:(int)language;
+
+/**
+ * 获取系统语言
+ *
+ */
+- (void)getSystemLanguage;
+
+/**
+ * 设置日历图案
+ */
+- (void)setCalendarMode:(int)mode;
+
+/**
+ * 设置待机图片（需配合 setStandbyMode:1 图片样式使用）
+ *
+ * 协议分三步：
+ *   1. 开始包（帧头 10 FF 36 00 A5），携带图片总长度
+ *   2. 分包发送图片数据（帧头 10 FF 36 01 A5）
+ *   3. 结束包（帧头 10 FF 36 02 A5）
+ *
+ * 每包均包含校验和（数据域累加和 & 0xFF）及结束符 0x5A
+ *
+ * @param image 待机图片
+ */
+- (void)setStandbyImage:(UIImage *)image;
+
+/**
+ * 查询设备信息
+ *
+ */
+- (void)getDeviceInfo;
+
+/**
+ * 绑定设备
+ *
+ * @param onceCode 一次性绑定码
+ * @param server   服务器地址
+ * @param expire   绑定过期时间
+ */
+- (void)bindDevice:(NSString *)onceCode server:(NSString *)server expire:(NSString *)expire;
 
 @end
 

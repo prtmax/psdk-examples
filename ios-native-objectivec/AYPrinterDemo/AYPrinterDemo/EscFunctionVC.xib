@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="23727" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="24506" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES">
     <device id="retina6_12" orientation="portrait" appearance="light"/>
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="23721"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="24504"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
         <capability name="System colors in document resources" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
@@ -45,13 +45,13 @@
                             </connections>
                         </stepper>
                         <switch opaque="NO" contentMode="scaleToFill" horizontalHuggingPriority="750" verticalHuggingPriority="750" contentHorizontalAlignment="center" contentVerticalAlignment="center" translatesAutoresizingMaskIntoConstraints="NO" id="ZAE-Hy-e6t">
-                            <rect key="frame" x="334" y="2.6666666666666714" width="51" height="31"/>
+                            <rect key="frame" x="322" y="4.3333333333333428" width="63" height="28"/>
                             <connections>
                                 <action selector="compressChange:" destination="-1" eventType="valueChanged" id="9UI-H8-jRZ"/>
                             </connections>
                         </switch>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="压缩" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="I2z-yo-9J6">
-                            <rect key="frame" x="290" y="7.9999999999999982" width="34" height="20.333333333333329"/>
+                            <rect key="frame" x="278" y="7.9999999999999982" width="34" height="20.333333333333329"/>
                             <fontDescription key="fontDescription" type="system" pointSize="17"/>
                             <nil key="textColor"/>
                             <nil key="highlightedColor"/>
@@ -148,6 +148,9 @@
                             </connections>
                         </button>
                     </subviews>
+                    <constraints>
+                        <constraint firstAttribute="height" constant="389" id="VS0-37-bgL"/>
+                    </constraints>
                 </stackView>
                 <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" spacing="10" translatesAutoresizingMaskIntoConstraints="NO" id="iit-KW-Kxk">
                     <rect key="frame" x="196.66666666666663" y="166.33333333333334" width="196.33333333333337" height="344.66666666666663"/>
@@ -230,6 +233,98 @@
                         <constraint firstAttribute="height" constant="4" id="dYa-07-b4B"/>
                     </constraints>
                 </progressView>
+                <stackView opaque="NO" contentMode="scaleAspectFill" axis="vertical" distribution="fillEqually" translatesAutoresizingMaskIntoConstraints="NO" id="sFc-gG-aWR">
+                    <rect key="frame" x="16" y="597" width="361" height="171.66666666666663"/>
+                    <subviews>
+                        <stackView opaque="NO" contentMode="center" translatesAutoresizingMaskIntoConstraints="NO" id="dpQ-fj-bHr">
+                            <rect key="frame" x="0.0" y="0.0" width="361" height="34.333333333333336"/>
+                            <subviews>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="--- AI打印机专属功能---" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="cns-wM-QqM">
+                                    <rect key="frame" x="0.0" y="0.0" width="361" height="34.333333333333336"/>
+                                    <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
+                                    <color key="textColor" systemColor="systemOrangeColor"/>
+                                    <nil key="highlightedColor"/>
+                                </label>
+                            </subviews>
+                        </stackView>
+                        <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="EcZ-WZ-w2t">
+                            <rect key="frame" x="0.0" y="34.333333333333371" width="361" height="34.333333333333343"/>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WAM-29-vJD">
+                                    <rect key="frame" x="0.0" y="0.0" width="180.66666666666666" height="34.333333333333336"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="设置待机样式"/>
+                                    <connections>
+                                        <action selector="setStandbyMode" destination="-1" eventType="touchUpInside" id="MAN-RD-GOl"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="TDm-eA-Fts">
+                                    <rect key="frame" x="180.66666666666663" y="0.0" width="180.33333333333337" height="34.333333333333336"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="设置系统语言"/>
+                                    <connections>
+                                        <action selector="setSystemLanguage" destination="-1" eventType="touchUpInside" id="wRb-94-uFi"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </stackView>
+                        <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="NQV-ht-f9r">
+                            <rect key="frame" x="0.0" y="68.666666666666629" width="361" height="34.333333333333343"/>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="WO3-et-3QM">
+                                    <rect key="frame" x="0.0" y="0.0" width="180.66666666666666" height="34.333333333333336"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="获取当前语言"/>
+                                    <connections>
+                                        <action selector="getSystemLanguage" destination="-1" eventType="touchUpInside" id="yRO-Jm-KRh"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Hgv-HK-fjy">
+                                    <rect key="frame" x="180.66666666666663" y="0.0" width="180.33333333333337" height="34.333333333333336"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="设置待机图片"/>
+                                    <connections>
+                                        <action selector="setStandbyImage" destination="-1" eventType="touchUpInside" id="faz-qv-hR8"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </stackView>
+                        <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="nOa-sh-spg">
+                            <rect key="frame" x="0.0" y="103" width="361" height="34.333333333333343"/>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="hRy-P6-Tku">
+                                    <rect key="frame" x="0.0" y="0.0" width="361" height="34.333333333333336"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="设置日历样式"/>
+                                    <connections>
+                                        <action selector="setCalendarMode" destination="-1" eventType="touchUpInside" id="t7t-KA-kJH"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </stackView>
+                        <stackView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="THY-Ni-fwT">
+                            <rect key="frame" x="0.0" y="137.33333333333337" width="361" height="34.333333333333343"/>
+                            <subviews>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="pnG-Xx-v1E">
+                                    <rect key="frame" x="0.0" y="0.0" width="180.66666666666666" height="34.333333333333336"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="查询设备信息"/>
+                                    <connections>
+                                        <action selector="getDeviceInfo" destination="-1" eventType="touchUpInside" id="khX-ey-UTv"/>
+                                    </connections>
+                                </button>
+                                <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="H14-NP-6Th">
+                                    <rect key="frame" x="180.66666666666663" y="0.0" width="180.33333333333337" height="34.333333333333336"/>
+                                    <state key="normal" title="Button"/>
+                                    <buttonConfiguration key="configuration" style="plain" title="绑定设备"/>
+                                    <connections>
+                                        <action selector="bindDevice" destination="-1" eventType="touchUpInside" id="FJS-TK-Qde"/>
+                                    </connections>
+                                </button>
+                            </subviews>
+                        </stackView>
+                    </subviews>
+                </stackView>
             </subviews>
             <viewLayoutGuide key="safeArea" id="ky2-Nu-n2i"/>
             <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -242,20 +337,33 @@
                 <constraint firstItem="ky2-Nu-n2i" firstAttribute="trailing" secondItem="Lq3-Wj-MlN" secondAttribute="trailing" constant="10" id="Llc-5T-ins"/>
                 <constraint firstItem="ky2-Nu-n2i" firstAttribute="trailing" secondItem="iit-KW-Kxk" secondAttribute="trailing" id="Lnk-H5-Owb"/>
                 <constraint firstItem="Ufd-up-xBL" firstAttribute="leading" secondItem="ky2-Nu-n2i" secondAttribute="leading" id="PJf-Uc-Exd"/>
+                <constraint firstItem="sFc-gG-aWR" firstAttribute="top" secondItem="Lq3-Wj-MlN" secondAttribute="bottom" constant="7.6699999999999999" id="Xwz-y4-oYe"/>
                 <constraint firstItem="iit-KW-Kxk" firstAttribute="leading" secondItem="Ufd-up-xBL" secondAttribute="trailing" id="YMq-bA-ikC"/>
                 <constraint firstItem="ky2-Nu-n2i" firstAttribute="trailing" secondItem="vbQ-qV-f7M" secondAttribute="trailing" constant="10" id="ZpX-Fi-wGb"/>
+                <constraint firstItem="ky2-Nu-n2i" firstAttribute="trailing" secondItem="sFc-gG-aWR" secondAttribute="trailing" constant="16" id="c4R-u8-Ylb"/>
                 <constraint firstItem="ky2-Nu-n2i" firstAttribute="trailing" secondItem="Z3n-VU-A5A" secondAttribute="trailing" id="eqX-Em-V9W"/>
                 <constraint firstItem="Z3n-VU-A5A" firstAttribute="leading" secondItem="ky2-Nu-n2i" secondAttribute="leading" id="ggv-dR-gGz"/>
                 <constraint firstItem="iit-KW-Kxk" firstAttribute="width" secondItem="Ufd-up-xBL" secondAttribute="width" id="gjt-6R-wzf"/>
                 <constraint firstItem="Lq3-Wj-MlN" firstAttribute="top" secondItem="vbQ-qV-f7M" secondAttribute="bottom" constant="10" id="klZ-RU-y5s"/>
                 <constraint firstItem="vbQ-qV-f7M" firstAttribute="top" secondItem="Ufd-up-xBL" secondAttribute="bottom" constant="20" id="ufN-Fn-rXO"/>
+                <constraint firstItem="sFc-gG-aWR" firstAttribute="leading" secondItem="ky2-Nu-n2i" secondAttribute="leading" constant="16" id="wSz-MJ-EXK"/>
             </constraints>
-            <point key="canvasLocation" x="-4047" y="-563"/>
+            <point key="canvasLocation" x="-4048.0916030534349" y="-563.38028169014092"/>
         </view>
+        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" id="w4i-3c-YKA">
+            <rect key="frame" x="0.0" y="0.0" width="75" height="35"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <state key="normal" title="Button"/>
+            <buttonConfiguration key="configuration" style="plain" title="Button"/>
+            <point key="canvasLocation" x="-4564" y="-421"/>
+        </button>
     </objects>
     <resources>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+        <systemColor name="systemOrangeColor">
+            <color red="1" green="0.58431372550000005" blue="0.0" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
         </systemColor>
     </resources>
 </document>
