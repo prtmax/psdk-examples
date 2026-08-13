@@ -21,12 +21,13 @@ typedef NS_ENUM(NSInteger, BleState) {
     BleStateFailToConnect
 };
 
-typedef void(^OnEscQueryChange)(EQuery type, NSData *data);
-typedef void(^OnEscSettingChange)(ESet type, NSData *data);
-typedef void(^OnTsplDataReceived)(TReceivedType type, NSData *data);
-typedef void(^OnCpclDataReceived)(CReceivedType type, NSData *data);
-typedef void(^OnDataReceived)(NSData *data);
-typedef void(^OnWriteComplete)(void);
+typedef void (^OnEscQueryChange)(EQuery type, NSData *data);
+typedef void (^OnEscSettingChange)(ESet type, NSData *data);
+typedef void (^OnTsplDataReceived)(TReceivedType type, NSData *data);
+typedef void (^OnCpclDataReceived)(CReceivedType type, NSData *data);
+typedef void (^OnDataReceived)(NSData *data);
+typedef void (^OnWriteComplete)(void);
+typedef void (^OnWriteProgress)(NSUInteger bytesWritten, NSUInteger totalBytes);
 
 @protocol BleHelperDelegate <NSObject>
 
@@ -60,6 +61,8 @@ typedef void(^OnWriteComplete)(void);
 
 /// 写入完成回调
 @property(copy, nonatomic) OnWriteComplete onWriteComplete;
+/// 写入进度回调
+@property(copy, nonatomic) OnWriteProgress onWriteProgress;
 
 + (instancetype)shareInstance;
 
@@ -77,4 +80,4 @@ typedef void(^OnWriteComplete)(void);
 
 @end
 
-//NS_ASSUME_NONNULL_END
+// NS_ASSUME_NONNULL_END

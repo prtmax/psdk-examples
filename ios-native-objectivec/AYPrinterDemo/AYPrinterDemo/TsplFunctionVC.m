@@ -11,6 +11,7 @@
 
 @property (weak, nonatomic) IBOutlet UILabel *displayLabel;
 @property (strong, nonatomic) AYOtaHelperCPCL *otaHelper;
+@property (weak, nonatomic) IBOutlet UIProgressView *otaProgressView;
 
 @end
 
@@ -277,31 +278,38 @@
 
 #warning 仅适用于部分机型，请勿随意升级
 - (IBAction)otaUpdate:(id)sender {
-   NSString *filepath = [[NSBundle mainBundle] pathForResource:@"NN0000581_T61_V4.99RC_KTA_20260526.PRTU" ofType:nil];
+   NSString *filepath = [[NSBundle mainBundle] pathForResource:@"JD_250WF_II2.07.36_20260807.bin" ofType:nil];
 
     NSLog(@"%@", filepath);
     NSData* filedata = [NSData dataWithContentsOfFile:filepath];
-//    NSMutableArray<NSData *> *dadas = [NSMutableArray array];
-//    [dadas addObject:filedata];
-//    [self.bleHelper writeCommands:dadas];
+  __weak typeof(self) weakSelf = self;
   
   // 升级回调
   self.otaHelper.otaStateChange = ^(OtaState state) {
     switch (state) {
       case OtaStateStart:
         NSLog(@"开始升级");
-        self.displayLabel.text = @"开始升级";
+        weakSelf.displayLabel.text = @"开始升级";
         break;
       case OtaStateFail:
         NSLog(@"升级失败");
-        self.displayLabel.text = @"开始失败";
+        weakSelf.displayLabel.text = @"开始失败";
         break;
       case OtaStateSuccess:
         NSLog(@"升级成功");
-        self.displayLabel.text = @"开始成功";
+        weakSelf.displayLabel.text = @"开始成功";
         break;
     }
   };
+  
+  self.otaHelper.progressChange = ^(int progress) {
+     NSLog(@"升级进度： %d", progress);
+     weakSelf.displayLabel.text = [NSString stringWithFormat:@"升级进度：%d / 100", progress];
+     [weakSelf.otaProgressView setProgress:progress / 100.0];
+  };
+  
+  self.otaProgressView.progress = 0;
+  self.otaProgressView.hidden = NO;
   // 发送升级数据
   [self.otaHelper otaWithFileData:filedata];
 }

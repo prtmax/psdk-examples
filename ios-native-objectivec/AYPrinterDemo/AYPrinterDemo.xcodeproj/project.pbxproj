@@ -66,6 +66,8 @@
 		B5DAE1582F2DE55700D4403C /* RGBPrintVC.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DAE1552F2DE55700D4403C /* RGBPrintVC.m */; };
 		B5DAE15B2F2DE57000D4403C /* RGBConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = B5DAE15A2F2DE57000D4403C /* RGBConfig.m */; };
 		B5DAE15D2F2DF0C800D4403C /* caomei.jpg in Resources */ = {isa = PBXBuildFile; fileRef = B5DAE15C2F2DF0C800D4403C /* caomei.jpg */; };
+		B5F7D634302C6CD200203D13 /* zero_compressed.bin in Resources */ = {isa = PBXBuildFile; fileRef = B5F7D633302C6CD100203D13 /* zero_compressed.bin */; };
+		B5F7D636302C77EE00203D13 /* JD_250WF_II2.07.36_20260807.bin in Resources */ = {isa = PBXBuildFile; fileRef = B5F7D635302C77EE00203D13 /* JD_250WF_II2.07.36_20260807.bin */; };
 		FECAFD37AFE582C13790ACA8 /* Pods_AYPrinterDemoTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6377182B2AED9CEC5B942E6F /* Pods_AYPrinterDemoTests.framework */; };
 /* End PBXBuildFile section */
 
@@ -178,6 +180,8 @@
 		B5DAE1592F2DE57000D4403C /* RGBConfig.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RGBConfig.h; sourceTree = "<group>"; };
 		B5DAE15A2F2DE57000D4403C /* RGBConfig.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RGBConfig.m; sourceTree = "<group>"; };
 		B5DAE15C2F2DF0C800D4403C /* caomei.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; path = caomei.jpg; sourceTree = "<group>"; };
+		B5F7D633302C6CD100203D13 /* zero_compressed.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = zero_compressed.bin; sourceTree = "<group>"; };
+		B5F7D635302C77EE00203D13 /* JD_250WF_II2.07.36_20260807.bin */ = {isa = PBXFileReference; lastKnownFileType = archive.macbinary; path = JD_250WF_II2.07.36_20260807.bin; sourceTree = "<group>"; };
 		C1904A8930F63CD7D33C217B /* Pods-AYPrinterDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AYPrinterDemo.debug.xcconfig"; path = "Target Support Files/Pods-AYPrinterDemo/Pods-AYPrinterDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		CD7E3EEB09CAA511CE409ADA /* Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig"; path = "Target Support Files/Pods-AYPrinterDemo-AYPrinterDemoUITests/Pods-AYPrinterDemo-AYPrinterDemoUITests.release.xcconfig"; sourceTree = "<group>"; };
 		D4EF962A242669BF50CD3CA5 /* Pods_AYPrinterDemo_AYPrinterDemoUITests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_AYPrinterDemo_AYPrinterDemoUITests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -241,6 +245,8 @@
 		B56455DC2BC38C9F0076C82F /* ota */ = {
 			isa = PBXGroup;
 			children = (
+				B5F7D635302C77EE00203D13 /* JD_250WF_II2.07.36_20260807.bin */,
+				B5F7D633302C6CD100203D13 /* zero_compressed.bin */,
 				B5DAB46F2FC5A7D500E5C7CE /* NN0000581_T61_V4.99RC_KTA_20260526.PRTU */,
 				B5467B1E2F306DF9005D910A /* v138868.RM */,
 				B56455DD2BC38C9F0076C82F /* DL-Q2 V1.12.PRTU */,
@@ -493,8 +499,10 @@
 				B5175E382C2FB55B00E533FF /* dithered-image (2).png in Resources */,
 				B56396282DAFB628008EBC12 /* dithered-image3.png in Resources */,
 				B574586F2AB067E700DF9716 /* LaunchScreen.storyboard in Resources */,
+				B5F7D634302C6CD200203D13 /* zero_compressed.bin in Resources */,
 				B56456002BC38C9F0076C82F /* qmsht.jpg in Resources */,
 				B581BA202BDA071D00D25CF6 /* A4主动上报信息释义.pdf in Resources */,
+				B5F7D636302C77EE00203D13 /* JD_250WF_II2.07.36_20260807.bin in Resources */,
 				B56456072BC38C9F0076C82F /* dithered-image.png in Resources */,
 				B590F1F92AB19A6E0012CEE5 /* TsplFunctionVC.xib in Resources */,
 				B5DAE15D2F2DF0C800D4403C /* caomei.jpg in Resources */,

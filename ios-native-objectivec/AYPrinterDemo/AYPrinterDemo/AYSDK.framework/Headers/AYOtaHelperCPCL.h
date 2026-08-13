@@ -8,11 +8,13 @@
 #import <Foundation/Foundation.h>
 #import <AYSDK/ETypes.h>
 
-typedef void(^OnOtaStateChange)(OtaState state);
+typedef void (^OnOtaProgressChange)(int progress);
+typedef void (^OnOtaStateChange)(OtaState state);
 
 @interface AYOtaHelperCPCL : NSObject
 
-@property (nonatomic, copy) OnOtaStateChange otaStateChange;
+@property(nonatomic, copy) OnOtaProgressChange progressChange;
+@property(nonatomic, copy) OnOtaStateChange otaStateChange;
 
 - (void)otaWithFileData:(NSData *)data;
 
