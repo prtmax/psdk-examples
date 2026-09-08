@@ -150,7 +150,6 @@ public class TSPLActivity extends Activity {
                                 .mirror(TDirection.Mirror.NO_MIRROR)
                                 .build()
                 )
-                .gap(true)
                 .cut(true)
                 .cls()
                 .text(TText.builder().content(etMsg.getText().toString()).x(50).y(50).build())
@@ -253,7 +252,6 @@ public class TSPLActivity extends Activity {
                                 .mirror(TDirection.Mirror.NO_MIRROR)
                                 .build()
                 )
-                .gap(true)
                 .cut(true)
                 .cls()
                 .barcode(TBarCode.builder().content("1234556890").height(50).x(10).y(10).cellWidth(2).build())
@@ -276,7 +274,6 @@ public class TSPLActivity extends Activity {
                                 .mirror(TDirection.Mirror.NO_MIRROR)
                                 .build()
                 )
-                .gap(true)
                 .cut(true)
                 .cls()
                 .qrcode(TQRCode.builder().x(10).y(10).content("1234556890").cellWidth(4).build())
@@ -341,7 +338,7 @@ public class TSPLActivity extends Activity {
 //          .bline()//黑标纸打印
 //          .continuous()//连续纸打印
 //          .offset(0)//进纸
-//          .ribbon(false)//热敏模式
+          .ribbon(false)//热敏模式
 //          .shift(0)//垂直偏移
 //          .reference(0, 0)//相对偏移
                 .direction(TDirection.builder().direction(TDirection.Direction.UP_OUT).mirror(TDirection.Mirror.NO_MIRROR).build())

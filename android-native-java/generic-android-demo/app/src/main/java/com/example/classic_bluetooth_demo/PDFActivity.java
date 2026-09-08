@@ -208,11 +208,11 @@ public class PDFActivity extends Activity {
       safeWrite(_gtspl);
     } else if (curCmd.equals("cpcl")) {
       GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().page(CPage.builder().width(pageWidth * 8).height(pageHeight * 8).build())//单位是dot 1mm=8dot
-        .image(CImage.builder()
-          .image(new AndroidSourceImage(rawBitmap))
-          .compress(cb_compress.isChecked())
-          .build()
-        );
+              .image(CImage.builder()
+                      .image(new AndroidSourceImage(rawBitmap))
+                      .compress(cb_compress.isChecked())
+                      .build()
+              );
       if (!rb_continue.isChecked()) {//不是连续纸都要发定位指令
         _gcpcl.form();
       }
@@ -220,14 +220,16 @@ public class PDFActivity extends Activity {
       safeWrite(_gcpcl);
     } else {
       GenericESC _gesc = PrintUtil.getInstance().esc()
-        .image(EImage.builder()
-          .image(new AndroidSourceImage(rawBitmap))
-          .compress(cb_compress.isChecked())
-          .build())
-        .lineDot(250);
+              .enable()
+              .image(EImage.builder()
+                      .image(new AndroidSourceImage(rawBitmap))
+                      .compress(cb_compress.isChecked())
+                      .build())
+              .lineDot(250);
       if (!rb_continue.isChecked()) {//不是连续纸都要发定位指令
         _gesc.position();
       }
+      _gesc.stopJob();
       safeWrite(_gesc);
     }
   }

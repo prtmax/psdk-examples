@@ -20,6 +20,7 @@ import com.printer.psdk.device.adapter.ReadOptions;
 import com.printer.psdk.device.adapter.types.WroteReporter;
 import com.printer.psdk.device.usb.USB;
 import com.printer.psdk.device.usb.USBConnectedDevice;
+import com.printer.psdk.esc.args.EImage;
 import com.printer.psdk.frame.father.PSDK;
 import com.printer.psdk.imagep.android.AndroidSourceImage;
 import com.printer.psdk.tspl.GenericTSPL;
@@ -314,7 +315,7 @@ public class USBActivity extends Activity {
         )
         .print(1);
       safeWrite(_gtspl);
-    } else {
+    } else if ("cpcl".equals(curCmd)){
       GenericCPCL _gcpcl = PrintUtil.getInstance().cpcl().clear().page(CPage.builder().width(608).height(1040).build())
         .image(CImage.builder()
           .image(new AndroidSourceImage(rawBitmap))
@@ -326,6 +327,19 @@ public class USBActivity extends Activity {
       }
       _gcpcl.print(CPrint.builder().build());
       safeWrite(_gcpcl);
+    } else {
+      GenericESC _gesc = PrintUtil.getInstance().esc()
+              .enable()
+              .image(EImage.builder()
+                      .image(new AndroidSourceImage(rawBitmap))
+                      .compress(cb_compress.isChecked())
+                      .build())
+              .lineDot(250);
+      if (cb_position.isChecked()) {//定位指令
+        _gesc.position();
+      }
+      _gesc.stopJob();
+      safeWrite(_gesc);
     }
   }
 
