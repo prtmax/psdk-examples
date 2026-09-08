@@ -12,6 +12,7 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="TsplFunctionVC">
             <connections>
                 <outlet property="displayLabel" destination="OyS-Za-nXS" id="apJ-WQ-emT"/>
+                <outlet property="otaProgressView" destination="8wM-Ey-BmJ" id="e2A-QG-zzJ"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -163,6 +164,12 @@
                             <color key="textColor" red="0.33333333333333331" green="0.63921568627450975" blue="0.30196078431372547" alpha="1" colorSpace="custom" customColorSpace="displayP3"/>
                             <nil key="highlightedColor"/>
                         </label>
+                        <progressView hidden="YES" opaque="NO" contentMode="scaleToFill" verticalHuggingPriority="750" translatesAutoresizingMaskIntoConstraints="NO" id="8wM-Ey-BmJ">
+                            <rect key="frame" x="0.0" y="352.33333333333331" width="393" height="4"/>
+                            <constraints>
+                                <constraint firstAttribute="height" constant="4" id="IO4-ec-8vd"/>
+                            </constraints>
+                        </progressView>
                     </subviews>
                 </stackView>
             </subviews>
