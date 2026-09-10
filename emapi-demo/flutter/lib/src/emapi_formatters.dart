@@ -84,6 +84,23 @@ String formatReport(EmapiReport report) {
     EmapiBluetoothConnectionReport(:final state) => '蓝牙连接上报：$state',
     EmapiWifiConfigStatusReport(:final ssid, :final state) =>
       'WIFI 配网上报：SSID=${_value(ssid)}，状态=${_value(state)}',
+    EmapiRfidStatusReport(
+      :final paperModel,
+      :final paperLength,
+      :final paperWidth,
+      :final paperColor,
+      :final paperMaterialNumber,
+      :final remainingPaperLength,
+    ) =>
+      [
+        'RFID 状态上报',
+        '纸张型号：${_value(paperModel)}',
+        '纸张长度：${_value(paperLength)}',
+        '纸张宽度：${_value(paperWidth)}',
+        '纸张颜色：${_value(paperColor)}',
+        '纸张物料号：${_value(paperMaterialNumber)}',
+        '纸张剩余长度：${_value(remainingPaperLength)}',
+      ].join('\n'),
     EmapiUnknownReport() => '未知上报：${report.command}',
     _ => '未识别上报：${report.command}',
   };

@@ -1021,6 +1021,18 @@ final _simulatedUpgradeReportCommand = EmapiCommand(
   child: EmapiConstants.childReportUpgradeStatus,
 );
 
+final _simulatedPrinterStatusReportCommand = EmapiCommand(
+  type: EmapiConstants.typeRequest,
+  parent: EmapiConstants.parentReport,
+  child: EmapiConstants.childReportPrinterStatus,
+);
+
+final _simulatedRfidStatusReportCommand = EmapiCommand(
+  type: EmapiConstants.typeRequest,
+  parent: EmapiConstants.parentReport,
+  child: EmapiConstants.childReportRfidStatus,
+);
+
 final _simulatedWifiReportCommand = EmapiCommand(
   type: EmapiConstants.typePassthroughRequest,
   parent: EmapiConstants.parentWifi,

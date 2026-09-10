@@ -191,7 +191,10 @@ final printer = EmapiPrinter(connection: connection);
 
 // 监听打印机主动上报
 printer.reports.listen((report) {
-    // 处理上报：打印状态、升级状态、流控、蓝牙连接等
+    // 处理上报：打印状态、RFID 状态、升级状态、流控、蓝牙连接等
+    if (report is EmapiRfidStatusReport) {
+        // 打印结束后识别到 RFID 纸张时上报：型号/长度/宽度/颜色/料号/剩余长度
+    }
 });
 ```
 
@@ -265,7 +268,7 @@ Demo 使用简单的 `ChangeNotifier` 模式（非完整状态管理框架），
 - 扫描生成 1 台虚拟蓝牙设备
 - 所有 EMAPI 指令返回模拟数据（包含完整的 TLV 编码响应）
 - OTA / WiFi 文件传输模拟分块进度
-- 模拟主动上报（流控、升级状态、WiFi 配网状态等）
+- 模拟主动上报（流控、升级状态、WiFi 配网状态、RFID 状态等）
 
 模拟模式下指令和上报的字节流格式与真实设备完全一致，适合用于：
 - 前期协议联调

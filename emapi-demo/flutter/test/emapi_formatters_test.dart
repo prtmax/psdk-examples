@@ -14,6 +14,30 @@ void main() {
     );
   });
 
+  test('formatReport_displaysRfidStatusReport', () {
+    final report = EmapiRfidStatusReport(
+      EmapiCommand(
+        type: EmapiConstants.typeRequest,
+        parent: EmapiConstants.parentReport,
+        child: EmapiConstants.childReportRfidStatus,
+      ),
+      paperModel: 'L801',
+      paperLength: '40m',
+      paperWidth: '80mm',
+      paperColor: 'white',
+      paperMaterialNumber: 'PAPER-01',
+      remainingPaperLength: 123456,
+    );
+
+    final text = formatReport(report);
+
+    expect(text, contains('RFID 状态上报'));
+    expect(text, contains('纸张型号：L801'));
+    expect(text, contains('纸张宽度：80mm'));
+    expect(text, contains('纸张颜色：white'));
+    expect(text, contains('纸张剩余长度：123456'));
+  });
+
   test('formatPrintStatus_displaysPublicSdkFieldsOnly', () {
     const status = EmapiPrintStatus(
       paperStatus: 1,

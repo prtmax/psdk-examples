@@ -387,6 +387,15 @@ void main() {
     expect(printBody, contains('printEsc('));
   });
 
+  test('controller_simulatesRfidStatusReportAfterEscPrint', () {
+    final controller = readProjectFile('lib/src/emapi_demo_controller.dart');
+    final printBody = methodBody(controller, 'performEscPrint');
+
+    expect(printBody, contains('EmapiRfidStatusReport'));
+    expect(printBody, contains('nfcPaperRecognition'));
+    expect(printBody, contains('remainingPaperLength'));
+  });
+
   test('controller_wifiTransferUsesWifiDownloadProtocolOnly', () {
     final controller = readProjectFile('lib/src/emapi_demo_controller.dart');
     final transferBody = methodBody(controller, 'performWifiFileTransfer');
