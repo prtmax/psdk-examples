@@ -920,9 +920,26 @@ public class ESCActivity extends Activity {
       case OPERATE_BATVOL:
         readMark = ReadMark.NONE;
         if (bytes.length == 2) {
-          String s = "电量：" + (int) bytes[1];
+          int batteryRaw = bytes[1];
+          String statusStr;
+          switch (bytes[0]) {
+            case 0x00:
+            case 0x01:
+              statusStr = "未充电";
+              break;
+            case 0x02:
+              statusStr = "充电中";
+              break;
+            case 0x03:
+              statusStr = "已充满";
+              break;
+            default:
+              statusStr = "未知状态";
+              break;
+          }
+          String s = "电量：" + batteryRaw + "，" + statusStr;
           Util.show(ESCActivity.this, s);
-          Log.e(TAG, "电量: " + s);
+          Log.e(TAG, s);
         }
         break;
       case OPERATE_PRINTERSN:
