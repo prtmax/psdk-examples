@@ -603,6 +603,19 @@ class _EscPrintSheetContentState extends State<_EscPrintSheetContent> {
   int enableMode = 0;
   double thickness = 8;
   bool compress = false;
+  late final TextEditingController copiesController;
+
+  @override
+  void initState() {
+    super.initState();
+    copiesController = TextEditingController(text: '1');
+  }
+
+  @override
+  void dispose() {
+    copiesController.dispose();
+    super.dispose();
+  }
 
   bool get includePosition {
     return paperType != esc.Type.continuousReelPaper;
@@ -623,6 +636,18 @@ class _EscPrintSheetContentState extends State<_EscPrintSheetContent> {
         _SelectedFileRow(
           icon: Icons.image_outlined,
           label: widget.escImageLabel,
+        ),
+        const SizedBox(height: 10),
+        TextField(
+          controller: copiesController,
+          enabled: !widget.controller.busy,
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+          decoration: const InputDecoration(
+            labelText: '打印份数',
+            hintText: '请输入打印份数，默认 1 份',
+            prefixIcon: Icon(Icons.copy_outlined),
+          ),
         ),
         const SizedBox(height: 10),
         Text('纸张类型', style: theme.textTheme.labelMedium),
@@ -694,9 +719,7 @@ class _EscPrintSheetContentState extends State<_EscPrintSheetContent> {
         const SizedBox(height: 10),
         Row(
           children: [
-            Expanded(
-              child: Text('图像压缩', style: theme.textTheme.labelMedium),
-            ),
+            Expanded(child: Text('图像压缩', style: theme.textTheme.labelMedium)),
             Switch(
               value: compress,
               onChanged: widget.controller.busy
@@ -719,22 +742,32 @@ class _EscPrintSheetContentState extends State<_EscPrintSheetContent> {
               label: const Text('选择图片'),
             ),
             FilledButton.icon(
-              onPressed: widget.controller.busy
-                  ? null
-                  : () => widget.controller.performEscPrint(
-                        imagePath: widget.escImagePathController.text,
-                        paperType: paperType,
-                        printMode: enableMode,
-                        thickness: thickness.round(),
-                        includePosition: includePosition,
-                        compress: compress,
-                      ),
+              onPressed: widget.controller.busy ? null : _startPrint,
               icon: const Icon(Icons.print),
               label: const Text('开始打印'),
             ),
           ],
         ),
       ],
+    );
+  }
+
+  void _startPrint() {
+    final copies = int.tryParse(copiesController.text.trim());
+    if (copies == null || copies < 1) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('打印份数必须是大于等于 1 的整数')));
+      return;
+    }
+    widget.controller.performEscPrint(
+      imagePath: widget.escImagePathController.text,
+      copies: copies,
+      paperType: paperType,
+      printMode: enableMode,
+      thickness: thickness.round(),
+      includePosition: includePosition,
+      compress: compress,
     );
   }
 }

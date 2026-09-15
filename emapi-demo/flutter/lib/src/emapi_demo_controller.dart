@@ -26,6 +26,7 @@ class EmapiDemoController extends ChangeNotifier {
   ConnectedDevice? _connectedDevice;
   _TracingEmapiConnection? _tracingConnection;
   EmapiPrinter? _printer;
+  Completer<EmapiPrintResultReport>? _printResultWaiter;
   bool _disposed = false;
 
   bool initialized = false;
@@ -560,6 +561,7 @@ class EmapiDemoController extends ChangeNotifier {
   Future<void> performEscPrint({
     Uint8List? imageBytes,
     String? imagePath,
+    int copies = 1,
     esc.Type paperType = esc.Type.foldedBlackLabelPaper,
     int printMode = 0,
     int thickness = 1,
@@ -570,6 +572,9 @@ class EmapiDemoController extends ChangeNotifier {
   }) {
     Uint8List? escBytes;
     return _runPrinterAction('ESC 图片打印', null, () async {
+      if (copies < 1) {
+        throw ArgumentError.value(copies, 'copies', '必须大于等于 1');
+      }
       final image =
           imageBytes ??
           (simulationMode
@@ -591,14 +596,38 @@ class EmapiDemoController extends ChangeNotifier {
       _addRequestLog(
         EmapiDemoLogEntry(
           title: 'ESC 指令数据',
-          message: '生成 ${escBytes!.length} bytes ESC 指令',
+          message: '生成 ${escBytes!.length} bytes ESC 指令，打印 $copies 份',
           bytes: escBytes,
         ),
       );
-      if (!simulationMode) {
-        await _requirePrinter().printEsc(escBytes!);
+      for (var copy = 1; copy <= copies; copy += 1) {
+        final printResultWaiter = _armPrintResultWaiter();
+        try {
+          if (!simulationMode) {
+            await _requirePrinter().printEsc(escBytes!);
+          } else {
+            // 模拟真实设备在完成当前一份后才会上报打印结果。
+            await Future<void>.delayed(const Duration(milliseconds: 100));
+            _emitSimulatedReport(
+              EmapiPrintResultReport(
+                _simulatedPrintResultReportCommand,
+                result: 0,
+              ),
+            );
+          }
+          final result = await printResultWaiter.future.timeout(
+            const Duration(seconds: 60),
+          );
+          if (result.result != 0) {
+            throw StateError('第 $copy/$copies 份打印失败，结果码：${result.result}');
+          }
+        } finally {
+          if (identical(_printResultWaiter, printResultWaiter)) {
+            _printResultWaiter = null;
+          }
+        }
       }
-      return '${simulationMode ? '模拟模式：' : ''}ESC 图片打印指令已完成';
+      return '${simulationMode ? '模拟模式：' : ''}ESC 图片打印 $copies 份已完成';
     }, simulatedResponseBytes: () => escBytes);
   }
 
@@ -866,6 +895,12 @@ class EmapiDemoController extends ChangeNotifier {
   }
 
   void _handleReport(EmapiReport report) {
+    if (report is EmapiPrintResultReport) {
+      final waiter = _printResultWaiter;
+      if (waiter != null && !waiter.isCompleted) {
+        waiter.complete(report);
+      }
+    }
     final formatted = formatReport(report);
     if (report is EmapiUpgradeStatusReport) {
       latestUpgradeStatus = formatted;
@@ -879,6 +914,15 @@ class EmapiDemoController extends ChangeNotifier {
       ),
     );
     _notify();
+  }
+
+  Completer<EmapiPrintResultReport> _armPrintResultWaiter() {
+    if (_printResultWaiter != null) {
+      throw StateError('已有打印结果等待任务');
+    }
+    final waiter = Completer<EmapiPrintResultReport>();
+    _printResultWaiter = waiter;
+    return waiter;
   }
 
   void _addCommandLog(String message) {
@@ -1013,6 +1057,12 @@ final _simulatedFlowControlReportCommand = EmapiCommand(
   type: EmapiConstants.typeRequest,
   parent: EmapiConstants.parentReport,
   child: EmapiConstants.childReportFlowControl,
+);
+
+final _simulatedPrintResultReportCommand = EmapiCommand(
+  type: EmapiConstants.typeRequest,
+  parent: EmapiConstants.parentReport,
+  child: EmapiConstants.childReportPrintResult,
 );
 
 final _simulatedUpgradeReportCommand = EmapiCommand(
