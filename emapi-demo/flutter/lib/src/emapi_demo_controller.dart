@@ -35,15 +35,34 @@ class EmapiDemoController extends ChangeNotifier {
   bool connecting = false;
   bool connected = false;
   bool simulationMode = false;
+  bool rawReceiveLoggingEnabled = false;
   String? connectedDeviceName;
   String? pendingActionLabel;
   int? knownMtu;
   int otaSentBytes = 0;
   int otaTotalBytes = 0;
   String? latestUpgradeStatus;
+  int _rawReadSequence = 0;
 
   bool get busy {
     return connecting || pendingActionLabel != null;
+  }
+
+  bool get hasLogs {
+    return requestLogs.isNotEmpty ||
+        commandLogs.isNotEmpty ||
+        reportLogs.isNotEmpty;
+  }
+
+  void clearLogs() {
+    if (!hasLogs) {
+      return;
+    }
+    requestLogs.clear();
+    commandLogs.clear();
+    reportLogs.clear();
+    _rawReadSequence = 0;
+    _notify();
   }
 
   String get otaProgress {
@@ -130,6 +149,7 @@ class EmapiDemoController extends ChangeNotifier {
           _connectedDevice = await _connector.connect(device);
           _tracingConnection = _TracingEmapiConnection(
             ConnectedDeviceEmapiConnection(_connectedDevice!),
+            onRead: _handleRawInboundData,
           );
           _printer = EmapiPrinter(connection: _tracingConnection!);
           // TODO(EMAPI SDK): reports are exposed through EmapiPrinter.reports only; no public startListeningReports/stopListeningReports API exists currently.
@@ -695,6 +715,14 @@ class EmapiDemoController extends ChangeNotifier {
     _notify();
   }
 
+  void setRawReceiveLogging(bool enabled) {
+    if (rawReceiveLoggingEnabled == enabled) {
+      return;
+    }
+    rawReceiveLoggingEnabled = enabled;
+    _notify();
+  }
+
   Future<Uint8List> _readOtaBytes(String filePath) async {
     return _readTransferBytes(filePath, emptyPathMessage: '请选择或输入 OTA 文件路径');
   }
@@ -916,6 +944,41 @@ class EmapiDemoController extends ChangeNotifier {
     _notify();
   }
 
+  void _handleRawInboundData(
+    Uint8List data,
+    List<EmapiCommand> decodedCommands,
+    Object? parseError,
+  ) {
+    if (!rawReceiveLoggingEnabled) {
+      return;
+    }
+    _rawReadSequence += 1;
+    final details = <String>[
+      '${DateTime.now().toIso8601String()} RX #$_rawReadSequence：底层 read 收到 ${data.length} bytes',
+      if (decodedCommands.isNotEmpty)
+        '本次解析出 ${decodedCommands.length} 帧：${decodedCommands.join(' | ')}',
+      if (decodedCommands.isEmpty && parseError == null)
+        '本次暂未形成完整帧，可能是拆包，等待后续数据',
+      if (parseError != null) '解析异常：${_formatDiagnosticError(parseError)}',
+    ];
+    reportLogs.insert(
+      0,
+      EmapiDemoLogEntry(
+        title: '原始接收 RX',
+        message: details.join('\n'),
+        bytes: data,
+      ),
+    );
+    _notify();
+  }
+
+  String _formatDiagnosticError(Object error) {
+    if (error is EmapiProtocolException) {
+      return error.message;
+    }
+    return '$error';
+  }
+
   Completer<EmapiPrintResultReport> _armPrintResultWaiter() {
     if (_printResultWaiter != null) {
       throw StateError('已有打印结果等待任务');
@@ -1018,10 +1081,17 @@ class _TraceFrame {
 }
 
 class _TracingEmapiConnection implements EmapiConnection {
-  _TracingEmapiConnection(this._inner);
+  _TracingEmapiConnection(this._inner, {this.onRead});
 
   final EmapiConnection _inner;
+  final void Function(
+    Uint8List data,
+    List<EmapiCommand> decodedCommands,
+    Object? parseError,
+  )?
+  onRead;
   final List<_TraceFrame> frames = [];
+  final FrameParser _diagnosticParser = FrameParser();
 
   @override
   Future<void> write(List<int> data) async {
@@ -1037,12 +1107,16 @@ class _TracingEmapiConnection implements EmapiConnection {
   @override
   Future<List<int>> read({required Duration timeout}) async {
     final data = await _inner.read(timeout: timeout);
-    frames.add(
-      _TraceFrame(
-        direction: _TraceDirection.inbound,
-        bytes: Uint8List.fromList(data),
-      ),
-    );
+    final bytes = Uint8List.fromList(data);
+    frames.add(_TraceFrame(direction: _TraceDirection.inbound, bytes: bytes));
+    List<EmapiCommand> decodedCommands = const [];
+    Object? parseError;
+    try {
+      decodedCommands = _diagnosticParser.add(bytes);
+    } catch (error) {
+      parseError = error;
+    }
+    onRead?.call(bytes, decodedCommands, parseError);
     return data;
   }
 }

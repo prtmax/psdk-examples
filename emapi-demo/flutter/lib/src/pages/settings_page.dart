@@ -38,6 +38,13 @@ class SettingsPage extends StatelessWidget {
                           ? null
                           : (value) => controller.setSimulationMode(value),
                     ),
+                    SwitchListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: const Text('原始接收 RX 日志'),
+                      subtitle: const Text('记录底层收到的原始字节和帧解析诊断信息'),
+                      value: controller.rawReceiveLoggingEnabled,
+                      onChanged: controller.setRawReceiveLogging,
+                    ),
                   ],
                 ),
               ),

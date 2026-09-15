@@ -397,74 +397,74 @@ packages:
     dependency: "direct main"
     description:
       name: psdk_bluetooth_ble
-      sha256: e3fd6f4154990db8809ce4b6fd4b97e41b181f48953011e46cf04e6bb6099f55
+      sha256: "6baaefea70c73ed18aef7c0e053af6ceaed23e09941cfa7ce5c3aa749421c7a4"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.9"
+    version: "0.1.10"
   psdk_bluetooth_classic:
     dependency: "direct main"
     description:
       name: psdk_bluetooth_classic
-      sha256: "6273c24afec86d9ddad01ec6d715fc912b1f3733f4ed1067d6c0459ae0b24e25"
+      sha256: e8c635c3ef60d67f8a87fb7c1b5261a380cb8dcc39b6bd09ffbaceb0dad8a542
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.9"
+    version: "0.1.10"
   psdk_bluetooth_traits:
     dependency: "direct main"
     description:
       name: psdk_bluetooth_traits
-      sha256: "724ebf59e0daa719aaf842e416b1c3e66aa6c44a1d8da2903ae1546b5915d303"
+      sha256: "7ce0b090c6313d7e938eaad0c0295281cee679734582082ed75abb0a7402505c"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.9"
+    version: "0.1.10"
   psdk_bluetooth_windows:
     dependency: "direct main"
     description:
       name: psdk_bluetooth_windows
-      sha256: f72e598ad96baeb8cccc956fdce3438f4e4b401a2c55242b0416c1605137a421
+      sha256: "069da50a2358db926b041c6a9343a4991d5f19320d6a06488fc0c9c01f71435a"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.9"
+    version: "0.1.10"
   psdk_device_adapter:
     dependency: "direct main"
     description:
       name: psdk_device_adapter
-      sha256: cbf3952bb8832a999bd7a6ec4a8facc6c7139ac4dcafa451bdc4b02c02851ea1
+      sha256: "416367f529d1ec13901a79f881f809b01058fc7f50472b0e773f611dfc6371a9"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.9"
+    version: "0.1.10"
   psdk_frame_father:
     dependency: transitive
     description:
       name: psdk_frame_father
-      sha256: "351c5e0d3573faac427a22b97a3a5b25c102aeb9718d0a9b3f6f4507617f3710"
+      sha256: d90abd68a7fa09c9ad71300d037a18e51f32d70cf3a2c2e3db0a34e047190552
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.9"
+    version: "0.1.10"
   psdk_fruit_emapi:
     dependency: "direct main"
     description:
       name: psdk_fruit_emapi
-      sha256: "579dd8b76daf392c00d85b3daa84764f4061f0bf0ff44dcd8ac3f26ddc5fcab9"
+      sha256: d3f3a6f09d22b7ae521422b88848fd04d0c5d9eb7b13c8d60c81326182d06ed2
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.9"
+    version: "0.1.10"
   psdk_fruit_esc:
     dependency: "direct main"
     description:
       name: psdk_fruit_esc
-      sha256: c13dd995e8335649af1630112de1917e46682e580d6fa52a088624e80b1fa9a6
+      sha256: "66ea02db9ad82e3250e205c3c00a8898af96b1da63d4aea8c455fd8943a7b048"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.9"
+    version: "0.1.10"
   psdk_imageb:
     dependency: "direct main"
     description:
       name: psdk_imageb
-      sha256: f3bdf10d1cdbd8a12bd15ec3eaa7d5d5c61d14c1b690b34565af9fbe8168735b
+      sha256: "0261fcd02210b143dea738d60c7639308ae2fd34cf0fa115adc230502ed91408"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.9"
+    version: "0.1.10"
   sky_engine:
     dependency: transitive
     description: flutter

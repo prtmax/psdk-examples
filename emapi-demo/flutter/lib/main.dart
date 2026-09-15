@@ -112,6 +112,11 @@ class _EmapiDemoPageState extends State<EmapiDemoPage> {
         title: const Text('EMAPI Flutter Demo'),
         actions: [
           IconButton(
+            tooltip: '清空日志',
+            onPressed: controller.hasLogs ? controller.clearLogs : null,
+            icon: const Icon(Icons.delete_sweep_outlined),
+          ),
+          IconButton(
             tooltip: '设置',
             onPressed: controller.busy ? null : _openSettings,
             icon: const Icon(Icons.tune),
