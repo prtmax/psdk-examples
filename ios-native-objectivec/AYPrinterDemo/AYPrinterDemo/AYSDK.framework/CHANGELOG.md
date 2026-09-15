@@ -1,3 +1,10 @@
+## 2026-09-12
+
+### Changed
+
+- Add TSPL missing query commands support and related result types
+- Add comments for `TReceivedType` enum entries (including new TSPL query types)
+
 ## 2026-07-09
 
 ### Changed

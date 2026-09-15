@@ -132,6 +132,10 @@
             weakSelf.displayLabel.text = [NSString stringWithFormat:@"硬件版本: %@", data.toRawString];
           }
             break;
+          case TReceivedTypePrinterBase: {
+            weakSelf.displayLabel.text = [NSString stringWithFormat:@"打印机基础信息: %@", data.toRawString];
+          }
+            break;
             default:
                 break;
         }
@@ -185,15 +189,9 @@
 }
 
 - (IBAction)sn:(id)sender {
-  AYTsplCommand *tspl = [AYTsplCommand new];
-//    [tspl readSN];
-//  Byte cmd[] = {0x10, 0xff, 0xef, 0xf0};
-//  NSData *command = [NSData dataWithBytes:cmd length:sizeof(cmd)];
-  [tspl pageWidth:76 height:130];
-  [tspl cls];
-  [tspl addCustomCommand:@"LINE 0,56,1200,56,2\n".toGbkData];
-  [tspl print:1];
-    
+    AYTsplCommand *tspl = [AYTsplCommand new];
+    [tspl readSN];
+  
     [self.bleHelper writeCommands:tspl.commands];
 }
 
@@ -266,13 +264,19 @@
   [self.bleHelper writeCommands:tspl.commands];
 }
 
-
 /**
  * 恢复出厂设置
  */
 - (IBAction)resetToFactory {
   AYTsplCommand *tspl = [AYTsplCommand new];
   [tspl resetToFactory];
+  [self.bleHelper writeCommands:tspl.commands];
+}
+
+- (IBAction)printerBase {
+  AYTsplCommand *tspl = [AYTsplCommand new];
+  [tspl printerBase];
+  
   [self.bleHelper writeCommands:tspl.commands];
 }
 

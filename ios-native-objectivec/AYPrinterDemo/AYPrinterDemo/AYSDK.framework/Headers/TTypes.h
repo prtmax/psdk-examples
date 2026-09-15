@@ -7,19 +7,35 @@
 
 
 typedef NS_ENUM(NSInteger, TReceivedType) {
-    TReceivedTypeSN,
-    TReceivedTypeVersion,
-    TReceivedBatteryLevel,
-    TReceivedPrinterState,
-    TReceivedPrintSuccess,
-    TReceivedSetOffTime,  // 设置关机时间
-    TReceivedGetOffTime,  // 获取关机时间
-    TReceivedStatus,      // 状态上报
-    TReceivedNotSpace,    // 空间不足
-    TReceivedSpaceEnough, // 空间足够
-    TReceivedTypeHardwareVersion, // 固件版本
-    TReceivedTypeFactoryReset,    // 恢复出厂
-    TReceivedNone,
+    TReceivedTypeSN,              // 查询序列号返回
+    TReceivedTypeVersion,          // 查询固件版本返回
+    TReceivedBatteryLevel,         // 电池电量上报
+    TReceivedPrinterState,         // 打印机状态上报
+    TReceivedPrintSuccess,         // 打印任务成功上报
+    TReceivedSetOffTime,           // 设置关机时间
+    TReceivedGetOffTime,            // 获取关机时间
+    TReceivedStatus,                // 状态上报
+    TReceivedNotSpace,              // 空间不足
+    TReceivedSpaceEnough,           // 空间恢复正常
+    TReceivedTypeHardwareVersion,   // 固件版本
+    TReceivedTypeFactoryReset,      // 恢复出厂
+    TReceivedNone,                  // 未分类/默认类型
+
+    // 新增 TSPL 查询类型（追加在 TReceivedNone 后，保持既有枚举值不变）
+    TReceivedTypeModel,           // 打印机型号
+    TReceivedTypePrintLife,       //  打印机寿命
+    TReceivedTypeBluetoothModel,   // 蓝牙模块型号
+    TReceivedTypeBluetoothVersion, // 蓝牙固件版本
+    TReceivedTypeBluetoothMAC,     // 蓝牙 MAC 地址
+    TReceivedTypeBluetoothName,    // 蓝牙设备名称
+    TReceivedTypeWifiVersion,      // Wi-Fi 版本信息
+    TReceivedTypeDRAMSpace,        // DRAM 容量
+    TReceivedTypeDRAMFileList,     // DRAM 文件列表
+    TReceivedTypeFlashSpace,       // FLASH 容量
+    TReceivedTypeFlashFileList,    // FLASH 文件列表
+    TReceivedTypeCardSpace,        //  储存卡容量（与 FLASH 命令一致）
+    TReceivedTypeDiagnosticReport, //  通用回执
+    TReceivedTypePrinterBase,      // 打印机基础信息（cJSON 字符串）
 };
 
 typedef NS_ENUM(NSInteger, TOutDirection) {
