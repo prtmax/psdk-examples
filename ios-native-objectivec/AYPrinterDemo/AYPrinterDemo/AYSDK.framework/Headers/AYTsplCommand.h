@@ -235,9 +235,62 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)readVersion;
 
 /**
+ * 查询打印机型号
+ * READC MDDLE
+ */
+- (void)readModel;
+
+/**
  * 读取硬件版本
  */
 - (void)readHardwareVersion;
+
+/**
+ * 查询打印寿命（累计打印里程）
+ * DIAGNOSTIC REPORT MILAGE
+ */
+- (void)readPrintLife;
+
+/**
+ * 查询打印机基础信息(返回 cJSON 字符串)
+ */
+- (void)printerBase;
+
+/** 查询蓝牙模块型号 */
+- (void)readBluetoothModel;
+
+/** 查询蓝牙模块软件版本 */
+- (void)readBluetoothVersion;
+
+/** 查询蓝牙 MAC 地址 */
+- (void)readBluetoothMAC;
+
+/** 查询蓝牙名称 */
+- (void)readBluetoothName;
+
+/** 查询 Wi‑Fi 固件版本（设备使用 BTVERSION 报告项） */
+- (void)readWifiVersion;
+
+/** 查询 DRAM 空间 */
+- (void)readDRAMSpace;
+
+/** 查询 DRAM 下的文件列表 */
+- (void)readDRAMFileList;
+
+/** 查询 FLASH 空间 */
+- (void)readFlashSpace;
+
+/** 查询 FLASH 下的文件列表 */
+- (void)readFlashFileList;
+
+/** 查询 CARD 空间 */
+- (void)readCardSpace;
+
+/**
+ * 发送任意 TSPL DIAGNOSTIC REPORT 查询。
+ * @param report 报告名称，例如 @"MILAGE" 或 @"DPHYSPACE"
+ */
+- (void)diagnosticReport:(NSString *)report;
 
 /**
  * 学习纸张（间隙检测）
