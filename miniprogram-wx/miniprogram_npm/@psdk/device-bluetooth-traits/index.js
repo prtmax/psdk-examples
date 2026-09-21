@@ -4,120 +4,12 @@ var __DEFINE__ = function(modId, func, req) { var m = { exports: {}, _tempexport
 var __REQUIRE__ = function(modId, source) { if(!__MODS__[modId]) return require(source); if(!__MODS__[modId].status) { var m = __MODS__[modId].m; m._exports = m._tempexports; var desp = Object.getOwnPropertyDescriptor(m, "exports"); if (desp && desp.configurable) Object.defineProperty(m, "exports", { set: function (val) { if(typeof val === "object" && val !== m._exports) { m._exports.__proto__ = val.__proto__; Object.keys(val).forEach(function (k) { m._exports[k] = val[k]; }); } m._tempexports = val }, get: function () { return m._tempexports; } }); __MODS__[modId].status = 1; __MODS__[modId].func(__MODS__[modId].req, m, m.exports); } return __MODS__[modId].m.exports; };
 var __REQUIRE_WILDCARD__ = function(obj) { if(obj && obj.__esModule) { return obj; } else { var newObj = {}; if(obj != null) { for(var k in obj) { if (Object.prototype.hasOwnProperty.call(obj, k)) newObj[k] = obj[k]; } } newObj.default = obj; return newObj; } };
 var __REQUIRE_DEFAULT__ = function(obj) { return obj && obj.__esModule ? obj.default : obj; };
-__DEFINE__(1724665017807, function(require, module, exports) {
+__DEFINE__(1789968481491, function(require, module, exports) {
+var h=Object.defineProperty;var T=Object.getOwnPropertyDescriptor;var S=Object.getOwnPropertyNames;var U=Object.prototype.hasOwnProperty;var F=(t,e,r)=>e in t?h(t,e,{enumerable:!0,configurable:!0,writable:!0,value:r}):t[e]=r;var y=(t,e)=>{for(var r in e)h(t,r,{get:e[r],enumerable:!0})},B=(t,e,r,i)=>{if(e&&typeof e=="object"||typeof e=="function")for(let o of S(e))!U.call(t,o)&&o!==r&&h(t,o,{get:()=>e[o],enumerable:!(i=T(e,o))||i.enumerable});return t};var P=t=>B(h({},"__esModule",{value:!0}),t);var a=(t,e,r)=>F(t,typeof e!="symbol"?e+"":e,r);var D={};y(D,{AllowRule:()=>f,BleFlowControlWriter:()=>C,DEFAULT_BLE_FLOW_CONTROL_OPTIONS:()=>c,Jluetooth:()=>m,JluetoothDevice:()=>v,TBluetoothHelpers:()=>w,findBleFlowControlCharacteristics:()=>O,isBleShortUuidMatch:()=>d,isBleUuidMatch:()=>A,normalizeBleUuid:()=>u});module.exports=P(D);var m=class{async isDiscovery(){return(await this.bluetoothAdapterState()).discovering||!1}};var v=class{constructor(e){a(this,"origin");a(this,"name");a(this,"deviceId");a(this,"mac");a(this,"rssi");a(this,"advertisData");this.origin=e.origin,this.name=e.name,this.deviceId=e.deviceId,this.mac=e.mac,this.rssi=e.rssi,this.advertisData=e.advertisData}},f=(o=>(o.EQUALS="EQUALS",o.START_WITH="START_WITH",o.END_WITH="END_WITH",o.REGEX="REGEX",o))(f||{});var c={enabled:!1,serviceUUID:"FF00",writeCharacteristicUUID:"FF02",readCharacteristicUUID:"FF01",flowControlCharacteristicUUID:"FF03",initialMtu:20,mtuPayloadOverhead:3,creditWaitTimeout:0},w=class{static isAllowService(e,r){return this.isAllowServices(e,r&&[r])}static isAllowServices(e,r){var i;if(r==null)return!0;for(let o of r)switch((i=o.rule)!=null?i:"EQUALS"){case"EQUALS":{if(e==o.uuid)return!0;break}case"START_WITH":{if(e.startsWith(o.uuid))return!0;break}case"END_WITH":{if(e.endsWith(o.uuid))return!0;break}case"REGEX":{if(new RegExp(o.uuid).test(e))return!0;break}}}};function u(t){return t.replace(/-/g,"").toLowerCase()}function A(t,e){return u(t)===u(e)}function d(t,e){let r=u(t),i=u(e);return r===i||r.startsWith(`0000${i}`)}function O(t){let e={...c,...t.flowControlOptions};for(let r of t.services){if(t.isServiceAllowed&&!t.isServiceAllowed(r)||!d(t.getServiceUuid(r),e.serviceUUID))continue;let i=t.getCharacteristics(r);if(!i)continue;let o=i.find(n=>d(t.getCharacteristicUuid(n),e.writeCharacteristicUUID)),s=i.find(n=>d(t.getCharacteristicUuid(n),e.readCharacteristicUUID)),l=i.find(n=>d(t.getCharacteristicUuid(n),e.flowControlCharacteristicUUID));if(o&&s&&l)return{service:r,write:o,read:s,flowControl:l}}}var C=class{constructor(e={}){a(this,"mtu");a(this,"mtuPayloadOverhead");a(this,"credit",0);a(this,"creditWaitTimeout");a(this,"sleep");a(this,"now");a(this,"writePromise",Promise.resolve());var o,s,l,n,p;let r=(o=e.initialMtu)!=null?o:c.initialMtu;this.mtu=r>0?r:c.initialMtu;let i=(s=e.mtuPayloadOverhead)!=null?s:c.mtuPayloadOverhead;this.mtuPayloadOverhead=i>=0?i:c.mtuPayloadOverhead,this.creditWaitTimeout=(l=e.creditWaitTimeout)!=null?l:c.creditWaitTimeout,this.sleep=(n=e.sleep)!=null?n:b=>new Promise(g=>setTimeout(g,b)),this.now=(p=e.now)!=null?p:()=>Date.now()}state(){return{mtu:this.mtu,payloadMtu:this.payloadMtu(),credit:this.credit}}parseNotifyPacket(e){if(e.length===0)return;switch(console.log("[BLE FC] notify",Array.from(e)),e[0]){case 1:{if(e.length>=2){let i=e[1];i>this.credit?this.credit=i:this.credit+=i,console.log("[BLE FC] credit:",this.credit)}break}case 2:{if(e.length>=3){let i=e[1]|e[2]<<8;i>0&&(this.mtu=i),console.log("[BLE FC] mtu:",this.mtu)}break}}}onNotify(e){this.parseNotifyPacket(e)}async write(e,r){let i=this.writePromise.catch(()=>{}).then(()=>this.writeUnlocked(e,r));return this.writePromise=i,i}async writeUnlocked(e,r){let i=0;for(;i<e.length;){await this.waitForCredit();let o=this.payloadMtu();this.credit-=1;let s=e.slice(i,i+o);console.log("[BLE FC] write chunk:",s.length,"credit:",this.credit),await r.writeChunk(s),i+=o}}payloadMtu(){let e=this.mtu-this.mtuPayloadOverhead;return e>0?e:1}async waitForCredit(){let e=this.now();for(;this.credit<=0;){if(this.creditWaitTimeout>0&&this.now()-e>=this.creditWaitTimeout)throw new Error("Timeout waiting for BLE flow-control credit");await this.sleep(20)}}};
+//# sourceMappingURL=index.js.map
 
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __exportStar = (this && this.__exportStar) || function(m, exports) {
-    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-__exportStar(require("./traits"), exports);
-__exportStar(require("./types"), exports);
-__exportStar(require("./helpers"), exports);
-
-}, function(modId) {var map = {"./traits":1724665017808,"./types":1724665017809,"./helpers":1724665017810}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017808, function(require, module, exports) {
-
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.Jluetooth = void 0;
-/**
- * absctract bluetooth class
- */
-class Jluetooth {
-    isDiscovery() {
-        return __awaiter(this, void 0, void 0, function* () {
-            const state = yield this.bluetoothAdapterState();
-            return state.discovering || false;
-        });
-    }
-}
-exports.Jluetooth = Jluetooth;
-
-}, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017809, function(require, module, exports) {
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.AllowRule = exports.JluetoothDevice = void 0;
-class JluetoothDevice {
-    constructor(options) {
-        this.origin = options.origin;
-        this.name = options.name;
-        this.deviceId = options.deviceId;
-    }
-}
-exports.JluetoothDevice = JluetoothDevice;
-var AllowRule;
-(function (AllowRule) {
-    AllowRule["EQUALS"] = "EQUALS";
-    AllowRule["START_WITH"] = "START_WITH";
-    AllowRule["END_WITH"] = "END_WITH";
-    AllowRule["REGEX"] = "REGEX";
-})(AllowRule = exports.AllowRule || (exports.AllowRule = {}));
-
-}, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017810, function(require, module, exports) {
-
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.TBluetoothHelpers = void 0;
-const types_1 = require("./types");
-class TBluetoothHelpers {
-    static isAllowService(serviceUUID, allowService) {
-        return this.isAllowServices(serviceUUID, allowService && [allowService]);
-    }
-    static isAllowServices(serviceUUID, allowServices) {
-        var _a;
-        if (allowServices == undefined)
-            return true;
-        for (const allowService of allowServices) {
-            const rule = (_a = allowService.rule) !== null && _a !== void 0 ? _a : types_1.AllowRule.EQUALS;
-            switch (rule) {
-                case types_1.AllowRule.EQUALS: {
-                    if (serviceUUID == allowService.uuid)
-                        return true;
-                    break;
-                }
-                case types_1.AllowRule.START_WITH: {
-                    if (serviceUUID.startsWith(allowService.uuid))
-                        return true;
-                    break;
-                }
-                case types_1.AllowRule.END_WITH: {
-                    if (serviceUUID.endsWith(allowService.uuid))
-                        return true;
-                    break;
-                }
-                case types_1.AllowRule.REGEX: {
-                    if (new RegExp(allowService.uuid).test(serviceUUID))
-                        return true;
-                    break;
-                }
-            }
-        }
-    }
-}
-exports.TBluetoothHelpers = TBluetoothHelpers;
-
-}, function(modId) { var map = {"./types":1724665017809}; return __REQUIRE__(map[modId], modId); })
-return __REQUIRE__(1724665017807);
+}, function(modId) {var map = {}; return __REQUIRE__(map[modId], modId); })
+return __REQUIRE__(1789968481491);
 })()
 //miniprogram-npm-outsideDeps=[]
 //# sourceMappingURL=index.js.map

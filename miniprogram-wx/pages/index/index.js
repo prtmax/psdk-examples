@@ -40,10 +40,18 @@ import {
   ESC,
   EImage
 } from "@psdk/esc";
+
+// 图片打印尺寸，只需修改这里即可同步调整 Canvas 和像素数据尺寸。
+const IMAGE_SIZE = {
+  width: 1200,
+  height: 1800,
+};
+
 var bluetooth = new WechatBleBluetooth({
-  allowedWriteCharacteristic: '49535343-8841-43F4-A8D4-ECBE34729BB3',
-	allowedReadCharacteristic: '49535343-1e4d-4bd9-ba61-23c647249616',
   allowNoName: false,
+			flowControl: {
+				enabled: true,
+			}
 })
 // index.js
 // 获取应用实例
@@ -59,6 +67,7 @@ Page({
     tspl: null,
     esc: null,
     printer: null,
+    isEsc: false,
     items: [{
         type: 'tspl',
         checked: 'true',
@@ -773,20 +782,38 @@ Page({
   writeImage: async function () {
     console.log("writeImage")
     const that = this;
+    const printer = that.data.items[0].checked
+      ? that.data.tspl
+      : that.data.items[1].checked
+        ? that.data.cpcl
+        : that.data.esc;
+    if (!printer) {
+      wx.showToast({
+        title: '请先连接设备',
+        icon: 'none',
+      });
+      return;
+    }
     // 把图片画到离屏 canvas 上
     const canvas = wx.createOffscreenCanvas({
       type: '2d',
-      width: 576,
-      height: 873
+      width: IMAGE_SIZE.width,
+      height: IMAGE_SIZE.height,
     });
     const ctx = canvas.getContext('2d');
     const image = canvas.createImage();
     await new Promise(resolve => {
       image.onload = resolve;
-      image.src = "/image/dog.jpg"; // 要加载的图片 url, 可以是base64
+      image.src = "/image/p3.png"; // 要加载的图片 url, 可以是base64
     });
-    ctx.drawImage(image, 0, 0, 576, 873);
+    ctx.drawImage(image, 0, 0, IMAGE_SIZE.width, IMAGE_SIZE.height);
     console.log("toDataURL - ", ctx.canvas.toDataURL()) // 输出的图片
+    const imageData = ctx.getImageData(0, 0, IMAGE_SIZE.width, IMAGE_SIZE.height);
+    const inputImage = {
+      data: imageData.data,
+      width: imageData.width,
+      height: imageData.height,
+    };
     if (that.data.items[0].checked) {
       const tspl = await that.data.tspl
         .page(new TPage({
@@ -799,7 +826,7 @@ Page({
             x: 0,
             y: 0,
             compress: true,
-            image: canvas
+            image: inputImage
           })
         )
         .print();
@@ -815,7 +842,7 @@ Page({
             x: 0,
             y: 0,
             compress: true,
-            image: canvas
+            image: inputImage
           })
         )
         .print();
@@ -826,7 +853,7 @@ Page({
         .wakeup()
         .image(
           new EImage({
-            image: canvas,
+            image: inputImage,
             compress:true,
             threshold:128
           })
@@ -841,9 +868,14 @@ Page({
   },
   radioChange(e) {
     let that = this;
-    const items = that.data.items
-    for (let i = 0, len = items.length; i < len; ++i) {
-      items[i].checked = items[i].type === e.detail.value
-    }
+    const selectedType = e.detail.value;
+    const items = that.data.items.map(item => ({
+      ...item,
+      checked: item.type === selectedType,
+    }));
+    that.setData({
+      items,
+      isEsc: selectedType === 'esc',
+    });
   },
 })

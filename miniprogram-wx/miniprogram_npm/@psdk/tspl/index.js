@@ -4,7 +4,7 @@ var __DEFINE__ = function(modId, func, req) { var m = { exports: {}, _tempexport
 var __REQUIRE__ = function(modId, source) { if(!__MODS__[modId]) return require(source); if(!__MODS__[modId].status) { var m = __MODS__[modId].m; m._exports = m._tempexports; var desp = Object.getOwnPropertyDescriptor(m, "exports"); if (desp && desp.configurable) Object.defineProperty(m, "exports", { set: function (val) { if(typeof val === "object" && val !== m._exports) { m._exports.__proto__ = val.__proto__; Object.keys(val).forEach(function (k) { m._exports[k] = val[k]; }); } m._tempexports = val }, get: function () { return m._tempexports; } }); __MODS__[modId].status = 1; __MODS__[modId].func(__MODS__[modId].req, m, m.exports); } return __MODS__[modId].m.exports; };
 var __REQUIRE_WILDCARD__ = function(obj) { if(obj && obj.__esModule) { return obj; } else { var newObj = {}; if(obj != null) { for(var k in obj) { if (Object.prototype.hasOwnProperty.call(obj, k)) newObj[k] = obj[k]; } } newObj.default = obj; return newObj; } };
 var __REQUIRE_DEFAULT__ = function(obj) { return obj && obj.__esModule ? obj.default : obj; };
-__DEFINE__(1724665017883, function(require, module, exports) {
+__DEFINE__(1789968481534, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -25,8 +25,8 @@ __exportStar(require("./impls"), exports);
 __exportStar(require("./args"), exports);
 __exportStar(require("./types"), exports);
 
-}, function(modId) {var map = {"./impls":1724665017884,"./args":1724665017887,"./types":1724665017890}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017884, function(require, module, exports) {
+}, function(modId) {var map = {"./impls":1789968481535,"./args":1789968481538,"./types":1789968481541}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481535, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -46,8 +46,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./generic"), exports);
 __exportStar(require("./tspl"), exports);
 
-}, function(modId) { var map = {"./generic":1724665017885,"./tspl":1724665017929}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017885, function(require, module, exports) {
+}, function(modId) { var map = {"./generic":1789968481536,"./tspl":1789968481597}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481536, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GenericTSPL = void 0;
@@ -59,8 +59,8 @@ class GenericTSPL extends basic_1.BasicTSPL {
 }
 exports.GenericTSPL = GenericTSPL;
 
-}, function(modId) { var map = {"./basic":1724665017886}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017886, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481537}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481537, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BasicTSPL = void 0;
@@ -69,6 +69,26 @@ const args_1 = require("../args");
 class BasicTSPL extends frame_father_1.PSDK {
     constructor(lifecycle) {
         super();
+        /**
+         * lifecycle
+         * @private
+         */
+        Object.defineProperty(this, "_lifecycle", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        /**
+         * commander
+         * @private
+         */
+        Object.defineProperty(this, "_commander", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this._lifecycle = lifecycle;
         this._commander = frame_father_1.Commander.make();
     }
@@ -118,6 +138,12 @@ class BasicTSPL extends frame_father_1.PSDK {
      * 画圆
      */
     circle(arg) {
+        return super.push(arg);
+    }
+    /**
+     * 画椭圆
+     */
+    ellipse(arg) {
         return super.push(arg);
     }
     /**
@@ -265,11 +291,101 @@ class BasicTSPL extends frame_father_1.PSDK {
     peel(enable) {
         return super.push(new args_1.TPeel({ enable: enable }));
     }
+    /**
+     * 下载位图(IP-888)
+     */
+    downloadBmp(fileName, data) {
+        return this.push(new args_1.TDownloadBmp({ fileName: fileName, data: data }));
+    }
+    /**
+     * 打印打印机里缓存的图片
+     */
+    putImage(arg) {
+        return super.push(arg);
+    }
+    /**
+     * 红色打印(0-15)
+     */
+    setRed(density) {
+        return super.push(new args_1.TRed({ density: density }));
+    }
+    /**
+     * 黑色打印
+     */
+    setBlack() {
+        return super.push(new args_1.TBlack());
+    }
+    /**
+     * 打印自检页
+     */
+    selfTest() {
+        return super.push(new args_1.TSelfTest());
+    }
+    /**
+     * 设置碳尾开关
+     */
+    setRibbonEnd(enable) {
+        return super.push(new args_1.TSetRibbonEnd({ enable: enable }));
+    }
+    /**
+     * 获取当前碳尾开关(0关，1开)
+     */
+    getRibbonEnd() {
+        return super.push(new args_1.TGetRibbonEnd());
+    }
+    /**
+     * 热转印的版本号获取
+     */
+    versions() {
+        return super.push(new args_1.TVersions());
+    }
+    /**
+     * 热转印的型号获取
+     */
+    models() {
+        return super.push(new args_1.TModels());
+    }
+    /**
+     * 热转印的sn获取
+     */
+    sns() {
+        return super.push(new args_1.TSNs());
+    }
+    /**
+     * 打印机设置成gbk编码
+     */
+    setGBKCode() {
+        return super.push(new args_1.TGBKCode());
+    }
+    /**
+     * 打印机设置成utf-8编码
+     */
+    setUTF8Code() {
+        return super.push(new args_1.TUTF8Code());
+    }
+    /**
+     * 学习纸张（间隙检测）
+     */
+    learnPaperGap() {
+        return super.push(new args_1.TLearnPaperGap());
+    }
+    /**
+     * 读取硬件版本
+     */
+    readHardwareVersion() {
+        return super.push(new args_1.TReadHardwareVersion());
+    }
+    /**
+     * 恢复出厂设置
+     */
+    resetToFactory() {
+        return super.push(new args_1.TResetFactory());
+    }
 }
 exports.BasicTSPL = BasicTSPL;
 
-}, function(modId) { var map = {"../args":1724665017887}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017887, function(require, module, exports) {
+}, function(modId) { var map = {"../args":1789968481538}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481538, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -318,9 +434,25 @@ __exportStar(require("./ribbon"), exports);
 __exportStar(require("./shift"), exports);
 __exportStar(require("./status"), exports);
 __exportStar(require("./tear"), exports);
+__exportStar(require("./putimage"), exports);
+__exportStar(require("./ellipse"), exports);
+__exportStar(require("./red"), exports);
+__exportStar(require("./black"), exports);
+__exportStar(require("./selftest"), exports);
+__exportStar(require("./setribbonend"), exports);
+__exportStar(require("./getribbonend"), exports);
+__exportStar(require("./versions"), exports);
+__exportStar(require("./models"), exports);
+__exportStar(require("./sns"), exports);
+__exportStar(require("./downloadbmp"), exports);
+__exportStar(require("./gbkcode"), exports);
+__exportStar(require("./utf8code"), exports);
+__exportStar(require("./learnpapergap"), exports);
+__exportStar(require("./readhardwareversion"), exports);
+__exportStar(require("./resetfactory"), exports);
 
-}, function(modId) { var map = {"./bar":1724665017888,"./barcode":1724665017899,"./basic":1724665017889,"./box":1724665017900,"./circle":1724665017901,"./cls":1724665017902,"./cut":1724665017903,"./density":1724665017904,"./direction":1724665017905,"./dmatrix":1724665017906,"./gap":1724665017907,"./image":1724665017908,"./page":1724665017909,"./print":1724665017910,"./reference":1724665017911,"./sn":1724665017912,"./speed":1724665017913,"./text":1724665017914,"./version":1724665017915,"./line":1724665017916,"./qrcode":1724665017917,"./readstate":1724665017918,"./textbox":1724665017919,"./bline":1724665017920,"./continuous":1724665017921,"./label":1724665017922,"./offset":1724665017923,"./peel":1724665017924,"./ribbon":1724665017925,"./shift":1724665017926,"./status":1724665017927,"./tear":1724665017928}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017888, function(require, module, exports) {
+}, function(modId) { var map = {"./bar":1789968481539,"./barcode":1789968481551,"./basic":1789968481540,"./box":1789968481552,"./circle":1789968481553,"./cls":1789968481554,"./cut":1789968481555,"./density":1789968481556,"./direction":1789968481557,"./dmatrix":1789968481558,"./gap":1789968481559,"./image":1789968481560,"./page":1789968481561,"./print":1789968481562,"./reference":1789968481563,"./sn":1789968481564,"./speed":1789968481565,"./text":1789968481566,"./version":1789968481567,"./line":1789968481568,"./qrcode":1789968481569,"./readstate":1789968481570,"./textbox":1789968481571,"./bline":1789968481572,"./continuous":1789968481573,"./label":1789968481574,"./offset":1789968481575,"./peel":1789968481576,"./ribbon":1789968481577,"./shift":1789968481578,"./status":1789968481579,"./tear":1789968481580,"./putimage":1789968481581,"./ellipse":1789968481582,"./red":1789968481583,"./black":1789968481584,"./selftest":1789968481585,"./setribbonend":1789968481586,"./getribbonend":1789968481587,"./versions":1789968481588,"./models":1789968481589,"./sns":1789968481590,"./downloadbmp":1789968481591,"./gbkcode":1789968481592,"./utf8code":1789968481593,"./learnpapergap":1789968481594,"./readhardwareversion":1789968481595,"./resetfactory":1789968481596}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481539, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TBar = void 0;
@@ -331,6 +463,36 @@ class TBar extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a, _b, _c, _d, _e;
         super();
+        Object.defineProperty(this, "x", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "y", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "width", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "height", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "line", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.x = (_a = options === null || options === void 0 ? void 0 : options.x) !== null && _a !== void 0 ? _a : 0;
         this.y = (_b = options === null || options === void 0 ? void 0 : options.y) !== null && _b !== void 0 ? _b : 0;
         this.width = (_c = options === null || options === void 0 ? void 0 : options.width) !== null && _c !== void 0 ? _c : 0;
@@ -352,8 +514,8 @@ class TBar extends basic_1.BasicTSPLArg {
 }
 exports.TBar = TBar;
 
-}, function(modId) { var map = {"./basic":1724665017889,"../types":1724665017890}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017889, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540,"../types":1789968481541}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481540, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BasicTSPLArg = void 0;
@@ -371,7 +533,7 @@ class BasicTSPLArg extends frame_father_1.EasyArg {
 exports.BasicTSPLArg = BasicTSPLArg;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017890, function(require, module, exports) {
+__DEFINE__(1789968481541, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -396,12 +558,13 @@ __exportStar(require("./line"), exports);
 __exportStar(require("./linem"), exports);
 __exportStar(require("./rotation"), exports);
 __exportStar(require("./showtype"), exports);
+__exportStar(require("./alignment"), exports);
 
-}, function(modId) { var map = {"./font":1724665017891,"./image":1724665017892,"./codetype":1724665017893,"./correctlevel ":1724665017894,"./line":1724665017895,"./linem":1724665017896,"./rotation":1724665017897,"./showtype":1724665017898}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017891, function(require, module, exports) {
+}, function(modId) { var map = {"./font":1789968481542,"./image":1789968481543,"./codetype":1789968481544,"./correctlevel ":1789968481545,"./line":1789968481546,"./linem":1789968481547,"./rotation":1789968481548,"./showtype":1789968481549,"./alignment":1789968481550}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481542, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.Alignment = exports.TFont = void 0;
+exports.TFont = void 0;
 /**
  * font
  */
@@ -419,17 +582,10 @@ var TFont;
      * 32 bit
      */
     TFont["TSS32"] = "TSS32.BF2";
-})(TFont = exports.TFont || (exports.TFont = {}));
-/**
- * Alignment
- */
-var Alignment;
-(function (Alignment) {
-    Alignment["B1"] = "B1";
-})(Alignment = exports.Alignment || (exports.Alignment = {}));
+})(TFont || (exports.TFont = TFont = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017892, function(require, module, exports) {
+__DEFINE__(1789968481543, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TImageMode = void 0;
@@ -438,10 +594,10 @@ var TImageMode;
     TImageMode[TImageMode["OVERWRITE"] = 0] = "OVERWRITE";
     TImageMode[TImageMode["OR"] = 1] = "OR";
     TImageMode[TImageMode["XOR"] = 2] = "XOR";
-})(TImageMode = exports.TImageMode || (exports.TImageMode = {}));
+})(TImageMode || (exports.TImageMode = TImageMode = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017893, function(require, module, exports) {
+__DEFINE__(1789968481544, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TCodeType = void 0;
@@ -486,10 +642,10 @@ var TCodeType;
      * EAN13
      */
     TCodeType["CODE_EAN13"] = "EAN13";
-})(TCodeType = exports.TCodeType || (exports.TCodeType = {}));
+})(TCodeType || (exports.TCodeType = TCodeType = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017894, function(require, module, exports) {
+__DEFINE__(1789968481545, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TCorrectLevel = void 0;
@@ -514,10 +670,10 @@ var TCorrectLevel;
      * 纠错等级：H
      */
     TCorrectLevel["H"] = "H";
-})(TCorrectLevel = exports.TCorrectLevel || (exports.TCorrectLevel = {}));
+})(TCorrectLevel || (exports.TCorrectLevel = TCorrectLevel = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017895, function(require, module, exports) {
+__DEFINE__(1789968481546, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TTLine = void 0;
@@ -525,10 +681,10 @@ var TTLine;
 (function (TTLine) {
     TTLine[TTLine["SOLID_LINE"] = 0] = "SOLID_LINE";
     TTLine[TTLine["DOTTED_LINE"] = 1] = "DOTTED_LINE";
-})(TTLine = exports.TTLine || (exports.TTLine = {}));
+})(TTLine || (exports.TTLine = TTLine = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017896, function(require, module, exports) {
+__DEFINE__(1789968481547, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TLineM = void 0;
@@ -539,10 +695,10 @@ var TLineM;
     TLineM["DOTTED_LINE_M2"] = "M2";
     TLineM["DOTTED_LINE_M3"] = "M3";
     TLineM["DOTTED_LINE_M4"] = "M4";
-})(TLineM = exports.TLineM || (exports.TLineM = {}));
+})(TLineM || (exports.TLineM = TLineM = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017897, function(require, module, exports) {
+__DEFINE__(1789968481548, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TRotation = void 0;
@@ -564,10 +720,10 @@ var TRotation;
      * 旋转270度
      */
     TRotation[TRotation["ROTATION_270"] = 270] = "ROTATION_270";
-})(TRotation = exports.TRotation || (exports.TRotation = {}));
+})(TRotation || (exports.TRotation = TRotation = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017898, function(require, module, exports) {
+__DEFINE__(1789968481549, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TShowType = void 0;
@@ -589,10 +745,35 @@ var TShowType;
      * 居右显示
      */
     TShowType[TShowType["SHOW_RIGHT"] = 3] = "SHOW_RIGHT";
-})(TShowType = exports.TShowType || (exports.TShowType = {}));
+})(TShowType || (exports.TShowType = TShowType = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017899, function(require, module, exports) {
+__DEFINE__(1789968481550, function(require, module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TAlignment = void 0;
+var TAlignment;
+(function (TAlignment) {
+    /**
+     * 默认
+     */
+    TAlignment[TAlignment["DEFAULT"] = 0] = "DEFAULT";
+    /**
+     * 左对齐
+     */
+    TAlignment[TAlignment["LEFT"] = 1] = "LEFT";
+    /**
+     * 居中
+     */
+    TAlignment[TAlignment["CENTER"] = 2] = "CENTER";
+    /**
+     * 右对齐
+     */
+    TAlignment[TAlignment["RIGHT"] = 3] = "RIGHT";
+})(TAlignment || (exports.TAlignment = TAlignment = {}));
+
+}, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481551, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TBarCode = void 0;
@@ -603,6 +784,54 @@ class TBarCode extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a, _b, _c, _d, _e, _f, _g, _h;
         super();
+        Object.defineProperty(this, "x", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "y", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "codeType", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "height", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "showType", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "rotation", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "cellWidth", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "content", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.x = (_a = options === null || options === void 0 ? void 0 : options.x) !== null && _a !== void 0 ? _a : 0;
         this.y = (_b = options === null || options === void 0 ? void 0 : options.y) !== null && _b !== void 0 ? _b : 0;
         this.codeType = (_c = options === null || options === void 0 ? void 0 : options.codeType) !== null && _c !== void 0 ? _c : types_1.TCodeType.CODE_128;
@@ -633,8 +862,8 @@ class TBarCode extends basic_1.BasicTSPLArg {
 }
 exports.TBarCode = TBarCode;
 
-}, function(modId) { var map = {"./basic":1724665017889,"../types":1724665017890}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017900, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540,"../types":1789968481541}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481552, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TBox = void 0;
@@ -644,6 +873,42 @@ class TBox extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a, _b, _c, _d, _e, _f;
         super();
+        Object.defineProperty(this, "startX", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "startY", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "endX", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "endY", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "width", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "radius", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.startX = (_a = options === null || options === void 0 ? void 0 : options.startX) !== null && _a !== void 0 ? _a : 0;
         this.startY = (_b = options === null || options === void 0 ? void 0 : options.startY) !== null && _b !== void 0 ? _b : 0;
         this.endX = (_c = options === null || options === void 0 ? void 0 : options.endX) !== null && _c !== void 0 ? _c : 0;
@@ -667,8 +932,8 @@ class TBox extends basic_1.BasicTSPLArg {
 }
 exports.TBox = TBox;
 
-}, function(modId) { var map = {"./basic":1724665017889}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017901, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481553, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TCircle = void 0;
@@ -678,6 +943,30 @@ class TCircle extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a, _b, _c, _d;
         super();
+        Object.defineProperty(this, "x", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "y", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "width", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "radius", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.x = (_a = options === null || options === void 0 ? void 0 : options.x) !== null && _a !== void 0 ? _a : 0;
         this.y = (_b = options === null || options === void 0 ? void 0 : options.y) !== null && _b !== void 0 ? _b : 0;
         this.width = (_c = options === null || options === void 0 ? void 0 : options.width) !== null && _c !== void 0 ? _c : 0;
@@ -697,8 +986,8 @@ class TCircle extends basic_1.BasicTSPLArg {
 }
 exports.TCircle = TCircle;
 
-}, function(modId) { var map = {"./basic":1724665017889}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017902, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481554, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TCls = void 0;
@@ -717,7 +1006,7 @@ class TCls extends frame_father_1.OnlyTextHeaderArg {
 exports.TCls = TCls;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017903, function(require, module, exports) {
+__DEFINE__(1789968481555, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TCut = void 0;
@@ -729,6 +1018,12 @@ class TCut extends frame_father_1.OnlyTextHeaderArg {
     constructor(options) {
         var _a;
         super();
+        Object.defineProperty(this, "enable", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.enable = (_a = options === null || options === void 0 ? void 0 : options.enable) !== null && _a !== void 0 ? _a : true;
     }
     header() {
@@ -738,7 +1033,7 @@ class TCut extends frame_father_1.OnlyTextHeaderArg {
 exports.TCut = TCut;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017904, function(require, module, exports) {
+__DEFINE__(1789968481556, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TDensity = void 0;
@@ -751,6 +1046,12 @@ class TDensity extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a;
         super();
+        Object.defineProperty(this, "density", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.density = (_a = options === null || options === void 0 ? void 0 : options.density) !== null && _a !== void 0 ? _a : 5;
     }
     clause() {
@@ -764,8 +1065,8 @@ class TDensity extends basic_1.BasicTSPLArg {
 }
 exports.TDensity = TDensity;
 
-}, function(modId) { var map = {"./basic":1724665017889}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017905, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481557, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DirectionType = exports.TDirection = void 0;
@@ -778,6 +1079,12 @@ class TDirection extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a;
         super();
+        Object.defineProperty(this, "direction", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.direction = (_a = options.direction) !== null && _a !== void 0 ? _a : DirectionType.ASC;
     }
     clause() {
@@ -794,10 +1101,10 @@ var DirectionType;
 (function (DirectionType) {
     DirectionType[DirectionType["ASC"] = 0] = "ASC";
     DirectionType[DirectionType["DESC"] = 1] = "DESC";
-})(DirectionType = exports.DirectionType || (exports.DirectionType = {}));
+})(DirectionType || (exports.DirectionType = DirectionType = {}));
 
-}, function(modId) { var map = {"./basic":1724665017889}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017906, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481558, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TDmatrix = void 0;
@@ -807,6 +1114,36 @@ class TDmatrix extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a, _b, _c, _d, _e;
         super();
+        Object.defineProperty(this, "x", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "y", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "width", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "height", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "content", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.x = (_a = options === null || options === void 0 ? void 0 : options.x) !== null && _a !== void 0 ? _a : 0;
         this.y = (_b = options === null || options === void 0 ? void 0 : options.y) !== null && _b !== void 0 ? _b : 0;
         this.width = (_c = options === null || options === void 0 ? void 0 : options.width) !== null && _c !== void 0 ? _c : 0;
@@ -830,8 +1167,8 @@ class TDmatrix extends basic_1.BasicTSPLArg {
 }
 exports.TDmatrix = TDmatrix;
 
-}, function(modId) { var map = {"./basic":1724665017889}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017907, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481559, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TGap = void 0;
@@ -844,6 +1181,12 @@ class TGap extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a;
         super();
+        Object.defineProperty(this, "enable", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.enable = (_a = options === null || options === void 0 ? void 0 : options.enable) !== null && _a !== void 0 ? _a : true;
     }
     clause() {
@@ -857,8 +1200,8 @@ class TGap extends basic_1.BasicTSPLArg {
 }
 exports.TGap = TGap;
 
-}, function(modId) { var map = {"./basic":1724665017889}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017908, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481560, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TImage = void 0;
@@ -873,6 +1216,48 @@ class TImage extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a, _b, _c, _d, _e, _f;
         super();
+        Object.defineProperty(this, "x", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "y", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "compress", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "mode", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "image", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "reverse", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "threshold", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.x = (_a = options.x) !== null && _a !== void 0 ? _a : 0;
         this.y = (_b = options.y) !== null && _b !== void 0 ? _b : 0;
         this.compress = (_c = options.compress) !== null && _c !== void 0 ? _c : false;
@@ -926,8 +1311,8 @@ class TImage extends basic_1.BasicTSPLArg {
 }
 exports.TImage = TImage;
 
-}, function(modId) { var map = {"./basic":1724665017889,"../types":1724665017890}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017909, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540,"../types":1789968481541}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481561, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TPage = void 0;
@@ -939,6 +1324,18 @@ const frame_father_1 = require("@psdk/frame-father");
 class TPage extends basic_1.BasicTSPLArg {
     constructor(options) {
         super();
+        Object.defineProperty(this, "width", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "height", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.width = options.width;
         this.height = options.height;
     }
@@ -954,8 +1351,8 @@ class TPage extends basic_1.BasicTSPLArg {
 }
 exports.TPage = TPage;
 
-}, function(modId) { var map = {"./basic":1724665017889}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017910, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481562, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TPrint = void 0;
@@ -968,6 +1365,12 @@ class TPrint extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a;
         super();
+        Object.defineProperty(this, "copies", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.copies = (_a = options === null || options === void 0 ? void 0 : options.copies) !== null && _a !== void 0 ? _a : 1;
     }
     clause() {
@@ -982,8 +1385,8 @@ class TPrint extends basic_1.BasicTSPLArg {
 }
 exports.TPrint = TPrint;
 
-}, function(modId) { var map = {"./basic":1724665017889}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017911, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481563, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TReference = void 0;
@@ -996,6 +1399,18 @@ class TReference extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a, _b;
         super();
+        Object.defineProperty(this, "x", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "y", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.x = (_a = options === null || options === void 0 ? void 0 : options.x) !== null && _a !== void 0 ? _a : 0;
         this.y = (_b = options === null || options === void 0 ? void 0 : options.y) !== null && _b !== void 0 ? _b : 0;
     }
@@ -1011,8 +1426,8 @@ class TReference extends basic_1.BasicTSPLArg {
 }
 exports.TReference = TReference;
 
-}, function(modId) { var map = {"./basic":1724665017889}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017912, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481564, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TSN = void 0;
@@ -1028,7 +1443,7 @@ class TSN extends frame_father_1.OnlyTextHeaderArg {
 exports.TSN = TSN;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017913, function(require, module, exports) {
+__DEFINE__(1789968481565, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TSpeed = void 0;
@@ -1041,6 +1456,12 @@ class TSpeed extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a;
         super();
+        Object.defineProperty(this, "speed", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.speed = (_a = options === null || options === void 0 ? void 0 : options.speed) !== null && _a !== void 0 ? _a : 6;
     }
     header() {
@@ -1054,8 +1475,8 @@ class TSpeed extends basic_1.BasicTSPLArg {
 }
 exports.TSpeed = TSpeed;
 
-}, function(modId) { var map = {"./basic":1724665017889}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017914, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481566, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TText = void 0;
@@ -1067,8 +1488,74 @@ const types_1 = require("../types");
  */
 class TText extends basic_1.BasicTSPLArg {
     constructor(options) {
-        var _a, _b, _c, _d, _e, _f, _g, _h, _j;
+        var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k;
         super();
+        Object.defineProperty(this, "x", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "y", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "font", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "rawFont", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "rotation", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "mulX", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "mulY", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "isBold", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "alignment", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "content", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "charset", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.x = (_a = options.x) !== null && _a !== void 0 ? _a : 0;
         this.y = (_b = options.y) !== null && _b !== void 0 ? _b : 0;
         this.font = (_c = options.font) !== null && _c !== void 0 ? _c : types_1.TFont.TSS16;
@@ -1076,9 +1563,10 @@ class TText extends basic_1.BasicTSPLArg {
         this.rotation = (_d = options.rotation) !== null && _d !== void 0 ? _d : 0;
         this.mulX = (_e = options.mulX) !== null && _e !== void 0 ? _e : 1;
         this.mulY = (_f = options.mulY) !== null && _f !== void 0 ? _f : 1;
-        this.alignment = (_g = options.alignment) !== null && _g !== void 0 ? _g : types_1.Alignment.B1;
-        this.content = (_h = options.content) !== null && _h !== void 0 ? _h : '';
-        this.charset = (_j = options === null || options === void 0 ? void 0 : options.charset) !== null && _j !== void 0 ? _j : 'gbk';
+        this.isBold = (_g = options.isBold) !== null && _g !== void 0 ? _g : false;
+        this.alignment = (_h = options.alignment) !== null && _h !== void 0 ? _h : types_1.TAlignment.DEFAULT;
+        this.content = (_j = options.content) !== null && _j !== void 0 ? _j : '';
+        this.charset = (_k = options === null || options === void 0 ? void 0 : options.charset) !== null && _k !== void 0 ? _k : 'gbk';
     }
     clause() {
         return frame_father_1.TSPLCommand.with(this.header(), this.charset)
@@ -1088,7 +1576,8 @@ class TText extends basic_1.BasicTSPLArg {
             .appendNumber(this.rotation)
             .appendNumber(this.mulX)
             .appendNumber(this.mulX)
-            .appendText(this.alignment.toString())
+            .append(frame_father_1.TextAppendat.create("B1", { condition: this.isBold }))
+            .append(frame_father_1.TextAppendat.create(this.alignment.toString(), { condition: this.alignment != types_1.TAlignment.DEFAULT }))
             .append(frame_father_1.TextAppendat.create(this.content, {
             callback: value => value.replace(/"/gm, '["]')
         }).quote())
@@ -1100,8 +1589,8 @@ class TText extends basic_1.BasicTSPLArg {
 }
 exports.TText = TText;
 
-}, function(modId) { var map = {"./basic":1724665017889,"../types":1724665017890}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017915, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540,"../types":1789968481541}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481567, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TVersion = void 0;
@@ -1117,7 +1606,7 @@ class TVersion extends frame_father_1.OnlyTextHeaderArg {
 exports.TVersion = TVersion;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017916, function(require, module, exports) {
+__DEFINE__(1789968481568, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TLine = void 0;
@@ -1128,6 +1617,42 @@ class TLine extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a, _b, _c, _d, _e, _f;
         super();
+        Object.defineProperty(this, "startX", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "startY", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "endX", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "endY", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "width", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "line", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.startX = (_a = options === null || options === void 0 ? void 0 : options.startX) !== null && _a !== void 0 ? _a : 0;
         this.startY = (_b = options === null || options === void 0 ? void 0 : options.startY) !== null && _b !== void 0 ? _b : 0;
         this.endX = (_c = options === null || options === void 0 ? void 0 : options.endX) !== null && _c !== void 0 ? _c : 0;
@@ -1151,8 +1676,8 @@ class TLine extends basic_1.BasicTSPLArg {
 }
 exports.TLine = TLine;
 
-}, function(modId) { var map = {"./basic":1724665017889,"../types":1724665017890}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017917, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540,"../types":1789968481541}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481569, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TQRCode = void 0;
@@ -1163,6 +1688,54 @@ class TQRCode extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a, _b, _c, _d, _e, _f, _g, _h;
         super();
+        Object.defineProperty(this, "x", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "y", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "correctLevel", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "cellWidth", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "rotation", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "version", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "content", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "charset", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.x = (_a = options === null || options === void 0 ? void 0 : options.x) !== null && _a !== void 0 ? _a : 0;
         this.y = (_b = options === null || options === void 0 ? void 0 : options.y) !== null && _b !== void 0 ? _b : 0;
         this.correctLevel = (_c = options === null || options === void 0 ? void 0 : options.correctLevel) !== null && _c !== void 0 ? _c : types_1.TCorrectLevel.L;
@@ -1196,8 +1769,8 @@ class TQRCode extends basic_1.BasicTSPLArg {
 }
 exports.TQRCode = TQRCode;
 
-}, function(modId) { var map = {"./basic":1724665017889,"../types":1724665017890}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017918, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540,"../types":1789968481541}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481570, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TReadState = void 0;
@@ -1213,7 +1786,7 @@ class TReadState extends frame_father_1.OnlyTextHeaderArg {
 exports.TReadState = TReadState;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017919, function(require, module, exports) {
+__DEFINE__(1789968481571, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TTextBox = void 0;
@@ -1227,6 +1800,72 @@ class TTextBox extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a, _b, _c, _d, _e, _f, _g, _h, _j, _k, _l;
         super();
+        Object.defineProperty(this, "x", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "y", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "font", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "rotation", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "rotationType", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "mulX", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "mulY", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "width", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "lineSpace", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "isBold", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "content", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.x = (_a = options.x) !== null && _a !== void 0 ? _a : 0;
         this.y = (_b = options.y) !== null && _b !== void 0 ? _b : 0;
         this.font = (_c = options.font) !== null && _c !== void 0 ? _c : types_1.TFont.TSS16;
@@ -1262,8 +1901,8 @@ class TTextBox extends basic_1.BasicTSPLArg {
 }
 exports.TTextBox = TTextBox;
 
-}, function(modId) { var map = {"./basic":1724665017889,"../types":1724665017890}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017920, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540,"../types":1789968481541}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481572, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TBline = void 0;
@@ -1273,6 +1912,18 @@ class TBline extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a, _b;
         super();
+        Object.defineProperty(this, "height", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "offset", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.height = (_a = options === null || options === void 0 ? void 0 : options.height) !== null && _a !== void 0 ? _a : 3;
         this.offset = (_b = options === null || options === void 0 ? void 0 : options.offset) !== null && _b !== void 0 ? _b : 0;
     }
@@ -1288,8 +1939,8 @@ class TBline extends basic_1.BasicTSPLArg {
 }
 exports.TBline = TBline;
 
-}, function(modId) { var map = {"./basic":1724665017889}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017921, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481573, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TContinuous = void 0;
@@ -1299,6 +1950,18 @@ class TContinuous extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a, _b;
         super();
+        Object.defineProperty(this, "height", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "offset", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.height = (_a = options === null || options === void 0 ? void 0 : options.height) !== null && _a !== void 0 ? _a : 0;
         this.offset = (_b = options === null || options === void 0 ? void 0 : options.offset) !== null && _b !== void 0 ? _b : 0;
     }
@@ -1314,8 +1977,8 @@ class TContinuous extends basic_1.BasicTSPLArg {
 }
 exports.TContinuous = TContinuous;
 
-}, function(modId) { var map = {"./basic":1724665017889}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017922, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481574, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TLabel = void 0;
@@ -1325,6 +1988,18 @@ class TLabel extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a, _b;
         super();
+        Object.defineProperty(this, "height", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "offset", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.height = (_a = options === null || options === void 0 ? void 0 : options.height) !== null && _a !== void 0 ? _a : 3;
         this.offset = (_b = options === null || options === void 0 ? void 0 : options.offset) !== null && _b !== void 0 ? _b : 0;
     }
@@ -1340,8 +2015,8 @@ class TLabel extends basic_1.BasicTSPLArg {
 }
 exports.TLabel = TLabel;
 
-}, function(modId) { var map = {"./basic":1724665017889}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017923, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481575, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TOffset = void 0;
@@ -1351,6 +2026,12 @@ class TOffset extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a;
         super();
+        Object.defineProperty(this, "offset", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.offset = (_a = options === null || options === void 0 ? void 0 : options.offset) !== null && _a !== void 0 ? _a : 0;
     }
     clause() {
@@ -1364,8 +2045,8 @@ class TOffset extends basic_1.BasicTSPLArg {
 }
 exports.TOffset = TOffset;
 
-}, function(modId) { var map = {"./basic":1724665017889}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017924, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481576, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TPeel = void 0;
@@ -1378,6 +2059,12 @@ class TPeel extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a;
         super();
+        Object.defineProperty(this, "enable", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.enable = (_a = options === null || options === void 0 ? void 0 : options.enable) !== null && _a !== void 0 ? _a : true;
     }
     clause() {
@@ -1391,8 +2078,8 @@ class TPeel extends basic_1.BasicTSPLArg {
 }
 exports.TPeel = TPeel;
 
-}, function(modId) { var map = {"./basic":1724665017889}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017925, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481577, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TRibbon = void 0;
@@ -1402,6 +2089,12 @@ class TRibbon extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a;
         super();
+        Object.defineProperty(this, "enable", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.enable = (_a = options === null || options === void 0 ? void 0 : options.enable) !== null && _a !== void 0 ? _a : true;
     }
     clause() {
@@ -1415,8 +2108,8 @@ class TRibbon extends basic_1.BasicTSPLArg {
 }
 exports.TRibbon = TRibbon;
 
-}, function(modId) { var map = {"./basic":1724665017889}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017926, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481578, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TShift = void 0;
@@ -1426,6 +2119,12 @@ class TShift extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a;
         super();
+        Object.defineProperty(this, "shift", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.shift = (_a = options === null || options === void 0 ? void 0 : options.shift) !== null && _a !== void 0 ? _a : 0;
     }
     clause() {
@@ -1439,8 +2138,8 @@ class TShift extends basic_1.BasicTSPLArg {
 }
 exports.TShift = TShift;
 
-}, function(modId) { var map = {"./basic":1724665017889}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017927, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481579, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TStatus = void 0;
@@ -1453,7 +2152,7 @@ class TStatus extends frame_father_1.OnlyBinaryHeaderArg {
 exports.TStatus = TStatus;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017928, function(require, module, exports) {
+__DEFINE__(1789968481580, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TTear = void 0;
@@ -1466,6 +2165,12 @@ class TTear extends basic_1.BasicTSPLArg {
     constructor(options) {
         var _a;
         super();
+        Object.defineProperty(this, "enable", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
         this.enable = (_a = options === null || options === void 0 ? void 0 : options.enable) !== null && _a !== void 0 ? _a : true;
     }
     clause() {
@@ -1479,8 +2184,468 @@ class TTear extends basic_1.BasicTSPLArg {
 }
 exports.TTear = TTear;
 
-}, function(modId) { var map = {"./basic":1724665017889}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1724665017929, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481581, function(require, module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TPutImage = void 0;
+const basic_1 = require("./basic");
+const frame_father_1 = require("@psdk/frame-father");
+class TPutImage extends basic_1.BasicTSPLArg {
+    constructor(options) {
+        var _a, _b, _c, _d;
+        super();
+        Object.defineProperty(this, "x", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "y", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "filename", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "charset", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        this.x = (_a = options.x) !== null && _a !== void 0 ? _a : 0;
+        this.y = (_b = options.y) !== null && _b !== void 0 ? _b : 0;
+        this.filename = (_c = options.filename) !== null && _c !== void 0 ? _c : '';
+        this.charset = (_d = options === null || options === void 0 ? void 0 : options.charset) !== null && _d !== void 0 ? _d : 'gbk';
+    }
+    clause() {
+        return frame_father_1.TSPLCommand.with(this.header(), this.charset)
+            .appendNumber(this.x)
+            .appendNumber(this.y)
+            .append(frame_father_1.TextAppendat.create(this.filename, {
+            callback: value => value.replace(/"/gm, '["]')
+        }).quote())
+            .clause();
+    }
+    header() {
+        return 'PUTBMP';
+    }
+}
+exports.TPutImage = TPutImage;
+
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481582, function(require, module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TEllipse = void 0;
+const basic_1 = require("./basic");
+const frame_father_1 = require("@psdk/frame-father");
+class TEllipse extends basic_1.BasicTSPLArg {
+    constructor(options) {
+        var _a, _b, _c, _d, _e;
+        super();
+        Object.defineProperty(this, "x", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "y", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "width", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "height", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "thickness", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        this.x = (_a = options === null || options === void 0 ? void 0 : options.x) !== null && _a !== void 0 ? _a : 0;
+        this.y = (_b = options === null || options === void 0 ? void 0 : options.y) !== null && _b !== void 0 ? _b : 0;
+        this.width = (_c = options === null || options === void 0 ? void 0 : options.width) !== null && _c !== void 0 ? _c : 0;
+        this.height = (_d = options === null || options === void 0 ? void 0 : options.height) !== null && _d !== void 0 ? _d : 0;
+        this.thickness = (_e = options === null || options === void 0 ? void 0 : options.thickness) !== null && _e !== void 0 ? _e : 0;
+    }
+    clause() {
+        return frame_father_1.TSPLCommand.with(this.header())
+            .appendNumber(this.x)
+            .appendNumber(this.y)
+            .appendNumber(this.width)
+            .appendNumber(this.height)
+            .appendNumber(this.thickness)
+            .clause();
+    }
+    header() {
+        return 'ELLIPSE';
+    }
+}
+exports.TEllipse = TEllipse;
+
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481583, function(require, module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TRed = void 0;
+const basic_1 = require("./basic");
+const frame_father_1 = require("@psdk/frame-father");
+class TRed extends basic_1.BasicTSPLArg {
+    constructor(options) {
+        var _a;
+        super();
+        Object.defineProperty(this, "density", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        this.density = (_a = options === null || options === void 0 ? void 0 : options.density) !== null && _a !== void 0 ? _a : 10;
+    }
+    clause() {
+        return frame_father_1.TSPLCommand.with(this.header())
+            .appendNumber(this.density)
+            .clause();
+    }
+    header() {
+        return 'SETCOLOR RED';
+    }
+}
+exports.TRed = TRed;
+
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481584, function(require, module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TBlack = void 0;
+const frame_father_1 = require("@psdk/frame-father");
+class TBlack extends frame_father_1.OnlyTextHeaderArg {
+    constructor() {
+        super();
+    }
+    header() {
+        return 'SETCOLOR BLACK';
+    }
+}
+exports.TBlack = TBlack;
+
+}, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481585, function(require, module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TSelfTest = void 0;
+const frame_father_1 = require("@psdk/frame-father");
+class TSelfTest extends frame_father_1.OnlyTextHeaderArg {
+    constructor() {
+        super();
+    }
+    header() {
+        return 'SELFTEST';
+    }
+}
+exports.TSelfTest = TSelfTest;
+
+}, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481586, function(require, module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TSetRibbonEnd = void 0;
+const frame_father_1 = require("@psdk/frame-father");
+/**
+ * enable cut
+ */
+class TSetRibbonEnd extends frame_father_1.OnlyTextHeaderArg {
+    constructor(options) {
+        var _a;
+        super();
+        Object.defineProperty(this, "enable", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        this.enable = (_a = options === null || options === void 0 ? void 0 : options.enable) !== null && _a !== void 0 ? _a : true;
+    }
+    header() {
+        return this.enable ? 'SET RIBBONEND ON' : 'SET RIBBONEND OFF';
+    }
+}
+exports.TSetRibbonEnd = TSetRibbonEnd;
+
+}, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481587, function(require, module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TGetRibbonEnd = void 0;
+const frame_father_1 = require("@psdk/frame-father");
+class TGetRibbonEnd extends frame_father_1.OnlyTextHeaderArg {
+    constructor() {
+        super();
+    }
+    header() {
+        return 'DIAGNOSTIC REPORT RIBBONEND';
+    }
+}
+exports.TGetRibbonEnd = TGetRibbonEnd;
+
+}, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481588, function(require, module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TVersions = void 0;
+const frame_father_1 = require("@psdk/frame-father");
+class TVersions extends frame_father_1.OnlyTextHeaderArg {
+    constructor() {
+        super();
+    }
+    header() {
+        return 'OUT GETSETTING$(\"SYSTEM\",\"INFORMATION\",\"VERSION\")';
+    }
+}
+exports.TVersions = TVersions;
+
+}, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481589, function(require, module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TModels = void 0;
+const frame_father_1 = require("@psdk/frame-father");
+class TModels extends frame_father_1.OnlyTextHeaderArg {
+    constructor() {
+        super();
+    }
+    header() {
+        return 'OUT GETSETTING$(\"SYSTEM\",\"INFORMATION\",\"MODEL\")';
+    }
+}
+exports.TModels = TModels;
+
+}, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481590, function(require, module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TSNs = void 0;
+const frame_father_1 = require("@psdk/frame-father");
+class TSNs extends frame_father_1.OnlyTextHeaderArg {
+    constructor() {
+        super();
+    }
+    header() {
+        return 'OUT GETSETTING$(\"SYSTEM\",\"INFORMATION\",\"SERIAL\")';
+    }
+}
+exports.TSNs = TSNs;
+
+}, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481591, function(require, module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TDownloadBmp = void 0;
+const basic_1 = require("./basic");
+const frame_father_1 = require("@psdk/frame-father");
+/**
+ * 下载图片到打印机
+ */
+class TDownloadBmp extends basic_1.BasicTSPLArg {
+    constructor(options) {
+        super();
+        Object.defineProperty(this, "fileName", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        Object.defineProperty(this, "data", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: void 0
+        });
+        this.fileName = options.fileName;
+        this.data = options.data;
+    }
+    clause() {
+        const alignData = this.align32(this.data);
+        const tc = frame_father_1.TSPLCommand.with(this.header())
+            .appendText('F')
+            .append(frame_father_1.TextAppendat.create(this.fileName).quote())
+            .appendNumber(alignData.length);
+        const command = frame_father_1.Commander.make()
+            .pushClause(tc.clause(), false)
+            .pushText(',', { newline: false })
+            .pushBinary(alignData, false)
+            .newline()
+            .command();
+        return frame_father_1.Raw.binary(command.binary()).clause();
+    }
+    header() {
+        return 'DOWNLOAD';
+    }
+    //32位对齐
+    align32(data) {
+        const bmpSize = data.length;
+        const bmpOffset = this.getOffset(data);
+        const width = this.getWidth(data);
+        let linewidth4cha = 0;
+        if (width % 32 !== 0) {
+            linewidth4cha = (Math.floor(width / 32) + 1) * 4;
+        }
+        else {
+            linewidth4cha = Math.floor(width / 32) * 4;
+        }
+        const widthshengyu = width % 8;
+        let linewidth1cha = 0;
+        if (width % 8 !== 0) {
+            linewidth1cha = Math.floor(width / 8) + 1;
+        }
+        else {
+            linewidth1cha = Math.floor(width / 8);
+        }
+        const datas = new Uint8Array(bmpSize);
+        for (let index = 0; index < bmpSize; index++) {
+            if (index >= bmpOffset) {
+                if (widthshengyu === 0) {
+                    if ((index - bmpOffset) % linewidth4cha < linewidth1cha)
+                        datas[index] = data[index];
+                    else
+                        datas[index] = 0xff;
+                }
+                else {
+                    if ((index - bmpOffset) % linewidth4cha < (linewidth1cha - 1))
+                        datas[index] = data[index];
+                    else if ((index - bmpOffset) % linewidth4cha === (linewidth1cha - 1))
+                        datas[index] = (data[index] & ((0xff << (8 - widthshengyu))));
+                    else
+                        datas[index] = 0xff;
+                }
+            }
+            else {
+                datas[index] = data[index];
+            }
+        }
+        return datas;
+    }
+    getWidth(data) {
+        return ((this.getUint(data[0x15]) * 256 * 256 * 256) +
+            (this.getUint(data[0x14]) * 256 * 256) +
+            (this.getUint(data[0x13]) * 256) +
+            this.getUint(data[0x12]));
+    }
+    getOffset(data) {
+        return ((this.getUint(data[0x0d]) * 256 * 256 * 256) +
+            (this.getUint(data[0x0c]) * 256 * 256) +
+            (this.getUint(data[0x0b]) * 256) +
+            this.getUint(data[0x0a]));
+    }
+    getUint(data) {
+        if (data < 0)
+            return data + 256;
+        else
+            return data;
+    }
+}
+exports.TDownloadBmp = TDownloadBmp;
+
+}, function(modId) { var map = {"./basic":1789968481540}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481592, function(require, module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TGBKCode = void 0;
+const frame_father_1 = require("@psdk/frame-father");
+class TGBKCode extends frame_father_1.OnlyTextHeaderArg {
+    constructor() {
+        super();
+    }
+    header() {
+        return 'CODEPAGE 936';
+    }
+}
+exports.TGBKCode = TGBKCode;
+
+}, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481593, function(require, module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TUTF8Code = void 0;
+const frame_father_1 = require("@psdk/frame-father");
+class TUTF8Code extends frame_father_1.OnlyTextHeaderArg {
+    constructor() {
+        super();
+    }
+    header() {
+        return 'CODEPAGE UTF-8';
+    }
+}
+exports.TUTF8Code = TUTF8Code;
+
+}, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481594, function(require, module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TLearnPaperGap = void 0;
+const frame_father_1 = require("@psdk/frame-father");
+class TLearnPaperGap extends frame_father_1.OnlyTextHeaderArg {
+    constructor() {
+        super();
+    }
+    header() {
+        return 'GAPDETECT';
+    }
+}
+exports.TLearnPaperGap = TLearnPaperGap;
+
+}, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481595, function(require, module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TReadHardwareVersion = void 0;
+const frame_father_1 = require("@psdk/frame-father");
+class TReadHardwareVersion extends frame_father_1.OnlyTextHeaderArg {
+    constructor() {
+        super();
+    }
+    header() {
+        return 'READC HW_VERSION';
+    }
+}
+exports.TReadHardwareVersion = TReadHardwareVersion;
+
+}, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481596, function(require, module, exports) {
+
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.TResetFactory = void 0;
+const frame_father_1 = require("@psdk/frame-father");
+class TResetFactory extends frame_father_1.OnlyTextHeaderArg {
+    constructor() {
+        super();
+    }
+    header() {
+        return 'RESET FACTORY';
+    }
+}
+exports.TResetFactory = TResetFactory;
+
+}, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1789968481597, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TSPL = void 0;
@@ -1499,8 +2664,8 @@ class TSPL {
 }
 exports.TSPL = TSPL;
 
-}, function(modId) { var map = {"./generic":1724665017885}; return __REQUIRE__(map[modId], modId); })
-return __REQUIRE__(1724665017883);
+}, function(modId) { var map = {"./generic":1789968481536}; return __REQUIRE__(map[modId], modId); })
+return __REQUIRE__(1789968481534);
 })()
 //miniprogram-npm-outsideDeps=["@psdk/frame-father","@psdk/frame-imageb"]
 //# sourceMappingURL=index.js.map

@@ -2,7 +2,7 @@
 	<view class="center">
 		<button @click="discovery" class="button">开始搜索</button>
 		<button @click="closeBluetooth" class="button">断开连接</button>
-		<button @click="writeCpclModel" class="button">打印cpcl模版</button>
+		<button @click="writeCpclModel" class="button">打印危废模版(cpcl)</button>
 		<button @click="writeTsplModel" class="button">打印tspl模版</button>
 
 		<view class="input-container">
@@ -21,6 +21,9 @@
 				<button type="warn" class="button" @click="connectBT(item)">连接</button>
 			</block>
 		</scroll-view>
+		<!-- CTextCanvas-->
+		<canvas canvas-id="ctextCanvas" id="ctextCanvas"
+			style="width: 2400px; height: 240px; position: fixed; left: 0; top: 0; opacity: 0; pointer-events: none;"></canvas>
 	</view>
 
 </template>
@@ -28,9 +31,6 @@
 <script>
 	import bluetoothTool from '@/plugins/BluetoothTool.js'
 	import permission from '@/plugins/permission.js'
-	import {
-		InputImage
-	} from '@psdk/frame-imageb';
 	import {
 		ConnectedDevice,
 		Lifecycle,
@@ -57,6 +57,7 @@
 		CCorrectLevel,
 		CSN,
 		CStatus,
+		CTextCanvas,
 	} from "@psdk/cpcl";
 	import {
 		TBar,
@@ -105,47 +106,47 @@
 					console.log("搜索完成");
 				},
 				readDataCallback: async (dataByteArr) => {
-				  const vm = this;
-				  console.log("收到打印机数据：", dataByteArr);
-				  
-				  // 状态查询的返回数据解析
-				  if (dataByteArr.length === 1) {
-				    const states = [];
-				    let isOK = true;
-				    const byte0 = dataByteArr[0] & 0xFF; // 确保是无符号字节
-				    
-				    if ((byte0 & 0x01) === 0x01) {
-				      states.push("正在打印");
-				      isOK = false;
-				    }
-				    if ((byte0 & 0x02) === 0x02) {
-				      states.push("纸舱盖开");
-				      isOK = false;
-				    }
-				    if ((byte0 & 0x04) === 0x04) {
-				      states.push("缺纸");
-				      isOK = false;
-				    }
-				    if ((byte0 & 0x08) === 0x08) {
-				      states.push("电池电压低");
-				      isOK = false;
-				    }
-				    if ((byte0 & 0x10) === 0x10) {
-				      states.push("打印头过热");
-				      isOK = false;
-				    }
-				    if (isOK) {
-				      states.push("状态良好");
-				    }
-				
-				    const statusText = states.join("、");
-				    console.log("打印机状态解析结果：", statusText);
-				    uni.showToast({
-				      title: statusText,
-				      icon: isOK ? 'success' : 'none',
-				      duration: 3000
-				    });
-				  }
+					const vm = this;
+					console.log("收到打印机数据：", dataByteArr);
+
+					// 状态查询的返回数据解析
+					if (dataByteArr.length === 1) {
+						const states = [];
+						let isOK = true;
+						const byte0 = dataByteArr[0] & 0xFF; // 确保是无符号字节
+
+						if ((byte0 & 0x01) === 0x01) {
+							states.push("正在打印");
+							isOK = false;
+						}
+						if ((byte0 & 0x02) === 0x02) {
+							states.push("纸舱盖开");
+							isOK = false;
+						}
+						if ((byte0 & 0x04) === 0x04) {
+							states.push("缺纸");
+							isOK = false;
+						}
+						if ((byte0 & 0x08) === 0x08) {
+							states.push("电池电压低");
+							isOK = false;
+						}
+						if ((byte0 & 0x10) === 0x10) {
+							states.push("打印头过热");
+							isOK = false;
+						}
+						if (isOK) {
+							states.push("状态良好");
+						}
+
+						const statusText = states.join("、");
+						console.log("打印机状态解析结果：", statusText);
+						uni.showToast({
+							title: statusText,
+							icon: isOK ? 'success' : 'none',
+							duration: 3000
+						});
+					}
 				},
 				connExceptionCallback: function(e) {
 					console.log(e);
@@ -257,18 +258,23 @@
 				})
 			},
 			async queryPrinterStatus() {
-			  const vm = this;
-			  try {
-			    // 发送状态查询指令
-			    const psdk = await vm.$printer.esc().clear().state();
-			    const binary = psdk.command().binary();
-			    await this.sendMessage(binary);
-			
-			    uni.showToast({ title: '状态查询指令已发送', icon: 'none' });
-			  } catch (e) {
-			    console.error(e);
-			    uni.showToast({ title: '状态查询失败' });
-			  }
+				const vm = this;
+				try {
+					// 发送状态查询指令
+					const psdk = await vm.$printer.esc().clear().state();
+					const binary = psdk.command().binary();
+					await this.sendMessage(binary);
+
+					uni.showToast({
+						title: '状态查询指令已发送',
+						icon: 'none'
+					});
+				} catch (e) {
+					console.error(e);
+					uni.showToast({
+						title: '状态查询失败'
+					});
+				}
 			},
 			//如果自己有字符串或者字节数据 可以按照这个这样传来打印
 			async printTest() {
@@ -280,7 +286,7 @@
 					// var binary1 = psdk1.command().binary();
 					// await this.sendMessage(Array.from(this.uint8ArrayToSignedArray(binary1)));
 					//字符串
-					const psdk = await vm.$printer.tspl()
+					const psdk = await vm.$printer.tspl().clear()
 						.raw(Raw.text("! 0 300 300 2400 1\n" +
 							"PAGE-WIDTH 2400\n" +
 							"GAP-SENSE\n" +
@@ -307,7 +313,7 @@
 							"FORM\n" +
 							"PRINT\n"));
 					var binary = psdk.command().binary();
-					await this.sendMessage(Array.from(this.uint8ArrayToSignedArray(binary)));
+					await this.sendMessage(binary);
 				} catch (e) {
 					console.error(e);
 					uni.showToast({
@@ -331,133 +337,146 @@
 				}
 			},
 			async writeCpclModel() {
-			  const vm = this;
-			  try {
-			    const dot = 8; // 点密度：可切换 12 或 8
-			
-			    const cpcl = await vm.$printer.cpcl().clear()
-			      .page(new CPage({
-			        width: 200 * dot,    // 200mm 宽度
-			        height: 200 * dot,   // 200mm 高度
-			      }))
-			      .bold(true)
-			
-			      // 废物名称
-			      .text(new CText({
-			        x: 45 * dot,
-			        y: 33 * dot,
-			        content: "废物名称内容",
-			        font: CFont.TSS32
-			      }))
-			      // 废物类别
-			      .text(new CText({
-			        x: 45 * dot,
-			        y: 44 * dot,
-			        content: "废物类别内容",
-			        font: CFont.TSS32
-			      }))
-			      // 废物代码
-			      .text(new CText({
-			        x: 45 * dot,
-			        y: 55 * dot,
-			        content: "废物代码内容",
-			        font: CFont.TSS24
-			      }))
-			      // 废物形态
-			      .text(new CText({
-			        x: 105 * dot,
-			        y: 55 * dot,
-			        content: "废物形态内容",
-			        font: CFont.TSS32
-			      }))
-			      // 主要成分
-			      .text(new CText({
-			        x: 45 * dot,
-			        y: 68 * dot,
-			        content: "主要成分内容",
-			        font: CFont.TSS32
-			      }))
-			      // 有害成分
-			      .text(new CText({
-			        x: 45 * dot,
-			        y: 91 * dot,
-			        content: "有害成分内容",
-			        font: CFont.TSS32
-			      }))
-			      // 注意事项
-			      .text(new CText({
-			        x: 45 * dot,
-			        y: 114 * dot,
-			        content: "注意事项内容",
-			        font: CFont.TSS32
-			      }))
-			      // 数字识别码
-			      .text(new CText({
-			        x: 48 * dot,
-			        y: 138 * dot,
-			        content: "数字识别码内容",
-			        font: CFont.TSS24
-			      }))
-			      // 产生/收集单位
-			      .text(new CText({
-			        x: 55 * dot,
-			        y: 148 * dot,
-			        content: "产生/收集单位内容",
-			        font: CFont.TSS32
-			      }))
-			      // 联系人和联系方式
-			      .text(new CText({
-			        x: 66 * dot,
-			        y: 160 * dot,
-			        content: "联系人和联系方式内容",
-			        font: CFont.TSS32
-			      }))
-			      // 产生日期
-			      .text(new CText({
-			        x: 40 * dot,
-			        y: 172 * dot,
-			        content: "产生日期内容",
-			        font: CFont.TSS24
-			      }))
-			      // 废物重量
-			      .text(new CText({
-			        x: 102 * dot,
-			        y: 172 * dot,
-			        content: "废物重量内容",
-			        font: CFont.TSS32
-			      }))
-			
-			      // 取消加粗、恢复字号
-			      .bold(false)
-			
-			      // 备注
-			      .text(new CText({
-			        x: 27 * dot,
-			        y: 184 * dot,
-			        content: "备注内容",
-			        font: CFont.TSS24,
-			      }))
-			
-			      // 二维码
-			      .qrcode(new CQRCode({
-			        x: 148 * dot,
-			        y: 148 * dot,
-			        width: 9,
-			        content: "https://wfqr.qrprt.com/id=00000000000000000",
-			      }))
-			
-			      .form(new CForm())
-			      .print();
-			
-			    console.log(cpcl.command().string());
-			    const binary = cpcl.command().binary();
-			    await this.sendMessage(binary);
-			
-			    uni.showToast({ title: '打印成功', icon: 'success' });
-			  } catch (e) {
-			    console.error(e);
-			    uni.showToast({ title: '打印失败' });
-			  }
+				const vm = this;
+				try {
+					const dot = 12; // 点密度：可切换 12(203dpi) 或 8(300dpi)
+
+					const cpcl = await vm.$printer.cpcl().clear()
+						.page(new CPage({
+							width: 200 * dot, // 200mm 宽度
+							height: 200 * dot, // 200mm 高度
+						}))
+						.bold(true)
+						.mag(new CMag({
+							font: CFont.TSS32_MAX1
+						})) //字号有用到MAX的或者使用MAX后要恢复成没有MAX的需要加个mag指令
+						// 废物名称
+						.text(new CText({
+							x: 45 * dot,
+							y: 33 * dot,
+							content: "废物名称内容",
+							font: CFont.TSS32_MAX1
+						}))
+						// 废物类别
+						.text(new CText({
+							x: 45 * dot,
+							y: 44 * dot,
+							content: "废物类别内容",
+							font: CFont.TSS32_MAX1
+						}))
+						// 废物代码
+						.text(new CText({
+							x: 45 * dot,
+							y: 55 * dot,
+							content: "废物代码内容",
+							font: CFont.TSS32_MAX1
+						}))
+						// 废物形态
+						.text(new CText({
+							x: 105 * dot,
+							y: 55 * dot,
+							content: "废物形态内容",
+							font: CFont.TSS32_MAX1
+						}))
+						// 主要成分（CTextCanvas：含打印机不支持的化学式下标 C₁₅H₃₀O₂）
+						.text(new CTextCanvas({
+							x: 45 * dot,
+							y: 68 * dot,
+							inputImage: await CTextCanvas.generateUniCanvasImage({
+								content: "主要成分内容C₁₅H₃₀O₂",
+								fontSize: 64,
+								canvasId: 'ctextCanvas',
+								component: vm,
+							}),
+						}))
+						// 有害成分
+						.text(new CText({
+							x: 45 * dot,
+							y: 91 * dot,
+							content: "有害成分内容",
+							font: CFont.TSS32_MAX1
+						}))
+						// 注意事项
+						.text(new CText({
+							x: 45 * dot,
+							y: 114 * dot,
+							content: "注意事项内容",
+							font: CFont.TSS32_MAX1
+						}))
+						// 数字识别码
+						.text(new CText({
+							x: 48 * dot,
+							y: 138 * dot,
+							content: "数字识别码内容",
+							font: CFont.TSS24
+						}))
+						// 产生/收集单位
+						.text(new CText({
+							x: 55 * dot,
+							y: 148 * dot,
+							content: "产生/收集单位内容",
+							font: CFont.TSS32_MAX1
+						}))
+						// 联系人和联系方式
+						.text(new CText({
+							x: 66 * dot,
+							y: 160 * dot,
+							content: "联系人和联系方式内容",
+							font: CFont.TSS32_MAX1
+						}))
+						// 产生日期
+						.text(new CText({
+							x: 40 * dot,
+							y: 172 * dot,
+							content: "产生日期内容",
+							font: CFont.TSS32_MAX1
+						}))
+						// 废物重量
+						.text(new CText({
+							x: 102 * dot,
+							y: 172 * dot,
+							content: "废物重量内容",
+							font: CFont.TSS32_MAX1
+						}))
+
+						// 取消加粗、恢复字号
+						.bold(false)
+
+						// 备注
+						.text(new CText({
+							x: 27 * dot,
+							y: 184 * dot,
+							content: "备注内容",
+							font: CFont.TSS32_MAX1,
+						}))
+						.mag(new CMag({
+							font: CFont.TSS24
+						}))
+						// 二维码
+						.qrcode(new CQRCode({
+							x: 148 * dot,
+							y: 148 * dot,
+							width: 9,
+							content: "https://wfqr.qrprt.com/id=00000000000000000",
+						}))
+
+						.form(new CForm())
+						.print();
+
+					console.log(cpcl.command().string());
+					const binary = cpcl.command().binary();
+					await this.sendMessage(binary);
+
+					uni.showToast({
+						title: '打印成功',
+						icon: 'success'
+					});
+				} catch (e) {
+					console.error(e);
+					uni.showToast({
+						title: '打印失败'
+					});
+				}
 			},
 			///转成安卓有符号的
 			uint8ArrayToSignedArray(uint8Array) {

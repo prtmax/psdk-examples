@@ -19,6 +19,8 @@
 				<button type="warn" class="button" @click="connectDevice(item)">连接</button>
 			</block>
 		</scroll-view>
+		<!-- CTextCanvas 图片文字：用于绘制文字的画布（隐藏） -->
+		<canvas canvas-id="ctextCanvas" id="ctextCanvas" style="width: 2400px; height: 240px; position: fixed; left: 0; top: 0; opacity: 0; pointer-events: none;"></canvas>
 	</view>
 </template>
 
@@ -74,9 +76,10 @@
 
 	async function initState(vm) {
 		vm.bluetooth = new UniappBleBluetooth({
-			allowedWriteCharacteristic: '49535343-8841-43F4-A8D4-ECBE34729BB3',
-			allowedReadCharacteristic: '49535343-1e4d-4bd9-ba61-23c647249616',
 			allowNoName: false,
+			flowControl: {
+				enabled: true,
+			}
 		});
 		vm.bluetooth.discovered((devices) => {
 			devices.forEach(device => {
@@ -126,7 +129,7 @@
 				try {
 					console.log('closeBluetooth');
 					if (vm.connectedDevice != null) {
-						vm.connectedDevice.disconnect();
+						await vm.connectedDevice.disconnect();
 						vm.connectedDevice = null;
 						vm.connectedDeviceId = "";
 					}
@@ -266,12 +269,16 @@
 					    content: "废物形态内容",
 					    font: CFont.TSS32
 					  }))
-					  // 主要成分
-					  .text(new CText({
+					  // 主要成分（图片文字：含打印机不支持的化学式下标 C₁₅H₃₀O₂）
+					  .text(new CTextCanvas({
 					    x: 45 * dot,
 					    y: 68 * dot,
-					    content: "主要成分内容",
-					    font: CFont.TSS32
+					    inputImage: await CTextCanvas.generateUniCanvasImage({
+					      content: "主要成分内容C₁₅H₃₀O₂",
+					      fontSize: 32,
+					      canvasId: 'ctextCanvas',
+					      component: vm,
+					    }),
 					  }))
 					  // 有害成分
 					  .text(new CText({

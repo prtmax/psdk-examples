@@ -44,6 +44,10 @@
 		TFont,
 		TTLine,
 	} from "@psdk/tspl";
+	import {
+		InputImage
+	} from '@psdk/frame-imageb';
+	import {base64ToPath } from 'image-tools'
 	export default {
 		data() {
 			return {
@@ -59,7 +63,7 @@
 					},
 				],
 				current: 0,
-				sn: 'SW244100075',
+				sn: 'SW245200154',
 				canvasId: 'myCanvas',
 				canvasWidth: 240,
 				canvasHeight: 240,
