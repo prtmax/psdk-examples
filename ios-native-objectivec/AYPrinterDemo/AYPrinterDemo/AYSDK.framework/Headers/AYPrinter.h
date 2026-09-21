@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property(strong, nonatomic) NSString *mac;
 @property(strong, nonatomic) NSString *uuid;
 @property(strong, nonatomic) NSNumber *rssi;
+@property(strong, nonatomic) NSString *sn;
 @property(strong, nonatomic) CBPeripheral *peripheral;
 
 @end
