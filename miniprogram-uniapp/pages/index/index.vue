@@ -13,7 +13,7 @@
 		</view>
 		<button @click="discovery" class="button">开始搜索</button>
 		<button @click="closeBluetooth" class="button">断开连接</button>
-		<button @click="writeModel" class="button">打印76*130模版</button>
+		<button @click="writeModel" class="button" v-show="items[current].type !== 'esc'">打印76*130模版</button>
 		<button @click="printImage" class="button">打印图片</button>
 		<button @click="writeTsplRibbonModel" class="button" v-show="items[current].type === 'tspl'">打印热转印测试</button>
 		<!--		<button @click="deleteBmp" class="button">删除位图</button>-->
@@ -89,9 +89,10 @@
 	async function initState(vm) {
 		//uniapp自带的蓝牙方法只支持ble蓝牙(发送数据效率慢)，开发者如果只需要运行成安卓app可以参考classic.vue页面(是通过经典蓝牙的插件调用原生的方法实现的，打印速度比较快)
 		vm.bluetooth = new UniappBleBluetooth({
-			allowedWriteCharacteristic: '49535343-8841-43F4-A8D4-ECBE34729BB3',
-			allowedReadCharacteristic: '49535343-1e4d-4bd9-ba61-23c647249616',
 			allowNoName: false,
+			flowControl: {
+				enabled: true,
+			}
 		});
 		vm.bluetooth.discovered((devices) => {
 			devices.forEach(device => {
@@ -163,7 +164,7 @@
 				try {
 					console.log('closeBluetooth');
 					if (vm.connectedDevice != null) {
-						vm.connectedDevice.disconnect();
+						await vm.connectedDevice.disconnect();
 						vm.connectedDevice = null;
 						vm.connectedDeviceId = "";
 					}
