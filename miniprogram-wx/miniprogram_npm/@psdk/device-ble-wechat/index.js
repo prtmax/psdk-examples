@@ -4,7 +4,7 @@ var __DEFINE__ = function(modId, func, req) { var m = { exports: {}, _tempexport
 var __REQUIRE__ = function(modId, source) { if(!__MODS__[modId]) return require(source); if(!__MODS__[modId].status) { var m = __MODS__[modId].m; m._exports = m._tempexports; var desp = Object.getOwnPropertyDescriptor(m, "exports"); if (desp && desp.configurable) Object.defineProperty(m, "exports", { set: function (val) { if(typeof val === "object" && val !== m._exports) { m._exports.__proto__ = val.__proto__; Object.keys(val).forEach(function (k) { m._exports[k] = val[k]; }); } m._tempexports = val }, get: function () { return m._tempexports; } }); __MODS__[modId].status = 1; __MODS__[modId].func(__MODS__[modId].req, m, m.exports); } return __MODS__[modId].m.exports; };
 var __REQUIRE_WILDCARD__ = function(obj) { if(obj && obj.__esModule) { return obj; } else { var newObj = {}; if(obj != null) { for(var k in obj) { if (Object.prototype.hasOwnProperty.call(obj, k)) newObj[k] = obj[k]; } } newObj.default = obj; return newObj; } };
 var __REQUIRE_DEFAULT__ = function(obj) { return obj && obj.__esModule ? obj.default : obj; };
-__DEFINE__(1789968481490, function(require, module, exports) {
+__DEFINE__(1790237021547, function(require, module, exports) {
 var __assign = (this && this.__assign) || function () {
     __assign = Object.assign || function(t) {
         for (var s, i = 1, n = arguments.length; i < n; i++) {
@@ -59,7 +59,7 @@ var z = Object.getOwnPropertyNames;
 var K = Object.getPrototypeOf, Y = Object.prototype.hasOwnProperty;
 var Z = function (i, e, t) { return e in i ? g(i, e, { enumerable: !0, configurable: !0, writable: !0, value: t }) : i[e] = t; };
 var T = function (i, e) { return function () { return (e || i((e = { exports: {} }).exports, e), e.exports); }; }, ee = function (i, e) { for (var t in e)
-    g(i, t, { get: e[t], enumerable: !0 }); }, R = function (i, e, t, r) { if (e && typeof e == "object" || typeof e == "function") {
+    g(i, t, { get: e[t], enumerable: !0 }); }, x = function (i, e, t, r) { if (e && typeof e == "object" || typeof e == "function") {
     var _loop_1 = function (s) {
         !Y.call(i, s) && s !== t && g(i, s, { get: function () { return e[s]; }, enumerable: !(r = j(e, s)) || r.enumerable });
     };
@@ -68,7 +68,7 @@ var T = function (i, e) { return function () { return (e || i((e = { exports: {}
         _loop_1(s);
     }
 } return i; };
-var S = function (i, e, t) { return (t = i != null ? X(K(i)) : {}, R(e || !i || !i.__esModule ? g(t, "default", { value: i, enumerable: !0 }) : t, i)); }, te = function (i) { return R(g({}, "__esModule", { value: !0 }), i); };
+var S = function (i, e, t) { return (t = i != null ? X(K(i)) : {}, x(e || !i || !i.__esModule ? g(t, "default", { value: i, enumerable: !0 }) : t, i)); }, te = function (i) { return x(g({}, "__esModule", { value: !0 }), i); };
 var v = function (i, e, t) { return Z(i, typeof e != "symbol" ? e + "" : e, t); };
 var _ = T(function (O) { O.promiseFinally = function (i, e) { var t = function (s) { return (e(), s); }, r = function (s) { return (e(), Promise.reject(s)); }; return Promise.resolve(i).then(t, r); }; O.toError = function (i) { return (i = typeof i == "function" ? i() : i, typeof i == "string" ? new Error(i) : i); }; });
 var M = T(function (ge, H) { var _a = _(), ie = _a.promiseFinally, re = _a.toError; H.exports = (function () {
@@ -342,7 +342,7 @@ var I = { CONNECTED: "CONNECTED", DISCONNECTED: "DISCONNECTED" }, D = (function 
         return __awaiter(this, void 0, void 0, function () {
             var _this = this;
             return __generator(this, function (_a) {
-                return [2, new Promise(function (t, r) { wx.writeBLECharacteristicValue({ deviceId: _this.device.deviceId, serviceId: _this.scpair.service.uuid, characteristicId: _this.scpair.write.uuid, value: e.buffer, success: function (s) { if (s.errMsg.indexOf("ok") == -1) {
+                return [2, new Promise(function (t, r) { wx.writeBLECharacteristicValue({ deviceId: _this.device.deviceId, serviceId: _this.scpair.service.uuid, characteristicId: _this.scpair.write.uuid, writeType: "writeNoResponse", value: e.buffer, success: function (s) { if (s.errMsg.indexOf("ok") == -1) {
                             r(s.errMsg);
                             return;
                         } t(); }, fail: function (s) { return r(s); } }); })];
@@ -654,7 +654,7 @@ var $ = 247, b = (function () {
     };
     class_4.prototype.findSCPair = function (e) {
         return __awaiter(this, void 0, void 0, function () {
-            var r, s, n, c, o, p, m, W, N, k, F, x, t, _i, _a, a, h, _b, _c, a, h, l, f, _d, h_1, d, _e, h_2, d, _f, _g, a, l, _h, _j, a, h, l, f, _k, _l, a, l;
+            var r, s, n, c, o, p, m, W, N, k, F, R, t, _i, _a, a, h, _b, _c, a, h, l, f, _d, h_1, d, _e, h_2, d, _f, _g, a, l, _h, _j, a, h, l, f, _k, _l, a, l;
             var _this = this;
             return __generator(this, function (_m) {
                 switch (_m.label) {
@@ -713,7 +713,7 @@ var $ = 247, b = (function () {
                         else
                             for (_k = 0, _l = e.services; _k < _l.length; _k++) {
                                 a = _l[_k];
-                                if (!w.TBluetoothHelpers.isAllowServices(a.uuid, (x = this.options) == null ? void 0 : x.allowServices))
+                                if (!w.TBluetoothHelpers.isAllowServices(a.uuid, (R = this.options) == null ? void 0 : R.allowServices))
                                     continue;
                                 l = t.get(a.uuid).find(function (f) { return f.properties.write; });
                                 if (l)
@@ -728,7 +728,7 @@ var $ = 247, b = (function () {
 }());
 
 }, function(modId) {var map = {}; return __REQUIRE__(map[modId], modId); })
-return __REQUIRE__(1789968481490);
+return __REQUIRE__(1790237021547);
 })()
 //miniprogram-npm-outsideDeps=[]
 //# sourceMappingURL=index.js.map

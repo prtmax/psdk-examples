@@ -9,10 +9,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@psdk/cpcl": "0.7.20",
-    "@psdk/device-ble-wechat": "0.7.20",
-    "@psdk/esc": "0.7.20",
-    "@psdk/tspl": "0.7.20",
+    "@psdk/cpcl": "0.7.21",
+    "@psdk/device-ble-wechat": "0.7.21",
+    "@psdk/esc": "0.7.21",
+    "@psdk/tspl": "0.7.21",
     "buffer": "^6.0.3",
     "string_decoder": "^1.3.0"
   },
