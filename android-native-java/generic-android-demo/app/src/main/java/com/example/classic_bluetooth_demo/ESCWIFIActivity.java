@@ -24,12 +24,13 @@ import com.printer.psdk.frame.father.listener.DataListenerRunner;
 import com.printer.psdk.frame.father.listener.ListenAction;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ESCWIFIActivity extends Activity {
   private EditText wifi_name, wifi_pwd;
-  private Button button_send, button_status, button_get_key, button_get_sn;
+  private Button button_send, button_status, button_get_wifi_name, button_get_key, button_get_sn;
   private TextView tv_content;
   private TextView title_right_text;
   private Connection connection;
@@ -49,6 +50,7 @@ public class ESCWIFIActivity extends Activity {
     title_right_text = (TextView) findViewById(R.id.title_right_text);
     button_send = (Button) findViewById(R.id.button_send);
     button_status = (Button) findViewById(R.id.button_status);
+    button_get_wifi_name = (Button) findViewById(R.id.button_get_wifi_name);
     button_get_key = (Button) findViewById(R.id.button_get_key);
     button_get_sn = (Button) findViewById(R.id.button_get_sn);
     tv_content = (TextView) findViewById(R.id.tv_content);
@@ -133,6 +135,18 @@ public class ESCWIFIActivity extends Activity {
         }
         readMark = ReadMark.OPERATE_WIFI_LINK_STATE;
         GenericESC _gesc = esc.getWifiSta();
+        safeWrite(_gesc);
+      }
+    });
+    button_get_wifi_name.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View view) {
+        if (!isConnected()) {
+          Util.show(ESCWIFIActivity.this, "请先连接设备");
+          return;
+        }
+        readMark = ReadMark.OPERATE_ESC_WIFI_NAME;
+        GenericESC _gesc = esc.getWifiName();
         safeWrite(_gesc);
       }
     });
@@ -276,6 +290,14 @@ public class ESCWIFIActivity extends Activity {
                     boolean wifiConnected = received.length == 2 && (received[1] == 0x01 || received[1] == 0x02);
                     String content = "wifi连接状态:" + (wifiConnected ? "已连接" : "未连接");
                     runOnUiThread(() -> tv_content.setText(content));
+                    break;
+                  case OPERATE_ESC_WIFI_NAME:
+                    readMark = ReadMark.NONE;
+                    String wifiName = new String(received, StandardCharsets.UTF_8);
+                    runOnUiThread(() -> {
+                      wifi_name.setText(wifiName);
+                      tv_content.setText("打印机当前WiFi名称:" + wifiName);
+                    });
                     break;
                   case OPERATE_GET_KEY:
                     readMark = ReadMark.NONE;

@@ -59,19 +59,34 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal">
         <Button
+          android:id="@+id/button_get_wifi_name"
+          android:layout_weight="1"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"
+          android:text="查询打印机WiFi名称"
+          android:textSize="18sp"/>
+        <Button
           android:id="@+id/button_get_key"
           android:layout_weight="1"
-          android:layout_width="wrap_content"
+          android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:text="获取秘钥"
           android:textSize="18sp"/>
+      </LinearLayout>
+      <LinearLayout android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
         <Button
           android:id="@+id/button_get_sn"
           android:layout_weight="1"
-          android:layout_width="wrap_content"
+          android:layout_width="0dp"
           android:layout_height="wrap_content"
           android:text="查询SN"
           android:textSize="18sp"/>
+        <Space
+          android:layout_weight="1"
+          android:layout_width="0dp"
+          android:layout_height="wrap_content"/>
       </LinearLayout>
 
 

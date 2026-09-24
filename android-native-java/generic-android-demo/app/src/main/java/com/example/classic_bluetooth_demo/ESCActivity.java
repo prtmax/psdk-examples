@@ -426,8 +426,9 @@ public class ESCActivity extends Activity {
           return;
         }
         readMark = ReadMark.OPERATE_PAPERTYPE;
+        //设置纸张类型 A4打印机用这个
         GenericESC _gesc = PrintUtil.getInstance().esc().paperType(EPaperType.builder().type(EPaperType.Type.FOLDED_BLACK_LABEL_PAPER).build());
-        //半寸口袋用这个
+        //设置纸张类型 半寸口袋打印机用这个
 //        GenericESC _gesc = PrintUtil.getInstance().esc().paperTypeQ3(EPaperTypeQ3.builder().type(EPaperTypeQ3.TypeQ3.TRANSPARENT_BLACK_LABEL_PAPER).build());
         safeWrite(_gesc);
       }
