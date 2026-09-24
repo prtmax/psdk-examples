@@ -81,7 +81,7 @@
         }
     }
     if (!isExist) {
-        NSLog(@"发现设备 name：%@, uuid: %@, mac: %@", printer.name, printer.uuid, printer.mac);
+        NSLog(@"发现设备 %@", [printer description]);
         [self.printers addObject:printer];
         [self.tableView reloadData];
     }
