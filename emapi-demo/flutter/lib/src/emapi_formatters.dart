@@ -70,6 +70,7 @@ String formatReport(EmapiReport report) {
       :final batteryState,
       :final overheat,
       :final nfcPaperRecognition,
+      :final batteryLevelStage,
     ) =>
       [
         '打印机状态上报',
@@ -78,6 +79,7 @@ String formatReport(EmapiReport report) {
         '电池状态：${_value(batteryState)}',
         '过热：${_value(overheat)}',
         'NFC 纸张识别：${_value(nfcPaperRecognition)}',
+        '电池电量阶段：${formatBatteryLevelStage(batteryLevelStage)}',
       ].join('\n'),
     EmapiFlowControlReport(:final isBusy) => '流控上报：${isBusy ? '忙' : '空闲'}',
     EmapiUpgradeStatusReport(:final status) => '升级状态上报：$status',
@@ -103,6 +105,19 @@ String formatReport(EmapiReport report) {
       ].join('\n'),
     EmapiUnknownReport() => '未知上报：${report.command}',
     _ => '未识别上报：${report.command}',
+  };
+}
+
+String formatBatteryLevelStage(int? stage) {
+  return switch (stage) {
+    null => '未知',
+    0 => '0%~1%',
+    1 => '1%~10%',
+    2 => '10%~20%',
+    3 => '20%~50%',
+    4 => '50%~90%',
+    5 => '90%~100%',
+    _ => '未知($stage)',
   };
 }
 

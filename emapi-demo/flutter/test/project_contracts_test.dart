@@ -344,6 +344,10 @@ void main() {
     expect(controller.requestLogs.first.bytes, isNotNull);
     expect(controller.knownMtu, 512);
 
+    await controller.queryPrintStatus();
+
+    expect(controller.reportLogs.first.message, contains('电池电量阶段：50%~90%'));
+
     await controller.performOta('');
 
     expect(controller.otaTotalBytes, 2048);

@@ -38,6 +38,21 @@ void main() {
     expect(text, contains('纸张剩余长度：123456'));
   });
 
+  test('formatReport_displaysPrinterBatteryLevelStage', () {
+    final report = EmapiPrinterStatusReport(
+      EmapiCommand(
+        type: EmapiConstants.typeRequest,
+        parent: EmapiConstants.parentReport,
+        child: EmapiConstants.childReportPrinterStatus,
+      ),
+      batteryLevelStage: 4,
+    );
+
+    expect(formatReport(report), contains('电池电量阶段：50%~90%'));
+    expect(formatBatteryLevelStage(5), '90%~100%');
+    expect(formatBatteryLevelStage(6), '未知(6)');
+  });
+
   test('formatPrintStatus_displaysPublicSdkFieldsOnly', () {
     const status = EmapiPrintStatus(
       paperStatus: 1,
