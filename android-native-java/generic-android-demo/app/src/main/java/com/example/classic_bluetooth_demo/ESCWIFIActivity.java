@@ -29,6 +29,25 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ESCWIFIActivity extends Activity {
+  private static final String[] PRODUCTION_HOSTS = {
+          "https://cprint-api.iprtapp.com",
+          "https://cprint-api.aynapp.aiyinprinter.com.cn",
+          "https://cprint-api.aynapp.aiyinprinter.com",
+          "https://cprint-api.aynapp.aiyin.com",
+          "https://cprint-api.aynapp.ai-yin.cn",
+          "https://cprint-api.aynapp.ai-yin.com",
+          "https://cprint-api.aynapp.ai-yin.com.cn"
+  };
+  private static final String[] STAGING_HOSTS = {
+          "https://cprint-api-stg.iprtapp.com",
+          "https://cprint-api-stg.aynapp.aiyinprinter.com.cn",
+          "https://cprint-api-stg.aynapp.aiyinprinter.com",
+          "https://cprint-api-stg.aynapp.aiyin.com",
+          "https://cprint-api-stg.aynapp.ai-yin.cn",
+          "https://cprint-api-stg.aynapp.ai-yin.com",
+          "https://cprint-api-stg.aynapp.ai-yin.com.cn"
+  };
+
   private EditText wifi_name, wifi_pwd;
   private Button button_send, button_status, button_get_wifi_name, button_get_key, button_get_sn;
   private TextView tv_content;
@@ -38,8 +57,9 @@ public class ESCWIFIActivity extends Activity {
   private ReadMark readMark = ReadMark.NONE;
   // 新增控件变量
   private EditText et_key, et_host_custom;
-  private Button btn_set_key, btn_set_host;
-  private CheckBox cb_host1, cb_host2, cb_host3, cb_host4, cb_host5, cb_host6, cb_host7, cb_host8;
+  private Button btn_set_key, btn_set_host, btn_host_production, btn_host_staging;
+  private TextView tv_host_environment;
+  private CheckBox[] hostCheckBoxes;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -58,14 +78,19 @@ public class ESCWIFIActivity extends Activity {
     btn_set_key = (Button) findViewById(R.id.btn_set_key);
     et_host_custom = (EditText) findViewById(R.id.et_host_custom);
     btn_set_host = (Button) findViewById(R.id.btn_set_host);
-    cb_host1 = (CheckBox) findViewById(R.id.cb_host1);
-    cb_host2 = (CheckBox) findViewById(R.id.cb_host2);
-    cb_host3 = (CheckBox) findViewById(R.id.cb_host3);
-    cb_host4 = (CheckBox) findViewById(R.id.cb_host4);
-    cb_host5 = (CheckBox) findViewById(R.id.cb_host5);
-    cb_host6 = (CheckBox) findViewById(R.id.cb_host6);
-    cb_host7 = (CheckBox) findViewById(R.id.cb_host7);
-    cb_host8 = (CheckBox) findViewById(R.id.cb_host8);
+    btn_host_production = (Button) findViewById(R.id.btn_host_production);
+    btn_host_staging = (Button) findViewById(R.id.btn_host_staging);
+    tv_host_environment = (TextView) findViewById(R.id.tv_host_environment);
+    hostCheckBoxes = new CheckBox[]{
+            (CheckBox) findViewById(R.id.cb_host1),
+            (CheckBox) findViewById(R.id.cb_host2),
+            (CheckBox) findViewById(R.id.cb_host3),
+            (CheckBox) findViewById(R.id.cb_host4),
+            (CheckBox) findViewById(R.id.cb_host5),
+            (CheckBox) findViewById(R.id.cb_host6),
+            (CheckBox) findViewById(R.id.cb_host7)
+    };
+    setHostPreset(PRODUCTION_HOSTS, "正式");
     BluetoothDevice device = getIntent().getParcelableExtra("device");
     connection = Bluetooth.getInstance().createConnectionBle(device, new ConnectListener() {
       @Override
@@ -210,6 +235,19 @@ public class ESCWIFIActivity extends Activity {
         safeWrite(_gesc);
       }
     });
+    btn_host_production.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        setHostPreset(PRODUCTION_HOSTS, "正式");
+      }
+    });
+    btn_host_staging.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        setHostPreset(STAGING_HOSTS, "测试");
+      }
+    });
+
     // 设置域名按钮事件
     btn_set_host.setOnClickListener(new View.OnClickListener() {
       @Override
@@ -219,17 +257,12 @@ public class ESCWIFIActivity extends Activity {
           return;
         }
         List<String> hosts = new ArrayList<>();
-        if (cb_host1.isChecked()) hosts.add(cb_host1.getText().toString());
-        if (cb_host2.isChecked()) hosts.add(cb_host2.getText().toString());
-        if (cb_host3.isChecked()) hosts.add(cb_host3.getText().toString());
-        if (cb_host4.isChecked()) hosts.add(cb_host4.getText().toString());
-        if (cb_host5.isChecked()) hosts.add(cb_host5.getText().toString());
-        if (cb_host6.isChecked()) hosts.add(cb_host6.getText().toString());
-        if (cb_host7.isChecked()) hosts.add(cb_host7.getText().toString());
-        if (cb_host8.isChecked()) hosts.add(cb_host8.getText().toString());
+        for (CheckBox hostCheckBox : hostCheckBoxes) {
+          if (hostCheckBox.isChecked()) hosts.add(hostCheckBox.getText().toString());
+        }
         String custom = et_host_custom.getText().toString().trim();
         if (!custom.isEmpty()) {
-          String[] arr = custom.split(",");
+          String[] arr = custom.split("\\|");
           for (String s : arr) {
             String host = s.trim();
             if (!host.isEmpty()) hosts.add(host);
@@ -247,6 +280,14 @@ public class ESCWIFIActivity extends Activity {
 
     // 获取当前设备连接的WiFi名称并填入输入框
     getCurrentWifiName();
+  }
+
+  private void setHostPreset(String[] hosts, String environment) {
+    tv_host_environment.setText("当前：" + environment + "云打印域名");
+    for (int i = 0; i < hostCheckBoxes.length; i++) {
+      hostCheckBoxes[i].setText(hosts[i]);
+      hostCheckBoxes[i].setChecked(true);
+    }
   }
 
   private void getCurrentWifiName() {

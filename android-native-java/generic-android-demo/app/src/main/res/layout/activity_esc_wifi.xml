@@ -126,18 +126,39 @@
         android:text="选择服务器域名（可多选）："
         android:layout_marginTop="16dp"/>
       <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <Button
+          android:id="@+id/btn_host_production"
+          android:layout_width="0dp"
+          android:layout_weight="1"
+          android:layout_height="wrap_content"
+          android:text="正式"/>
+        <Button
+          android:id="@+id/btn_host_staging"
+          android:layout_width="0dp"
+          android:layout_weight="1"
+          android:layout_height="wrap_content"
+          android:text="测试"/>
+      </LinearLayout>
+      <TextView
+        android:id="@+id/tv_host_environment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="当前：正式云打印域名"/>
+      <LinearLayout
         android:id="@+id/layout_hosts"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
-        <CheckBox android:id="@+id/cb_host1" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="https://aliyuncs.com"/>
-        <CheckBox android:id="@+id/cb_host2" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="https://iprtapp.com"/>
-        <CheckBox android:id="@+id/cb_host3" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="https://aynapp.aiyinprinter.com.cn"/>
-        <CheckBox android:id="@+id/cb_host4" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="https://aynapp.aiyinprinter.com"/>
-        <CheckBox android:id="@+id/cb_host5" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="https://aynapp.aiyin.com"/>
-        <CheckBox android:id="@+id/cb_host6" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="https://aynapp.ai-yin.cn"/>
-        <CheckBox android:id="@+id/cb_host7" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="https://aynapp.ai-yin.com"/>
-        <CheckBox android:id="@+id/cb_host8" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="https://aynapp.ai-yin.com.cn"/>
+        <CheckBox android:id="@+id/cb_host1" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/cb_host2" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/cb_host3" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/cb_host4" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/cb_host5" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/cb_host6" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
+        <CheckBox android:id="@+id/cb_host7" android:layout_width="wrap_content" android:layout_height="wrap_content"/>
       </LinearLayout>
       <LinearLayout
         android:layout_width="match_parent"
@@ -149,7 +170,7 @@
           android:layout_width="0dp"
           android:layout_weight="2"
           android:layout_height="wrap_content"
-          android:hint="自定义域名(可选, 多个用逗号分隔)"/>
+          android:hint="自定义域名(可选, 多个用|分隔)"/>
         <Button
           android:id="@+id/btn_set_host"
           android:layout_width="0dp"
