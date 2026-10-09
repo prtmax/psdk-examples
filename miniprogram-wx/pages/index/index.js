@@ -43,9 +43,27 @@ import {
 
 // 图片打印尺寸，只需修改这里即可同步调整 Canvas 和像素数据尺寸。
 const IMAGE_SIZE = {
-  width: 1200,
-  height: 1800,
+  width: 2496,
+  height: 3564,
 };
+
+const ESC_ACTIVE_REPORTS = {
+  STATUS: 0xFF,
+  PAPER_ERROR: 0xFE,
+  START_OR_STOP: 0xFD,
+  BATTERY: 0xFB,
+};
+
+function bytesToHex(bytes) {
+  return bytes.map(byte => byte.toString(16).padStart(2, '0')).join('').toUpperCase();
+}
+
+function isEscActiveReport(value) {
+  return value === ESC_ACTIVE_REPORTS.STATUS ||
+    value === ESC_ACTIVE_REPORTS.PAPER_ERROR ||
+    value === ESC_ACTIVE_REPORTS.START_OR_STOP ||
+    value === ESC_ACTIVE_REPORTS.BATTERY;
+}
 
 var bluetooth = new WechatBleBluetooth({
   allowNoName: false,
@@ -58,6 +76,8 @@ var bluetooth = new WechatBleBluetooth({
 const app = getApp()
 
 Page({
+  escPending: '',
+  escNotifyBuffer: [],
   data: {
     discoveredDevices: [],
     connectedDeviceId: "",
@@ -68,6 +88,11 @@ Page({
     esc: null,
     printer: null,
     isEsc: false,
+    escPending: '',
+    escStatus: '未查询',
+    escBattery: '未查询',
+    escSn: '未查询',
+    escEvents: [],
     items: [{
         type: 'tspl',
         checked: 'true',
@@ -143,6 +168,20 @@ Page({
     that.data.cpcl = CPCL.generic(lifecycle);
     that.data.tspl = TSPL.generic(lifecycle);
     that.data.esc = ESC.generic(lifecycle);
+    that.escPending = '';
+    that.escNotifyBuffer = [];
+    that.data.connectedDevice.notify(async value => {
+      if (that.data.isEsc) {
+        that.handleEscNotification(value);
+      }
+    });
+    that.setData({
+      escPending: '',
+      escStatus: '未查询',
+      escBattery: '未查询',
+      escSn: '未查询',
+      escEvents: [],
+    });
   },
   safeWrite: async function(psdk) {
     let that = this;
@@ -859,9 +898,165 @@ Page({
           })
         )
         .stopJob();
-        await that.safeWrite(esc);
+        that.setEscPending('print');
+        const ok = await that.safeWrite(esc);
+        if (!ok) that.clearEscPending();
     }
 
+  },
+  queryEscStatus: async function () {
+    if (!this.data.esc || !this.data.connectedDevice) {
+      wx.showToast({title: '请先连接设备', icon: 'none'});
+      return;
+    }
+    this.setEscPending('status');
+    const ok = await this.safeWrite(this.data.esc.state());
+    if (!ok) this.clearEscPending();
+  },
+  queryEscBattery: async function () {
+    if (!this.data.esc || !this.data.connectedDevice) {
+      wx.showToast({title: '请先连接设备', icon: 'none'});
+      return;
+    }
+    this.setEscPending('battery');
+    const ok = await this.safeWrite(this.data.esc.batteryVolume());
+    if (!ok) this.clearEscPending();
+  },
+  queryEscSn: async function () {
+    if (!this.data.esc || !this.data.connectedDevice) {
+      wx.showToast({title: '请先连接设备', icon: 'none'});
+      return;
+    }
+    this.setEscPending('sn');
+    const ok = await this.safeWrite(this.data.esc.sn());
+    if (!ok) this.clearEscPending();
+  },
+  setEscPending: function (pending) {
+    this.escPending = pending;
+    this.setData({escPending: pending});
+  },
+  clearEscPending: function () {
+    this.escPending = '';
+    this.setData({escPending: ''});
+  },
+  handleEscNotification: function (value) {
+    const bytes = Array.from(value || []);
+    if (!bytes.length) return;
+    console.log('[ESC] notify:', bytesToHex(bytes));
+    this.escNotifyBuffer = (this.escNotifyBuffer || []).concat(bytes);
+
+    while (this.escNotifyBuffer.length) {
+      const first = this.escNotifyBuffer[0];
+      if (isEscActiveReport(first)) {
+        if (this.escNotifyBuffer.length < 2) return;
+        this.handleEscActiveReport(this.escNotifyBuffer.splice(0, 2));
+        continue;
+      }
+
+      // OK may be split across two BLE notifications.
+      if (this.escPending === 'print' && first === 0x4F && this.escNotifyBuffer.length < 2) {
+        return;
+      }
+
+      const response = this.escNotifyBuffer.splice(0);
+      this.handleEscResponse(response);
+    }
+  },
+  handleEscActiveReport: function (frame) {
+    const type = frame[0];
+    const value = frame[1];
+    if (type === ESC_ACTIVE_REPORTS.STATUS) {
+      const messages = [];
+      if (value & 0x01) messages.push('过热');
+      if (value & 0x02) messages.push('开盖');
+      if (value & 0x04) messages.push('缺纸');
+      if (value & 0x08) messages.push('低电压');
+      const status = messages.length ? messages.join('、') : '正常';
+      this.setData({escStatus: status});
+      this.addEscEvent(`打印机状态：${status}`);
+      if (value & 0x06) this.clearEscPending();
+      return;
+    }
+    if (type === ESC_ACTIVE_REPORTS.PAPER_ERROR) {
+      const paperTypes = {
+        0x01: '折叠黑标纸',
+        0x02: '连续卷筒纸',
+        0x03: '不干胶缝隙纸',
+      };
+      this.addEscEvent(`纸张类型错误：${paperTypes[value] || `未知(${value})`}`);
+      this.clearEscPending();
+      return;
+    }
+    if (type === ESC_ACTIVE_REPORTS.START_OR_STOP) {
+      this.addEscEvent(value === 0x01 ? '打印机终止打印' : value === 0x02 ? '打印机继续打印' : `打印控制：${value}`);
+      if (value === 0x01) this.clearEscPending();
+      return;
+    }
+    if (type === ESC_ACTIVE_REPORTS.BATTERY) {
+      const batteryStates = ['正常', '低电', '充电中', '充电完成'];
+      const batteryState = batteryStates[value] || `未知(${value})`;
+      this.setData({escBattery: batteryState});
+      this.addEscEvent(`电池状态：${batteryState}`);
+    }
+  },
+  handleEscResponse: function (bytes) {
+    const pending = this.escPending;
+    if (pending === 'status') {
+      const flags = bytes[0] || 0;
+      const messages = [];
+      if (flags & 0x01) messages.push('正在打印');
+      if (flags & 0x02) messages.push('纸舱盖开');
+      if (flags & 0x04) messages.push('缺纸');
+      if (flags & 0x08) messages.push('电池电压低');
+      if (flags & 0x10) messages.push('打印头过热');
+      this.setData({escStatus: messages.length ? messages.join('、') : '良好'});
+      this.clearEscPending();
+      return;
+    }
+    if (pending === 'battery') {
+      const batteryStates = ['未充电', '未充电', '充电中', '已充满'];
+      const stateCode = bytes.length ? bytes[0] : '';
+      const state = batteryStates[stateCode] || `未知状态(${stateCode})`;
+      const level = bytes.length > 1 ? bytes[1] : '未知';
+      this.setData({escBattery: `${level}，${state}`});
+      this.clearEscPending();
+      return;
+    }
+    if (pending === 'sn') {
+      this.setData({escSn: this.decodeEscText(bytes)});
+      this.clearEscPending();
+      return;
+    }
+
+    const hex = bytesToHex(bytes);
+    if (hex === '4F4B' || hex === 'AA') {
+      this.addEscEvent('打印完成');
+      this.clearEscPending();
+    } else if (hex === '4552') {
+      this.addEscEvent('打印失败');
+      this.clearEscPending();
+    } else if (bytes.length) {
+      this.addEscEvent(`收到响应：${hex}`);
+    }
+  },
+  decodeEscText: function (bytes) {
+    const cleanBytes = bytes.filter(byte => byte !== 0);
+    try {
+      if (typeof TextDecoder === 'function') {
+        return new TextDecoder('gb18030').decode(new Uint8Array(cleanBytes)).trim() || bytesToHex(bytes);
+      }
+    } catch (e) {
+      console.warn('[ESC] 文本解码失败', e);
+    }
+    return String.fromCharCode.apply(null, cleanBytes).trim() || bytesToHex(bytes);
+  },
+  addEscEvent: function (message) {
+    const now = new Date();
+    const time = [now.getHours(), now.getMinutes(), now.getSeconds()]
+      .map(value => String(value).padStart(2, '0')).join(':');
+    const events = [{time, message}].concat(this.data.escEvents || []).slice(0, 8);
+    this.setData({escEvents: events});
+    console.log('[ESC] event:', message);
   },
   onLoad() {
 
@@ -877,5 +1072,9 @@ Page({
       items,
       isEsc: selectedType === 'esc',
     });
+    if (selectedType !== 'esc') {
+      that.clearEscPending();
+      that.escNotifyBuffer = [];
+    }
   },
 })

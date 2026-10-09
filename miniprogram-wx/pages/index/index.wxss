@@ -33,3 +33,40 @@
 .usermotto {
   margin-top: 200px;
 }
+
+.esc-panel {
+  width: 100%;
+  margin-top: 16rpx;
+  padding: 0 20rpx 20rpx;
+  box-sizing: border-box;
+}
+
+.esc-actions {
+  display: flex;
+  flex-direction: row;
+  gap: 12rpx;
+}
+
+.esc-actions .button {
+  flex: 1;
+  margin: 0;
+}
+
+.esc-result,
+.esc-events {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  margin-top: 16rpx;
+  padding: 16rpx;
+  background-color: #f7f7f7;
+}
+
+.esc-events-title {
+  font-weight: 600;
+}
+
+.esc-event {
+  color: #555;
+  font-size: 26rpx;
+}

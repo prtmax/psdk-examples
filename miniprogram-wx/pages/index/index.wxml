@@ -12,9 +12,27 @@
 		</view>
 	<button bindtap="openBluetooth" class="button">开始搜索</button>
 	<button bindtap="closeBluetooth" class="button">断开连接</button>
-	<button wx:if="{{!isEsc}}" bindtap="writeModel" class="button">打印76*130模版</button>
+  <button wx:if="{{!isEsc}}" bindtap="writeModel" class="button">打印76*130模版</button>
   <button bindtap="writeImage" class="button">打印图片</button>
   <button wx:if="{{!isEsc}}" bindtap="writeTsplRibbonModel" class="button">打印热转印测试</button>
+  <view wx:if="{{isEsc}}" class="esc-panel">
+    <view class="esc-actions">
+      <button bindtap="queryEscStatus" class="button">查询状态</button>
+      <button bindtap="queryEscBattery" class="button">查询电量</button>
+      <button bindtap="queryEscSn" class="button">查询SN</button>
+    </view>
+    <view class="esc-result">
+      <text>状态：{{escStatus}}</text>
+      <text>电量：{{escBattery}}</text>
+      <text>SN：{{escSn}}</text>
+    </view>
+    <view wx:if="{{escEvents.length}}" class="esc-events">
+      <text class="esc-events-title">打印机事件</text>
+      <view wx:for="{{escEvents}}" wx:for-item="event" wx:for-index="index" wx:key="index" class="esc-event">
+        <text>{{event.time}} {{event.message}}</text>
+      </view>
+    </view>
+  </view>
 </view>
 <view class="venues_list">
   <block wx:for="{{discoveredDevices}}" wx:for-item="item" wx:key="index">
