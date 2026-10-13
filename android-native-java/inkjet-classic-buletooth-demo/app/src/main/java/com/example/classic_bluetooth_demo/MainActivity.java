@@ -47,6 +47,7 @@ public class MainActivity extends Activity {
   private Button continueButton;
   private Button labelButton;
   private Button statusButton;
+  private Button nnButton;
   private Button batteryVolButton;
   private Button printer_info;
   private Button set_off_time;
@@ -78,6 +79,7 @@ public class MainActivity extends Activity {
     continueButton = (Button) findViewById(R.id.print_continue);
     labelButton = (Button) findViewById(R.id.printer_label);
     statusButton = (Button) findViewById(R.id.printer_status);
+    nnButton = (Button) findViewById(R.id.printer_nn);
     batteryVolButton = (Button) findViewById(R.id.printer_BatteryVol);
     printer_info = (Button) findViewById(R.id.printer_info);
     set_off_time = (Button) findViewById(R.id.set_off_time);
@@ -192,6 +194,14 @@ public class MainActivity extends Activity {
       public void onClick(View v) {
         readMark = ReadMark.OPERATE_STATUS;
         CompatibleInkJet _compatibleInkJet = compatibleInkJet.state();
+        safeWrite(_compatibleInkJet);
+      }
+    });
+    nnButton.setOnClickListener(new View.OnClickListener() {
+      @Override
+      public void onClick(View v) {
+        readMark = ReadMark.OPERATE_NN;
+        CompatibleInkJet _compatibleInkJet = compatibleInkJet.nn();
         safeWrite(_compatibleInkJet);
       }
     });
@@ -629,6 +639,7 @@ public class MainActivity extends Activity {
               data[7] & 0xFF,
               data[8] & 0xFF);
       Log.e(TAG, "墨盒四位唯一标识: " + uniqueId);
+      show("墨盒四位唯一标识: " + uniqueId);
       return inkLevel;
     } catch (Exception e) {
       return 0;
@@ -790,6 +801,12 @@ public class MainActivity extends Activity {
         Log.e(TAG, "主动查询状态: " + status);
         show("主动查询状态: " + status);
         break;
+      case OPERATE_NN:
+        readMark = ReadMark.NONE;
+        String nn = parseNNResponse(bytes);
+        Log.e(TAG, "NN号: " + nn);
+        show("NN号: " + nn);
+        break;
       case OPERATE_BATVOL:
         readMark = ReadMark.NONE;
         parseBatteryStatus(bytes);
@@ -868,6 +885,44 @@ public class MainActivity extends Activity {
         break;
     }
 
+  }
+
+  /**
+   * 解析 NN 查询响应。文本响应按 UTF-8 展示，二进制响应保留十六进制内容。
+   */
+  public String parseNNResponse(byte[] data) {
+    if (data == null || data.length == 0) {
+      return "无效数据";
+    }
+
+    int start = 0;
+    int end = data.length;
+    while (start < end && (data[start] == 0 || data[start] == '\r' || data[start] == '\n')) {
+      start++;
+    }
+    while (end > start && (data[end - 1] == 0 || data[end - 1] == '\r' || data[end - 1] == '\n')) {
+      end--;
+    }
+    if (start == end) {
+      return "空响应";
+    }
+
+    boolean printable = true;
+    for (int i = start; i < end; i++) {
+      int value = data[i] & 0xFF;
+      if (value < 0x20 || value > 0x7E) {
+        printable = false;
+        break;
+      }
+    }
+    if (printable) {
+      try {
+        return new String(data, start, end - start, "UTF-8");
+      } catch (UnsupportedEncodingException e) {
+        return new String(data, start, end - start);
+      }
+    }
+    return ByteArrToHex(Arrays.copyOfRange(data, start, end));
   }
 
   private String Byte2Hex(Byte inByte) {

@@ -5,6 +5,7 @@ public enum ReadMark {
   OPERATE_PRINT,//打印操作
   OPERATE_PRINT_SN,//BITMAP_SN打印操作
   OPERATE_STATUS,//打印机状态查询
+  OPERATE_NN,//NN号查询
   OPERATE_BATVOL,//电量查询
   OPERATE_SHUTDOWN_TIME,//设置关机时间
   OPERATE_INFO,//设备所有信息
