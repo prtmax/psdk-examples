@@ -385,6 +385,9 @@ void main() {
     expect(buildBody, contains('enableMode('));
     expect(buildBody, contains('thickness('));
     expect(buildBody, contains('image('));
+    expect(buildBody, contains('imageGray('));
+    expect(buildBody, contains('EImageGray('));
+    expect(buildBody, contains('compress: false'));
     expect(buildBody, contains('position()'));
     expect(buildBody, contains('continuous'));
     expect(buildBody, contains('stopJob()'));

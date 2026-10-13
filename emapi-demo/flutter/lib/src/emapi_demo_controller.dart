@@ -6,6 +6,7 @@ import 'package:psdk_bluetooth_traits/psdk_bluetooth_traits.dart';
 import 'package:psdk_device_adapter/psdk_device_adapter.dart';
 import 'package:psdk_fruit_emapi/psdk_fruit_emapi.dart';
 import 'package:psdk_fruit_esc/psdk_fruit_esc.dart' as esc;
+import 'package:psdk_fruit_esc/psdk_fruit_esc.dart';
 
 import 'bluetooth_printer_connector.dart';
 import 'entities/emapi_demo_log_entry.dart';
@@ -826,15 +827,26 @@ class EmapiDemoController extends ChangeNotifier {
         .enable()
         .paperType(arg: esc.EPaperType(type: paperType))
         .enableMode(mode: printMode)
-        .thickness(thickness: thickness)
-        .image(
-          arg: esc.EImage(
-            image: imageBytes,
-            compress: compress,
-            reverse: reverse,
-            threshold: threshold,
-          ),
-        );
+        .thickness(thickness: thickness);
+    if (printMode == 2) {
+      command.imageGray(
+        arg: EImageGray(
+          image: imageBytes,
+          // 灰阶图片暂不支持压缩。
+          compress: false,
+          reverse: reverse,
+        ),
+      );
+    } else {
+      command.image(
+        arg: esc.EImage(
+          image: imageBytes,
+          compress: compress,
+          reverse: reverse,
+          threshold: threshold,
+        ),
+      );
+    }
     if (includePosition && paperType != esc.Type.continuousReelPaper) {
       command.position();
     }
