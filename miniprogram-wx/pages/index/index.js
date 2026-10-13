@@ -54,6 +54,31 @@ const ESC_ACTIVE_REPORTS = {
   BATTERY: 0xFB,
 };
 
+const PRINT_INFO_COMMAND = new Uint8Array([0x10, 0xFF, 0x90, 0x00]);
+const PRINT_AUTH_TAG_HEX = '92fd309742dca78546fff13763832dd85def04afe33e648619b056f2509ce754';
+
+function hexToBytes(hex) {
+  return new Uint8Array(hex.match(/../g).map(value => parseInt(value, 16)));
+}
+
+function concatBytes(...parts) {
+  const result = new Uint8Array(parts.reduce((length, part) => length + part.length, 0));
+  let offset = 0;
+  parts.forEach(part => {
+    result.set(part, offset);
+    offset += part.length;
+  });
+  return result;
+}
+
+function readUnsignedBigEndian(bytes, offset, length) {
+  let value = 0;
+  for (let index = 0; index < length; index += 1) {
+    value = value * 256 + bytes[offset + index];
+  }
+  return value;
+}
+
 function bytesToHex(bytes) {
   return bytes.map(byte => byte.toString(16).padStart(2, '0')).join('').toUpperCase();
 }
@@ -78,6 +103,7 @@ const app = getApp()
 Page({
   escPending: '',
   escNotifyBuffer: [],
+  printerProtocolNotifyBuffer: [],
   data: {
     discoveredDevices: [],
     connectedDeviceId: "",
@@ -93,6 +119,9 @@ Page({
     escBattery: '未查询',
     escSn: '未查询',
     escEvents: [],
+    printerInfo: '未查询',
+    authResult: '未发送',
+    printCompletion: '未收到',
     items: [{
         type: 'tspl',
         checked: 'true',
@@ -170,8 +199,14 @@ Page({
     that.data.esc = ESC.generic(lifecycle);
     that.escPending = '';
     that.escNotifyBuffer = [];
+    that.printerProtocolNotifyBuffer = [];
     that.data.connectedDevice.notify(async value => {
-      if (that.data.isEsc) {
+      const bytes = Array.from(value || []);
+      const isPrinterProtocol = that.data.isEsc &&
+        (that.printerProtocolNotifyBuffer.length > 0 || bytes[0] === 0x90);
+      if (isPrinterProtocol) {
+        that.handlePrinterProtocolNotification(value);
+      } else if (that.data.isEsc) {
         that.handleEscNotification(value);
       }
     });
@@ -181,6 +216,9 @@ Page({
       escBattery: '未查询',
       escSn: '未查询',
       escEvents: [],
+      printerInfo: '未查询',
+      authResult: '未发送',
+      printCompletion: '未收到',
     });
   },
   safeWrite: async function(psdk) {
@@ -208,6 +246,116 @@ Page({
       });
       return false;
     }
+  },
+  queryPrinterInfo: async function () {
+    if (!this.data.isEsc) {
+      wx.showToast({title: '请先切换到ESC', icon: 'none'});
+      return;
+    }
+    if (!this.data.connectedDevice) {
+      wx.showToast({title: '请先连接设备', icon: 'none'});
+      return;
+    }
+    const printer = this.getSelectedPrinter();
+    if (!printer) {
+      wx.showToast({title: '请先连接设备', icon: 'none'});
+      return;
+    }
+    await this.safeWrite(printer.raw(Raw.binary(PRINT_INFO_COMMAND, {newline: false})));
+  },
+  sendPrintAuth: async function () {
+    if (!this.data.isEsc) {
+      wx.showToast({title: '请先切换到ESC', icon: 'none'});
+      return;
+    }
+    if (!this.data.connectedDevice) {
+      wx.showToast({title: '请先连接设备', icon: 'none'});
+      return;
+    }
+    const printer = this.getSelectedPrinter();
+    if (!printer) {
+      wx.showToast({title: '请先连接设备', icon: 'none'});
+      return;
+    }
+    const command = concatBytes(
+      new Uint8Array([0x10, 0xFF, 0x90, 0x10]),
+      new Uint8Array(Array.from('kfb-t1').map(char => char.charCodeAt(0))),
+      hexToBytes(PRINT_AUTH_TAG_HEX),
+    );
+    this.setData({authResult: '已发送，等待返回'});
+    const ok = await this.safeWrite(printer.raw(Raw.binary(command, {newline: false})));
+    if (!ok) this.setData({authResult: '发送失败'});
+  },
+  handlePrinterProtocolNotification: function (value) {
+    const bytes = Array.from(value || []);
+    if (!bytes.length) return;
+    console.log('[Printer protocol] notify raw:', bytesToHex(bytes));
+    this.printerProtocolNotifyBuffer = (this.printerProtocolNotifyBuffer || []).concat(bytes);
+    const buffer = this.printerProtocolNotifyBuffer;
+    while (buffer.length >= 2) {
+      if (buffer[0] !== 0x90) {
+        buffer.shift();
+        continue;
+      }
+      const type = buffer[1];
+      let frameLength;
+      if (type === 0x00) {
+        if (buffer.length < 3) return;
+        const deviceIdLength = buffer[2];
+        frameLength = 43 + deviceIdLength;
+      } else if (type === 0x10) {
+        frameLength = 3;
+      } else if (type === 0x12) {
+        frameLength = 28;
+      } else {
+        console.warn('[Printer protocol] unknown notification:', bytesToHex(buffer.slice(0, 2)));
+        buffer.splice(0, 2);
+        continue;
+      }
+      if (buffer.length < frameLength) return;
+      const frame = buffer.splice(0, frameLength);
+      this.handlePrinterProtocolFrame(frame);
+    }
+  },
+  handlePrinterProtocolFrame: function (frame) {
+    const type = frame[1];
+    if (type === 0x00) {
+      const deviceIdLength = frame[2];
+      const deviceIdStart = 3;
+      const deviceId = String.fromCharCode(...frame.slice(deviceIdStart, deviceIdStart + deviceIdLength));
+      const sessionStart = deviceIdStart + deviceIdLength;
+      const sessionId = bytesToHex(frame.slice(sessionStart, sessionStart + 16));
+      const lastSessionId = bytesToHex(frame.slice(sessionStart + 16, sessionStart + 32));
+      const lastPrintedPages = readUnsignedBigEndian(frame, sessionStart + 32, 4);
+      const totalPrintedPages = readUnsignedBigEndian(frame, sessionStart + 36, 4);
+      this.setData({
+        printerInfo: `deviceId: ${deviceId}；sessionId: ${sessionId}；lastSessionId: ${lastSessionId}；已打印: ${lastPrintedPages}；累计: ${totalPrintedPages}`,
+      });
+      console.log('[Printer protocol] info:', {deviceId, sessionId, lastSessionId, lastPrintedPages, totalPrintedPages});
+      return;
+    }
+    if (type === 0x10) {
+      const accepted = frame[2] === 0x00;
+      this.setData({authResult: accepted ? '认证通过' : `认证失败（result=${frame[2]}）`});
+      return;
+    }
+    if (type === 0x12) {
+      const sessionId = bytesToHex(frame.slice(2, 18));
+      const taskPages = readUnsignedBigEndian(frame, 18, 2);
+      const sessionPages = readUnsignedBigEndian(frame, 20, 4);
+      const totalPages = readUnsignedBigEndian(frame, 24, 4);
+      this.setData({
+        printCompletion: `完成：taskPages=${taskPages}；sessionPages=${sessionPages}；totalPages=${totalPages}；sessionId=${sessionId}`,
+      });
+      console.log('[Printer protocol] print complete:', {sessionId, taskPages, sessionPages, totalPages});
+    }
+  },
+  getSelectedPrinter: function () {
+    return this.data.items[0].checked
+      ? this.data.tspl
+      : this.data.items[1].checked
+        ? this.data.cpcl
+        : this.data.esc;
   },
   writeModel: async function () {
     let that = this;
@@ -1075,6 +1223,7 @@ Page({
     if (selectedType !== 'esc') {
       that.clearEscPending();
       that.escNotifyBuffer = [];
+      that.printerProtocolNotifyBuffer = [];
     }
   },
 })

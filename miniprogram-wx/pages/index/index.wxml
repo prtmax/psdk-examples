@@ -15,6 +15,16 @@
   <button wx:if="{{!isEsc}}" bindtap="writeModel" class="button">打印76*130模版</button>
   <button bindtap="writeImage" class="button">打印图片</button>
   <button wx:if="{{!isEsc}}" bindtap="writeTsplRibbonModel" class="button">打印热转印测试</button>
+  <view wx:if="{{isEsc}}" class="printer-protocol-panel">
+    <text class="raw-title">打印机信息与认证</text>
+    <button bindtap="queryPrinterInfo" class="button">查询打印机信息</button>
+    <button bindtap="sendPrintAuth" class="button">发送打印认证头</button>
+    <view class="protocol-result">
+      <text>信息：{{printerInfo}}</text>
+      <text>认证：{{authResult}}</text>
+      <text>打印完成通知：{{printCompletion}}</text>
+    </view>
+  </view>
   <view wx:if="{{isEsc}}" class="esc-panel">
     <view class="esc-actions">
       <button bindtap="queryEscStatus" class="button">查询状态</button>

@@ -41,6 +41,28 @@
   box-sizing: border-box;
 }
 
+.printer-protocol-panel {
+  width: 100%;
+  margin-top: 16rpx;
+  padding: 0 20rpx 20rpx;
+  box-sizing: border-box;
+}
+
+.raw-title {
+  display: block;
+  margin-bottom: 12rpx;
+}
+
+.protocol-result {
+  display: flex;
+  flex-direction: column;
+  gap: 8rpx;
+  margin-top: 16rpx;
+  padding: 16rpx;
+  background-color: #f7f7f7;
+  word-break: break-all;
+}
+
 .esc-actions {
   display: flex;
   flex-direction: row;
