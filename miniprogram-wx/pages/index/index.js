@@ -42,9 +42,10 @@ import {
 } from "@psdk/esc";
 
 // 图片打印尺寸，只需修改这里即可同步调整 Canvas 和像素数据尺寸。
+// A4机器最大允许208mm宽 203dpi mm*8 300dpi mm*12
 const IMAGE_SIZE = {
-  width: 2496,
-  height: 3564,
+  width: 208*8,
+  height: 297*8,
 };
 
 const ESC_ACTIVE_REPORTS = {
