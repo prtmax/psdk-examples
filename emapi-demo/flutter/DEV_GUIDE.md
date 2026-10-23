@@ -343,6 +343,25 @@ if (Platform.isWindows) {
 
 iOS 平台已原生支持（BLE），无需额外配置。
 
+### Q5: iOS 应用退到后台后 OTA 升级一直失败？
+
+这是 iOS 的后台运行限制，不是 EMAPI 协议问题。iOS 应用退到后台后若无后台模式声明，系统会在几秒内挂起应用：BLE 链路被挂起/断开，OTA 分块写入循环收不到底层的 `WRITE_END` 事件，升级自然会失败。
+
+解决办法是在 `ios/Runner/Info.plist` 中声明蓝牙中心后台模式（Demo 已内置）：
+
+```xml
+<key>UIBackgroundModes</key>
+<array>
+    <string>bluetooth-central</string>
+</array>
+```
+
+补充说明：
+
+- 该模式让应用在后台继续处理 CoreBluetooth 事件，OTA 传输可以跨前后台继续进行。
+- 它**不能**覆盖应用被用户上滑强杀（terminated）的情况；进程结束后传输无法续传（当前底层 `ble_plugin` 未提供 CoreBluetooth 状态恢复，无法在进程重启后自动续传）。
+- 建议在 OTA 期间提示用户保持应用在前台，避免误杀进程。
+
 ---
 
 ## 12. 相关资源
