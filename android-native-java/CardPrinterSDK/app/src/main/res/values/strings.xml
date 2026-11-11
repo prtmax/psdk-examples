@@ -27,6 +27,7 @@
     <string name="printer_series">Printer Series</string>
     <string name="ip_port" translatable="false">Ip:Port</string>
     <string name="use_ip">use</string>
+    <string name="ble_wifi_provision">BLE Wi-Fi setup</string>
     <string name="enum_result">Enum result</string>
     <string name="comm_type">Comm type</string>
     <string name="paper_position">paper Position</string>

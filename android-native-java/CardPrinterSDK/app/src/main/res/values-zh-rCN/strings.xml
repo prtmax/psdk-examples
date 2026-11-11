@@ -25,6 +25,7 @@
     <string name="network_printer">网络打印机</string>
     <string name="printer_series">打印机系列</string>
     <string name="use_ip">使用</string>
+    <string name="ble_wifi_provision">BLE配网</string>
     <string name="enum_result">枚举结果</string>
     <string name="comm_type">通讯方式</string>
     <string name="paper_position">纸片位置</string>

@@ -56,6 +56,15 @@
             android:theme="@style/Theme.Translucent"
             android:screenOrientation="locked" />
 
+        <activity
+            android:name=".wifi.BleScanActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".wifi.WifiProvisionActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"

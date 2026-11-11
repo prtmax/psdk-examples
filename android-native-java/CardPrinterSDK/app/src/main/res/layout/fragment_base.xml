@@ -186,6 +186,18 @@
                 app:layout_constraintStart_toEndOf="@+id/et_ip_port"
                 app:layout_constraintTop_toTopOf="@+id/et_ip_port" />
 
+            <Button
+                android:id="@+id/bt_ble_wifi"
+                style="@style/DefaultButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/ble_wifi_provision"
+                android:textAllCaps="false"
+                app:layout_constraintBottom_toBottomOf="@+id/et_ip_port"
+                app:layout_constraintStart_toEndOf="@+id/cb_use_ip"
+                app:layout_constraintTop_toTopOf="@+id/et_ip_port" />
+
             <EditText
                 android:id="@+id/et_ip_port"
                 android:layout_width="180dp"
@@ -269,15 +281,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tv_printer_type" />
 
-            <!-- 在XML中添加一个Barrier -->
-<!--            <androidx.constraintlayout.widget.Barrier-->
-<!--                android:id="@+id/barrier_bottom"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                app:barrierDirection="bottom"-->
-<!--                app:constraint_referenced_ids="bluetooth_config_view" />-->
-
-            <!-- 修改TextView的约束 -->
             <TextView
                 android:id="@+id/tv_printer_type"
                 android:layout_width="wrap_content"
@@ -289,16 +292,9 @@
                 android:text="@string/comm_type"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@id/bluetooth_config_view" />
-
-
-            <!-- 蓝牙配网View -->
-            <com.printer.demo.view.BluetoothNetworkConfigView
-                android:id="@+id/bluetooth_config_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+
 
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/sw_printer_status"

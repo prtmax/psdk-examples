@@ -3,7 +3,9 @@ package com.printer.demo.fragments;
 import static android.os.Build.VERSION.SDK_INT;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -25,6 +27,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -38,6 +42,8 @@ import com.printer.demo.GlobalPara;
 import com.printer.demo.MainActivity;
 import com.printer.demo.R;
 import com.printer.demo.activities.SelectFileActivity;
+import com.printer.demo.wifi.BleScanActivity;
+import com.printer.demo.wifi.WifiProvisionActivity;
 import com.printer.demo.task.CardPositionTask;
 import com.printer.demo.task.ClearCacheTask;
 import com.printer.demo.task.ClosePrinterTask;
@@ -47,7 +53,6 @@ import com.printer.demo.task.InitPrinterTask;
 import com.printer.demo.task.InjectCardTask;
 import com.printer.demo.task.OpenPrinterTask;
 import com.printer.demo.task.ShowStatusTask;
-import com.printer.demo.view.BluetoothNetworkConfigView;
 import com.printer.sdk.CardPrinterAPI;
 import com.printer.sdk.LogConfig;
 import com.printer.sdk.Printer;
@@ -105,7 +110,7 @@ public class FragmentBase extends Fragment {
     private static final int PERMISSIONS_REQUEST_CODE = 100;
     private static final int REQUEST_PERMISSIONS_CODE = 1001;
 
-    private BluetoothNetworkConfigView bluetoothNetworkConfigView;
+    private ActivityResultLauncher<Intent> bleProvisionLauncher;
 
     public FragmentBase() {
         super(R.layout.fragment_base);
@@ -121,6 +126,23 @@ public class FragmentBase extends Fragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        bleProvisionLauncher = registerForActivityResult(
+                new ActivityResultContracts.StartActivityForResult(),
+                result -> {
+                    if (result.getResultCode() != Activity.RESULT_OK || result.getData() == null) {
+                        return;
+                    }
+                    String address = result.getData().getStringExtra(WifiProvisionActivity.EXTRA_PRINTER_ADDRESS);
+                    if (TextUtils.isEmpty(address) || useIpPrinterCheckBox == null || ipPort == null) {
+                        return;
+                    }
+                    useIpPrinterCheckBox.setChecked(true);
+                    ipPort.setText(address);
+                    if (tvMsg != null) {
+                        tvMsg.setText(address);
+                    }
+                    openPrinterBtnAnimation();
+                });
         executor = Executors.newSingleThreadExecutor();
         statusExe = Executors.newSingleThreadExecutor();
         executor.execute(() -> {
@@ -151,9 +173,6 @@ public class FragmentBase extends Fragment {
         } catch (InterruptedException ignore) {
         }
 
-        if (bluetoothNetworkConfigView != null) {
-            bluetoothNetworkConfigView.release();
-        }
 
         super.onDestroy();
     }
@@ -218,6 +237,9 @@ public class FragmentBase extends Fragment {
         ipPort = view.findViewById(R.id.et_ip_port);
         btOpenPrinter = view.findViewById(R.id.bt_open_printer);
 
+        view.findViewById(R.id.bt_ble_wifi).setOnClickListener(v ->
+                bleProvisionLauncher.launch(new Intent(requireContext(), BleScanActivity.class)));
+
         btOpenPrinter.setOnClickListener(v -> {
             boolean useIpPrinter = useIpPrinterCheckBox.isChecked();
             if (useIpPrinter) {
@@ -259,33 +281,6 @@ public class FragmentBase extends Fragment {
             dialog.show();
         });
 
-        // 初始化蓝牙配网view
-        bluetoothNetworkConfigView = view.findViewById(R.id.bluetooth_config_view);
-        // 设置蓝牙配置成功监听器
-        bluetoothNetworkConfigView.setOnConfigSuccessListener(new BluetoothNetworkConfigView.OnConfigSuccessListener() {
-            @Override
-            public void onConfigSuccess(String ip, String port) {
-                // 配置成功，更新IP和端口
-                runOnUiThread(() -> {
-                    useIpPrinterCheckBox.setChecked(true);
-                    ipPort.setText(ip + ":" + port);
-
-                    // 给打开打印机按钮添加动画
-                    openPrinterBtnAnimation();
-                    if (bluetoothNetworkConfigView.bleBluetoothHelper != null) {
-                        bluetoothNetworkConfigView.bleBluetoothHelper.release();
-                    }
-                });
-            }
-
-            @Override
-            public void onStatusUpdate(int state, String message) {
-                // 更新状态消息
-                runOnUiThread(() -> {
-                    tvMsg.setText("状态：" + state + ", 消息：" + message);
-                });
-            }
-        });
     }
 
     private Spinner spYmcDpi, spKDpi, spCMS;
@@ -454,8 +449,5 @@ public class FragmentBase extends Fragment {
         return firmware;
     }
 
-    private void runOnUiThread(Runnable runnable) {
-        requireActivity().runOnUiThread(runnable);
-    }
 
 }
