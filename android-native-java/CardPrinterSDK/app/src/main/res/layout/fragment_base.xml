@@ -1,0 +1,370 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/version"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="8dp"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_msg"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="4dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginEnd="4dp"
+            android:background="#CCCCCC"
+            android:minHeight="24dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/version" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="80dp"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:background="#CCCCCC"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_msg">
+
+            <TextView
+                android:id="@+id/tv_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                />
+
+        </androidx.core.widget.NestedScrollView>
+
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <Button
+                android:id="@+id/bt_enum_printer"
+                style="@style/DefaultButton"
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:text="@string/enum_printer"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_ip_port" />
+
+            <Button
+                android:id="@+id/bt_open_printer"
+                style="@style/DefaultButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/open_printer"
+                app:layout_constraintStart_toEndOf="@+id/bt_enum_printer"
+                app:layout_constraintTop_toTopOf="@+id/bt_enum_printer" />
+
+            <Button
+                android:id="@+id/bt_close_printer"
+                style="@style/DefaultButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/close_printer"
+                app:layout_constraintStart_toEndOf="@+id/bt_open_printer"
+                app:layout_constraintTop_toTopOf="@+id/bt_open_printer" />
+
+            <Button
+                android:id="@+id/bt_card_position"
+                style="@style/DefaultButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/paper_position"
+                app:layout_constraintBottom_toBottomOf="@+id/sw_printer_status"
+                app:layout_constraintStart_toEndOf="@+id/sw_printer_status"
+                app:layout_constraintTop_toTopOf="@+id/sw_printer_status" />
+
+            <Button
+                android:id="@+id/bt_inject_card"
+                style="@style/DefaultButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:text="@string/paper_feeding"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/sw_printer_status" />
+
+            <Button
+                android:id="@+id/bt_eject_card"
+                style="@style/DefaultButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/paper_output"
+                app:layout_constraintStart_toEndOf="@+id/bt_inject_card"
+                app:layout_constraintTop_toTopOf="@+id/bt_inject_card" />
+
+            <Button
+                android:id="@+id/bt_init_printer"
+                style="@style/DefaultButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/init_printer"
+                app:layout_constraintStart_toEndOf="@+id/bt_eject_card"
+                app:layout_constraintTop_toTopOf="@+id/bt_eject_card" />
+
+            <Button
+                android:id="@+id/bt_clear_cache"
+                style="@style/DefaultButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/clear_cache"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/bt_init_printer" />
+
+            <Button
+                android:id="@+id/bt_log_config"
+                style="@style/DefaultButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/log_config"
+                app:layout_constraintStart_toEndOf="@+id/bt_clear_cache"
+                app:layout_constraintTop_toTopOf="@+id/bt_clear_cache" />
+
+            <Button
+                android:id="@+id/bt_print_setting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:text="@string/print_setting"
+                app:layout_constraintStart_toEndOf="@+id/bt_log_config"
+                app:layout_constraintTop_toTopOf="@+id/bt_log_config"/>
+
+            <CheckBox
+                android:id="@+id/cb_use_ip"
+                style="@style/DefaultButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/use_ip"
+                app:layout_constraintBottom_toBottomOf="@+id/et_ip_port"
+                app:layout_constraintStart_toEndOf="@+id/et_ip_port"
+                app:layout_constraintTop_toTopOf="@+id/et_ip_port" />
+
+            <EditText
+                android:id="@+id/et_ip_port"
+                android:layout_width="180dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:hint="IP:Port"
+                android:inputType="text|textUri"
+                android:minHeight="48dp"
+                android:text="192.168.1.100:9100"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_ip_port"
+                app:layout_constraintStart_toEndOf="@+id/tv_ip_port"
+                app:layout_constraintTop_toTopOf="@+id/tv_ip_port" />
+
+            <Spinner
+                android:id="@+id/sp_enum_type"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginStart="4dp"
+                android:entries="@array/enum_type"
+                android:spinnerMode="dropdown"
+                app:layout_constraintBottom_toTopOf="@+id/tv_enum_printer"
+                app:layout_constraintStart_toEndOf="@+id/tv_printer_type"
+                app:layout_constraintTop_toTopOf="@+id/tv_printer_type" />
+
+            <Spinner
+                android:id="@+id/sp_printer"
+                android:layout_width="wrap_content"
+                android:layout_height="48dp"
+                android:layout_marginStart="4dp"
+                android:spinnerMode="dropdown"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_enum_printer"
+                app:layout_constraintStart_toEndOf="@+id/tv_enum_printer"
+                app:layout_constraintTop_toTopOf="@+id/tv_enum_printer" />
+
+<!--            <Spinner-->
+<!--                android:id="@+id/sp_printer_type"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="0dp"-->
+<!--                android:layout_marginStart="4dp"-->
+<!--                android:entries="@array/printer_type"-->
+<!--                app:layout_constraintBottom_toBottomOf="@+id/tv_series"-->
+<!--                app:layout_constraintStart_toEndOf="@+id/tv_series"-->
+<!--                app:layout_constraintTop_toTopOf="@+id/tv_series" />-->
+
+<!--            <TextView-->
+<!--                android:id="@+id/tv_series"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="4dp"-->
+<!--                android:layout_marginTop="4dp"-->
+<!--                android:gravity="center"-->
+<!--                android:minHeight="48dp"-->
+<!--                android:text="@string/printer_series"-->
+<!--                android:textStyle="bold"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
+
+            <TextView
+                android:id="@+id/tv_ip_port"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:minHeight="48dp"
+                android:text="@string/ip_port"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_enum_printer" />
+
+            <TextView
+                android:id="@+id/tv_enum_printer"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:minHeight="48dp"
+                android:text="@string/enum_result"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_printer_type" />
+
+            <!-- 在XML中添加一个Barrier -->
+<!--            <androidx.constraintlayout.widget.Barrier-->
+<!--                android:id="@+id/barrier_bottom"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                app:barrierDirection="bottom"-->
+<!--                app:constraint_referenced_ids="bluetooth_config_view" />-->
+
+            <!-- 修改TextView的约束 -->
+            <TextView
+                android:id="@+id/tv_printer_type"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:gravity="center"
+                android:minHeight="48dp"
+                android:text="@string/comm_type"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/bluetooth_config_view" />
+
+
+            <!-- 蓝牙配网View -->
+            <com.printer.demo.view.BluetoothNetworkConfigView
+                android:id="@+id/bluetooth_config_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/sw_printer_status"
+                style="@style/DefaultSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="4dp"
+                android:background="@drawable/round_boder"
+                android:text="@string/show_status"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/bt_enum_printer"
+                app:showText="true"
+                app:switchPadding="4dp"
+                app:switchTextAppearance="@style/SwitchControl" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/sw_save_prn"
+                style="@style/DefaultSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="10px"
+                android:background="@drawable/round_boder"
+                android:text="@string/save_prn_file"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/bt_clear_cache"
+                app:showText="true"
+                app:switchPadding="4dp"
+                app:switchTextAppearance="@style/SwitchControl" />
+
+            <Button
+                android:id="@+id/bt_firmware_update"
+                style="@style/DefaultButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="@string/firmware_update"
+                app:layout_constraintStart_toEndOf="@+id/sw_save_prn"
+                app:layout_constraintTop_toTopOf="@+id/sw_save_prn" />
+
+            <Button
+                android:id="@+id/bt_clear_error"
+                style="@style/DefaultButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:layout_marginTop="10px"
+                android:text="@string/clear_error"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/sw_save_prn"
+                android:visibility="gone"
+                />
+
+<!--            <Button-->
+<!--                android:id="@+id/bt_recycle_card"-->
+<!--                style="@style/DefaultButton"-->
+<!--                android:layout_width="wrap_content"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_marginStart="4dp"-->
+<!--                android:layout_marginTop="4dp"-->
+<!--                android:text="@string/recycle_card"-->
+<!--                app:layout_constraintStart_toEndOf="@+id/bt_eject_card"-->
+<!--                app:layout_constraintBottom_toBottomOf="@+id/bt_eject_card" />-->
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
+
+</LinearLayout>

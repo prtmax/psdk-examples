@@ -1,0 +1,321 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="printer_type">
+        <item>DC8600</item>
+        <item>R600</item>
+        <item>D300Kp</item>
+    </string-array>
+    <string-array name="enum_type">
+        <item>USB</item>
+        <item>Network</item>
+        <item>Bluetooth</item>
+    </string-array>
+
+    <string-array name="r600_inject_mode">
+        <item>默认EDS项</item>
+        <item>纸盒自动入纸</item>
+        <item>右侧手动入纸</item>
+        <item>右侧自动入纸</item>
+        <item>左侧自动入纸</item>
+    </string-array>
+    <string-array name="r600_eject_mode">
+        <item>默认EDS项</item>
+        <item>左侧出纸</item>
+        <item>右侧斜下方出纸</item>
+        <item>右侧水平出纸</item>
+    </string-array>
+    <string-array name="r600_recycle_mode">
+        <item>右侧水平出纸口</item>
+    </string-array>
+    <string-array name="r600_dpi">
+        <item>600*600</item>
+    </string-array>
+
+    <string-array name="d300kp_dpi">
+        <item>300*300</item>
+        <item>300*600</item>
+        <item>300*1200</item>
+    </string-array>
+    <string-array name="d300kp_inject_mode">
+        <item>默认EDS项</item>
+        <item>纸盒</item>
+        <item>自动</item>
+        <item>命令后装纸</item>
+    </string-array>
+    <string-array name="d300kp_move_mode">
+        <item>移纸到待打印位置</item>
+        <item>移纸到转印完成位置(预留,暂未支持)</item>
+        <item>移纸到非接触位置</item>
+        <item>移纸到接触位置</item>>
+        <item>移纸到磁条位置</item>>
+        <item>移纸到磁条位置2(预留, 暂未支持)</item>
+        <item>移纸到翻转器位置(暂未支持)</item>
+    </string-array>
+    <string-array name="d300kp_eject_mode">
+        <item>默认EDS项</item>
+        <item>前方斜下排纸</item>
+        <item>后方水平排纸</item>
+    </string-array>
+    <string-array name="d300kp_recycle_mode">
+        <item>前出纸口</item>
+        <item>后出纸口</item>
+    </string-array>
+
+    <string-array name="dc8600_inject_mode">
+        <item>默认EDS项</item>
+        <item>纸盒命令装纸</item>
+        <item>纸盒手动装纸(预留,暂未支持)</item>
+        <item>左侧命令装纸</item>
+        <item>左侧手动装纸(预留,暂未支持)</item>
+        <item>右侧水平命令装纸</item>
+        <item>右侧水平手动装纸(预留,暂未支持)</item>
+        <item>右侧下方自动装纸(预留,暂未支持)</item>
+        <item>右侧下方手动装纸(预留,暂未支持)</item>
+        <item>右侧纸盒进纸</item>
+        <item>右侧纸盒手动进纸(预留,暂未支持)</item>
+    </string-array>
+    <string-array name="dc8600_move_mode">
+        <item>移纸到待打印位置</item>
+        <item>移纸到转印完成位置</item>
+        <item>移纸到非接触位置</item>
+        <item>移纸到接触位置</item>
+        <item>移纸到磁条位置</item>
+        <item>移纸到磁条位置2(预留,暂未支持)</item>
+        <item>移纸到翻转器位置(暂未支持)</item>
+    </string-array>
+    <string-array name="dc8600_eject_mode">
+        <item>默认EDS项</item>
+        <item>左侧出纸</item>
+        <item>右侧水平出纸</item>
+        <item>右侧斜下方出纸</item>
+    </string-array>
+    <string-array name="dc8600_eject_action">
+        <item>默认EDS项</item>
+        <item>翻转排纸</item>
+        <item>排纸后重启(预留,暂未支持)</item>
+        <item>排纸重试(预留,暂未支持)</item>
+        <item>夹纸</item>
+    </string-array>
+    <string-array name="dc8600_eject_side">
+        <item>默认EDS项</item>
+        <item>正面朝上排纸</item>
+        <item>反面朝上排纸</item>
+    </string-array>
+    <string-array name="dc8600_recycle_mode">
+        <item>待打印位</item>
+        <item>左侧出纸</item>
+        <item>右侧水平出纸</item>
+        <item>右侧斜下方出纸</item>
+    </string-array>
+    <string-array name="inject_flip_paper">
+        <item>进纸不翻转纸片</item>
+        <item>进纸翻转纸片</item>
+    </string-array>
+
+    <string-array name="layer">
+        <item>YMC</item>
+        <item>K</item>
+        <item>K2</item>
+    </string-array>
+    <string-array name="text_direction">
+        <item>水平</item>
+        <item>垂直</item>
+    </string-array>
+    <string-array name="barcode_type">
+        <item>Code128</item>
+        <item>Code39</item>
+        <item>Code93</item>
+        <item>EAN13</item>
+    </string-array>
+    <string-array name="font_style">
+        <item>常规</item>
+        <item>粗体</item>
+        <item>斜体</item>
+    </string-array>
+    <string-array name="error_correction_level">
+        <item>L</item>
+        <item>M</item>
+        <item>Q</item>
+        <item>H</item>
+    </string-array>
+    <string-array name="dither_mode">
+        <item>None</item>
+        <item>误差扩散</item>
+        <item>有序抖动</item>
+        <item>阈值</item>
+    </string-array>
+    <string-array name="log_level">
+        <item>None(NoLogOutput)</item>
+        <item>Error</item>
+        <item>Info</item>
+        <item>Command</item>
+    </string-array>
+    <string-array name="ymc_dpi">
+        <item>300*300</item>
+        <item>300*600</item>
+        <item>600*600</item>
+    </string-array>
+    <string-array name="k_dpi">
+        <item>300*300</item>
+        <item>300*600</item>
+        <item>300*1200</item>
+        <item>600*600</item>
+    </string-array>
+    <string-array name="unit">
+        <item>point</item>
+        <item>mm</item>
+        <item>inch</item>
+    </string-array>
+    <string-array name="sam">
+        <item>主纸槽</item>
+        <item>副纸槽</item>
+        <item>SAM1</item>
+        <item>SAM2</item>
+        <item>SAM3</item>
+        <item>SAM4</item>
+        <item>SAM5</item>
+        <item>SAM6</item>
+        <item>SAM7</item>
+        <item>SAM8</item>
+    </string-array>
+    <string-array name="ip_type">
+        <item>静态 IP</item>
+        <item>DHCP</item>
+    </string-array>
+    <string-array name="angle">
+        <item>0</item>
+        <item>90</item>
+        <item>180</item>
+        <item>270</item>
+    </string-array>
+    <string-array name="sector">
+        <item>Sector 0</item>
+        <item>Sector 1</item>
+        <item>Sector 2</item>
+        <item>Sector 3</item>
+        <item>Sector 4</item>
+        <item>Sector 5</item>
+        <item>Sector 6</item>
+        <item>Sector 7</item>
+        <item>Sector 8</item>
+        <item>Sector 9</item>
+        <item>Sector 10</item>
+        <item>Sector 11</item>
+        <item>Sector 12</item>
+        <item>Sector 13</item>
+        <item>Sector 14</item>
+        <item>Sector 15</item>
+    </string-array>
+
+    <string-array name="vh">
+        <item>水平</item>
+        <item>垂直</item>
+    </string-array>
+
+    <string-array name="dc8600_paper_exit">
+        <item>左侧出纸口</item>
+        <item>右侧出纸口</item>
+        <item>右侧水平出纸口</item>
+    </string-array>
+
+    <string-array name="r600_paper_exit">
+        <item>左侧出纸口</item>
+        <item>右侧出纸口</item>
+        <item>右侧水平出纸口</item>
+        <item>垂直出纸口</item>
+    </string-array>
+
+    <string-array name="d300kp_paper_exit">
+        <item>前出纸口</item>
+        <item>后出纸口</item>
+    </string-array>
+
+    <string-array name="arr_paper_eject_side">
+        <item>自动</item>
+        <item>正面</item>
+        <item>背面</item>
+    </string-array>
+
+    <string-array name="arr_thickness">
+        <item>薄</item>
+        <item>厚</item>
+    </string-array>
+
+    <string-array name="dc8600_feeding_mode">
+        <item>纸盒命令装纸</item>
+        <item>右侧命令装纸</item>
+        <item>右侧纸盒装纸</item>
+        <item>左侧命令装纸</item>
+    </string-array>
+
+    <string-array name="r600_feeding_mode">
+        <item>纸盒自动入纸</item>
+        <item>右侧手动装纸</item>
+        <item>右侧自动装纸</item>
+        <item>左侧自动装纸</item>
+    </string-array>
+
+    <string-array name="d300kp_feeding_mode">
+        <item>纸盒装纸</item>
+        <item>自动</item>
+        <item>命令装纸</item>
+    </string-array>
+
+    <string-array name="addon_name">
+        <item>3合1读纸器</item>
+        <item>接触式读纸器</item>
+        <item>非接触式读纸器</item>
+        <item>翻转器</item>
+        <item>前废纸盒</item>
+        <item>覆膜机</item>
+        <item>左覆膜机</item>
+        <item>右覆膜机</item>
+        <item>前发纸盒</item>
+        <item>磁纸读纸器</item>
+        <item>后废纸盒</item>
+        <item>右发纸盒</item>
+        <item>上发纸盒</item>
+        <item>右废纸盒</item>
+        <item>后废纸盒</item>
+        <item>外置发纸盒</item>
+    </string-array>
+
+    <string-array name="d300kp_color_brightness">
+        <item>明亮</item>
+        <item>鲜艳</item>
+        <item>自定义</item>
+        <item>暖色</item>
+    </string-array>
+
+    <string-array name="r600_color_brightness">
+        <item>暖色</item>
+        <item>鲜艳</item>
+        <item>明亮</item>
+        <item>自定义</item>
+    </string-array>
+
+    <string-array name="paper_reader_name">
+        <item>CPU纸读纸器</item>
+        <item>M1纸读纸器</item>
+        <item>磁纸读纸器</item>
+    </string-array>
+
+    <string-array name="test_paper">
+        <item>测试纸</item>
+        <item>自检纸</item>
+    </string-array>
+
+    <string-array name="image_mode">
+        <item>默认</item>
+        <item>居中显示</item>
+        <item>拉伸铺满</item>
+<!--        <item>平铺</item>-->
+        <item>居中裁剪</item>
+    </string-array>
+
+    <string-array name="wifi_mode">
+        <item>AP</item>
+        <item>STA</item>
+    </string-array>
+
+</resources>

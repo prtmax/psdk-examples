@@ -1,0 +1,56 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.CardPrinterSDK" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+        <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
+        <item name="sample_button_color">@color/black</item>
+        <item name="sample_button_text_color">#e6e6e6</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="textAllCaps">false</item>
+    </style>
+
+    <style name="Theme.CardPrinterSDK" parent="Base.Theme.CardPrinterSDK" />
+
+    <style name="SwitchControl">
+        <item name="android:textColor">#000000</item>
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <style name="DefaultSwitch" parent="Widget.Material3.CompoundButton.MaterialSwitch">
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+    </style>
+
+    <style name="Theme.Translucent" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:colorBackgroundCacheHint">@null</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <!--        <item name="android:windowTranslucentStatus">true</item>-->
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="statusBarBackground">@android:color/transparent</item>
+        <item name="statusBarForeground">@android:color/transparent</item>
+    </style>
+
+    <style name="SampleButton" parent="DefaultButton">
+        <item name="android:layout_height">@dimen/sample_button_height</item>
+        <item name="android:layout_marginTop">@dimen/sample_button_spacing</item>
+        <item name="android:textColor">?sample_button_text_color</item>
+        <item name="backgroundTint">?sample_button_color</item>
+    </style>
+
+    <style name="DefaultButton" parent="Widget.Material3.Button">
+        <item name="android:paddingLeft">12dp</item>
+        <item name="android:paddingRight">12dp</item>
+        <item name="android:paddingTop">@dimen/mtrl_btn_padding_top</item>
+        <item name="android:paddingBottom">@dimen/mtrl_btn_padding_bottom</item>
+    </style>
+
+    <style name="SwitchText" parent="@style/TextAppearance.AppCompat.Widget.Switch">
+        <item name="android:textSize">10sp</item>
+    </style>
+
+    <style name="TabLayoutTextStyle" parent="TextAppearance.Design.Tab">
+        <item name="textAllCaps">false</item>
+        <item name="android:textAllCaps">false</item>
+    </style>
+</resources>

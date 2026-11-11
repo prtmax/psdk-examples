@@ -1,0 +1,42 @@
+[versions]
+agp = "8.10.1"
+androidfilepicker = "1.0.1"
+baserecyclerviewadapterhelper4 = "4.1.4"
+circleindicator = "2.1.6"
+colorpickerview = "2.3.0"
+fragmentKtx = "1.7.1"
+junit = "4.13.2"
+junitVersion = "1.1.5"
+espressoCore = "3.5.1"
+appcompat = "1.7.0"
+material = "1.12.0"
+activity = "1.9.0"
+constraintlayout = "2.1.4"
+xpopup = "2.10.0"
+xxpermissions = "18.63"
+core = "1.17.0"
+opencv = "4.12.0"
+
+[libraries]
+androidfilepicker = { module = "me.rosuh:AndroidFilePicker", version.ref = "androidfilepicker" }
+baserecyclerviewadapterhelper4 = { module = "io.github.cymchad:BaseRecyclerViewAdapterHelper4", version.ref = "baserecyclerviewadapterhelper4" }
+circleindicator = { module = "me.relex:circleindicator", version.ref = "circleindicator" }
+colorpickerview = { module = "com.github.skydoves:colorpickerview", version.ref = "colorpickerview" }
+fragment-ktx = { module = "androidx.fragment:fragment-ktx", version.ref = "fragmentKtx" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
+material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
+constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
+xpopup = { module = "com.github.li-xiaojun:XPopup", version.ref = "xpopup" }
+xxpermissions = { module = "com.github.getActivity:XXPermissions", version.ref = "xxpermissions" }
+core = { group = "androidx.core", name = "core", version.ref = "core" }
+opencv = { group = "org.opencv", name = "opencv", version.ref = "opencv" }
+
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+

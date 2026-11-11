@@ -1,0 +1,5 @@
+<!-- res/drawable/bg_dialog_round.xml -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android">
+    <solid android:color="#CC000000" /> <!-- 半透明黑色背景 -->
+    <corners android:radius="12dp" />
+</shape>

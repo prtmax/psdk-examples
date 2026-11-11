@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/bluetooth_config_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_marginStart="4dp"
+    android:layout_marginEnd="4dp"
+    android:layout_marginTop="4dp"
+    android:background="@drawable/round_boder"
+    android:padding="8dp">
+
+    <!-- 蓝牙扫描区域 -->
+    <LinearLayout
+        android:id="@+id/scan_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/tv_scan_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="5dp"
+            android:text="扫描附近设备"
+            android:textStyle="bold"
+            android:textSize="20dp"
+            android:layout_marginBottom="8dp" />
+
+        <TextView
+            android:id="@+id/tv_scan_des"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="手机尽量靠近要添加的设备"
+            android:textColor="#666666"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:layout_marginBottom="8dp" />
+
+        <Button
+            android:id="@+id/bt_start_bleScan"
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginEnd="20dp"
+            android:text="开始扫描"
+            android:layout_marginBottom="8dp" />
+
+        <ListView
+            android:id="@+id/lv_bluetooth_devices"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bt_start_bleScan"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone"/>
+
+    </LinearLayout>
+
+    <!-- WiFi模式选择区域 -->
+    <LinearLayout
+        android:id="@+id/wifi_mode_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_wifi_mode_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="目前wifi设置模式是，是否切换？"
+            android:textSize="16dp"
+            android:textStyle="bold"
+            android:gravity="center"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <Button
+                android:id="@+id/btn_switch"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="切换"
+                android:textSize="16sp"
+                android:textColor="#FFFFFF"/>
+
+            <Button
+                android:id="@+id/btn_no_switching"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="16dp"
+                android:text="不切换"
+                android:textSize="16sp"
+                android:textColor="#FFFFFF"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- WiFi输入区域 -->
+    <LinearLayout
+        android:id="@+id/wifi_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone">
+
+        <!-- SSID输入 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginTop="8dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_wifi_tips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="SSID："
+                android:textSize="16dp"
+                android:gravity="center"/>
+
+            <EditText
+                android:id="@+id/tv_wifi_SSID"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:hint="请输入Wi-Fi名称"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"
+                android:background="#806750A4"/>
+        </LinearLayout>
+
+        <!-- 密码输入 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="45dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/tv_password_tips"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="密码："
+                android:textSize="16dp"
+                android:gravity="center"/>
+
+            <EditText
+                android:id="@+id/edit_wifi_password"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:hint="请输入 Wi-Fi 密码"
+                android:textColor="#FFFFFF"
+                android:background="#806750A4"/>
+        </LinearLayout>
+
+        <!-- 按钮区域 -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="15dp"
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+            <Button
+                android:id="@+id/btn_previous"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="上一步"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"/>
+
+            <Button
+                android:id="@+id/btn_next"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginLeft="16dp"
+                android:text="下一步"
+                android:textSize="18sp"
+                android:textColor="#FFFFFF"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- WiFi连接成功区域 -->
+    <LinearLayout
+        android:id="@+id/wifi_success_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tv_abtain_wifi_ip_success"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:text="已更新Ip:Port，可直接连接打印机了！"
+            android:textSize="16dp"
+            android:gravity="center"/>
+
+        <Button
+            android:id="@+id/btn_scan_again"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="16dp"
+            android:text="重新扫描"
+            android:textSize="18sp"
+            android:textColor="#FFFFFF"/>
+    </LinearLayout>
+
+</LinearLayout>

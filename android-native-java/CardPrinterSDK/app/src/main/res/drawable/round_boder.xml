@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+    android:insetTop="4dp" android:insetBottom="4dp">
+    <shape
+        android:shape="rectangle">
+        <!--    <solid android:color="@color/material_dynamic_neutral10" />-->
+        <padding
+            android:top="@dimen/mtrl_btn_padding_top"
+            android:bottom="@dimen/mtrl_btn_padding_bottom" />
+        <stroke
+            android:width="2dp"
+            android:color="?attr/colorPrimary" />
+        <corners android:radius="24dp" />
+    </shape>
+</inset>
