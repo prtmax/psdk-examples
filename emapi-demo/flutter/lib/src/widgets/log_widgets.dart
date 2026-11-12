@@ -5,11 +5,15 @@ class _LogList extends StatelessWidget {
     required this.emptyText,
     required this.entries,
     this.bottomPadding = 16,
+    this.exportName = '日志',
+    this.exportMeta,
   });
 
   final String emptyText;
   final List<EmapiDemoLogEntry> entries;
   final double bottomPadding;
+  final String exportName;
+  final String? exportMeta;
 
   @override
   Widget build(BuildContext context) {
@@ -24,14 +28,131 @@ class _LogList extends StatelessWidget {
         ),
       );
     }
-    return ListView.separated(
-      padding: EdgeInsets.fromLTRB(16, 16, 16, bottomPadding),
-      itemCount: entries.length,
-      separatorBuilder: (context, index) => const SizedBox(height: 10),
-      itemBuilder: (context, index) {
-        return _LogCard(entry: entries[index]);
-      },
+    return Column(
+      children: [
+        _LogToolbar(
+          name: exportName,
+          entries: entries,
+          meta: exportMeta,
+        ),
+        Expanded(
+          child: ListView.separated(
+            padding: EdgeInsets.fromLTRB(16, 0, 16, bottomPadding),
+            itemCount: entries.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 10),
+            itemBuilder: (context, index) {
+              return _LogCard(entry: entries[index]);
+            },
+          ),
+        ),
+      ],
     );
+  }
+}
+
+/// 日志页工具条：把当前列表整份复制/导出，便于直接发给固件同事对时间戳。
+class _LogToolbar extends StatelessWidget {
+  const _LogToolbar({
+    required this.name,
+    required this.entries,
+    this.meta,
+  });
+
+  final String name;
+  final List<EmapiDemoLogEntry> entries;
+  final String? meta;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 8, 0),
+      child: Row(
+        children: [
+          Expanded(
+            child: Text(
+              '$name · ${entries.length} 条',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: theme.textTheme.labelSmall?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+          ),
+          TextButton.icon(
+            onPressed: () => _copyArchive(context),
+            icon: const Icon(Icons.copy_all, size: 18),
+            label: const Text('复制'),
+          ),
+          TextButton.icon(
+            onPressed: () => _exportArchive(context),
+            icon: const Icon(Icons.save_alt, size: 18),
+            label: const Text('导出'),
+          ),
+          if (canShareLogArchive)
+            TextButton.icon(
+              onPressed: () => _shareArchive(context),
+              icon: const Icon(Icons.ios_share, size: 18),
+              label: const Text('分享'),
+            ),
+        ],
+      ),
+    );
+  }
+
+  String _buildContent() {
+    return buildLogArchive(name: name, entries: entries, meta: meta);
+  }
+
+  Future<void> _copyArchive(BuildContext context) async {
+    await copyLogArchiveToClipboard(_buildContent());
+    if (!context.mounted) {
+      return;
+    }
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('已复制$name（${entries.length} 条）')),
+    );
+  }
+
+  Future<void> _exportArchive(BuildContext context) async {
+    try {
+      final path = await saveLogArchive(
+        fileName: buildLogArchiveFileName(name: name),
+        content: _buildContent(),
+      );
+      if (path == null || !context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('已导出：$path')),
+      );
+    } catch (error) {
+      if (!context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('导出失败：$error')),
+      );
+    }
+  }
+
+  /// 调起系统分享面板，Android/iOS 上可直接选微信发给。
+  Future<void> _shareArchive(BuildContext context) async {
+    final fileName = buildLogArchiveFileName(name: name);
+    try {
+      await shareLogArchive(
+        fileName: fileName,
+        content: _buildContent(),
+        title: '$name $fileName',
+      );
+    } catch (error) {
+      if (!context.mounted) {
+        return;
+      }
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('分享失败：$error，可改用「导出」')),
+      );
+    }
   }
 }
 

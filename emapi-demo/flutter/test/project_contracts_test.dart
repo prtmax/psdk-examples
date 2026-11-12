@@ -5,6 +5,7 @@ import 'package:emapi_demo/src/bluetooth_printer_connector.dart';
 import 'package:emapi_demo/src/emapi_demo_controller.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:psdk_fruit_emapi/psdk_fruit_emapi.dart';
 
 String readProjectFile(String path) {
   return File(path).readAsStringSync();
@@ -414,6 +415,114 @@ void main() {
     expect(transferBody, contains('finishWifiFileDownload'));
     expect(transferBody, isNot(contains('upgradeMainController')));
     expect(chunkBody, isNot(contains('upgradeMainController')));
+  });
+
+  test('controller_logsEveryOutboundPacketWhenRawSendLoggingEnabled', () {
+    final controller = readProjectFile('lib/src/emapi_demo_controller.dart');
+    final settings = readProjectFile('lib/src/pages/settings_page.dart');
+    final functionPage = readProjectFile('lib/src/pages/function_page.dart');
+
+    expect(controller, contains('bool rawSendLoggingEnabled'));
+    expect(controller, contains('void setRawSendLogging('));
+    expect(controller, contains('onWrite: _handleRawOutboundData'));
+    expect(controller, contains('onWriteComplete: _handleRawOutboundResult'));
+    expect(controller, contains('_handleRawOutboundResult'));
+    expect(controller, contains('_rawWriteSequence'));
+    expect(controller, contains('_slowWriteThresholdMs'));
+    expect(controller, contains('_describeEmapiCommand'));
+    expect(settings, contains('原始发送 TX 日志'));
+    expect(settings, contains('controller.setRawSendLogging'));
+    expect(functionPage, contains('链路日志'));
+    expect(functionPage, contains('controller.linkLogs'));
+  });
+
+  test('controller_interleavesTxAndRxIntoLinkLog', () {
+    final controller = readProjectFile('lib/src/emapi_demo_controller.dart');
+    final inboundBody = methodBody(controller, '_handleRawInboundData');
+    final outboundBody = methodBody(controller, '_handleRawOutboundData');
+
+    expect(controller, contains('final List<EmapiDemoLogEntry> linkLogs'));
+    expect(inboundBody, contains("title: 'RX 接收'"));
+    expect(outboundBody, contains("title: 'TX 发送'"));
+    expect(controller, contains('_addLinkLog'));
+    expect(controller, contains('_addLinkMarker'));
+    expect(controller, contains('_childNames'));
+    expect(controller, contains('_parentNames'));
+  });
+
+  test('controller_exposesMtuOverrideAppliedToPrinter', () {
+    final controller = readProjectFile('lib/src/emapi_demo_controller.dart');
+    final settings = readProjectFile('lib/src/pages/settings_page.dart');
+
+    expect(controller, contains('int? mtuOverride'));
+    expect(controller, contains('void setMtuOverride('));
+    expect(
+      controller,
+      contains('EmapiPrinter(connection: _tracingConnection!, mtu: mtuOverride)'),
+    );
+    expect(controller, contains('knownMtu = mtuOverride ?? info.mtu'));
+    expect(settings, contains('协议 MTU'));
+    expect(settings, contains('controller.setMtuOverride'));
+  });
+
+  test('controller_distinguishesAckFromPrintResultTimeout', () {
+    final controller = readProjectFile('lib/src/emapi_demo_controller.dart');
+    final printBody = methodBody(controller, 'performEscPrint');
+
+    // 数据传输的 ACK 与“打印结果上报”是两回事，超时文案必须区分开。
+    expect(controller, contains('_printResultTimeout'));
+    expect(printBody, contains('开始等待「打印结果上报」'));
+    expect(printBody, contains('onTimeout:'));
+    expect(printBody, contains('等待「打印结果上报」超时'));
+    expect(printBody, contains('ESC 数据已全部发送并收到 ACK'));
+    expect(controller, contains('收到「打印结果上报」'));
+  });
+
+  test('logWidgets_exportsAndCopiesAnyLogTab', () {
+    final widgets = readProjectFile('lib/src/widgets/log_widgets.dart');
+    final archive = readProjectFile('lib/src/log_archive.dart');
+    final main = readProjectFile('lib/main.dart');
+    final functionPage = readProjectFile('lib/src/pages/function_page.dart');
+
+    expect(widgets, contains('class _LogToolbar'));
+    expect(widgets, contains('buildLogArchive'));
+    expect(widgets, contains('_shareArchive'));
+    expect(archive, contains('String buildLogArchive'));
+    expect(archive, contains('Clipboard.setData'));
+    expect(archive, contains('FilePicker.saveFile'));
+    expect(archive, contains('SharePlus.instance.share'));
+    expect(archive, contains('String formatHexDump'));
+    expect(archive, contains('String buildLogArchiveFileName'));
+    expect(main, contains("import 'src/log_archive.dart';"));
+    expect(main, isNot(contains("import 'dart:io';")));
+    expect(main, isNot(contains("import 'dart:convert';")));
+    expect(functionPage, contains("exportName: '链路日志'"));
+    expect(functionPage, contains("exportName: '发送指令'"));
+    expect(functionPage, contains('exportMeta'));
+  });
+
+  test('emapiFrameSizeEqualsMtu', () {
+    // 一帧 EMAPI = frameOverhead(9) + commandHeader(5) + payload，
+    // 而 printEsc 的分片容量是 mtu - 14，所以满帧正好等于 mtu。
+    const mtu = 784;
+    final payloadCapacity = printTransferPayloadCapacity(mtu);
+    expect(payloadCapacity, mtu - 14);
+
+    final frame = FrameCodec.encode(
+      EmapiCommand(
+        type: EmapiConstants.typeRequest,
+        parent: EmapiConstants.parentPrinter,
+        child: EmapiConstants.childTransferData,
+        payload: List<int>.filled(payloadCapacity, 0),
+      ),
+    );
+    expect(frame.length, mtu);
+    expect(frame.first, EmapiConstants.frameHead);
+    expect(frame.last, EmapiConstants.frameTail);
+
+    final chunks = chunkPrintData(List<int>.filled(2000, 0), mtu);
+    expect(chunks.first.length, payloadCapacity);
+    expect(chunks.length, (2000 / payloadCapacity).ceil());
   });
 
   test('pubspec_dependsOnEscFruitFromLocalPsdkOrMatchingGitRef', () {

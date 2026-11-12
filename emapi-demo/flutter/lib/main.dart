@@ -10,6 +10,7 @@ import 'package:psdk_fruit_esc/psdk_fruit_esc.dart' as esc;
 import 'src/bluetooth_printer_connector.dart';
 import 'src/emapi_demo_controller.dart';
 import 'src/entities/emapi_demo_log_entry.dart';
+import 'src/log_archive.dart';
 
 part 'src/pages/function_page.dart';
 part 'src/pages/scan_page.dart';

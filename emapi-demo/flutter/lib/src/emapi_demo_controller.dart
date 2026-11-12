@@ -21,6 +21,7 @@ class EmapiDemoController extends ChangeNotifier {
   final List<EmapiDemoLogEntry> requestLogs = [];
   final List<EmapiDemoLogEntry> commandLogs = [];
   final List<EmapiDemoLogEntry> reportLogs = [];
+  final List<EmapiDemoLogEntry> linkLogs = [];
 
   StreamSubscription? _scanSubscription;
   StreamSubscription<EmapiReport>? _reportSubscription;
@@ -37,13 +38,18 @@ class EmapiDemoController extends ChangeNotifier {
   bool connected = false;
   bool simulationMode = false;
   bool rawReceiveLoggingEnabled = false;
+  bool rawSendLoggingEnabled = false;
   String? connectedDeviceName;
   String? pendingActionLabel;
   int? knownMtu;
+  int? mtuOverride;
   int otaSentBytes = 0;
   int otaTotalBytes = 0;
   String? latestUpgradeStatus;
   int _rawReadSequence = 0;
+  int _rawWriteSequence = 0;
+  DateTime? _lastLinkEventAt;
+  String? _pendingTxTransportNote;
 
   bool get busy {
     return connecting || pendingActionLabel != null;
@@ -52,7 +58,8 @@ class EmapiDemoController extends ChangeNotifier {
   bool get hasLogs {
     return requestLogs.isNotEmpty ||
         commandLogs.isNotEmpty ||
-        reportLogs.isNotEmpty;
+        reportLogs.isNotEmpty ||
+        linkLogs.isNotEmpty;
   }
 
   void clearLogs() {
@@ -62,7 +69,11 @@ class EmapiDemoController extends ChangeNotifier {
     requestLogs.clear();
     commandLogs.clear();
     reportLogs.clear();
+    linkLogs.clear();
     _rawReadSequence = 0;
+    _rawWriteSequence = 0;
+    _lastLinkEventAt = null;
+    _pendingTxTransportNote = null;
     _notify();
   }
 
@@ -151,8 +162,15 @@ class EmapiDemoController extends ChangeNotifier {
           _tracingConnection = _TracingEmapiConnection(
             ConnectedDeviceEmapiConnection(_connectedDevice!),
             onRead: _handleRawInboundData,
+            onWrite: _handleRawOutboundData,
+            onWriteComplete: _handleRawOutboundResult,
+            onSocketSplit: _rememberSppSocketSplit,
           );
-          _printer = EmapiPrinter(connection: _tracingConnection!);
+          _printer = EmapiPrinter(
+            connection: _tracingConnection!,
+            mtu: mtuOverride,
+            timeout: _ackWaitTimeout,
+          );
           // TODO(EMAPI SDK): reports are exposed through EmapiPrinter.reports only; no public startListeningReports/stopListeningReports API exists currently.
           await _reportSubscription?.cancel();
           _reportSubscription = _printer!.reports.listen(_handleReport);
@@ -176,6 +194,7 @@ class EmapiDemoController extends ChangeNotifier {
     _connectedDevice = null;
     _tracingConnection = null;
     _printer = null;
+    _pendingTxTransportNote = null;
     connected = false;
     connectedDeviceName = null;
     latestUpgradeStatus = null;
@@ -419,11 +438,11 @@ class EmapiDemoController extends ChangeNotifier {
             bootVersion: 'BOOT-SIM',
             mtu: 512,
           );
-          knownMtu = info.mtu;
+          knownMtu = mtuOverride ?? info.mtu;
           return formatDeviceInfo(info);
         }
         final info = await _requirePrinter().queryDeviceInfo();
-        knownMtu = info.mtu;
+        knownMtu = mtuOverride ?? info.mtu;
         return formatDeviceInfo(info);
       },
       simulatedResponseBytes: () {
@@ -626,6 +645,10 @@ class EmapiDemoController extends ChangeNotifier {
         try {
           if (!simulationMode) {
             await _requirePrinter().printEsc(escBytes!);
+            _addLinkMarker(
+              'ESC 数据已全部发送并收到 ACK，开始等待「打印结果上报」'
+              '（0x09/0x01，≤${_printResultTimeout.inSeconds}s）',
+            );
           } else {
             // 模拟真实设备在完成当前一份后才会上报打印结果。
             await Future<void>.delayed(const Duration(milliseconds: 100));
@@ -637,7 +660,15 @@ class EmapiDemoController extends ChangeNotifier {
             );
           }
           final result = await printResultWaiter.future.timeout(
-            const Duration(seconds: 60),
+            _printResultTimeout,
+            onTimeout: () {
+              throw TimeoutException(
+                '等待「打印结果上报」超时（${_printResultTimeout.inSeconds}s，'
+                '第 $copy/$copies 份）：ESC 数据已全部发送并收到 ACK，'
+                '但设备没有上报打印结果（0x09/0x01）',
+                _printResultTimeout,
+              );
+            },
           );
           if (result.result != 0) {
             throw StateError('第 $copy/$copies 份打印失败，结果码：${result.result}');
@@ -721,6 +752,28 @@ class EmapiDemoController extends ChangeNotifier {
       return;
     }
     rawReceiveLoggingEnabled = enabled;
+    _notify();
+  }
+
+  void setRawSendLogging(bool enabled) {
+    if (rawSendLoggingEnabled == enabled) {
+      return;
+    }
+    rawSendLoggingEnabled = enabled;
+    _notify();
+  }
+
+  /// 覆盖协议 MTU（打印/文件分片大小），null 表示使用设备上报值。
+  /// 修改后需要重新连接才生效。
+  void setMtuOverride(int? value) {
+    if (value != null && value <= 0) {
+      value = null;
+    }
+    if (mtuOverride == value) {
+      return;
+    }
+    mtuOverride = value;
+    _addCommandLog('协议 MTU 覆盖：${value ?? '自动（设备上报）'}（重新连接后生效）');
     _notify();
   }
 
@@ -827,7 +880,8 @@ class EmapiDemoController extends ChangeNotifier {
         .enable()
         .paperType(arg: esc.EPaperType(type: paperType))
         .enableMode(mode: printMode)
-        .thickness(thickness: thickness);
+        .thickness(thickness: thickness)
+        .lineDot(dot: 45);
     if (printMode == 2) {
       command.imageGray(
         arg: EImageGray(
@@ -874,6 +928,7 @@ class EmapiDemoController extends ChangeNotifier {
       return;
     }
     pendingActionLabel = label;
+    _addLinkMarker('开始：$label');
     final traceStart = _tracingConnection?.frames.length ?? 0;
     if (requestCommand != null &&
         (simulationMode || _tracingConnection == null)) {
@@ -890,6 +945,7 @@ class EmapiDemoController extends ChangeNotifier {
       final result = await action();
       final traceBytes = _traceBytesSince(traceStart, _TraceDirection.inbound);
       _addActualOutboundLog(label, traceStart);
+      _addLinkMarker('结束：$label → $result');
       _addCommandEntry(
         EmapiDemoLogEntry(
           title: label,
@@ -900,6 +956,7 @@ class EmapiDemoController extends ChangeNotifier {
     } catch (error) {
       final traceBytes = _traceBytesSince(traceStart, _TraceDirection.inbound);
       _addActualOutboundLog(label, traceStart);
+      _addLinkMarker('结束：$label → 失败：${formatError(error)}');
       _addCommandEntry(
         EmapiDemoLogEntry(
           title: label,
@@ -939,6 +996,7 @@ class EmapiDemoController extends ChangeNotifier {
       final waiter = _printResultWaiter;
       if (waiter != null && !waiter.isCompleted) {
         waiter.complete(report);
+        _addLinkMarker('收到「打印结果上报」：result=${report.result}');
       }
     }
     final formatted = formatReport(report);
@@ -965,23 +1023,199 @@ class EmapiDemoController extends ChangeNotifier {
       return;
     }
     _rawReadSequence += 1;
-    final details = <String>[
-      '${DateTime.now().toIso8601String()} RX #$_rawReadSequence：底层 read 收到 ${data.length} bytes',
-      if (decodedCommands.isNotEmpty)
-        '本次解析出 ${decodedCommands.length} 帧：${decodedCommands.join(' | ')}',
-      if (decodedCommands.isEmpty && parseError == null)
-        '本次暂未形成完整帧，可能是拆包，等待后续数据',
-      if (parseError != null) '解析异常：${_formatDiagnosticError(parseError)}',
+    _addLinkLog(
+      title: 'RX 接收',
+      direction: '↓',
+      sequence: _rawReadSequence,
+      bytes: data,
+      details: [
+        ...decodedCommands.map(_describeEmapiCommand),
+        if (decodedCommands.isEmpty && parseError == null) '未形成完整帧（可能被拆分）',
+        if (parseError != null) '解析异常：${_formatDiagnosticError(parseError)}',
+      ],
+    );
+  }
+
+  void _handleRawOutboundData(
+    Uint8List data,
+    List<EmapiCommand> decodedCommands,
+    Object? parseError,
+  ) {
+    final transportNote = _pendingTxTransportNote;
+    _pendingTxTransportNote = null;
+    if (!rawSendLoggingEnabled) {
+      return;
+    }
+    _rawWriteSequence += 1;
+    final payloadHead = _payloadHeadHex(decodedCommands);
+    _addLinkLog(
+      title: 'TX 发送',
+      direction: '↑',
+      sequence: _rawWriteSequence,
+      bytes: data,
+      details: [
+        ...decodedCommands.map(_describeEmapiCommand),
+        ?payloadHead,
+        ?transportNote,
+        if (decodedCommands.isEmpty && parseError == null) '未形成完整帧（可能被拆分）',
+        if (parseError != null) '解析异常：${_formatDiagnosticError(parseError)}',
+      ],
+    );
+  }
+
+  void _rememberSppSocketSplit(int frameBytes, int chunkSize, int chunkCount) {
+    if (chunkCount <= 1) {
+      _pendingTxTransportNote = null;
+      return;
+    }
+    _pendingTxTransportNote =
+        'SPP socket 试验拆包：$frameBytes B → $chunkCount 包，每包 ≤$chunkSize B';
+  }
+
+  void _handleRawOutboundResult(Duration elapsed, Object? error) {
+    if (!rawSendLoggingEnabled) {
+      return;
+    }
+    final sequence = _rawWriteSequence;
+    final linkState = '链路状态：${_connectionStateLabel()}';
+    if (error != null) {
+      _addLinkLog(
+        title: 'TX 发送失败',
+        direction: '✗',
+        sequence: sequence,
+        bytes: null,
+        details: ['写耗时 ${elapsed.inMilliseconds}ms', '异常：$error', linkState],
+      );
+      return;
+    }
+    if (elapsed.inMilliseconds < _slowWriteThresholdMs) {
+      return;
+    }
+    _addLinkLog(
+      title: 'TX 发送缓慢',
+      direction: '⚠',
+      sequence: sequence,
+      bytes: null,
+      details: [
+        '写耗时 ${elapsed.inMilliseconds}ms（≥${_slowWriteThresholdMs}ms，'
+            '发送缓冲出现反压：设备可能没在取数据，或 SPP 链路拥塞）',
+        linkState,
+      ],
+    );
+  }
+
+  String _connectionStateLabel() {
+    final device = _connectedDevice;
+    if (device == null) {
+      return '未知';
+    }
+    try {
+      return device.connectionState() == ConnectionState.connected
+          ? '已连接'
+          : '已断开';
+    } catch (_) {
+      return '未知';
+    }
+  }
+
+  /// 把 TX/RX 事件按发生顺序写进同一条链路日志，便于对齐"发了什么/回了什么"。
+  void _addLinkLog({
+    required String title,
+    required String direction,
+    required List<String> details,
+    required Uint8List? bytes,
+    int? sequence,
+  }) {
+    final now = DateTime.now();
+    final previous = _lastLinkEventAt;
+    _lastLinkEventAt = now;
+    final delta = previous == null
+        ? ''
+        : '  +${now.difference(previous).inMilliseconds}ms';
+    final prefix = sequence == null ? direction : '$direction #$sequence';
+    final size = bytes == null ? '' : '  ${bytes.length}B';
+    final lines = <String>[
+      '${_formatClock(now)}$delta  $prefix$size',
+      ...details,
     ];
-    reportLogs.insert(
+    linkLogs.insert(
       0,
       EmapiDemoLogEntry(
-        title: '原始接收 RX',
-        message: details.join('\n'),
-        bytes: data,
+        title: title,
+        message: lines.join('\n'),
+        bytes: bytes,
       ),
     );
     _notify();
+  }
+
+  bool get _linkLoggingEnabled {
+    return rawReceiveLoggingEnabled || rawSendLoggingEnabled;
+  }
+
+  /// 在链路日志里插入"操作开始/结束"锚点，方便在大量数据帧里定位边界。
+  void _addLinkMarker(String message) {
+    if (!_linkLoggingEnabled) {
+      return;
+    }
+    _addLinkLog(
+      title: '操作节点',
+      direction: '●',
+      details: [message],
+      bytes: null,
+    );
+  }
+
+  String _describeEmapiCommand(EmapiCommand command) {
+    final type = _typeLabel(command.type);
+    final name = _commandName(command);
+    return '[$type] $name · parent 0x${_hex8(command.parent)} '
+        'child 0x${_hex8(command.child)} · payload ${command.payload.length}B';
+  }
+
+  String _typeLabel(int type) {
+    return switch (type) {
+      EmapiConstants.typeRequest => '请求',
+      EmapiConstants.typeResponse => '响应',
+      EmapiConstants.typeError => '错误',
+      EmapiConstants.typePassthroughRequest => '透传请求',
+      EmapiConstants.typePassthroughResponse => '透传响应',
+      EmapiConstants.typePassthroughError => '透传错误',
+      _ => '未知',
+    };
+  }
+
+  String _commandName(EmapiCommand command) {
+    final name = _childNames[command.parent]?[command.child];
+    if (name != null) {
+      return name;
+    }
+    return _parentNames[command.parent] ?? '未知指令';
+  }
+
+  String? _payloadHeadHex(List<EmapiCommand> commands) {
+    for (final command in commands) {
+      if (command.payload.isEmpty) {
+        continue;
+      }
+      final head = command.payload.take(16).toList();
+      final hex = head
+          .map((byte) => byte.toRadixString(16).padLeft(2, '0').toUpperCase())
+          .join(' ');
+      final suffix = command.payload.length > head.length ? ' …' : '';
+      return 'payload 前 ${head.length}B: $hex$suffix';
+    }
+    return null;
+  }
+
+  String _formatClock(DateTime time) {
+    String two(int value) => value.toString().padLeft(2, '0');
+    return '${two(time.hour)}:${two(time.minute)}:${two(time.second)}'
+        '.${time.millisecond.toString().padLeft(3, '0')}';
+  }
+
+  String _hex8(int value) {
+    return value.toRadixString(16).padLeft(2, '0').toUpperCase();
   }
 
   String _formatDiagnosticError(Object error) {
@@ -1083,6 +1317,69 @@ Uint8List _responseBytes({
   );
 }
 
+const int _slowWriteThresholdMs = 120;
+
+/// 数据帧全部 ACK 后，等待设备上报「打印结果」(0x09/0x01) 的上限。
+const Duration _printResultTimeout = Duration(seconds: 60);
+
+/// ACK 等待超时。固件侧反馈大灰阶帧 / 慢设备的 ACK 可能超过 2s 才返回，
+/// 因此把默认 2s 收窄/放宽 —— 这里先放宽到 4s 再试。
+const Duration _ackWaitTimeout = Duration(seconds: 4);
+
+/// 链路日志里把 EMAPI 的 parent/child 翻成可读名称，便于直接对照固件日志。
+const Map<int, String> _parentNames = {
+  0x01: '系统',
+  0x02: '打印控制类',
+  0x05: 'RFID',
+  0x06: 'WiFi',
+  0x07: '设备配置',
+  0x09: '主动上报',
+  0x0A: '文件传输',
+};
+
+const Map<int, Map<int, String>> _childNames = {
+  0x01: {
+    0x01: '查询打印机基本参数',
+    0x04: '打印机休眠关机',
+    0x05: '设置关机时间',
+  },
+  0x02: {
+    0x01: '打印机参数',
+    0x04: '查询打印状态',
+    0x06: '打印业务数据下发传输',
+    0x0C: '打印自检页',
+  },
+  0x05: {
+    0x01: '查询 RFID UID',
+    0x02: '查询 RFID 卡信息',
+    0x03: '查询 RFID 纸长',
+    0x04: 'RFID 认证失败处理',
+  },
+  0x06: {
+    0x01: 'WiFi 配网',
+    0x02: 'WiFi 连接状态',
+    0x03: 'WiFi 热点信息',
+    0x04: 'WiFi 配网状态',
+    0x05: 'WiFi 文件开始',
+    0x06: 'WiFi 文件传输',
+    0x07: 'WiFi 文件结束',
+  },
+  0x09: {
+    0x01: '打印结果上报',
+    0x02: '打印机状态上报',
+    0x03: '流控上报',
+    0x04: '升级状态上报',
+    0x05: '蓝牙连接上报',
+    0x0A: 'RFID 状态上报',
+  },
+  0x0A: {
+    0x01: '文件开始',
+    0x02: '文件传输',
+    0x03: '文件结束',
+    0x04: '文件升级',
+  },
+};
+
 enum _TraceDirection { outbound, inbound }
 
 class _TraceFrame {
@@ -1093,7 +1390,14 @@ class _TraceFrame {
 }
 
 class _TracingEmapiConnection implements EmapiConnection {
-  _TracingEmapiConnection(this._inner, {this.onRead});
+  _TracingEmapiConnection(
+    this._inner, {
+    this.onRead,
+    this.onWrite,
+    this.onWriteComplete,
+    this.onSocketSplit,
+    this.socketChunkSize,
+  });
 
   final EmapiConnection _inner;
   final void Function(
@@ -1102,18 +1406,51 @@ class _TracingEmapiConnection implements EmapiConnection {
     Object? parseError,
   )?
   onRead;
+  final void Function(
+    Uint8List data,
+    List<EmapiCommand> decodedCommands,
+    Object? parseError,
+  )?
+  onWrite;
+  final void Function(Duration elapsed, Object? error)? onWriteComplete;
+  final void Function(int frameBytes, int chunkSize, int chunkCount)?
+  onSocketSplit;
+
+  /// When set, each EMAPI frame is still logged whole, then written to the
+  /// socket in pieces of at most this many bytes.
+  final int? socketChunkSize;
   final List<_TraceFrame> frames = [];
   final FrameParser _diagnosticParser = FrameParser();
+  final FrameParser _diagnosticWriteParser = FrameParser();
 
   @override
   Future<void> write(List<int> data) async {
+    final bytes = Uint8List.fromList(data);
     frames.add(
-      _TraceFrame(
-        direction: _TraceDirection.outbound,
-        bytes: Uint8List.fromList(data),
-      ),
+      _TraceFrame(direction: _TraceDirection.outbound, bytes: bytes),
     );
-    await _inner.write(data);
+    _notifySocketSplit(data);
+    if (onWrite != null) {
+      List<EmapiCommand> decodedCommands = const [];
+      Object? parseError;
+      try {
+        decodedCommands = _diagnosticWriteParser.add(bytes);
+      } catch (error) {
+        parseError = error;
+      }
+      onWrite!(bytes, decodedCommands, parseError);
+    }
+    final stopwatch = Stopwatch()..start();
+    Object? writeError;
+    try {
+      await _writeSocket(data);
+    } catch (error) {
+      writeError = error;
+      rethrow;
+    } finally {
+      stopwatch.stop();
+      onWriteComplete?.call(stopwatch.elapsed, writeError);
+    }
   }
 
   @override
@@ -1130,6 +1467,29 @@ class _TracingEmapiConnection implements EmapiConnection {
     }
     onRead?.call(bytes, decodedCommands, parseError);
     return data;
+  }
+
+  void _notifySocketSplit(List<int> data) {
+    final chunkSize = socketChunkSize;
+    if (chunkSize == null || chunkSize <= 0 || data.length <= chunkSize) {
+      return;
+    }
+    final chunkCount = (data.length + chunkSize - 1) ~/ chunkSize;
+    onSocketSplit?.call(data.length, chunkSize, chunkCount);
+  }
+
+  Future<void> _writeSocket(List<int> data) async {
+    final chunkSize = socketChunkSize;
+    if (chunkSize == null || chunkSize <= 0 || data.length <= chunkSize) {
+      await _inner.write(data);
+      return;
+    }
+    for (var offset = 0; offset < data.length; offset += chunkSize) {
+      final end = offset + chunkSize > data.length
+          ? data.length
+          : offset + chunkSize;
+      await _inner.write(data.sublist(offset, end));
+    }
   }
 }
 

@@ -81,7 +81,7 @@ class _FunctionPageState extends State<_FunctionPage> {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 3,
+      length: 4,
       child: Stack(
         children: [
           Column(
@@ -107,6 +107,7 @@ class _FunctionPageState extends State<_FunctionPage> {
                   Tab(text: '发送指令 ${controller.requestLogs.length}'),
                   Tab(text: '命令结果 ${controller.commandLogs.length}'),
                   Tab(text: '上报解析 ${controller.reportLogs.length}'),
+                  Tab(text: '链路日志 ${controller.linkLogs.length}'),
                 ],
               ),
               Expanded(
@@ -116,16 +117,29 @@ class _FunctionPageState extends State<_FunctionPage> {
                       emptyText: '暂无发送指令',
                       entries: controller.requestLogs,
                       bottomPadding: 210,
+                      exportName: '发送指令',
                     ),
                     _LogList(
                       emptyText: '暂无命令结果',
                       entries: controller.commandLogs,
                       bottomPadding: 210,
+                      exportName: '命令结果',
                     ),
                     _LogList(
                       emptyText: '暂无上报解析',
                       entries: controller.reportLogs,
                       bottomPadding: 210,
+                      exportName: '上报解析',
+                    ),
+                    _LogList(
+                      emptyText: '暂无链路日志（在设置中开启原始收发日志）',
+                      entries: controller.linkLogs,
+                      bottomPadding: 210,
+                      exportName: '链路日志',
+                      exportMeta: controller.knownMtu == null
+                          ? '已知 MTU: 未知（尚未查询设备参数）'
+                          : '已知 MTU: ${controller.knownMtu}'
+                              '${controller.mtuOverride == null ? '' : '（已覆盖为 ${controller.mtuOverride}）'}',
                     ),
                   ],
                 ),
