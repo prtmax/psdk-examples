@@ -3,6 +3,7 @@
     <string name="version">version:%s</string>
     <string name="unknown">unknown</string>
     <string name="enum_printer">Enum Printer</string>
+    <string name="searching_printer">Searching LAN printers...</string>
     <string name="open_printer">Connect Printer</string>
     <string name="close_printer">Disconnect Printer</string>
     <string name="show_status">Printer Status</string>
@@ -267,4 +268,11 @@
     <string name="force_eject">is force_eject</string>
 
 
+    <string name="back">Back</string>
+    <string name="ble_scan_title">Scan devices</string>
+    <string name="wifi_provision_title">Wi-Fi setup</string>
+    <string name="ble_scan_start">Scan</string>
+    <string name="ble_scan_stop">Stop scan</string>
+    <string name="ble_scan_empty">No BLE devices found</string>
+    <string name="connection_state">Status:</string>
 </resources>

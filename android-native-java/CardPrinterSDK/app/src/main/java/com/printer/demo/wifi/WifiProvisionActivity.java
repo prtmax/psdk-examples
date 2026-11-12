@@ -18,6 +18,11 @@ import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import com.google.android.material.appbar.MaterialToolbar;
+
 import com.printer.demo.R;
 import com.printer.psdk.device.adapter.ConnectedDevice;
 import com.printer.psdk.device.adapter.types.WroteReporter;
@@ -102,12 +107,30 @@ public class WifiProvisionActivity extends Activity {
             finish();
             return;
         }
-        new Thread(() -> connection.connect(null)).start();
+        new Thread(() -> {
+            connection.connect(null);
+            if (BleConnectGuard.disarmIfGattMissing(connection)) {
+                showState(deviceLabel(device) + "连接失败");
+            }
+        }).start();
         bindActions(device);
         fillCurrentWifiName();
     }
 
     private void bindViews() {
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(v -> finish());
+        ViewCompat.setOnApplyWindowInsetsListener(toolbar, (v, insets) -> {
+            int top = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            v.setPadding(v.getPaddingLeft(), top, v.getPaddingRight(), v.getPaddingBottom());
+            return insets;
+        });
+        View connectionBar = findViewById(R.id.connection_bar);
+        ViewCompat.setOnApplyWindowInsetsListener(connectionBar, (v, insets) -> {
+            int bottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+            v.setPadding(v.getPaddingLeft(), v.getPaddingTop(), v.getPaddingRight(), bottom);
+            return insets;
+        });
         wifiName = findViewById(R.id.wifi_name);
         wifiPassword = findViewById(R.id.wifi_pwd);
         titleRightText = findViewById(R.id.title_right_text);
@@ -467,6 +490,7 @@ public class WifiProvisionActivity extends Activity {
     @Override
     protected void onDestroy() {
         if (connection != null) {
+            BleConnectGuard.cancelConnectTimeout(connection);
             try {
                 connection.disconnect();
             } catch (Exception ignored) {

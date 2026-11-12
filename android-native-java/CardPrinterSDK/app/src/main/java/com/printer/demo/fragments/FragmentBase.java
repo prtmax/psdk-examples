@@ -19,6 +19,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -44,6 +45,7 @@ import com.printer.demo.R;
 import com.printer.demo.activities.SelectFileActivity;
 import com.printer.demo.wifi.BleScanActivity;
 import com.printer.demo.wifi.WifiProvisionActivity;
+import com.printer.psdk.device.net.Network;
 import com.printer.demo.task.CardPositionTask;
 import com.printer.demo.task.ClearCacheTask;
 import com.printer.demo.task.ClosePrinterTask;
@@ -76,10 +78,21 @@ public class FragmentBase extends Fragment {
         public void handleMessage(@NonNull Message msg) {
             switch (msg.what) {
                 case EnumPrinterTask.ENUM_PRINTER:
+                    if (msg.arg1 != enumRequestSeq) {
+                        break;
+                    }
                     // noinspection unchecked
                     List<Printer> printers = (List<Printer>) msg.obj;
-                    if (!printers.isEmpty()) {
+                    if (printers != null && !printers.isEmpty() && printerAdapter != null) {
+                        boolean wasEmpty = printerAdapter.isEmpty();
                         printerAdapter.addAll(printers);
+                        if (wasEmpty && spPrinter != null) {
+                            spPrinter.setSelection(0);
+                        }
+                        if (wasEmpty && printers.get(0) instanceof Printer.NetworkPrinter && ipPort != null) {
+                            Printer.NetworkPrinter printer = (Printer.NetworkPrinter) printers.get(0);
+                            ipPort.setText(printer.getIp() + ":" + printer.getPort());
+                        }
                     }
                     break;
                 case ShowStatusTask.SHOW_STATUS:
@@ -89,6 +102,9 @@ public class FragmentBase extends Fragment {
                     tvStatus.setText((CharSequence) msg.obj);
                     break;
                 default:
+                    if (msg.arg2 == EnumPrinterTask.ENUM_PRINTER && msg.arg1 != enumRequestSeq) {
+                        break;
+                    }
                     tvMsg.setText((CharSequence) msg.obj);
             }
         }
@@ -100,7 +116,7 @@ public class FragmentBase extends Fragment {
     private ExecutorService statusExe;
     private Spinner spEnumType, spPrinter, spPrinterType;
     private ArrayAdapter<Printer> printerAdapter;
-    private TextView tvStatus, tvMsg, tvScanTitle, tvScanDes, tvWifiModeTitle;
+    private TextView tvStatus, tvMsg;
     private Button btOpenPrinter;
     private CheckBox useIpPrinterCheckBox;
     private EditText ipPort;
@@ -111,6 +127,7 @@ public class FragmentBase extends Fragment {
     private static final int REQUEST_PERMISSIONS_CODE = 1001;
 
     private ActivityResultLauncher<Intent> bleProvisionLauncher;
+    private int enumRequestSeq;
 
     public FragmentBase() {
         super(R.layout.fragment_base);
@@ -158,6 +175,11 @@ public class FragmentBase extends Fragment {
 
     @Override
     public void onDestroy() {
+        enumRequestSeq = -1;
+        try {
+            Network.getInstance().stopPrinterDiscovery();
+        } catch (Exception ignored) {
+        }
         executor.shutdown();
         try {
             if (!executor.awaitTermination(500, TimeUnit.MILLISECONDS)) {
@@ -222,13 +244,17 @@ public class FragmentBase extends Fragment {
         initSpinner(view);
         tvStatus = view.findViewById(R.id.tv_status);
         tvMsg = view.findViewById(R.id.tv_msg);
-        tvScanTitle = view.findViewById(R.id.tv_scan_title);
-        tvScanDes = view.findViewById(R.id.tv_scan_des);
-        tvWifiModeTitle = view.findViewById(R.id.tv_wifi_mode_title);
 
         view.findViewById(R.id.bt_enum_printer).setOnClickListener(v -> {
             printerAdapter.clear();
-            executor.execute(new EnumPrinterTask(getContext(),mainHandler, api, spEnumType.getSelectedItemPosition()));
+            int requestId = ++enumRequestSeq;
+            int type = spEnumType.getSelectedItemPosition();
+            EnumPrinterTask task = new EnumPrinterTask(getContext(), mainHandler, api, type, requestId);
+            if (type == EnumPrinterTask.TYPE_LAN) {
+                new Thread(task, "lan-printer-discovery").start();
+            } else {
+                executor.execute(task);
+            }
         });
 
 
@@ -396,6 +422,20 @@ public class FragmentBase extends Fragment {
         printerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1);
         spPrinter = view.findViewById(R.id.sp_printer);
         spPrinter.setAdapter(printerAdapter);
+        spPrinter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                Object item = parent.getItemAtPosition(position);
+                if (item instanceof Printer.NetworkPrinter && ipPort != null) {
+                    Printer.NetworkPrinter printer = (Printer.NetworkPrinter) item;
+                    ipPort.setText(printer.getIp() + ":" + printer.getPort());
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+            }
+        });
     }
 
 

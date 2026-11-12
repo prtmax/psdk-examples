@@ -3,6 +3,7 @@
     <string name="version">版本:%s</string>
     <string name="unknown">未知</string>
     <string name="enum_printer">枚举打印机</string>
+    <string name="searching_printer">正在搜索局域网打印机...</string>
     <string name="open_printer">连接打印机</string>
     <string name="close_printer">断开打印机</string>
     <string name="show_status">打印机状态</string>
@@ -264,4 +265,11 @@
 
 
     <string name="force_eject">是否强制退纸</string>
+    <string name="back">返回</string>
+    <string name="ble_scan_title">扫描设备</string>
+    <string name="wifi_provision_title">Wi-Fi 配网</string>
+    <string name="ble_scan_start">扫描</string>
+    <string name="ble_scan_stop">停止扫描</string>
+    <string name="ble_scan_empty">未发现 BLE 设备</string>
+    <string name="connection_state">连接状态：</string>
 </resources>

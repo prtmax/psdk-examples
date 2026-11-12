@@ -22,6 +22,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
+import com.google.android.material.appbar.MaterialToolbar;
 
 import com.printer.demo.R;
 import com.printer.psdk.device.bluetooth.Bluetooth;
@@ -96,7 +100,14 @@ public class BleScanActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_ble_scan);
+        setupToolbar();
         listView = findViewById(R.id.lv_devices);
+        listView.setClipToPadding(false);
+        ViewCompat.setOnApplyWindowInsetsListener(listView, (v, insets) -> {
+            int bottom = insets.getInsets(WindowInsetsCompat.Type.navigationBars()).bottom;
+            v.setPadding(0, 0, 0, bottom);
+            return insets;
+        });
         emptyView = findViewById(R.id.tv_empty);
         scanButton = findViewById(R.id.bt_scan);
         adapter = new DeviceAdapter();
@@ -106,9 +117,9 @@ public class BleScanActivity extends Activity {
             if (!Bluetooth.getInstance().isInitialized()) {
                 return;
             }
-            if ("停止扫描".contentEquals(scanButton.getText())) {
+            if (getString(R.string.ble_scan_stop).contentEquals(scanButton.getText())) {
                 Bluetooth.getInstance().stopDiscovery();
-                scanButton.setText("扫描");
+                scanButton.setText(R.string.ble_scan_start);
             } else {
                 startDiscovery();
             }
@@ -151,6 +162,17 @@ public class BleScanActivity extends Activity {
         }
     }
 
+
+    private void setupToolbar() {
+        MaterialToolbar toolbar = findViewById(R.id.toolbar);
+        toolbar.setNavigationOnClickListener(v -> finish());
+        ViewCompat.setOnApplyWindowInsetsListener(toolbar, (v, insets) -> {
+            int top = insets.getInsets(WindowInsetsCompat.Type.statusBars()).top;
+            v.setPadding(v.getPaddingLeft(), top, v.getPaddingRight(), v.getPaddingBottom());
+            return insets;
+        });
+    }
+
     private void openProvision(BleDevice device) {
         if (Bluetooth.getInstance().isInitialized()) {
             Bluetooth.getInstance().stopDiscovery();
@@ -172,7 +194,7 @@ public class BleScanActivity extends Activity {
         adapter.notifyDataSetChanged();
         emptyView.setVisibility(View.VISIBLE);
         Bluetooth.getInstance().startDiscovery();
-        scanButton.setText("停止扫描");
+        scanButton.setText(R.string.ble_scan_stop);
     }
 
     private boolean isBleDevice(BluetoothDevice device) {
