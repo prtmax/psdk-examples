@@ -419,6 +419,7 @@ public class FragmentBase extends Fragment {
     private void initSpinner(View view) {
 
         spEnumType = view.findViewById(R.id.sp_enum_type);
+        spEnumType.setSelection(EnumPrinterTask.TYPE_LAN);
         printerAdapter = new ArrayAdapter<>(requireContext(), android.R.layout.simple_list_item_1);
         spPrinter = view.findViewById(R.id.sp_printer);
         spPrinter.setAdapter(printerAdapter);
