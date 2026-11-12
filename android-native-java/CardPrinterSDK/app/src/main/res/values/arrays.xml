@@ -6,8 +6,8 @@
         <item>D300Kp</item>
     </string-array>
     <string-array name="enum_type">
-        <item>USB</item>
         <item>LAN</item>
+        <item>USB</item>
     </string-array>
 
     <string-array name="r600_inject_mode">

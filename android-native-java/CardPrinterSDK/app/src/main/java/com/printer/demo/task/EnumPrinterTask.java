@@ -17,8 +17,8 @@ import java.util.concurrent.TimeUnit;
 
 public class EnumPrinterTask extends BaseTask {
     public static final int ENUM_PRINTER = 1;
-    public static final int TYPE_USB = 0;
-    public static final int TYPE_LAN = 1;
+    public static final int TYPE_LAN = 0;
+    public static final int TYPE_USB = 1;
     private static final String DEFAULT_PORT = "9100";
     private static final long DISCOVERY_WAIT_SECONDS = 12;
 

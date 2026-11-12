@@ -13,8 +13,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RadioButton;
-import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +33,6 @@ import com.printer.psdk.frame.father.listener.ListenAction;
 import com.printer.psdk.wifi.GenericWIFI;
 import com.printer.psdk.wifi.WIFI;
 import com.printer.psdk.wifi.args.WSetSSID;
-import com.printer.psdk.wifi.args.WSetWifiIP;
 import com.printer.psdk.wifi.args.WSetWifiLAP;
 
 import java.io.IOException;
@@ -54,12 +51,6 @@ public class WifiProvisionActivity extends Activity {
 
     private EditText wifiName;
     private EditText wifiPassword;
-    private EditText etIpAddress;
-    private EditText etGateway;
-    private EditText etNetmask;
-    private RadioButton dhcpRadio;
-    private RadioButton staticIpRadio;
-    private View staticIpSettings;
     private TextView tvContent;
     private TextView titleRightText;
     private Button useIpButton;
@@ -135,16 +126,7 @@ public class WifiProvisionActivity extends Activity {
         wifiPassword = findViewById(R.id.wifi_pwd);
         titleRightText = findViewById(R.id.title_right_text);
         tvContent = findViewById(R.id.tv_content);
-        dhcpRadio = findViewById(R.id.dhcp_radio);
-        staticIpRadio = findViewById(R.id.static_ip_radio);
-        staticIpSettings = findViewById(R.id.static_ip_settings);
-        etIpAddress = findViewById(R.id.ip_address);
-        etGateway = findViewById(R.id.gateway);
-        etNetmask = findViewById(R.id.netmask);
         useIpButton = findViewById(R.id.button_use_ip);
-        RadioGroup ipType = findViewById(R.id.ip_type_radio_group);
-        ipType.setOnCheckedChangeListener((group, checkedId) ->
-                staticIpSettings.setVisibility(checkedId == R.id.static_ip_radio ? View.VISIBLE : View.GONE));
     }
 
     @SuppressLint("MissingPermission")
@@ -152,11 +134,9 @@ public class WifiProvisionActivity extends Activity {
         findViewById(R.id.button_search_name).setOnClickListener(v -> query(ReadMark.WIFI_NAME, wifi == null ? null : wifi.getSSID()));
         findViewById(R.id.button_search_pwd).setOnClickListener(v -> query(ReadMark.WIFI_PASSWORD, wifi == null ? null : wifi.getPassword()));
         findViewById(R.id.button_status).setOnClickListener(v -> query(ReadMark.WIFI_LINK_STATE, wifi == null ? null : wifi.state()));
-        findViewById(R.id.button_search_dhcp).setOnClickListener(v -> query(ReadMark.WIFI_DHCP, wifi == null ? null : wifi.getWifiDHCP()));
         findViewById(R.id.button_get_wifi_role).setOnClickListener(v -> query(ReadMark.WIFI_ROLE, wifi == null ? null : wifi.getWifiRole()));
         findViewById(R.id.button_get_apssid).setOnClickListener(v -> query(ReadMark.WIFI_APSSID, wifi == null ? null : wifi.getWifiAPSSID()));
         findViewById(R.id.button_get_appassword).setOnClickListener(v -> query(ReadMark.WIFI_APPASSWORD, wifi == null ? null : wifi.getWifiAPPASSWORD()));
-        findViewById(R.id.button_get_info).setOnClickListener(v -> query(ReadMark.ALL_WIFI_INFO, wifi == null ? null : wifi.getWifiInfo()));
         findViewById(R.id.button_get_ip).setOnClickListener(v -> {
             if (wifi == null) {
                 query(ReadMark.ALL_IP_INFO, null);
@@ -164,15 +144,7 @@ public class WifiProvisionActivity extends Activity {
             }
             query(ReadMark.ALL_IP_INFO, wifi.getWifiIP().getWifiMASK().getWifiGATEWAY());
         });
-        findViewById(R.id.button_reset).setOnClickListener(v -> {
-            if (!ensureReady()) {
-                return;
-            }
-            safeWrite(wifi.reset());
-            toast("已发送重置配网信息");
-        });
         findViewById(R.id.button_send).setOnClickListener(v -> sendSsid());
-        findViewById(R.id.button_set_ip).setOnClickListener(v -> sendIp());
         findViewById(R.id.button_set_wifi_role).setOnClickListener(v -> chooseRole());
         findViewById(R.id.button_set_wifi_lap).setOnClickListener(v -> editApParams(device));
         useIpButton.setOnClickListener(v -> returnPrinterAddress());
@@ -193,32 +165,11 @@ public class WifiProvisionActivity extends Activity {
         tvContent.setText("配网指令已发送: " + name);
     }
 
-    private void sendIp() {
-        if (!ensureReady()) {
-            return;
-        }
-        if (dhcpRadio.isChecked()) {
-            safeWrite(wifi.setWifiDHCP());
-            toast("已发送动态IP设置");
-            return;
-        }
-        String ip = etIpAddress.getText().toString().trim();
-        String mask = etNetmask.getText().toString().trim();
-        String gateway = etGateway.getText().toString().trim();
-        if (!isValidIp(ip) || !isValidIp(mask) || !isValidIp(gateway)) {
-            toast("请检查IP、掩码和网关");
-            return;
-        }
-        safeWrite(wifi.setWifiIP(WSetWifiIP.builder().ip(ip).mask(mask).gateway(gateway).build()));
-        rememberPrinterIp(ip);
-        toast("已发送静态IP设置");
-    }
-
     private void chooseRole() {
         if (!ensureReady()) {
             return;
         }
-        final String[] items = {"STA模式(1)", "AP模式(2)", "共享模式(3)"};
+        final String[] items = {"STA模式(1)：加入路由器", "AP模式(2)：手机直连", "共享模式(3)"};
         final int[] roles = {1, 2, 3};
         new AlertDialog.Builder(this)
                 .setTitle("选择WIFI工作模式")
@@ -314,36 +265,17 @@ public class WifiProvisionActivity extends Activity {
                     }
                     showContent("wifi连接状态:" + (connected ? "已连接" : "未连接"));
                     break;
-                case WIFI_DHCP:
-                    boolean dhcp = "1".equals(text.replace("\r", "").replace("\n", ""));
-                    runOnUiThread(() -> {
-                        if (dhcp) {
-                            dhcpRadio.setChecked(true);
-                        } else {
-                            staticIpRadio.setChecked(true);
-                        }
-                        tvContent.setText("DHCP:" + (dhcp ? "动态" : "静态"));
-                    });
-                    break;
                 case ALL_IP_INFO:
                     String[] infos = text.split("\\r?\\n");
                     if (infos.length > 2) {
                         String ip = infos[0].trim();
                         String mask = infos[1].trim();
                         String gateway = infos[2].trim();
-                        runOnUiThread(() -> {
-                            tvContent.setText("ip:" + ip + "\n子网掩码:" + mask + "\n网关:" + gateway);
-                            etIpAddress.setText(ip);
-                            etNetmask.setText(mask);
-                            etGateway.setText(gateway);
-                            rememberPrinterIp(ip);
-                        });
+                        showContent("ip:" + ip + "\n子网掩码:" + mask + "\n网关:" + gateway);
+                        rememberPrinterIp(ip);
                     } else {
                         showContent(text);
                     }
-                    break;
-                case ALL_WIFI_INFO:
-                    showContent("WIFI相关信息:" + text);
                     break;
                 case WIFI_ROLE:
                     showContent("WIFI工作模式:" + roleText(text.replace("\r", "").replace("\n", "")));
@@ -364,9 +296,11 @@ public class WifiProvisionActivity extends Activity {
         if (!isValidIp(ip)) {
             return;
         }
-        lastPrinterIp = ip;
-        useIpButton.setEnabled(true);
-        useIpButton.setText("使用此IP打印 (" + ip + ":" + PRINTER_PORT + ")");
+        runOnUiThread(() -> {
+            lastPrinterIp = ip;
+            useIpButton.setEnabled(true);
+            useIpButton.setText("使用此IP打印 (" + ip + ":" + PRINTER_PORT + ")");
+        });
     }
 
     private void returnPrinterAddress() {
@@ -466,9 +400,9 @@ public class WifiProvisionActivity extends Activity {
     private String roleText(String role) {
         switch (role) {
             case "1":
-                return "STA模式(1)";
+                return "STA模式(1)，打印机加入路由器";
             case "2":
-                return "AP模式(2)";
+                return "AP模式(2)，手机直连打印机Wi-Fi";
             case "3":
                 return "共享模式(3)";
             default:
@@ -504,9 +438,7 @@ public class WifiProvisionActivity extends Activity {
         WIFI_NAME,
         WIFI_PASSWORD,
         WIFI_LINK_STATE,
-        WIFI_DHCP,
         ALL_IP_INFO,
-        ALL_WIFI_INFO,
         WIFI_ROLE,
         WIFI_APSSID,
         WIFI_APPASSWORD
