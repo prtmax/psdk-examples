@@ -569,6 +569,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.1.12"
+  psdk_dithering:
+    dependency: "direct main"
+    description:
+      name: psdk_dithering
+      sha256: "31822f4799e361517e79723663edfc8ead0a79ed0b2e5db8e15d4957b0e67aa3"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.12"
   psdk_frame_father:
     dependency: transitive
     description:

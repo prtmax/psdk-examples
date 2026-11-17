@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:psdk_bluetooth_traits/psdk_bluetooth_traits.dart';
 import 'package:psdk_device_adapter/psdk_device_adapter.dart';
+import 'package:psdk_dithering/psdk_dithering.dart';
 import 'package:psdk_fruit_emapi/psdk_fruit_emapi.dart';
 import 'package:psdk_fruit_esc/psdk_fruit_esc.dart' as esc;
 import 'package:psdk_fruit_esc/psdk_fruit_esc.dart';
@@ -15,6 +16,9 @@ import 'emapi_formatters.dart';
 class EmapiDemoController extends ChangeNotifier {
   EmapiDemoController({BluetoothPrinterConnector? connector})
     : _connector = connector ?? BluetoothPrinterConnector();
+
+  /// App 端 Floyd-Steinberg 抖动；ESC 硬件模式仍使用普通二值化。
+  static const int escDitherPrintMode = 3;
 
   final BluetoothPrinterConnector _connector;
   final List<DiscoveredPrinterDevice> devices = [];
@@ -874,12 +878,17 @@ class EmapiDemoController extends ChangeNotifier {
     required bool reverse,
     required int? threshold,
   }) {
+    final usesDithering = printMode == escDitherPrintMode;
+    final hardwarePrintMode = usesDithering ? 0 : printMode;
+    final escImageBytes = usesDithering
+        ? applyFloydSteinbergDithering(imageBytes)
+        : imageBytes;
     final command = esc.ESC
         .genericWithConnectedDevice(_connectedDevice ?? FakeConnectedDevice())
         .wakeup()
         .enable()
         .paperType(arg: esc.EPaperType(type: paperType))
-        .enableMode(mode: printMode)
+        .enableMode(mode: hardwarePrintMode)
         .thickness(thickness: thickness)
         .lineDot(dot: 45);
     if (printMode == 2) {
@@ -894,7 +903,7 @@ class EmapiDemoController extends ChangeNotifier {
     } else {
       command.image(
         arg: esc.EImage(
-          image: imageBytes,
+          image: escImageBytes,
           compress: compress,
           reverse: reverse,
           threshold: threshold,
@@ -1302,6 +1311,21 @@ class EmapiDemoController extends ChangeNotifier {
     }
     return bytes.isEmpty ? null : Uint8List.fromList(bytes);
   }
+}
+
+/// 使用 psdk_dithering 的 Floyd-Steinberg 算法生成黑白 PNG，
+/// 输出可以直接交给 ESC 的 EImage。
+Uint8List applyFloydSteinbergDithering(Uint8List imageBytes) {
+  final processed = FloydSteinberg().processWithBytes(imageBytes);
+  final result = processed.result;
+  if (result == null) {
+    throw ArgumentError.value(
+      processed.message ?? '无法解码图片',
+      'imageBytes',
+      'Floyd-Steinberg 抖动处理失败',
+    );
+  }
+  return result.data;
 }
 
 Uint8List _responseBytes({

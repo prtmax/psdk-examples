@@ -684,6 +684,10 @@ class _EscPrintSheetContentState extends State<_EscPrintSheetContent> {
             ButtonSegment(value: 0, label: Text('普通')),
             ButtonSegment(value: 1, label: Text('双重')),
             ButtonSegment(value: 2, label: Text('灰阶')),
+            ButtonSegment(
+              value: EmapiDemoController.escDitherPrintMode,
+              label: Text('抖动'),
+            ),
           ],
           selected: {enableMode},
           onSelectionChanged: widget.controller.busy

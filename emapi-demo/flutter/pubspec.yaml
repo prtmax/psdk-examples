@@ -41,6 +41,7 @@ dependencies:
   psdk_fruit_emapi: ^0.1.12
   psdk_fruit_esc: ^0.1.12
   psdk_imageb: ^0.1.12
+  psdk_dithering: ^0.1.12
 
   file_picker: ^11.0.2
   share_plus: ^12.0.2

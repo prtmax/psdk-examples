@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:emapi_demo/src/bluetooth_printer_connector.dart';
 import 'package:emapi_demo/src/emapi_demo_controller.dart';
@@ -59,6 +60,78 @@ String methodBody(String source, String methodName) {
     }
   }
   return '';
+}
+
+Uint8List onePixelPng() {
+  return Uint8List.fromList(const [
+    0x89,
+    0x50,
+    0x4E,
+    0x47,
+    0x0D,
+    0x0A,
+    0x1A,
+    0x0A,
+    0x00,
+    0x00,
+    0x00,
+    0x0D,
+    0x49,
+    0x48,
+    0x44,
+    0x52,
+    0x00,
+    0x00,
+    0x00,
+    0x01,
+    0x00,
+    0x00,
+    0x00,
+    0x01,
+    0x08,
+    0x06,
+    0x00,
+    0x00,
+    0x00,
+    0x1F,
+    0x15,
+    0xC4,
+    0x89,
+    0x00,
+    0x00,
+    0x00,
+    0x0A,
+    0x49,
+    0x44,
+    0x41,
+    0x54,
+    0x78,
+    0x9C,
+    0x63,
+    0x00,
+    0x01,
+    0x00,
+    0x00,
+    0x05,
+    0x00,
+    0x01,
+    0x0D,
+    0x0A,
+    0x2D,
+    0xB4,
+    0x00,
+    0x00,
+    0x00,
+    0x00,
+    0x49,
+    0x45,
+    0x4E,
+    0x44,
+    0xAE,
+    0x42,
+    0x60,
+    0x82,
+  ]);
 }
 
 void main() {
@@ -260,6 +333,7 @@ void main() {
     expect(operationSheet, contains('controller.performEscPrint'));
     expect(operationSheet, contains('paperType'));
     expect(operationSheet, contains('enableMode'));
+    expect(operationSheet, contains("label: Text('抖动')"));
     expect(operationSheet, contains('thickness'));
     expect(operationSheet, contains('连续纸'));
   });
@@ -388,11 +462,35 @@ void main() {
     expect(buildBody, contains('image('));
     expect(buildBody, contains('imageGray('));
     expect(buildBody, contains('EImageGray('));
+    expect(buildBody, contains('applyFloydSteinbergDithering(imageBytes)'));
+    expect(buildBody, contains('enableMode(mode: hardwarePrintMode)'));
     expect(buildBody, contains('compress: false'));
     expect(buildBody, contains('position()'));
     expect(buildBody, contains('continuous'));
     expect(buildBody, contains('stopJob()'));
     expect(printBody, contains('printEsc('));
+  });
+
+  test('controller_floydSteinbergDitheringReturnsPngBytes', () {
+    final source = onePixelPng();
+
+    final output = applyFloydSteinbergDithering(source);
+
+    expect(output, isNotEmpty);
+    expect(output.take(8), source.take(8));
+  });
+
+  test('controller_simulationDitherEscPrintCompletes', () async {
+    final controller = EmapiDemoController()..simulationMode = true;
+    addTearDown(controller.dispose);
+
+    await controller.performEscPrint(
+      imageBytes: onePixelPng(),
+      printMode: EmapiDemoController.escDitherPrintMode,
+    );
+
+    expect(controller.commandLogs.first.message, contains('ESC 图片打印 1 份已完成'));
+    expect(controller.requestLogs.first.bytes, isNotEmpty);
   });
 
   test('controller_simulatesRfidStatusReportAfterEscPrint', () {
