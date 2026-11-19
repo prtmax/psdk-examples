@@ -20,6 +20,7 @@ import androidx.viewpager2.widget.ViewPager2;
 
 import com.printer.demo.adapter.VP2Adapter;
 import com.printer.sdk.CardPrinterAPI;
+import com.printer.psdk.device.net.Network;
 import com.printer.sdk.utils.ThreadUtils;
 
 import me.relex.circleindicator.CircleIndicator3;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Network.getInstance().initialize(getApplicationContext());
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {

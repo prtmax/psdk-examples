@@ -1,5 +1,9 @@
 package com.example.classic_bluetooth_demo;
 
+import static com.printer.psdk.cpcl.mark.CodeType.CODE128;
+import static com.printer.psdk.cpcl.mark.Font.TSS16;
+import static com.printer.psdk.cpcl.mark.Font.TSS24;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Intent;
@@ -51,6 +55,7 @@ public class NETActivity extends Activity {
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    network.initialize(getApplicationContext());
     setContentView(R.layout.activity_net);
     initView();
     initUdpDiscovery();
@@ -260,39 +265,39 @@ public class NETActivity extends Activity {
               .line(CLine.builder().startX(0).startY(88 + 128 + 80 + 144 + 128).endX(598 - 56 - 16).endY(88 + 128 + 80 + 144 + 128).lineWidth(2).build())
               .line(CLine.builder().startX(52).startY(88 + 128 + 80).endX(52).endY(88 + 128 + 80 + 144 + 128).lineWidth(2).build())
               .line(CLine.builder().startX(598 - 56 - 16).startY(88 + 128 + 80).endX(598 - 56 - 16).endY(664).lineWidth(2).build())
-              .bar(CBar.builder().x(120).y(88 + 12).lineWidth(1).height(80).content("1234567890").codeType(com.printer.psdk.cpcl.mark.CodeType.CODE128).codeRotation(CodeRotation.ROTATION_0).build())
-              .text(CText.builder().textX(120 + 12).textY(88 + 20 + 76).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("1234567890").build())
-              .text(CText.builder().textX(12).textY(88 + 128 + 80 + 32).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("收").build())
-              .text(CText.builder().textX(12).textY(88 + 128 + 80 + 96).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("件").build())
-              .text(CText.builder().textX(12).textY(88 + 128 + 80 + 144 + 32).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("发").build())
-              .text(CText.builder().textX(12).textY(88 + 128 + 80 + 144 + 80).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("件").build())
-              .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 144 + 128 + 16).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("签收人/签收时间").build())
-              .text(CText.builder().textX(430).textY(88 + 128 + 80 + 144 + 128 + 36).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("月").build())
-              .text(CText.builder().textX(490).textY(88 + 128 + 80 + 144 + 128 + 36).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("日").build())
-              .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 24).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("收姓名" + " " + "13777777777").build())
-              .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 24 + 32).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("南京市浦口区威尼斯水城七街区七街区").build())
-              .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 144 + 24).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("名字" + " " + "13777777777").build())
-              .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 144 + 24 + 32).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("南京市浦口区威尼斯水城七街区七街区").build())
-              .text(CText.builder().textX(598 - 56 - 5).textY(88 + 128 + 80 + 104).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("派").build())
-              .text(CText.builder().textX(598 - 56 - 5).textY(88 + 128 + 80 + 160).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("件").build())
-              .text(CText.builder().textX(598 - 56 - 5).textY(88 + 128 + 80 + 208).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("联").build())
+              .bar(CBar.builder().x(120).y(88 + 12).lineWidth(1).height(80).content("1234567890").codeType(CODE128).codeRotation(CodeRotation.ROTATION_0).build())
+              .text(CText.builder().textX(120 + 12).textY(88 + 20 + 76).font(TSS24).content("1234567890").build())
+              .text(CText.builder().textX(12).textY(88 + 128 + 80 + 32).font(TSS24).content("收").build())
+              .text(CText.builder().textX(12).textY(88 + 128 + 80 + 96).font(TSS24).content("件").build())
+              .text(CText.builder().textX(12).textY(88 + 128 + 80 + 144 + 32).font(TSS24).content("发").build())
+              .text(CText.builder().textX(12).textY(88 + 128 + 80 + 144 + 80).font(TSS24).content("件").build())
+              .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 144 + 128 + 16).font(TSS24).content("签收人/签收时间").build())
+              .text(CText.builder().textX(430).textY(88 + 128 + 80 + 144 + 128 + 36).font(TSS24).content("月").build())
+              .text(CText.builder().textX(490).textY(88 + 128 + 80 + 144 + 128 + 36).font(TSS24).content("日").build())
+              .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 24).font(TSS24).content("收姓名" + " " + "13777777777").build())
+              .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 24 + 32).font(TSS24).content("南京市浦口区威尼斯水城七街区七街区").build())
+              .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 144 + 24).font(TSS24).content("名字" + " " + "13777777777").build())
+              .text(CText.builder().textX(52 + 20).textY(88 + 128 + 80 + 144 + 24 + 32).font(TSS24).content("南京市浦口区威尼斯水城七街区七街区").build())
+              .text(CText.builder().textX(598 - 56 - 5).textY(88 + 128 + 80 + 104).font(TSS24).content("派").build())
+              .text(CText.builder().textX(598 - 56 - 5).textY(88 + 128 + 80 + 160).font(TSS24).content("件").build())
+              .text(CText.builder().textX(598 - 56 - 5).textY(88 + 128 + 80 + 208).font(TSS24).content("联").build())
               .box(CBox.builder().topLeftX(0).topLeftY(1).bottomRightX(598).bottomRightY(968).lineWidth(2).build())
               .line(CLine.builder().startX(0).startY(696 + 80).endX(598).endY(696 + 80).lineWidth(2).build())
               .line(CLine.builder().startX(0).startY(696 + 80 + 136).endX(598 - 56 - 16).endY(696 + 80 + 136).lineWidth(2).build())
               .line(CLine.builder().startX(52).startY(80).endX(52).endY(696 + 80 + 136).lineWidth(2).build())
               .line(CLine.builder().startX(598 - 56 - 16).startY(80).endX(598 - 56 - 16).endY(968).lineWidth(2).build())
-              .bar(CBar.builder().x(320).y(696 - 4).lineWidth(1).height(56).content("1234567890").codeType(com.printer.psdk.cpcl.mark.CodeType.CODE128).codeRotation(CodeRotation.ROTATION_0).build())
-              .text(CText.builder().textX(320 + 8).textY(696 + 54).font(com.printer.psdk.cpcl.mark.Font.TSS16).content("1234567890").build())
-              .text(CText.builder().textX(12).textY(696 + 80 + 35).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("发").build())
-              .text(CText.builder().textX(12).textY(696 + 80 + 84).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("件").build())
-              .text(CText.builder().textX(52 + 20).textY(696 + 80 + 28).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("名字" + " " + "13777777777").build())
-              .text(CText.builder().textX(52 + 20).textY(696 + 80 + 28 + 32).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("南京市浦口区威尼斯水城七街区七街区").build())
-              .text(CText.builder().textX(598 - 56 - 5).textY(696 + 80 + 50).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("客").build())
-              .text(CText.builder().textX(598 - 56 - 5).textY(696 + 80 + 82).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("户").build())
-              .text(CText.builder().textX(598 - 56 - 5).textY(696 + 80 + 106).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("联").build())
-              .text(CText.builder().textX(12 + 8).textY(696 + 80 + 136 + 22 - 5).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("物品：" + "几个快递" + " " + "12kg").build())
+              .bar(CBar.builder().x(320).y(696 - 4).lineWidth(1).height(56).content("1234567890").codeType(CODE128).codeRotation(CodeRotation.ROTATION_0).build())
+              .text(CText.builder().textX(320 + 8).textY(696 + 54).font(TSS16).content("1234567890").build())
+              .text(CText.builder().textX(12).textY(696 + 80 + 35).font(TSS24).content("发").build())
+              .text(CText.builder().textX(12).textY(696 + 80 + 84).font(TSS24).content("件").build())
+              .text(CText.builder().textX(52 + 20).textY(696 + 80 + 28).font(TSS24).content("名字" + " " + "13777777777").build())
+              .text(CText.builder().textX(52 + 20).textY(696 + 80 + 28 + 32).font(TSS24).content("南京市浦口区威尼斯水城七街区七街区").build())
+              .text(CText.builder().textX(598 - 56 - 5).textY(696 + 80 + 50).font(TSS24).content("客").build())
+              .text(CText.builder().textX(598 - 56 - 5).textY(696 + 80 + 82).font(TSS24).content("户").build())
+              .text(CText.builder().textX(598 - 56 - 5).textY(696 + 80 + 106).font(TSS24).content("联").build())
+              .text(CText.builder().textX(12 + 8).textY(696 + 80 + 136 + 22 - 5).font(TSS24).content("物品：" + "几个快递" + " " + "12kg").build())
               .box(CBox.builder().topLeftX(598 - 56 - 16 - 120).topLeftY(696 + 80 + 136 + 11).bottomRightX(598 - 56 - 16 - 16).bottomRightY(968 - 11).lineWidth(2).build())
-              .text(CText.builder().textX(598 - 56 - 16 - 120 + 17).textY(696 + 80 + 136 + 11 + 6).font(com.printer.psdk.cpcl.mark.Font.TSS24).content("已验视").build());
+              .text(CText.builder().textX(598 - 56 - 16 - 120 + 17).textY(696 + 80 + 136 + 11 + 6).font(TSS24).content("已验视").build());
       if (cb_position.isChecked()) {
         _gcpcl.form();
       }

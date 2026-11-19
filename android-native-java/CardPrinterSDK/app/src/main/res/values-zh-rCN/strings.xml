@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="discovery_failed">搜索打印机失败：%1$s</string>
     <string name="version">版本:%s</string>
     <string name="unknown">未知</string>
     <string name="enum_printer">枚举打印机</string>

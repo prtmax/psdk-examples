@@ -15,3 +15,5 @@
 local.properties
 /.idea/
 /aars/build/
+/signing/
+/keystore.properties

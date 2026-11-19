@@ -88,6 +88,10 @@ import com.printer.psdk.imagep.android.AndroidSourceImage;
     xmlns:tools="http://schemas.android.com/tools">
 <uses-permission android:name="android.permission.INTERNET" />
 <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+<uses-permission android:name="android.permission.CHANGE_NETWORK_STATE" />
+<uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+<uses-permission android:name="android.permission.WAKE_LOCK" />
 
 <!-- 扫码功能才需要 -->
 <uses-permission android:name="android.permission.CAMERA" />
@@ -250,6 +254,17 @@ GenericTSPL tspl = PrintUtil.getInstance().tspl()
 WroteReporter reporter = tspl.write();
 ```
 
+使用自定义矢量字体时，先将目标字体安装到打印机，再通过 `rawFont` 指定字体文件名。放大倍数按 `目标字高(mm) / 0.35` 取整，例如打印 5 mm 高文字使用 `14`：
+
+```java
+.text(TText.builder()
+    .x(400).y(25)
+    .rawFont("SIMHEI.TTF")
+    .xmulti(14).ymulti(14)
+    .content("上海浦东")
+    .build())
+```
+
 图片打印：
 
 ```java
@@ -368,9 +383,10 @@ private void connectNetwork(String ip) {
 }
 ```
 
-可选的 UDP 搜索：
+可选的网络搜索（Android 应用在启动时初始化一次，其他搜索调用保持原样）：
 
 ```java
+network.initialize(getApplicationContext());
 network.setOnPrinterFoundListener(info -> {
   // info.getId() 为可连接的 IP 标识；info.toString() 可用于展示
 });
@@ -473,10 +489,22 @@ Demo 已实现的配网能力包括：读取/设置 SSID 和密码、查询连�
 | `connection == null` | 设备对象是否为空；设备类型是否与 Classic/BLE API 匹配 |
 | 已连接但打印失败 | 是否在 `onConnectSuccess` 中调用 `PrintUtil.init`；是否在后台线程发送；检查 `WroteReporter.getException()` |
 | 打印内容乱码 | 协议、字体和字符集是否匹配；TSPL/CPCL 的坐标和 DPI 是否正确 |
+| 中文无法打印或部分中文缺失 | 多数是使用了点阵字体（如 `Font.TSS16`、`Font.TSS24`、`Font.TSS32`），而打印机没有对应的中文字库。改用打印机中已安装的中文矢量字体，例如将 `font(Font.TSS24)` 替换为 `rawFont("SIMHEI.TTF")`；字体文件名以打印机实际安装的字体为准 |
 | 图片打印空白/过大 | 检查图片尺寸、`compress(true)`、打印机分辨率和纸张尺寸 |
 | 网络连接失败 | 手机与打印机是否同网段；IP 是否正确；端口是否为 9100；是否被防火墙拦截 |
 | USB 无设备 | VID/PID 是否正确；是否插入 OTG；是否允许系统 USB 授权 |
 | 状态读取不到 | 是否先发送 `status()/state()`；是否启动 `DataListener` 或调用 `read(timeout)`；打印机是否支持该查询 |
+
+中文打印示例：
+
+```java
+.text(TText.builder()
+    .x(30).y(60)
+    .rawFont("SIMHEI.TTF") // 替换为打印机中实际存在的中文矢量字体
+    .xmulti(2).ymulti(2)
+    .content("中文打印测试")
+    .build())
+```
 
 ## 12. 联调验收清单
 

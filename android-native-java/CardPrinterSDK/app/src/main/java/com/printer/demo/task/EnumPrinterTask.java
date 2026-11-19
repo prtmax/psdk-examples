@@ -3,26 +3,23 @@ package com.printer.demo.task;
 import android.content.Context;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 import com.printer.demo.R;
 import com.printer.psdk.device.net.Network;
 import com.printer.sdk.CardPrinterAPI;
 import com.printer.sdk.Printer;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
 
 public class EnumPrinterTask extends BaseTask {
     public static final int ENUM_PRINTER = 1;
     public static final int TYPE_LAN = 0;
     public static final int TYPE_USB = 1;
     private static final String DEFAULT_PORT = "9100";
-    private static final long DISCOVERY_WAIT_SECONDS = 12;
-
-    private static final Object DISCOVERY_LOCK = new Object();
 
     private final CardPrinterAPI api;
     private final int type;
@@ -37,23 +34,23 @@ public class EnumPrinterTask extends BaseTask {
 
     @Override
     public void run() {
-        super.run();
+        postStatus("");
+        if (type == TYPE_LAN) {
+            startLanDiscovery();
+            return;
+        }
         List<Printer> printers;
         try {
             printers = enumerate();
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        } catch (SecurityException e) {
+            Log.e("PrinterDiscovery", "Printer enumeration failed", e);
+            postStatus(context.getString(R.string.discovery_failed, e.getMessage()));
             return;
         }
-        if (printers == null) {
-            return;
-        }
-        if (type != TYPE_LAN) {
-            if (!printers.isEmpty()) {
-                Message result = mainHandler.obtainMessage(ENUM_PRINTER, printers);
-                result.arg1 = requestId;
-                result.sendToTarget();
-            }
+        if (type != TYPE_LAN && !printers.isEmpty()) {
+            Message result = mainHandler.obtainMessage(ENUM_PRINTER, printers);
+            result.arg1 = requestId;
+            result.sendToTarget();
         }
         if (printers.isEmpty()) {
             postStatus(context.getString(R.string.no_printer));
@@ -62,54 +59,35 @@ public class EnumPrinterTask extends BaseTask {
         }
     }
 
-    private List<Printer> enumerate() throws InterruptedException {
+    private List<Printer> enumerate() {
         switch (type) {
             case TYPE_USB:
                 List<Printer> usb = api.findUsbPrinter();
                 return usb == null ? new ArrayList<Printer>() : usb;
-            case TYPE_LAN:
-                return discoverLanPrinters();
             default:
                 return new ArrayList<>();
         }
     }
 
-    /**
-     * Network.startPrinterDiscovery() broadcasts for about 10 seconds.
-     */
-    private List<Printer> discoverLanPrinters() throws InterruptedException {
-        synchronized (DISCOVERY_LOCK) {
-            return discoverLanPrintersLocked();
-        }
-    }
-
-    private List<Printer> discoverLanPrintersLocked() throws InterruptedException {
-        postStatus(context.getString(R.string.searching_printer));
+    private void startLanDiscovery() {
         Network network = Network.getInstance();
         List<Printer> found = Collections.synchronizedList(new ArrayList<Printer>());
-        CountDownLatch done = new CountDownLatch(1);
-        network.stopPrinterDiscovery();
         network.setOnPrinterFoundListener(info -> addLanPrinter(found, info));
         network.setOnScanningChangeListener(scanning -> {
-            if (!scanning) {
-                done.countDown();
+            if (scanning) {
+                postStatus(context.getString(R.string.searching_printer));
+                return;
+            }
+            IOException error = network.getLastDiscoveryError();
+            if (error != null) {
+                postStatus(context.getString(R.string.discovery_failed, error.getMessage()));
+            } else if (found.isEmpty()) {
+                postStatus(context.getString(R.string.no_printer));
+            } else {
+                postStatus(context.getString(R.string.op_successfully, context.getString(R.string.enum_printer)));
             }
         });
-        try {
-            network.startPrinterDiscovery();
-            if (!done.await(DISCOVERY_WAIT_SECONDS, TimeUnit.SECONDS)) {
-                network.stopPrinterDiscovery();
-            }
-            synchronized (found) {
-                return new ArrayList<>(found);
-            }
-        } finally {
-            network.setOnPrinterFoundListener(null);
-            network.setOnScanningChangeListener(null);
-            if (network.isScanning()) {
-                network.stopPrinterDiscovery();
-            }
-        }
+        network.startPrinterDiscovery();
     }
 
     private void addLanPrinter(List<Printer> found, Network.PrinterInfo info) {
@@ -122,14 +100,9 @@ public class EnumPrinterTask extends BaseTask {
         }
         Printer printer;
         synchronized (found) {
-            for (Printer existing : found) {
-                if (existing instanceof Printer.NetworkPrinter
-                        && ip.equals(((Printer.NetworkPrinter) existing).getIp())) {
-                    return;
-                }
-            }
             printer = new NamedNetworkPrinter(info.toString(), ip, DEFAULT_PORT);
             found.add(printer);
+            Log.i("PrinterDiscovery", "found request=" + requestId + " printer=" + info);
         }
         Message result = mainHandler.obtainMessage(ENUM_PRINTER, Collections.singletonList(printer));
         result.arg1 = requestId;

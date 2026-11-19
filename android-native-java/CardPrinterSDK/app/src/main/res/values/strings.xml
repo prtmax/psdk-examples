@@ -1,4 +1,5 @@
 <resources>
+    <string name="discovery_failed">Printer search failed: %1$s</string>
     <string name="app_name" translatable="false">CardPrinterSDK</string>
     <string name="version">version:%s</string>
     <string name="unknown">unknown</string>

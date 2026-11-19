@@ -62,6 +62,8 @@ import com.printer.sdk.operate.PrintData;
 import com.printer.sdk.operate.UpdateFirmware;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -176,10 +178,6 @@ public class FragmentBase extends Fragment {
     @Override
     public void onDestroy() {
         enumRequestSeq = -1;
-        try {
-            Network.getInstance().stopPrinterDiscovery();
-        } catch (Exception ignored) {
-        }
         executor.shutdown();
         try {
             if (!executor.awaitTermination(500, TimeUnit.MILLISECONDS)) {
@@ -197,6 +195,17 @@ public class FragmentBase extends Fragment {
 
 
         super.onDestroy();
+    }
+
+    @Override
+    public void onDestroyView() {
+        ++enumRequestSeq;
+        cancelDiscovery();
+        super.onDestroyView();
+    }
+
+    private void cancelDiscovery() {
+        Network.getInstance().stopPrinterDiscovery();
     }
 
     @Override
@@ -246,12 +255,13 @@ public class FragmentBase extends Fragment {
         tvMsg = view.findViewById(R.id.tv_msg);
 
         view.findViewById(R.id.bt_enum_printer).setOnClickListener(v -> {
+            cancelDiscovery();
             printerAdapter.clear();
             int requestId = ++enumRequestSeq;
             int type = spEnumType.getSelectedItemPosition();
             EnumPrinterTask task = new EnumPrinterTask(getContext(), mainHandler, api, type, requestId);
             if (type == EnumPrinterTask.TYPE_LAN) {
-                new Thread(task, "lan-printer-discovery").start();
+                task.run();
             } else {
                 executor.execute(task);
             }
@@ -479,7 +489,7 @@ public class FragmentBase extends Fragment {
     //sh,2026.08.17 add 读取固件文件为字节数组(约2MB, WiFi 传输, 不分包)
     private byte[] readFileToBytes(File file) throws Exception {
         byte[] firmware = new byte[(int) file.length()];
-        try (java.io.InputStream in = new java.io.FileInputStream(file)) {
+        try (InputStream in = new FileInputStream(file)) {
             int offset = 0;
             int read;
             while (offset < firmware.length
