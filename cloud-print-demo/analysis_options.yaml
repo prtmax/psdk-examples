@@ -1,0 +1,19 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - build/**
+    - android/**
+    - ios/**
+    - web/**
+    - windows/**
+    - macos/**
+    - linux/**
+  errors:
+    # Worktree checkouts resolve psdk_* via gitignored pubspec_overrides.yaml
+    # while committed pubspec.yaml targets sibling ../../psdk/dart/* on main.
+    path_does_not_exist: ignore
+
+linter:
+  rules:
+    # Additional project rules can be enabled here.
