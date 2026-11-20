@@ -55,11 +55,12 @@
   },
   "compileType": "miniprogram",
   "libVersion": "2.30.1",
-  "appid": "wxcf48953a5d51bccf",
+  "appid": "wxf94b9a9659b2e476",
   "projectname": "print-demo",
   "condition": {},
   "editorSetting": {
     "tabIndent": "insertSpaces",
     "tabSize": 2
-  }
+  },
+  "isGameTourist": false
 }

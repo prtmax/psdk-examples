@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.printer.psdk.compatible.external.inkjet.*;
 import com.printer.psdk.compatible.external.inkjet.mark.ImageMode;
+import com.printer.psdk.compatible.external.inkjet.mark.ImageQuality;
 import com.printer.psdk.compatible.external.inkjet.mark.ShutdownTime;
 import com.printer.psdk.device.adapter.ConnectedDevice;
 import com.printer.psdk.device.adapter.types.WroteReporter;
@@ -179,7 +180,7 @@ public class MainActivity extends Activity {
               readMark = ReadMark.OPERATE_PRINT;
               CompatibleInkJet _compatibleInkJet = compatibleInkJet.page(IPage.builder().width(44).height(60).build())
                       .cls()
-                      .image(IImage.builder().image(new AndroidSourceImage(rawBitmap)).mode(ImageMode.JPG).build())
+                      .image(IImage.builder().image(new AndroidSourceImage(rawBitmap)).mode(ImageMode.JPG).quality(ImageQuality.PHOTO).build())
                       .print(1);
 //              Log.e(TAG, "下发的hex: " + _compatibleInkJet.command().hex());
               safeWrite(_compatibleInkJet);

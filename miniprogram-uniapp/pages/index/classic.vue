@@ -17,7 +17,8 @@
 		<button @click="writeTsplRibbonModel" class="button" v-show="items[current].type === 'tspl'">打印热转印测试</button>
 		<canvas :style="'width: ' + canvasWidth + 'px; height: ' + canvasHeight + 'px; position: fixed; left: 8888px'"
 			:canvas-id="canvasId"></canvas>
-		<button @click="printImage" class="button">打印图片</button>
+		<button @click="printImage(false)" class="button">打印图片</button>
+		<button @click="printImage(true)" class="button" v-show="items[current].type === 'esc'">灰阶打印图片</button>
 		<button @click="learnPaper" class="button" v-show="items[current].type === 'esc'">校准纸张</button>
 		<scroll-view class="canvas-buttons" scroll-y="true">
 			<block v-for="(item, index) in discoveredDevices" :key="item.address">
@@ -83,6 +84,7 @@
 	} from "@psdk/tspl";
 	import {
 		EImage,
+		EImageGray,
 		EPaperTypeQ3,
 		PaperTypeQ3
 	} from "@psdk/esc";
@@ -308,7 +310,7 @@
 					await vm.sendMessage(learnBinary);
 				}
 			},
-			async printImage() {
+			async printImage(gray = false) {
 				const vm = this;
 				const ctx = uni.createCanvasContext(vm.canvasId, this);
 				const imgWidth = vm.canvasWidth; // 每张图片的宽度跟画布宽度一样
@@ -374,17 +376,16 @@
 					// const paperTypeCmd = await vm.$printer.esc().clear().paperTypeQ3(new EPaperTypeQ3({paperType:PaperTypeQ3.NO_DRY_ADHESIVE_PAPER}));
 					// const paperTypeBinary = paperTypeCmd.command().binary();
 					// await vm.sendMessage(paperTypeBinary);
-					const esc = await vm.$printer.esc().clear()
+					const esc = vm.$printer.esc().clear()
 						.enable()
-						.wakeup()
-						.image(
-							new EImage({
-								image: input,
-								compress: true,
-							})
-						)
-						.lineDot(40)
-						.stopJob();
+						.wakeup();
+					if (gray) {
+						esc.enableGray().imageGray(new EImageGray({ image: input }));
+					} else {
+						// 普通图片打印时切回二值模式，避免沿用上次的灰阶模式。
+						esc.enableMode(0).image(new EImage({ image: input, compress: false }));
+					}
+					esc.lineDot(40).stopJob();
 					const binary = esc.command().binary();
 					await vm.sendMessage(binary);
 				}

@@ -4,7 +4,7 @@ var __DEFINE__ = function(modId, func, req) { var m = { exports: {}, _tempexport
 var __REQUIRE__ = function(modId, source) { if(!__MODS__[modId]) return require(source); if(!__MODS__[modId].status) { var m = __MODS__[modId].m; m._exports = m._tempexports; var desp = Object.getOwnPropertyDescriptor(m, "exports"); if (desp && desp.configurable) Object.defineProperty(m, "exports", { set: function (val) { if(typeof val === "object" && val !== m._exports) { m._exports.__proto__ = val.__proto__; Object.keys(val).forEach(function (k) { m._exports[k] = val[k]; }); } m._tempexports = val }, get: function () { return m._tempexports; } }); __MODS__[modId].status = 1; __MODS__[modId].func(__MODS__[modId].req, m, m.exports); } return __MODS__[modId].m.exports; };
 var __REQUIRE_WILDCARD__ = function(obj) { if(obj && obj.__esModule) { return obj; } else { var newObj = {}; if(obj != null) { for(var k in obj) { if (Object.prototype.hasOwnProperty.call(obj, k)) newObj[k] = obj[k]; } } newObj.default = obj; return newObj; } };
 var __REQUIRE_DEFAULT__ = function(obj) { return obj && obj.__esModule ? obj.default : obj; };
-__DEFINE__(1790237021591, function(require, module, exports) {
+__DEFINE__(1795152767015, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -25,8 +25,8 @@ __exportStar(require("./impls"), exports);
 __exportStar(require("./args"), exports);
 __exportStar(require("./types"), exports);
 
-}, function(modId) {var map = {"./impls":1790237021592,"./args":1790237021595,"./types":1790237021598}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021592, function(require, module, exports) {
+}, function(modId) {var map = {"./impls":1795152767016,"./args":1795152767019,"./types":1795152767022}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767016, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -46,8 +46,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./generic"), exports);
 __exportStar(require("./tspl"), exports);
 
-}, function(modId) { var map = {"./generic":1790237021593,"./tspl":1790237021654}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021593, function(require, module, exports) {
+}, function(modId) { var map = {"./generic":1795152767017,"./tspl":1795152767078}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767017, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GenericTSPL = void 0;
@@ -59,8 +59,8 @@ class GenericTSPL extends basic_1.BasicTSPL {
 }
 exports.GenericTSPL = GenericTSPL;
 
-}, function(modId) { var map = {"./basic":1790237021594}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021594, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767018}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767018, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BasicTSPL = void 0;
@@ -384,8 +384,8 @@ class BasicTSPL extends frame_father_1.PSDK {
 }
 exports.BasicTSPL = BasicTSPL;
 
-}, function(modId) { var map = {"../args":1790237021595}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021595, function(require, module, exports) {
+}, function(modId) { var map = {"../args":1795152767019}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767019, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -451,8 +451,8 @@ __exportStar(require("./learnpapergap"), exports);
 __exportStar(require("./readhardwareversion"), exports);
 __exportStar(require("./resetfactory"), exports);
 
-}, function(modId) { var map = {"./bar":1790237021596,"./barcode":1790237021608,"./basic":1790237021597,"./box":1790237021609,"./circle":1790237021610,"./cls":1790237021611,"./cut":1790237021612,"./density":1790237021613,"./direction":1790237021614,"./dmatrix":1790237021615,"./gap":1790237021616,"./image":1790237021617,"./page":1790237021618,"./print":1790237021619,"./reference":1790237021620,"./sn":1790237021621,"./speed":1790237021622,"./text":1790237021623,"./version":1790237021624,"./line":1790237021625,"./qrcode":1790237021626,"./readstate":1790237021627,"./textbox":1790237021628,"./bline":1790237021629,"./continuous":1790237021630,"./label":1790237021631,"./offset":1790237021632,"./peel":1790237021633,"./ribbon":1790237021634,"./shift":1790237021635,"./status":1790237021636,"./tear":1790237021637,"./putimage":1790237021638,"./ellipse":1790237021639,"./red":1790237021640,"./black":1790237021641,"./selftest":1790237021642,"./setribbonend":1790237021643,"./getribbonend":1790237021644,"./versions":1790237021645,"./models":1790237021646,"./sns":1790237021647,"./downloadbmp":1790237021648,"./gbkcode":1790237021649,"./utf8code":1790237021650,"./learnpapergap":1790237021651,"./readhardwareversion":1790237021652,"./resetfactory":1790237021653}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021596, function(require, module, exports) {
+}, function(modId) { var map = {"./bar":1795152767020,"./barcode":1795152767032,"./basic":1795152767021,"./box":1795152767033,"./circle":1795152767034,"./cls":1795152767035,"./cut":1795152767036,"./density":1795152767037,"./direction":1795152767038,"./dmatrix":1795152767039,"./gap":1795152767040,"./image":1795152767041,"./page":1795152767042,"./print":1795152767043,"./reference":1795152767044,"./sn":1795152767045,"./speed":1795152767046,"./text":1795152767047,"./version":1795152767048,"./line":1795152767049,"./qrcode":1795152767050,"./readstate":1795152767051,"./textbox":1795152767052,"./bline":1795152767053,"./continuous":1795152767054,"./label":1795152767055,"./offset":1795152767056,"./peel":1795152767057,"./ribbon":1795152767058,"./shift":1795152767059,"./status":1795152767060,"./tear":1795152767061,"./putimage":1795152767062,"./ellipse":1795152767063,"./red":1795152767064,"./black":1795152767065,"./selftest":1795152767066,"./setribbonend":1795152767067,"./getribbonend":1795152767068,"./versions":1795152767069,"./models":1795152767070,"./sns":1795152767071,"./downloadbmp":1795152767072,"./gbkcode":1795152767073,"./utf8code":1795152767074,"./learnpapergap":1795152767075,"./readhardwareversion":1795152767076,"./resetfactory":1795152767077}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767020, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TBar = void 0;
@@ -514,8 +514,8 @@ class TBar extends basic_1.BasicTSPLArg {
 }
 exports.TBar = TBar;
 
-}, function(modId) { var map = {"./basic":1790237021597,"../types":1790237021598}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021597, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021,"../types":1795152767022}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767021, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BasicTSPLArg = void 0;
@@ -533,7 +533,7 @@ class BasicTSPLArg extends frame_father_1.EasyArg {
 exports.BasicTSPLArg = BasicTSPLArg;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021598, function(require, module, exports) {
+__DEFINE__(1795152767022, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -560,8 +560,8 @@ __exportStar(require("./rotation"), exports);
 __exportStar(require("./showtype"), exports);
 __exportStar(require("./alignment"), exports);
 
-}, function(modId) { var map = {"./font":1790237021599,"./image":1790237021600,"./codetype":1790237021601,"./correctlevel ":1790237021602,"./line":1790237021603,"./linem":1790237021604,"./rotation":1790237021605,"./showtype":1790237021606,"./alignment":1790237021607}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021599, function(require, module, exports) {
+}, function(modId) { var map = {"./font":1795152767023,"./image":1795152767024,"./codetype":1795152767025,"./correctlevel ":1795152767026,"./line":1795152767027,"./linem":1795152767028,"./rotation":1795152767029,"./showtype":1795152767030,"./alignment":1795152767031}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767023, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TFont = void 0;
@@ -585,7 +585,7 @@ var TFont;
 })(TFont || (exports.TFont = TFont = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021600, function(require, module, exports) {
+__DEFINE__(1795152767024, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TImageMode = void 0;
@@ -597,7 +597,7 @@ var TImageMode;
 })(TImageMode || (exports.TImageMode = TImageMode = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021601, function(require, module, exports) {
+__DEFINE__(1795152767025, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TCodeType = void 0;
@@ -645,7 +645,7 @@ var TCodeType;
 })(TCodeType || (exports.TCodeType = TCodeType = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021602, function(require, module, exports) {
+__DEFINE__(1795152767026, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TCorrectLevel = void 0;
@@ -673,7 +673,7 @@ var TCorrectLevel;
 })(TCorrectLevel || (exports.TCorrectLevel = TCorrectLevel = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021603, function(require, module, exports) {
+__DEFINE__(1795152767027, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TTLine = void 0;
@@ -684,7 +684,7 @@ var TTLine;
 })(TTLine || (exports.TTLine = TTLine = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021604, function(require, module, exports) {
+__DEFINE__(1795152767028, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TLineM = void 0;
@@ -698,7 +698,7 @@ var TLineM;
 })(TLineM || (exports.TLineM = TLineM = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021605, function(require, module, exports) {
+__DEFINE__(1795152767029, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TRotation = void 0;
@@ -723,7 +723,7 @@ var TRotation;
 })(TRotation || (exports.TRotation = TRotation = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021606, function(require, module, exports) {
+__DEFINE__(1795152767030, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TShowType = void 0;
@@ -748,7 +748,7 @@ var TShowType;
 })(TShowType || (exports.TShowType = TShowType = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021607, function(require, module, exports) {
+__DEFINE__(1795152767031, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TAlignment = void 0;
@@ -773,7 +773,7 @@ var TAlignment;
 })(TAlignment || (exports.TAlignment = TAlignment = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021608, function(require, module, exports) {
+__DEFINE__(1795152767032, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TBarCode = void 0;
@@ -862,8 +862,8 @@ class TBarCode extends basic_1.BasicTSPLArg {
 }
 exports.TBarCode = TBarCode;
 
-}, function(modId) { var map = {"./basic":1790237021597,"../types":1790237021598}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021609, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021,"../types":1795152767022}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767033, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TBox = void 0;
@@ -932,8 +932,8 @@ class TBox extends basic_1.BasicTSPLArg {
 }
 exports.TBox = TBox;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021610, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767034, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TCircle = void 0;
@@ -986,8 +986,8 @@ class TCircle extends basic_1.BasicTSPLArg {
 }
 exports.TCircle = TCircle;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021611, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767035, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TCls = void 0;
@@ -1006,7 +1006,7 @@ class TCls extends frame_father_1.OnlyTextHeaderArg {
 exports.TCls = TCls;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021612, function(require, module, exports) {
+__DEFINE__(1795152767036, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TCut = void 0;
@@ -1033,7 +1033,7 @@ class TCut extends frame_father_1.OnlyTextHeaderArg {
 exports.TCut = TCut;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021613, function(require, module, exports) {
+__DEFINE__(1795152767037, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TDensity = void 0;
@@ -1065,8 +1065,8 @@ class TDensity extends basic_1.BasicTSPLArg {
 }
 exports.TDensity = TDensity;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021614, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767038, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.DirectionType = exports.TDirection = void 0;
@@ -1103,8 +1103,8 @@ var DirectionType;
     DirectionType[DirectionType["DESC"] = 1] = "DESC";
 })(DirectionType || (exports.DirectionType = DirectionType = {}));
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021615, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767039, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TDmatrix = void 0;
@@ -1167,8 +1167,8 @@ class TDmatrix extends basic_1.BasicTSPLArg {
 }
 exports.TDmatrix = TDmatrix;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021616, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767040, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TGap = void 0;
@@ -1200,8 +1200,8 @@ class TGap extends basic_1.BasicTSPLArg {
 }
 exports.TGap = TGap;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021617, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767041, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TImage = void 0;
@@ -1311,8 +1311,8 @@ class TImage extends basic_1.BasicTSPLArg {
 }
 exports.TImage = TImage;
 
-}, function(modId) { var map = {"./basic":1790237021597,"../types":1790237021598}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021618, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021,"../types":1795152767022}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767042, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TPage = void 0;
@@ -1351,8 +1351,8 @@ class TPage extends basic_1.BasicTSPLArg {
 }
 exports.TPage = TPage;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021619, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767043, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TPrint = void 0;
@@ -1385,8 +1385,8 @@ class TPrint extends basic_1.BasicTSPLArg {
 }
 exports.TPrint = TPrint;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021620, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767044, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TReference = void 0;
@@ -1426,8 +1426,8 @@ class TReference extends basic_1.BasicTSPLArg {
 }
 exports.TReference = TReference;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021621, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767045, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TSN = void 0;
@@ -1443,7 +1443,7 @@ class TSN extends frame_father_1.OnlyTextHeaderArg {
 exports.TSN = TSN;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021622, function(require, module, exports) {
+__DEFINE__(1795152767046, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TSpeed = void 0;
@@ -1475,8 +1475,8 @@ class TSpeed extends basic_1.BasicTSPLArg {
 }
 exports.TSpeed = TSpeed;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021623, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767047, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TText = void 0;
@@ -1589,8 +1589,8 @@ class TText extends basic_1.BasicTSPLArg {
 }
 exports.TText = TText;
 
-}, function(modId) { var map = {"./basic":1790237021597,"../types":1790237021598}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021624, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021,"../types":1795152767022}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767048, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TVersion = void 0;
@@ -1606,7 +1606,7 @@ class TVersion extends frame_father_1.OnlyTextHeaderArg {
 exports.TVersion = TVersion;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021625, function(require, module, exports) {
+__DEFINE__(1795152767049, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TLine = void 0;
@@ -1676,8 +1676,8 @@ class TLine extends basic_1.BasicTSPLArg {
 }
 exports.TLine = TLine;
 
-}, function(modId) { var map = {"./basic":1790237021597,"../types":1790237021598}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021626, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021,"../types":1795152767022}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767050, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TQRCode = void 0;
@@ -1769,8 +1769,8 @@ class TQRCode extends basic_1.BasicTSPLArg {
 }
 exports.TQRCode = TQRCode;
 
-}, function(modId) { var map = {"./basic":1790237021597,"../types":1790237021598}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021627, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021,"../types":1795152767022}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767051, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TReadState = void 0;
@@ -1786,7 +1786,7 @@ class TReadState extends frame_father_1.OnlyTextHeaderArg {
 exports.TReadState = TReadState;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021628, function(require, module, exports) {
+__DEFINE__(1795152767052, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TTextBox = void 0;
@@ -1901,8 +1901,8 @@ class TTextBox extends basic_1.BasicTSPLArg {
 }
 exports.TTextBox = TTextBox;
 
-}, function(modId) { var map = {"./basic":1790237021597,"../types":1790237021598}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021629, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021,"../types":1795152767022}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767053, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TBline = void 0;
@@ -1939,8 +1939,8 @@ class TBline extends basic_1.BasicTSPLArg {
 }
 exports.TBline = TBline;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021630, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767054, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TContinuous = void 0;
@@ -1977,8 +1977,8 @@ class TContinuous extends basic_1.BasicTSPLArg {
 }
 exports.TContinuous = TContinuous;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021631, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767055, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TLabel = void 0;
@@ -2015,8 +2015,8 @@ class TLabel extends basic_1.BasicTSPLArg {
 }
 exports.TLabel = TLabel;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021632, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767056, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TOffset = void 0;
@@ -2045,8 +2045,8 @@ class TOffset extends basic_1.BasicTSPLArg {
 }
 exports.TOffset = TOffset;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021633, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767057, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TPeel = void 0;
@@ -2078,8 +2078,8 @@ class TPeel extends basic_1.BasicTSPLArg {
 }
 exports.TPeel = TPeel;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021634, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767058, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TRibbon = void 0;
@@ -2108,8 +2108,8 @@ class TRibbon extends basic_1.BasicTSPLArg {
 }
 exports.TRibbon = TRibbon;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021635, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767059, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TShift = void 0;
@@ -2138,8 +2138,8 @@ class TShift extends basic_1.BasicTSPLArg {
 }
 exports.TShift = TShift;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021636, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767060, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TStatus = void 0;
@@ -2152,7 +2152,7 @@ class TStatus extends frame_father_1.OnlyBinaryHeaderArg {
 exports.TStatus = TStatus;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021637, function(require, module, exports) {
+__DEFINE__(1795152767061, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TTear = void 0;
@@ -2184,8 +2184,8 @@ class TTear extends basic_1.BasicTSPLArg {
 }
 exports.TTear = TTear;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021638, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767062, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TPutImage = void 0;
@@ -2239,8 +2239,8 @@ class TPutImage extends basic_1.BasicTSPLArg {
 }
 exports.TPutImage = TPutImage;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021639, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767063, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TEllipse = void 0;
@@ -2301,8 +2301,8 @@ class TEllipse extends basic_1.BasicTSPLArg {
 }
 exports.TEllipse = TEllipse;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021640, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767064, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TRed = void 0;
@@ -2331,8 +2331,8 @@ class TRed extends basic_1.BasicTSPLArg {
 }
 exports.TRed = TRed;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021641, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767065, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TBlack = void 0;
@@ -2348,7 +2348,7 @@ class TBlack extends frame_father_1.OnlyTextHeaderArg {
 exports.TBlack = TBlack;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021642, function(require, module, exports) {
+__DEFINE__(1795152767066, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TSelfTest = void 0;
@@ -2364,7 +2364,7 @@ class TSelfTest extends frame_father_1.OnlyTextHeaderArg {
 exports.TSelfTest = TSelfTest;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021643, function(require, module, exports) {
+__DEFINE__(1795152767067, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TSetRibbonEnd = void 0;
@@ -2391,7 +2391,7 @@ class TSetRibbonEnd extends frame_father_1.OnlyTextHeaderArg {
 exports.TSetRibbonEnd = TSetRibbonEnd;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021644, function(require, module, exports) {
+__DEFINE__(1795152767068, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TGetRibbonEnd = void 0;
@@ -2407,7 +2407,7 @@ class TGetRibbonEnd extends frame_father_1.OnlyTextHeaderArg {
 exports.TGetRibbonEnd = TGetRibbonEnd;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021645, function(require, module, exports) {
+__DEFINE__(1795152767069, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TVersions = void 0;
@@ -2423,7 +2423,7 @@ class TVersions extends frame_father_1.OnlyTextHeaderArg {
 exports.TVersions = TVersions;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021646, function(require, module, exports) {
+__DEFINE__(1795152767070, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TModels = void 0;
@@ -2439,7 +2439,7 @@ class TModels extends frame_father_1.OnlyTextHeaderArg {
 exports.TModels = TModels;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021647, function(require, module, exports) {
+__DEFINE__(1795152767071, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TSNs = void 0;
@@ -2455,7 +2455,7 @@ class TSNs extends frame_father_1.OnlyTextHeaderArg {
 exports.TSNs = TSNs;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021648, function(require, module, exports) {
+__DEFINE__(1795152767072, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TDownloadBmp = void 0;
@@ -2564,8 +2564,8 @@ class TDownloadBmp extends basic_1.BasicTSPLArg {
 }
 exports.TDownloadBmp = TDownloadBmp;
 
-}, function(modId) { var map = {"./basic":1790237021597}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021649, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795152767021}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795152767073, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TGBKCode = void 0;
@@ -2581,7 +2581,7 @@ class TGBKCode extends frame_father_1.OnlyTextHeaderArg {
 exports.TGBKCode = TGBKCode;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021650, function(require, module, exports) {
+__DEFINE__(1795152767074, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TUTF8Code = void 0;
@@ -2597,7 +2597,7 @@ class TUTF8Code extends frame_father_1.OnlyTextHeaderArg {
 exports.TUTF8Code = TUTF8Code;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021651, function(require, module, exports) {
+__DEFINE__(1795152767075, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TLearnPaperGap = void 0;
@@ -2613,7 +2613,7 @@ class TLearnPaperGap extends frame_father_1.OnlyTextHeaderArg {
 exports.TLearnPaperGap = TLearnPaperGap;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021652, function(require, module, exports) {
+__DEFINE__(1795152767076, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TReadHardwareVersion = void 0;
@@ -2629,7 +2629,7 @@ class TReadHardwareVersion extends frame_father_1.OnlyTextHeaderArg {
 exports.TReadHardwareVersion = TReadHardwareVersion;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021653, function(require, module, exports) {
+__DEFINE__(1795152767077, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TResetFactory = void 0;
@@ -2645,7 +2645,7 @@ class TResetFactory extends frame_father_1.OnlyTextHeaderArg {
 exports.TResetFactory = TResetFactory;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021654, function(require, module, exports) {
+__DEFINE__(1795152767078, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.TSPL = void 0;
@@ -2664,8 +2664,8 @@ class TSPL {
 }
 exports.TSPL = TSPL;
 
-}, function(modId) { var map = {"./generic":1790237021593}; return __REQUIRE__(map[modId], modId); })
-return __REQUIRE__(1790237021591);
+}, function(modId) { var map = {"./generic":1795152767017}; return __REQUIRE__(map[modId], modId); })
+return __REQUIRE__(1795152767015);
 })()
 //miniprogram-npm-outsideDeps=["@psdk/frame-father","@psdk/frame-imageb"]
 //# sourceMappingURL=index.js.map

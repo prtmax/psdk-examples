@@ -38,13 +38,14 @@ import {
 } from "@psdk/tspl";
 import {
   ESC,
-  EImage
+  EImage,
+  EImageGray
 } from "@psdk/esc";
 
 // 图片打印尺寸，只需修改这里即可同步调整 Canvas 和像素数据尺寸。
 const IMAGE_SIZE = {
-  width: 2496,
-  height: 3564,
+  width: 384,
+  height: 570,
 };
 
 const ESC_ACTIVE_REPORTS = {
@@ -69,6 +70,7 @@ var bluetooth = new WechatBleBluetooth({
   allowNoName: false,
 			flowControl: {
 				enabled: true,
+				creditWaitTimeout: 30000,
 			}
 })
 // index.js
@@ -83,6 +85,7 @@ Page({
     connectedDeviceId: "",
     connectedDevice:null,
     isPrint:false,
+    preparingImage: false,
     cpcl: null,
     tspl: null,
     esc: null,
@@ -138,6 +141,7 @@ Page({
       connectedDevice:null,
       connectedDeviceId: ""
     })
+    this.clearEscPending();
 
   },
   //连接设备
@@ -185,28 +189,30 @@ Page({
   },
   safeWrite: async function(psdk) {
     let that = this;
-    try {
-      if (!that.data.isPrint) {
-        that.data.isPrint = true;
-        const report = await psdk.write();//不分包发送，如果不会丢包可以不分包
-        // const report = await psdk.write({
-        // 	enableChunkWrite: true,
-        // 	chunkSize: 20
-        // });//分包发送，chunkSize:分包大小
-        that.data.isPrint = false;
-        console.log(report);
-        wx.showToast({
-          title: '成功',
-        });
-        return true;
-      }
-    } catch (e) {
-      that.data.isPrint = false;
-      console.error(e);
-      wx.showToast({
-        title: '失败',
-      });
+    if (that.data.isPrint) {
+      wx.showToast({title: '正在发送数据，请稍候', icon: 'none'});
       return false;
+    }
+    that.setData({isPrint: true});
+    try {
+      // SDK 默认分包，BLE 连接层按打印机流控发送。
+      const report = await psdk.write();
+      if (!report.ok || report.controlExit) {
+        throw report.exception || new Error(report.controlExit ? '发送已中断' : '发送失败');
+      }
+      if (that.escPending === 'print') {
+        that.addEscEvent('图片数据发送完成，等待打印机回报完成');
+      }
+      wx.showToast({title: '数据已发送', icon: 'none'});
+      return true;
+    } catch (e) {
+      console.error(e);
+      const message = e && (e.message || e.errMsg) || String(e);
+      if (that.escPending === 'print') that.addEscEvent(`图片发送失败：${message}`);
+      wx.showToast({title: '发送失败，请查看日志', icon: 'none'});
+      return false;
+    } finally {
+      that.setData({isPrint: false});
     }
   },
   writeModel: async function () {
@@ -819,6 +825,27 @@ Page({
     await that.safeWrite(tspl);
   },
   writeImage: async function () {
+    return this.printImage(false);
+  },
+  writeGrayImage: async function () {
+    return this.printImage(true);
+  },
+  printImage: async function (gray) {
+    if (this.data.preparingImage || this.data.isPrint || this.escPending) {
+      wx.showToast({title: '请等待当前任务完成', icon: 'none'});
+      return;
+    }
+    this.setData({preparingImage: true});
+    try {
+      return await this.buildAndPrintImage(gray);
+    } catch (error) {
+      console.error('[ESC] 图片处理失败', error);
+      wx.showToast({title: '图片处理失败，请查看日志', icon: 'none'});
+    } finally {
+      this.setData({preparingImage: false});
+    }
+  },
+  buildAndPrintImage: async function (gray) {
     console.log("writeImage")
     const that = this;
     const printer = that.data.items[0].checked
@@ -841,12 +868,12 @@ Page({
     });
     const ctx = canvas.getContext('2d');
     const image = canvas.createImage();
-    await new Promise(resolve => {
+    await new Promise((resolve, reject) => {
       image.onload = resolve;
+      image.onerror = reject;
       image.src = "/image/p3.png"; // 要加载的图片 url, 可以是base64
     });
     ctx.drawImage(image, 0, 0, IMAGE_SIZE.width, IMAGE_SIZE.height);
-    console.log("toDataURL - ", ctx.canvas.toDataURL()) // 输出的图片
     const imageData = ctx.getImageData(0, 0, IMAGE_SIZE.width, IMAGE_SIZE.height);
     const inputImage = {
       data: imageData.data,
@@ -887,24 +914,36 @@ Page({
         .print();
         await that.safeWrite(cpcl);
     } else {
-      const esc = await that.data.esc
-        .enable()
+      const compress = false;
+      const esc = that.data.esc.clear()
         .wakeup()
-        .image(
-          new EImage({
-            image: inputImage,
-            compress:true,
-            threshold:128
-          })
-        )
-        .stopJob();
-        that.setEscPending('print');
-        const ok = await that.safeWrite(esc);
-        if (!ok) that.clearEscPending();
+        .enable();
+      if (gray) {
+        esc.enableGray().imageGray(new EImageGray({ image: inputImage }));
+      } else {
+        // 普通图片打印时切回二值模式，避免沿用上次的灰阶模式。
+        esc.enableMode(0).image(new EImage({
+          image: inputImage,
+          compress,
+          threshold: 128,
+        }));
+      }
+      esc.stopJob();
+      that.addEscEvent(`开始${gray ? '灰阶' : '普通'}打印，模式=${gray ? 2 : 0}，压缩=${compress ? '开' : '关'}`);
+      console.info('[ESC] print', {
+        mode: gray ? 2 : 0,
+        compress,
+        width: inputImage.width,
+        height: inputImage.height,
+      });
+      that.setEscPending('print');
+      const ok = await that.safeWrite(esc);
+      if (!ok) that.clearEscPending();
     }
 
   },
   queryEscStatus: async function () {
+    if (this.isEscOperationBusy()) return;
     if (!this.data.esc || !this.data.connectedDevice) {
       wx.showToast({title: '请先连接设备', icon: 'none'});
       return;
@@ -914,6 +953,7 @@ Page({
     if (!ok) this.clearEscPending();
   },
   queryEscBattery: async function () {
+    if (this.isEscOperationBusy()) return;
     if (!this.data.esc || !this.data.connectedDevice) {
       wx.showToast({title: '请先连接设备', icon: 'none'});
       return;
@@ -923,6 +963,7 @@ Page({
     if (!ok) this.clearEscPending();
   },
   queryEscSn: async function () {
+    if (this.isEscOperationBusy()) return;
     if (!this.data.esc || !this.data.connectedDevice) {
       wx.showToast({title: '请先连接设备', icon: 'none'});
       return;
@@ -930,6 +971,11 @@ Page({
     this.setEscPending('sn');
     const ok = await this.safeWrite(this.data.esc.sn());
     if (!ok) this.clearEscPending();
+  },
+  isEscOperationBusy: function () {
+    if (!this.data.isPrint && !this.data.preparingImage && !this.escPending) return false;
+    wx.showToast({title: '请等待当前任务完成', icon: 'none'});
+    return true;
   },
   setEscPending: function (pending) {
     this.escPending = pending;
@@ -1062,6 +1108,7 @@ Page({
 
   },
   radioChange(e) {
+    if (this.isEscOperationBusy()) return;
     let that = this;
     const selectedType = e.detail.value;
     const items = that.data.items.map(item => ({

@@ -13,7 +13,8 @@
 	<button bindtap="openBluetooth" class="button">开始搜索</button>
 	<button bindtap="closeBluetooth" class="button">断开连接</button>
   <button wx:if="{{!isEsc}}" bindtap="writeModel" class="button">打印76*130模版</button>
-  <button bindtap="writeImage" class="button">打印图片</button>
+  <button bindtap="writeImage" class="button" disabled="{{preparingImage || isPrint || escPending}}">打印图片</button>
+  <button wx:if="{{isEsc}}" bindtap="writeGrayImage" class="button" disabled="{{preparingImage || isPrint || escPending}}">灰阶打印图片</button>
   <button wx:if="{{!isEsc}}" bindtap="writeTsplRibbonModel" class="button">打印热转印测试</button>
   <view wx:if="{{isEsc}}" class="esc-panel">
     <view class="esc-actions">
@@ -22,6 +23,7 @@
       <button bindtap="queryEscSn" class="button">查询SN</button>
     </view>
     <view class="esc-result">
+      <text wx:if="{{escPending === 'print'}}">{{isPrint ? '正在发送图片数据' : '等待打印机回报完成'}}</text>
       <text>状态：{{escStatus}}</text>
       <text>电量：{{escBattery}}</text>
       <text>SN：{{escSn}}</text>
