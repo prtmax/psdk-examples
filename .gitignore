@@ -29,3 +29,5 @@ local.properties
 
 unpackage
 _tmp
+.worktrees/
+pubspec_overrides.yaml

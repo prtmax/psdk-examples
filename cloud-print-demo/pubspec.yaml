@@ -1,0 +1,76 @@
+name: cloud_print_demo
+description: Unified 4-in-1 Flutter demo for ESC WAN Cloud, Thermal LAN Stream, Sublimation RPC, and Color Inkjet PJL protocols.
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  permission_handler: ^12.0.1
+
+  psdk_color_core:
+    path: ../../psdk/dart/algorithms/color_core
+  psdk_bluetooth_ble:
+    path: ../../psdk/dart/devices/bluetooth_ble
+  psdk_bluetooth_traits:
+    path: ../../psdk/dart/devices/bluetooth_traits
+  psdk_cloud_wan:
+    path: ../../psdk/dart/devices/cloud_wan
+  psdk_device_adapter:
+    path: ../../psdk/dart/packages/device_adapter
+  psdk_frame_cloud:
+    path: ../../psdk/dart/packages/frame_cloud
+  psdk_frame_father:
+    path: ../../psdk/dart/packages/frame_father
+  psdk_fruit_esc:
+    path: ../../psdk/dart/fruits/esc
+  psdk_fruit_inkjet:
+    path: ../../psdk/dart/fruits/inkjet
+  psdk_fruit_sublimation:
+    path: ../../psdk/dart/fruits/sublimation
+  psdk_fruit_wifi:
+    path: ../../psdk/dart/fruits/wifi
+  psdk_imageb:
+    path: ../../psdk/dart/algorithms/imageb
+  psdk_network:
+    path: ../../psdk/dart/devices/network
+
+dependency_overrides:
+  psdk_bluetooth_ble:
+    path: ../../psdk/dart/devices/bluetooth_ble
+  psdk_bluetooth_traits:
+    path: ../../psdk/dart/devices/bluetooth_traits
+  psdk_cloud_wan:
+    path: ../../psdk/dart/devices/cloud_wan
+  psdk_color_core:
+    path: ../../psdk/dart/algorithms/color_core
+  psdk_device_adapter:
+    path: ../../psdk/dart/packages/device_adapter
+  psdk_frame_cloud:
+    path: ../../psdk/dart/packages/frame_cloud
+  psdk_frame_father:
+    path: ../../psdk/dart/packages/frame_father
+  psdk_fruit_esc:
+    path: ../../psdk/dart/fruits/esc
+  psdk_fruit_inkjet:
+    path: ../../psdk/dart/fruits/inkjet
+  psdk_fruit_sublimation:
+    path: ../../psdk/dart/fruits/sublimation
+  psdk_fruit_wifi:
+    path: ../../psdk/dart/fruits/wifi
+  psdk_imageb:
+    path: ../../psdk/dart/algorithms/imageb
+  psdk_network:
+    path: ../../psdk/dart/devices/network
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
