@@ -151,7 +151,7 @@
 						.image(
 							new EImage({
 								image: input,
-								compress: true,
+								compress: false,
 							})
 						)
 						.lineDot(40)

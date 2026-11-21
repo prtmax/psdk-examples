@@ -38,7 +38,8 @@ import {
 } from "@psdk/tspl";
 import {
   ESC,
-  EImage
+  EImage,
+  EImageGray
 } from "@psdk/esc";
 
 // 图片打印尺寸，只需修改这里即可同步调整 Canvas 和像素数据尺寸。
@@ -968,6 +969,12 @@ Page({
     await that.safeWrite(tspl);
   },
   writeImage: async function () {
+    return this.printImage(false);
+  },
+  writeGrayImage: async function () {
+    return this.printImage(true);
+  },
+  printImage: async function (gray) {
     console.log("writeImage")
     const that = this;
     const printer = that.data.items[0].checked
@@ -1036,20 +1043,23 @@ Page({
         .print();
         await that.safeWrite(cpcl);
     } else {
-      const esc = await that.data.esc
-        .enable()
+      const esc = that.data.esc.clear()
         .wakeup()
-        .image(
-          new EImage({
-            image: inputImage,
-            compress:true,
-            threshold:128
-          })
-        )
-        .stopJob();
-        that.setEscPending('print');
-        const ok = await that.safeWrite(esc);
-        if (!ok) that.clearEscPending();
+        .enable();
+      if (gray) {
+        esc.enableGray().imageGray(new EImageGray({ image: inputImage, compress: false }));
+      } else {
+        // 普通图片打印时切回二值模式，关闭压缩以兼容后续灰阶打印。
+        esc.enableMode(0).image(new EImage({
+          image: inputImage,
+          compress: false,
+          threshold: 128,
+        }));
+      }
+      esc.stopJob();
+      that.setEscPending('print');
+      const ok = await that.safeWrite(esc);
+      if (!ok) that.clearEscPending();
     }
 
   },

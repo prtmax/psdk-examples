@@ -14,6 +14,7 @@
 	<button bindtap="closeBluetooth" class="button">断开连接</button>
   <button wx:if="{{!isEsc}}" bindtap="writeModel" class="button">打印76*130模版</button>
   <button bindtap="writeImage" class="button">打印图片</button>
+  <button wx:if="{{isEsc}}" bindtap="writeGrayImage" class="button">灰阶打印图片</button>
   <button wx:if="{{!isEsc}}" bindtap="writeTsplRibbonModel" class="button">打印热转印测试</button>
   <view wx:if="{{isEsc}}" class="printer-protocol-panel">
     <text class="raw-title">打印机信息与认证</text>

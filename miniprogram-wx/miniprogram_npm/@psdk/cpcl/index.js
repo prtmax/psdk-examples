@@ -4,7 +4,7 @@ var __DEFINE__ = function(modId, func, req) { var m = { exports: {}, _tempexport
 var __REQUIRE__ = function(modId, source) { if(!__MODS__[modId]) return require(source); if(!__MODS__[modId].status) { var m = __MODS__[modId].m; m._exports = m._tempexports; var desp = Object.getOwnPropertyDescriptor(m, "exports"); if (desp && desp.configurable) Object.defineProperty(m, "exports", { set: function (val) { if(typeof val === "object" && val !== m._exports) { m._exports.__proto__ = val.__proto__; Object.keys(val).forEach(function (k) { m._exports[k] = val[k]; }); } m._tempexports = val }, get: function () { return m._tempexports; } }); __MODS__[modId].status = 1; __MODS__[modId].func(__MODS__[modId].req, m, m.exports); } return __MODS__[modId].m.exports; };
 var __REQUIRE_WILDCARD__ = function(obj) { if(obj && obj.__esModule) { return obj; } else { var newObj = {}; if(obj != null) { for(var k in obj) { if (Object.prototype.hasOwnProperty.call(obj, k)) newObj[k] = obj[k]; } } newObj.default = obj; return newObj; } };
 var __REQUIRE_DEFAULT__ = function(obj) { return obj && obj.__esModule ? obj.default : obj; };
-__DEFINE__(1790237021509, function(require, module, exports) {
+__DEFINE__(1795154914313, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -25,8 +25,8 @@ __exportStar(require("./impls"), exports);
 __exportStar(require("./args"), exports);
 __exportStar(require("./types"), exports);
 
-}, function(modId) {var map = {"./impls":1790237021510,"./args":1790237021513,"./types":1790237021516}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021510, function(require, module, exports) {
+}, function(modId) {var map = {"./impls":1795154914314,"./args":1795154914317,"./types":1795154914320}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914314, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -46,8 +46,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 __exportStar(require("./generic"), exports);
 __exportStar(require("./cpcl"), exports);
 
-}, function(modId) { var map = {"./generic":1790237021511,"./cpcl":1790237021546}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021511, function(require, module, exports) {
+}, function(modId) { var map = {"./generic":1795154914315,"./cpcl":1795154914350}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914315, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.GenericCPCL = void 0;
@@ -59,8 +59,8 @@ class GenericCPCL extends basic_1.BasicCPCL {
 }
 exports.GenericCPCL = GenericCPCL;
 
-}, function(modId) { var map = {"./basic":1790237021512}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021512, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795154914316}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914316, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BasicCPCL = void 0;
@@ -211,8 +211,8 @@ class BasicCPCL extends frame_father_1.PSDK {
 }
 exports.BasicCPCL = BasicCPCL;
 
-}, function(modId) { var map = {"../args":1790237021513,"../types":1790237021516}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021513, function(require, module, exports) {
+}, function(modId) { var map = {"../args":1795154914317,"../types":1795154914320}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914317, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -254,8 +254,8 @@ __exportStar(require("./underline"), exports);
 __exportStar(require("./watermark"), exports);
 __exportStar(require("./sn"), exports);
 
-}, function(modId) { var map = {"./bar":1790237021514,"./basic":1790237021515,"./bold":1790237021524,"./box":1790237021525,"./feed":1790237021526,"./form":1790237021529,"./gap":1790237021528,"./image":1790237021531,"./inverse":1790237021532,"./line":1790237021533,"./mag":1790237021534,"./page":1790237021535,"./pageheight":1790237021536,"./pagemode":1790237021537,"./pagesetup":1790237021538,"./pagewidth":1790237021527,"./print":1790237021530,"./qrcode":1790237021539,"./status":1790237021540,"./text":1790237021541,"./textcanvas":1790237021542,"./underline":1790237021543,"./watermark":1790237021544,"./sn":1790237021545}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021514, function(require, module, exports) {
+}, function(modId) { var map = {"./bar":1795154914318,"./basic":1795154914319,"./bold":1795154914328,"./box":1795154914329,"./feed":1795154914330,"./form":1795154914333,"./gap":1795154914332,"./image":1795154914335,"./inverse":1795154914336,"./line":1795154914337,"./mag":1795154914338,"./page":1795154914339,"./pageheight":1795154914340,"./pagemode":1795154914341,"./pagesetup":1795154914342,"./pagewidth":1795154914331,"./print":1795154914334,"./qrcode":1795154914343,"./status":1795154914344,"./text":1795154914345,"./textcanvas":1795154914346,"./underline":1795154914347,"./watermark":1795154914348,"./sn":1795154914349}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914318, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CBar = void 0;
@@ -382,8 +382,8 @@ class CodeTypeEntity {
     }
 }
 
-}, function(modId) { var map = {"./basic":1790237021515,"../types":1790237021516}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021515, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795154914319,"../types":1795154914320}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914319, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.BasicCPCLArg = void 0;
@@ -401,7 +401,7 @@ class BasicCPCLArg extends frame_father_1.EasyArg {
 exports.BasicCPCLArg = BasicCPCLArg;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021516, function(require, module, exports) {
+__DEFINE__(1795154914320, function(require, module, exports) {
 
 var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
     if (k2 === undefined) k2 = k;
@@ -426,8 +426,8 @@ __exportStar(require("./location"), exports);
 __exportStar(require("./mode"), exports);
 __exportStar(require("./rotation"), exports);
 
-}, function(modId) { var map = {"./coderotation":1790237021517,"./codetype":1790237021518,"./correctlevel":1790237021519,"./font":1790237021520,"./location":1790237021521,"./mode":1790237021522,"./rotation":1790237021523}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021517, function(require, module, exports) {
+}, function(modId) { var map = {"./coderotation":1795154914321,"./codetype":1795154914322,"./correctlevel":1795154914323,"./font":1795154914324,"./location":1795154914325,"./mode":1795154914326,"./rotation":1795154914327}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914321, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CCodeRotation = void 0;
@@ -444,7 +444,7 @@ var CCodeRotation;
 })(CCodeRotation || (exports.CCodeRotation = CCodeRotation = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021518, function(require, module, exports) {
+__DEFINE__(1795154914322, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CCodeType = void 0;
@@ -492,7 +492,7 @@ var CCodeType;
 })(CCodeType || (exports.CCodeType = CCodeType = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021519, function(require, module, exports) {
+__DEFINE__(1795154914323, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CCorrectLevel = void 0;
@@ -517,7 +517,7 @@ var CCorrectLevel;
 })(CCorrectLevel || (exports.CCorrectLevel = CCorrectLevel = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021520, function(require, module, exports) {
+__DEFINE__(1795154914324, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CFont = void 0;
@@ -569,7 +569,7 @@ var CFont;
 })(CFont || (exports.CFont = CFont = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021521, function(require, module, exports) {
+__DEFINE__(1795154914325, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CLocation = void 0;
@@ -586,7 +586,7 @@ var CLocation;
 })(CLocation || (exports.CLocation = CLocation = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021522, function(require, module, exports) {
+__DEFINE__(1795154914326, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CMode = void 0;
@@ -603,7 +603,7 @@ var CMode;
 })(CMode || (exports.CMode = CMode = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021523, function(require, module, exports) {
+__DEFINE__(1795154914327, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CRotation = void 0;
@@ -628,7 +628,7 @@ var CRotation;
 })(CRotation || (exports.CRotation = CRotation = {}));
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021524, function(require, module, exports) {
+__DEFINE__(1795154914328, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CBold = void 0;
@@ -657,8 +657,8 @@ class CBold extends basic_1.BasicCPCLArg {
 }
 exports.CBold = CBold;
 
-}, function(modId) { var map = {"./basic":1790237021515}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021525, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795154914319}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914329, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CBox = void 0;
@@ -725,8 +725,8 @@ class CBox extends basic_1.BasicCPCLArg {
 }
 exports.CBox = CBox;
 
-}, function(modId) { var map = {"./basic":1790237021515}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021526, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795154914319}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914330, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CFeed = void 0;
@@ -751,8 +751,8 @@ class CFeed extends basic_1.BasicCPCLArg {
 }
 exports.CFeed = CFeed;
 
-}, function(modId) { var map = {"./basic":1790237021515,"./pagewidth":1790237021527,"./gap":1790237021528,"./form":1790237021529,"./print":1790237021530,"../types":1790237021516}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021527, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795154914319,"./pagewidth":1795154914331,"./gap":1795154914332,"./form":1795154914333,"./print":1795154914334,"../types":1795154914320}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914331, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPageWidth = void 0;
@@ -781,8 +781,8 @@ class CPageWidth extends basic_1.BasicCPCLArg {
 }
 exports.CPageWidth = CPageWidth;
 
-}, function(modId) { var map = {"./basic":1790237021515}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021528, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795154914319}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914332, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CGap = void 0;
@@ -795,7 +795,7 @@ class CGap extends frame_father_1.OnlyTextHeaderArg {
 exports.CGap = CGap;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021529, function(require, module, exports) {
+__DEFINE__(1795154914333, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CForm = void 0;
@@ -808,7 +808,7 @@ class CForm extends frame_father_1.OnlyTextHeaderArg {
 exports.CForm = CForm;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021530, function(require, module, exports) {
+__DEFINE__(1795154914334, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPrint = void 0;
@@ -832,8 +832,8 @@ class CPrint extends frame_father_1.OnlyTextHeaderArg {
 }
 exports.CPrint = CPrint;
 
-}, function(modId) { var map = {"../types":1790237021516}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021531, function(require, module, exports) {
+}, function(modId) { var map = {"../types":1795154914320}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914335, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CImage = void 0;
@@ -925,8 +925,8 @@ class CImage extends basic_1.BasicCPCLArg {
 }
 exports.CImage = CImage;
 
-}, function(modId) { var map = {"./basic":1790237021515}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021532, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795154914319}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914336, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CInverse = void 0;
@@ -980,8 +980,8 @@ class CInverse extends basic_1.BasicCPCLArg {
 }
 exports.CInverse = CInverse;
 
-}, function(modId) { var map = {"./basic":1790237021515}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021533, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795154914319}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914337, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CLine = void 0;
@@ -1049,8 +1049,8 @@ class CLine extends basic_1.BasicCPCLArg {
 }
 exports.CLine = CLine;
 
-}, function(modId) { var map = {"./basic":1790237021515}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021534, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795154914319}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914338, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CMag = void 0;
@@ -1153,8 +1153,8 @@ class FontEntity {
     }
 }
 
-}, function(modId) { var map = {"./basic":1790237021515,"../types":1790237021516}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021535, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795154914319,"../types":1795154914320}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914339, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPage = void 0;
@@ -1200,8 +1200,8 @@ class CPage extends basic_1.BasicCPCLArg {
 }
 exports.CPage = CPage;
 
-}, function(modId) { var map = {"./basic":1790237021515,"./pageheight":1790237021536,"./pagewidth":1790237021527}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021536, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795154914319,"./pageheight":1795154914340,"./pagewidth":1795154914331}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914340, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPageHeight = void 0;
@@ -1238,8 +1238,8 @@ class CPageHeight extends basic_1.BasicCPCLArg {
 }
 exports.CPageHeight = CPageHeight;
 
-}, function(modId) { var map = {"./basic":1790237021515}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021537, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795154914319}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914341, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPageMode = void 0;
@@ -1272,8 +1272,8 @@ class CPageMode extends basic_1.BasicCPCLArg {
 }
 exports.CPageMode = CPageMode;
 
-}, function(modId) { var map = {"./basic":1790237021515,"../types":1790237021516,"./gap":1790237021528,"./form":1790237021529}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021538, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795154914319,"../types":1795154914320,"./gap":1795154914332,"./form":1795154914333}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914342, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPageSetup = void 0;
@@ -1311,8 +1311,8 @@ class CPageSetup extends basic_1.BasicCPCLArg {
 }
 exports.CPageSetup = CPageSetup;
 
-}, function(modId) { var map = {"./basic":1790237021515,"./pageheight":1790237021536,"./pagewidth":1790237021527}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021539, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795154914319,"./pageheight":1795154914340,"./pagewidth":1795154914331}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914343, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CQRCode = void 0;
@@ -1391,8 +1391,8 @@ class CQRCode extends basic_1.BasicCPCLArg {
 }
 exports.CQRCode = CQRCode;
 
-}, function(modId) { var map = {"./basic":1790237021515,"../types":1790237021516}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021540, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795154914319,"../types":1795154914320}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914344, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CStatus = void 0;
@@ -1411,7 +1411,7 @@ class CStatus extends frame_father_1.OnlyBinaryHeaderArg {
 exports.CStatus = CStatus;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021541, function(require, module, exports) {
+__DEFINE__(1795154914345, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CText = void 0;
@@ -1552,8 +1552,8 @@ class FontEntity {
     }
 }
 
-}, function(modId) { var map = {"./basic":1790237021515,"../types":1790237021516}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021542, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795154914319,"../types":1795154914320}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914346, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CTextCanvas = void 0;
@@ -1691,8 +1691,8 @@ class CTextCanvas extends text_1.CText {
 }
 exports.CTextCanvas = CTextCanvas;
 
-}, function(modId) { var map = {"./text":1790237021541,"./image":1790237021531,"../types":1790237021516}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021543, function(require, module, exports) {
+}, function(modId) { var map = {"./text":1795154914345,"./image":1795154914335,"../types":1795154914320}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914347, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CUnderLine = void 0;
@@ -1721,8 +1721,8 @@ class CUnderLine extends basic_1.BasicCPCLArg {
 }
 exports.CUnderLine = CUnderLine;
 
-}, function(modId) { var map = {"./basic":1790237021515}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021544, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795154914319}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914348, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CWaterMark = void 0;
@@ -1751,8 +1751,8 @@ class CWaterMark extends basic_1.BasicCPCLArg {
 }
 exports.CWaterMark = CWaterMark;
 
-}, function(modId) { var map = {"./basic":1790237021515}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021545, function(require, module, exports) {
+}, function(modId) { var map = {"./basic":1795154914319}; return __REQUIRE__(map[modId], modId); })
+__DEFINE__(1795154914349, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CSN = void 0;
@@ -1771,7 +1771,7 @@ class CSN extends frame_father_1.OnlyBinaryHeaderArg {
 exports.CSN = CSN;
 
 }, function(modId) { var map = {}; return __REQUIRE__(map[modId], modId); })
-__DEFINE__(1790237021546, function(require, module, exports) {
+__DEFINE__(1795154914350, function(require, module, exports) {
 
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.CPCL = void 0;
@@ -1796,8 +1796,8 @@ class CPCL {
 }
 exports.CPCL = CPCL;
 
-}, function(modId) { var map = {"./generic":1790237021511}; return __REQUIRE__(map[modId], modId); })
-return __REQUIRE__(1790237021509);
+}, function(modId) { var map = {"./generic":1795154914315}; return __REQUIRE__(map[modId], modId); })
+return __REQUIRE__(1795154914313);
 })()
 //miniprogram-npm-outsideDeps=["@psdk/frame-father","@psdk/frame-imageb"]
 //# sourceMappingURL=index.js.map

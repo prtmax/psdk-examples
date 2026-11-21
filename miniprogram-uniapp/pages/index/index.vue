@@ -14,7 +14,8 @@
 		<button @click="discovery" class="button">开始搜索</button>
 		<button @click="closeBluetooth" class="button">断开连接</button>
 		<button @click="writeModel" class="button" v-show="items[current].type !== 'esc'">打印76*130模版</button>
-		<button @click="printImage" class="button">打印图片</button>
+		<button @click="printImage(false)" class="button">打印图片</button>
+		<button @click="printImage(true)" class="button" v-show="items[current].type === 'esc'">灰阶打印图片</button>
 		<button @click="writeTsplRibbonModel" class="button" v-show="items[current].type === 'tspl'">打印热转印测试</button>
 		<!--		<button @click="deleteBmp" class="button">删除位图</button>-->
 		<!--		<button @click="downloadBmp" class="button">下载位图</button>-->
@@ -84,7 +85,8 @@
 		TAlignment,
 	} from "@psdk/tspl";
 	import {
-		EImage
+		EImage,
+		EImageGray
 	} from "@psdk/esc";
 	async function initState(vm) {
 		//uniapp自带的蓝牙方法只支持ble蓝牙(发送数据效率慢)，开发者如果只需要运行成安卓app可以参考classic.vue页面(是通过经典蓝牙的插件调用原生的方法实现的，打印速度比较快)
@@ -198,7 +200,7 @@
 					});
 				}
 			},
-			async printImage() {
+			async printImage(gray = false) {
 				console.log("printImage")
 				const vm = this;
 				//运行成安卓app会报API `createOffscreenCanvas` is not yet implemented，所以安卓端参考classic.vue里面的打印图片方法
@@ -259,17 +261,16 @@
 					await vm.safeWrite(cpcl);
 				} else {
 					// vm.$printer.init(new FakeConnectedDevice());
-					const esc = await vm.$printer.esc()
+					const esc = vm.$printer.esc().clear()
 						.enable()
-						.wakeup()
-						.image(
-							new EImage({
-								image: input,
-								compress: false,
-							})
-						)
-						.lineDot(40)
-						.stopJob();
+						.wakeup();
+					if (gray) {
+						esc.enableGray().imageGray(new EImageGray({ image: input, compress: false }));
+					} else {
+						// 普通图片打印时切回二值模式，关闭压缩以兼容后续灰阶打印。
+						esc.enableMode(0).image(new EImage({ image: input, compress: false }));
+					}
+					esc.lineDot(40).stopJob();
 					await vm.safeWrite(esc);
 				}
 			},
