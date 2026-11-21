@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp">
+
+    <Button
+        android:id="@+id/bt_select_pic"
+        style="@style/DefaultButton"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/sample_button_height"
+        android:text="@string/select_picture"
+        app:layout_constraintBottom_toBottomOf="@+id/sp_dither"
+        app:layout_constraintEnd_toStartOf="@+id/sp_dither"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/sp_dither" />
+
+    <EditText
+        android:id="@+id/et_path"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:enabled="false"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_path"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <EditText
+        android:id="@+id/et_threshold"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:ems="3"
+        android:inputType="number"
+        android:text="175"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/sp_dither"
+        app:layout_constraintTop_toBottomOf="@+id/textView13" />
+
+    <Spinner
+        android:id="@+id/sp_dither"
+        android:layout_width="0dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginEnd="8dp"
+        android:entries="@array/dither_mode"
+        android:prompt="@string/halftone"
+        android:spinnerMode="dropdown"
+        app:layout_constraintEnd_toStartOf="@+id/et_threshold"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/bt_select_pic"
+        app:layout_constraintTop_toBottomOf="@+id/textView12" />
+
+    <TextView
+        android:id="@+id/textView12"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/halftone"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/sp_dither"
+        app:layout_constraintTop_toBottomOf="@+id/et_path" />
+
+    <TextView
+        android:id="@+id/tv_path"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/image_path"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView13"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/threshold"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/et_threshold"
+        app:layout_constraintTop_toBottomOf="@+id/et_path" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

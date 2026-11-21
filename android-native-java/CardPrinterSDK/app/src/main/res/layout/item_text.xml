@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/et_font_size"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="8dp">
+
+    <Button
+        android:id="@+id/bt_select_font_color"
+        style="@style/SampleButton"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/sample_button_height"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="@dimen/sample_button_spacing"
+        android:text="@string/font_color"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/bt_pick_font"
+        app:layout_constraintTop_toBottomOf="@+id/et_content" />
+
+    <Button
+        android:id="@+id/bt_pick_font"
+        style="@style/DefaultButton"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/sample_button_height"
+        android:layout_marginTop="@dimen/sample_button_spacing"
+        android:layout_marginEnd="4dp"
+        android:text="@string/select_font"
+        app:layout_constraintEnd_toStartOf="@+id/bt_select_font_color"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_content" />
+
+    <EditText
+        android:id="@+id/et_content"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:minHeight="48dp"
+        android:text="Text1234567890Test"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_content"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+
+    <EditText
+        android:id="@+id/et_text_size"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/sample_button_height"
+        android:layout_marginStart="4dp"
+        android:ems="5"
+        android:inputType="number|numberDecimal"
+        android:text="8"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/sp_text_direction"
+        app:layout_constraintTop_toBottomOf="@+id/textView11" />
+
+    <Spinner
+        android:id="@+id/sp_text_direction"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/sample_button_height"
+        android:layout_marginEnd="4dp"
+        android:entries="@array/vh"
+        android:prompt="@string/text_direction"
+        android:spinnerMode="dropdown"
+        app:layout_constraintEnd_toStartOf="@+id/et_text_size"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView8" />
+
+    <TextView
+        android:id="@+id/tv_font_path"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="4dp"
+        android:background="#CCCCCC"
+        android:hint="@string/font"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/cb_text_bold"
+        app:layout_constraintEnd_toEndOf="@+id/et_text_size"
+        app:layout_constraintStart_toEndOf="@+id/cb_k_black"
+        app:layout_constraintTop_toBottomOf="@+id/et_text_size" />
+
+    <TextView
+        android:id="@+id/tv_content"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/print_content"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textView8"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/text_direction"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bt_pick_font" />
+
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/text_size"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/et_text_size"
+        app:layout_constraintTop_toBottomOf="@+id/bt_select_font_color" />
+
+    <CheckBox
+        android:id="@+id/cb_text_bold"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/text_bold"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/sp_text_direction"
+        app:layout_constraintTop_toBottomOf="@+id/sp_text_direction" />
+
+    <CheckBox
+        android:id="@+id/cb_k_black"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:text="@string/print_black_k"
+        app:layout_constraintBottom_toBottomOf="@+id/cb_text_bold"
+        app:layout_constraintStart_toEndOf="@+id/cb_text_bold"
+        app:layout_constraintTop_toTopOf="@+id/cb_text_bold" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

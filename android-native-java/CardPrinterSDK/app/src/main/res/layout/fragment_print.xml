@@ -1,0 +1,345 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <Button
+            android:id="@+id/bt_add_item"
+            style="@style/DefaultButton"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/sample_button_height"
+            android:layout_marginStart="4dp"
+            android:text="@string/add_item"
+            app:layout_constraintEnd_toStartOf="@+id/bt_clear"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view_pager" />
+
+        <Button
+            android:id="@+id/bt_print"
+            style="@style/DefaultButton"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/sample_button_height"
+            android:layout_marginEnd="4dp"
+            android:text="@string/print"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/bt_clear"
+            app:layout_constraintTop_toTopOf="@+id/bt_clear" />
+
+        <Button
+            android:id="@+id/bt_clear"
+            style="@style/DefaultButton"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/sample_button_height"
+            android:layout_marginStart="4dp"
+            android:layout_marginEnd="4dp"
+            android:text="@string/clear_canvas"
+            app:layout_constraintEnd_toStartOf="@+id/bt_print"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/bt_add_item"
+            app:layout_constraintTop_toBottomOf="@+id/view_pager" />
+
+        <Button
+            android:id="@+id/bt_add_reprint"
+            style="@style/DefaultButton"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/sample_button_height"
+            android:layout_marginStart="4dp"
+            android:text="批量打印"
+            app:layout_constraintEnd_toEndOf="@+id/bt_add_item"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bt_add_item" />
+
+        <EditText
+            android:id="@+id/et_reprint_count"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:ems="10"
+            android:inputType="number|numberDecimal"
+            android:minHeight="48dp"
+            android:text="5"
+            app:layout_constraintBottom_toBottomOf="@+id/bt_add_reprint"
+            app:layout_constraintEnd_toEndOf="@+id/bt_clear"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toEndOf="@+id/bt_add_reprint" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_public"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="4dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+
+            <CheckBox
+                android:id="@+id/cb_draw_direct"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/print_vertical"
+                app:layout_constraintBottom_toBottomOf="@+id/sp_angle"
+                app:layout_constraintStart_toEndOf="@+id/sp_angle"
+                app:layout_constraintTop_toTopOf="@+id/sp_angle" />
+
+            <EditText
+                android:id="@+id/et_x_pos"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:inputType="number|numberDecimal"
+                android:minHeight="48dp"
+                android:text="0"
+                app:layout_constraintEnd_toStartOf="@+id/et_y_pos"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_x_pos" />
+
+            <EditText
+                android:id="@+id/et_y_pos"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:inputType="number|numberDecimal"
+                android:minHeight="48dp"
+                android:text="0"
+                app:layout_constraintBaseline_toBaselineOf="@+id/et_x_pos"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/et_x_pos" />
+
+<!--             android:text="152.40"-->
+            <EditText
+                android:id="@+id/et_height"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:ems="10"
+                android:inputType="number|numberDecimal"
+                android:minHeight="48dp"
+                android:text="148"
+                app:layout_constraintBaseline_toBaselineOf="@+id/et_width"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toEndOf="@+id/et_width" />
+
+            <!--            android:text="99.99"-->
+            <!--            android:text="108.37"-->
+            <EditText
+                android:id="@+id/et_width"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="8dp"
+                android:inputType="number|numberDecimal"
+                android:text="100"
+                app:layout_constraintEnd_toStartOf="@+id/et_height"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/tv_size" />
+
+            <Spinner
+                android:id="@+id/sp_angle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:entries="@array/angle"
+                android:minHeight="48dp"
+                app:layout_constraintStart_toStartOf="@+id/et_x_pos"
+                app:layout_constraintTop_toBottomOf="@+id/tv_angle" />
+
+            <TextView
+                android:id="@+id/tv_x_pos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="X(mm):"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_y_pos"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Y(mm):"
+                app:layout_constraintBottom_toTopOf="@+id/et_y_pos"
+                app:layout_constraintStart_toStartOf="@+id/et_y_pos" />
+
+            <TextView
+                android:id="@+id/tv_angle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/rotation"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_width" />
+
+            <TextView
+                android:id="@+id/tv_size"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/width"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/et_x_pos" />
+
+            <TextView
+                android:id="@+id/tv_height"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/height"
+                app:layout_constraintBottom_toTopOf="@+id/et_height"
+                app:layout_constraintStart_toStartOf="@+id/et_height"
+                app:layout_constraintTop_toTopOf="@+id/tv_size" />
+
+            <Spinner
+                android:id="@+id/sp_image_mode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:gravity="center"
+                android:minHeight="48dp"
+                app:layout_constraintBottom_toBottomOf="@+id/cb_draw_direct"
+                app:layout_constraintStart_toEndOf="@+id/cb_draw_direct"
+                app:layout_constraintTop_toTopOf="@+id/cb_draw_direct" />
+
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/fill_mode"
+                app:layout_constraintBottom_toTopOf="@+id/sp_image_mode"
+                app:layout_constraintStart_toStartOf="@+id/sp_image_mode" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_image_settings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:visibility="gone"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cl_public">
+
+            <CheckBox
+                android:id="@+id/checkbox_opencv"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:checked="false"
+                android:text="是否选择选用对比度鲜艳度亮度处理"
+                android:textColor="@color/black"
+                android:textSize="15sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="visible">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="饱和度：" />
+
+                <EditText
+                    android:id="@+id/et_contrast"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="3" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    android:text="亮度：" />
+
+                <EditText
+                    android:id="@+id/et_brightness"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="-13" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="对比度：" />
+
+                <EditText
+                    android:id="@+id/et_saturation"
+                    android:layout_width="50dp"
+                    android:layout_height="wrap_content"
+                    android:text="0" />
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="锐化:(值越大越明显)"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
+                <EditText
+                    android:id="@+id/et_sharpening"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="number"
+                    android:text="50"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tabs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ll_image_settings"
+            app:tabIndicatorAnimationDuration="500"
+            app:tabIndicatorAnimationMode="elastic"
+            app:tabIndicatorFullWidth="false"
+            app:tabIndicatorHeight="3dp"
+            app:tabRippleColor="@null" />
+
+        <androidx.viewpager.widget.ViewPager
+            android:id="@+id/view_pager"
+            android:layout_width="match_parent"
+            android:layout_height="280dp"
+            android:background="#F8F8F8"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tabs" />
+
+
+        <TextView
+            android:id="@+id/tv_msg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:textAlignment="center"
+            android:textSize="16sp"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/bt_add_reprint" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</ScrollView>
