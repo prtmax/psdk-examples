@@ -12,11 +12,11 @@ import 'package:psdk_fruit_sublimation/psdk_fruit_sublimation.dart';
 void registerDemoProtocols(
   CloudPrinterRegistry registry, {
   required ColorCoreEngine colorCore,
-  required SublimationUdpTransport sublimationUdpTransport,
-  required SublimationTransportConnector sublimationConnector,
-  required InkjetMdnsBrowser inkjetMdnsBrowser,
-  required InkjetSoftApProbeTransport inkjetSoftApProbe,
-  required InkjetNetworkBinder inkjetNetworkBinder,
+  SublimationUdpTransport? sublimationUdpTransport,
+  SublimationTransportConnector? sublimationConnector,
+  InkjetMdnsBrowser? inkjetMdnsBrowser,
+  InkjetSoftApProbeTransport? inkjetSoftApProbe,
+  InkjetNetworkBinder? inkjetNetworkBinder,
   InkjetBleGattHooks? inkjetBleGattHooks,
   bool allowInkjetLoopback = true,
   bool enrichMdnsWithXslQuery = false,
@@ -25,7 +25,7 @@ void registerDemoProtocols(
     registry,
     colorCore: colorCore,
     transportConnector: sublimationConnector,
-    udpTransport: sublimationUdpTransport,
+    udpTransport: sublimationUdpTransport ?? const RawDatagramUdpTransport(),
   );
 
   registry.registerDriver(CloudPrinterFamily.colorInkjetPjl, ({

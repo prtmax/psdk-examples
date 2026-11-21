@@ -10,6 +10,7 @@ import 'package:psdk_network/psdk_network.dart';
 import '../models/demo_mode.dart';
 import '../models/protocol_inspector.dart';
 import '../stubs/sim_thermal_lan_stub.dart';
+import 'inspected_device.dart';
 import 'real_transport_helper.dart';
 
 class ThermalLanController extends ChangeNotifier {
@@ -36,6 +37,14 @@ class ThermalLanController extends ChangeNotifier {
   Network? _network;
   ConnectedDevice<dynamic>? _tcpDevice;
   CloudCancelToken? _printCancelToken;
+  final CloudCancelToken _disposeToken = CloudCancelToken();
+  bool _disposed = false;
+
+  void _notifyIfAlive() {
+    if (!_disposed) {
+      notifyListeners();
+    }
+  }
 
   WifiTextDialect selectedDialect = WifiTextDialect.bluetoothAt;
   bool busy = false;
@@ -65,7 +74,7 @@ class ThermalLanController extends ChangeNotifier {
 
   void setDialect(WifiTextDialect dialect) {
     selectedDialect = dialect;
-    notifyListeners();
+    _notifyIfAlive();
   }
 
   Future<void> runBluetoothAtProvisioning({
@@ -221,7 +230,7 @@ class ThermalLanController extends ChangeNotifier {
     final printer = target ?? selectedPrinter;
     if (printer == null) {
       statusMessage = 'Discover or select a printer first';
-      notifyListeners();
+      _notifyIfAlive();
       return;
     }
     await _runBusy(
@@ -231,11 +240,23 @@ class ThermalLanController extends ChangeNotifier {
         _network ??= mode == DemoRunMode.simulation
             ? simLanBackend.createScopedNetwork()
             : realTransportHelper.createRealNetwork();
-        _tcpDevice = await _network!.connect(
+        final device = await _network!.connect(
           printer.host,
           printer.port,
           networkInterface: printer.networkInterface,
         );
+        if (_disposed) {
+          await device.disconnect();
+          return;
+        }
+        _tcpDevice = mode == DemoRunMode.simulation
+            ? device
+            : InspectedDevice(
+                device,
+                inspector,
+                CloudPrinterFamily.thermalLanStream,
+                'TCP',
+              );
         selectedPrinter = printer;
         statusMessage = 'TCP connected to ${printer.host}:${printer.port}';
       },
@@ -249,7 +270,7 @@ class ThermalLanController extends ChangeNotifier {
     final tcp = _tcpDevice;
     if (tcp == null || tcp.connectionState() != ConnectionState.connected) {
       statusMessage = 'Connect TCP :9100 printer first';
-      notifyListeners();
+      _notifyIfAlive();
       return;
     }
     await _runBusy('Streaming TSPL job over TCP :9100...', () async {
@@ -261,7 +282,7 @@ class ThermalLanController extends ChangeNotifier {
         cancelToken: cancelToken,
         onProgress: (p) {
           printProgress = p;
-          notifyListeners();
+          _notifyIfAlive();
         },
       );
       try {
@@ -311,14 +332,16 @@ class ThermalLanController extends ChangeNotifier {
   Future<void> disconnectTcpPrinter() async {
     await _tcpDevice?.disconnect();
     _tcpDevice = null;
-    notifyListeners();
+    _notifyIfAlive();
   }
 
   Future<Uint8List> _sendBasicWifi(
     GenericWIFI wifi,
     ConnectedDevice<dynamic> dev,
   ) async {
+    _disposeToken.throwIfCancelled();
     final completer = Completer<Uint8List>();
+    completer.future.then<void>((_) {}, onError: (Object _, StackTrace _) {});
     final buf = <int>[];
     Timer? idle;
     late StreamSubscription<Uint8List> sub;
@@ -331,11 +354,17 @@ class ThermalLanController extends ChangeNotifier {
         }
       });
     });
+    final removeCancel = _disposeToken.addListener((reason) {
+      if (!completer.isCompleted) {
+        completer.completeError(CloudCancelledException(reason));
+      }
+    });
     try {
       await wifi.write();
       return await completer.future.timeout(const Duration(seconds: 2));
     } finally {
       idle?.cancel();
+      removeCancel();
       await sub.cancel();
     }
   }
@@ -344,7 +373,9 @@ class ThermalLanController extends ChangeNotifier {
     ConnectedDevice<dynamic> dev,
     Uint8List bytes,
   ) async {
+    _disposeToken.throwIfCancelled();
     final completer = Completer<Uint8List>();
+    completer.future.then<void>((_) {}, onError: (Object _, StackTrace _) {});
     final buf = <int>[];
     Timer? idle;
     late StreamSubscription<Uint8List> sub;
@@ -357,34 +388,46 @@ class ThermalLanController extends ChangeNotifier {
         }
       });
     });
+    final removeCancel = _disposeToken.addListener((reason) {
+      if (!completer.isCompleted) {
+        completer.completeError(CloudCancelledException(reason));
+      }
+    });
     try {
       await dev.write(bytes, sendDone: true);
       return await completer.future.timeout(const Duration(seconds: 2));
     } finally {
       idle?.cancel();
+      removeCancel();
       await sub.cancel();
     }
   }
 
   Future<void> _runBusy(String label, Future<void> Function() action) async {
+    if (_disposed) return;
     busy = true;
     statusMessage = label;
-    notifyListeners();
+    _notifyIfAlive();
     try {
       await action();
     } catch (e) {
       statusMessage = 'Error: $e';
     } finally {
       busy = false;
-      notifyListeners();
+      _notifyIfAlive();
     }
   }
 
   @override
   Future<void> dispose() async {
+    if (_disposed) return;
+    _disposed = true;
+    _disposeToken.cancel('Disposed');
+    _printCancelToken?.cancel('Disposed');
     await disconnectTcpPrinter();
     _network?.dispose();
     await simWifiDevice.disconnect();
+    await realBleDevice?.disconnect();
     super.dispose();
   }
 }

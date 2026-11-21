@@ -11,6 +11,8 @@ import '../models/demo_mode.dart';
 import '../models/protocol_inspector.dart';
 import '../stubs/sim_esc_wan_stub.dart';
 
+import 'inspected_wan.dart';
+
 class EscWanController extends ChangeNotifier {
   EscWanController({
     required this.inspector,
@@ -28,6 +30,16 @@ class EscWanController extends ChangeNotifier {
   CloudWanPrinterDriver? _driver;
   StreamSubscription<CloudStatusSnapshot>? _statusSub;
   CloudCancelToken? _jobCancelToken;
+  CloudCancelToken? _provisionCancelToken;
+  CloudWanEscProvisioner? _activeProvisioner;
+  final CloudCancelToken _disposeToken = CloudCancelToken();
+  bool _disposed = false;
+
+  void _notifyIfAlive() {
+    if (!_disposed) {
+      notifyListeners();
+    }
+  }
 
   bool busy = false;
   String statusMessage = 'Ready (Simulation Mode)';
@@ -70,6 +82,8 @@ class EscWanController extends ChangeNotifier {
           .split(RegExp(r'[|\s,]+'))
           .where((e) => e.trim().isNotEmpty)
           .toList();
+      final cancelToken = CloudCancelToken();
+      _provisionCancelToken = cancelToken;
       final provisioner = CloudWanEscProvisioner(
         device: _activeEscDevice,
         cloudHosts: hosts,
@@ -77,6 +91,7 @@ class EscWanController extends ChangeNotifier {
         requireCloudConnected: requireCloudConnected,
         commandTimeout: const Duration(seconds: 2),
       );
+      _activeProvisioner = provisioner;
       try {
         final result = await provisioner.provision(
           ProvisionRequest(
@@ -89,6 +104,7 @@ class EscWanController extends ChangeNotifier {
             pollInterval: mode == DemoRunMode.simulation
                 ? const Duration(milliseconds: 15)
                 : const Duration(milliseconds: 500),
+            cancelToken: cancelToken,
           ),
         );
         lastProvisionResult = result;
@@ -96,6 +112,8 @@ class EscWanController extends ChangeNotifier {
             ? 'Provisioned "$ssid" (${result.finalState.name})'
             : 'Provision failed: ${result.message ?? result.errorCode.name}';
       } finally {
+        _provisionCancelToken = null;
+        _activeProvisioner = null;
         await provisioner.dispose();
       }
     });
@@ -192,7 +210,10 @@ class EscWanController extends ChangeNotifier {
               : (lastSerialNumber ?? simBackend.serialNumber),
         );
       } else {
+        final wan = InspectedWan(inspector);
         config = CloudWanConfig.custom(
+          httpClientFactory: wan.createHttpClient,
+          mqttSocketConnector: wan.connectMqtt,
           apiBaseUrl: (apiBaseUrl ?? '').trim().isNotEmpty
               ? apiBaseUrl!.trim()
               : 'https://cprint-api.iprtapp.com',
@@ -219,9 +240,14 @@ class EscWanController extends ChangeNotifier {
       await driver.connect(
         device: mode == DemoRunMode.simulation ? simDevice : realBleDevice,
       );
+      if (_disposed) {
+        await driver.dispose();
+        _driver = null;
+        return;
+      }
       _statusSub = driver.watchStatus().listen((snap) {
         wanSnapshot = snap;
-        notifyListeners();
+        _notifyIfAlive();
       });
       wanSnapshot = await driver.queryStatus();
       statusMessage =
@@ -233,7 +259,7 @@ class EscWanController extends ChangeNotifier {
     final driver = _driver;
     if (driver == null || !driver.isConnected) {
       statusMessage = 'Connect Cloud WAN first';
-      notifyListeners();
+      _notifyIfAlive();
       return;
     }
     await _runBusy('Querying WAN printer state...', () async {
@@ -250,7 +276,7 @@ class EscWanController extends ChangeNotifier {
     final driver = _driver;
     if (driver == null || !driver.isConnected) {
       statusMessage = 'Connect Cloud WAN first';
-      notifyListeners();
+      _notifyIfAlive();
       return;
     }
     await _runBusy('Uploading & submitting Cloud WAN job...', () async {
@@ -274,7 +300,7 @@ class EscWanController extends ChangeNotifier {
         cancelToken: cancelToken,
         onProgress: (p) {
           jobProgress = p;
-          notifyListeners();
+          _notifyIfAlive();
         },
       );
       lastPrintResult = result;
@@ -297,7 +323,7 @@ class EscWanController extends ChangeNotifier {
     if (mode == DemoRunMode.simulation) {
       simBackend.injectFaultCode(code);
     }
-    notifyListeners();
+    _notifyIfAlive();
   }
 
   void setSimulatedJobOutcome(SimCloudJobOutcome outcome) {
@@ -305,7 +331,7 @@ class EscWanController extends ChangeNotifier {
     if (mode == DemoRunMode.simulation) {
       simBackend.nextJobOutcome = outcome;
     }
-    notifyListeners();
+    _notifyIfAlive();
   }
 
   /// Simulates 3+ consecutive HTTP polling failures so `CloudWanStatusMonitor`
@@ -314,7 +340,7 @@ class EscWanController extends ChangeNotifier {
     final monitor = _driver?.statusMonitor;
     if (mode != DemoRunMode.simulation || monitor == null) {
       statusMessage = 'Connect Cloud WAN in Simulation Mode first';
-      notifyListeners();
+      _notifyIfAlive();
       return;
     }
     await _runBusy('Simulating >=3 HTTP poll failures...', () async {
@@ -336,14 +362,16 @@ class EscWanController extends ChangeNotifier {
     _statusSub = null;
     await _driver?.dispose();
     _driver = null;
-    notifyListeners();
+    _notifyIfAlive();
   }
 
   Future<Uint8List> _exchangeEsc(
     ConnectedDevice<dynamic> device,
     GenericESC command,
   ) async {
+    _disposeToken.throwIfCancelled();
     final completer = Completer<Uint8List>();
+    completer.future.then<void>((_) {}, onError: (Object _, StackTrace _) {});
     final buffer = <int>[];
     Timer? settleTimer;
     late StreamSubscription<Uint8List> sub;
@@ -357,34 +385,48 @@ class EscWanController extends ChangeNotifier {
         }
       });
     });
+    final removeCancel = _disposeToken.addListener((reason) {
+      if (!completer.isCompleted) {
+        completer.completeError(CloudCancelledException(reason));
+      }
+    });
     try {
       await command.write();
       return await completer.future.timeout(const Duration(seconds: 2));
     } finally {
       settleTimer?.cancel();
+      removeCancel();
       await sub.cancel();
     }
   }
 
   Future<void> _runBusy(String label, Future<void> Function() action) async {
+    if (_disposed) return;
     busy = true;
     statusMessage = label;
-    notifyListeners();
+    _notifyIfAlive();
     try {
       await action();
     } catch (e) {
       statusMessage = 'Error: $e';
     } finally {
       busy = false;
-      notifyListeners();
+      _notifyIfAlive();
     }
   }
 
   @override
   Future<void> dispose() async {
-    await disconnectWan();
+    if (_disposed) return;
+    _disposed = true;
+    _disposeToken.cancel('Disposed');
+    _provisionCancelToken?.cancel('Disposed');
+    _jobCancelToken?.cancel('Disposed');
     simBackend.dispose();
+    await _activeProvisioner?.dispose();
+    await disconnectWan();
     await simDevice.disconnect();
+    await realBleDevice?.disconnect();
     super.dispose();
   }
 }

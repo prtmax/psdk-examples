@@ -45,3 +45,12 @@ kotlin {
 flutter {
     source = "../.."
 }
+
+// ble_plugin 1.5 pins API 31, below the AndroidX requirements of Flutter.
+val appCompileSdk = flutter.compileSdkVersion
+project(":ble_plugin") {
+    pluginManager.withPlugin("com.android.library") {
+        extensions.getByType<com.android.build.api.variant.LibraryAndroidComponentsExtension>()
+            .finalizeDsl { it.compileSdk = appCompileSdk }
+    }
+}

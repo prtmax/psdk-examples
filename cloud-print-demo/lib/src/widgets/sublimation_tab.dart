@@ -418,15 +418,22 @@ class _SublimationTabState extends State<SublimationTab> {
                   const SizedBox(height: 10),
                   DropdownButtonFormField<CloudColorMode>(
                     initialValue: c.selectedColorMode,
+                    isExpanded: true,
                     decoration: const InputDecoration(labelText: 'Color Mode'),
                     items: const [
                       DropdownMenuItem(
                         value: CloudColorMode.colorCmyk,
-                        child: Text('Color (Y/M/C/O + K)'),
+                        child: Text(
+                          'Color (Y/M/C/O + K)',
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       DropdownMenuItem(
                         value: CloudColorMode.monochrome,
-                        child: Text('Monochrome (K only)'),
+                        child: Text(
+                          'Monochrome (K only)',
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                     onChanged: (v) {
@@ -436,12 +443,16 @@ class _SublimationTabState extends State<SublimationTab> {
                   const SizedBox(height: 8),
                   DropdownButtonFormField<SublimationDitherMode>(
                     initialValue: c.selectedDitherMode,
+                    isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'K-Plane Dither Mode',
                     ),
                     items: [
                       for (final m in SublimationDitherMode.values)
-                        DropdownMenuItem(value: m, child: Text(m.name)),
+                        DropdownMenuItem(
+                          value: m,
+                          child: Text(m.name, overflow: TextOverflow.ellipsis),
+                        ),
                     ],
                     onChanged: (v) {
                       if (v != null) setState(() => c.selectedDitherMode = v);

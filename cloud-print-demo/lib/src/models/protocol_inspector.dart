@@ -78,6 +78,13 @@ class ProtocolInspectorController extends ChangeNotifier {
   final int maxEntries;
   final List<ProtocolTrafficEntry> _entries = <ProtocolTrafficEntry>[];
   int _nextId = 1;
+  bool _disposed = false;
+
+  void _notifyIfAlive() {
+    if (!_disposed) {
+      notifyListeners();
+    }
+  }
 
   List<ProtocolTrafficEntry> get entries =>
       List<ProtocolTrafficEntry>.unmodifiable(_entries);
@@ -106,7 +113,7 @@ class ProtocolInspectorController extends ChangeNotifier {
     while (_entries.length > maxEntries) {
       _entries.removeAt(0);
     }
-    notifyListeners();
+    _notifyIfAlive();
   }
 
   void recordText({
@@ -143,7 +150,13 @@ class ProtocolInspectorController extends ChangeNotifier {
   void clear() {
     if (_entries.isEmpty) return;
     _entries.clear();
-    notifyListeners();
+    _notifyIfAlive();
+  }
+
+  @override
+  void dispose() {
+    _disposed = true;
+    super.dispose();
   }
 
   String exportAll({CloudPrinterFamily? family, WireDirection? direction}) {
@@ -195,13 +208,21 @@ class ProtocolInspectorController extends ChangeNotifier {
       ),
       (m) => '${m.group(1)}"[REDACTED]"',
     );
-    // Generic password=... / pwd=... key-value pairs
+    // Generic JSON / quoted key-value pairs (e.g. {"deviceToken":"...","token":"Bearer ..."})
     out = out.replaceAllMapped(
       RegExp(
-        r'(\b(?:password|passwd|pwd|deviceToken|token)\b\s*[:=]\s*"?)([^",\r\n\s\}]+)("?)',
+        r'("?\b(?:password|passwd|pwd|deviceToken|token)\b"?\s*[:=]\s*)"([^"\r\n]*)"',
         caseSensitive: false,
       ),
-      (m) => '${m.group(1)}[REDACTED]${m.group(3)}',
+      (m) => '${m.group(1)}"[REDACTED]"',
+    );
+    // Generic unquoted password=... / pwd=... / deviceToken=... / token=... key-value pairs
+    out = out.replaceAllMapped(
+      RegExp(
+        r'("?\b(?:password|passwd|pwd|deviceToken|token)\b"?\s*[:=]\s*)([^",\r\n\s\}]+)',
+        caseSensitive: false,
+      ),
+      (m) => '${m.group(1)}[REDACTED]',
     );
     return out;
   }

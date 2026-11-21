@@ -101,7 +101,7 @@ class SimEscConnectedDevice extends ConnectedDevice<String> {
           family: CloudPrinterFamily.escWanCloud,
           transport: 'BLE ESC',
           direction: WireDirection.tx,
-          rawBytes: data,
+          rawBytes: data.sublist(0, data.length.clamp(0, 4)),
           decodedSummary: 'ESetKey -> [REDACTED] (${deviceKey.length} chars)',
         );
         _emitReply(const <int>[0xAA], 'ESetKey ACK: 0xAA');
@@ -119,6 +119,7 @@ class SimEscConnectedDevice extends ConnectedDevice<String> {
         _emitReply(
           utf8.encode('$deviceKey\r\n'),
           'EGetKey -> [REDACTED] (${deviceKey.length} chars)',
+          logRawBytes: Uint8List.fromList(utf8.encode('[REDACTED]\r\n')),
         );
         return;
       }
@@ -274,13 +275,13 @@ class SimEscConnectedDevice extends ConnectedDevice<String> {
     return utf8.decode(Uint8List.sublistView(data, start, end));
   }
 
-  void _emitReply(List<int> bytes, String summary) {
+  void _emitReply(List<int> bytes, String summary, {Uint8List? logRawBytes}) {
     final frame = Uint8List.fromList(bytes);
     inspector.record(
       family: CloudPrinterFamily.escWanCloud,
       transport: 'BLE ESC',
       direction: WireDirection.rx,
-      rawBytes: frame,
+      rawBytes: logRawBytes ?? frame,
       decodedSummary: summary,
     );
     scheduleMicrotask(() {
@@ -566,7 +567,8 @@ class SimCloudWanBackend {
           family: CloudPrinterFamily.escWanCloud,
           transport: 'MQTT v5',
           direction: WireDirection.tx,
-          rawBytes: rawBytes,
+          // Log fixed/protocol header only; omit username/password/token payload bytes.
+          rawBytes: rawBytes.sublist(0, rawBytes.length.clamp(0, 10)),
           decodedSummary: 'MQTT CONNECT (sn=$serialNumber, token=[REDACTED])',
         );
         final connack = Uint8List.fromList(const <int>[

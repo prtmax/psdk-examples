@@ -249,7 +249,7 @@ class RealBleConnectorRow extends StatelessWidget {
             OutlinedButton(
               onPressed: () async {
                 await connectedDevice!.disconnect();
-                onDisconnected();
+                if (context.mounted) onDisconnected();
               },
               child: const Text('Disconnect BLE'),
             )
@@ -292,6 +292,10 @@ class RealBleConnectorRow extends StatelessWidget {
             onTap: () async {
               Navigator.of(ctx).pop();
               final conn = await helper.connectBle(family: family, device: dev);
+              if (!context.mounted) {
+                await conn?.disconnect();
+                return;
+              }
               if (conn != null) {
                 onConnected(conn);
               } else if (context.mounted && helper.lastError != null) {

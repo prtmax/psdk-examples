@@ -18,58 +18,91 @@ import 'thermal_lan_controller.dart';
 class DemoCoordinator extends ChangeNotifier {
   DemoCoordinator({ColorCoreEngine? colorCore})
     : colorCore = colorCore ?? SublimationColorCoreResolver.resolve(),
-      inspector = ProtocolInspectorController(),
-      registry = CloudPrinterRegistry(),
-      realTransportHelper = RealTransportHelper() {
-    escWan = EscWanController(inspector: inspector, modeGetter: () => runMode);
+      inspector = ProtocolInspectorController() {
+    _createSession(runMode);
+  }
+
+  void _createSession(DemoRunMode mode) {
+    registry = CloudPrinterRegistry();
+    realTransportHelper = RealTransportHelper(inspector);
+    escWan = EscWanController(inspector: inspector, modeGetter: () => mode);
     thermalLan = ThermalLanController(
       inspector: inspector,
-      modeGetter: () => runMode,
+      modeGetter: () => mode,
       realTransportHelper: realTransportHelper,
     );
     sublimation = SublimationController(
       inspector: inspector,
       registry: registry,
-      colorCore: this.colorCore,
-      modeGetter: () => runMode,
+      colorCore: colorCore,
+      modeGetter: () => mode,
     );
     inkjet = InkjetController(
       inspector: inspector,
       registry: registry,
-      colorCore: this.colorCore,
-      modeGetter: () => runMode,
+      colorCore: colorCore,
+      modeGetter: () => mode,
     );
 
+    final simulated = mode == DemoRunMode.simulation;
     registerDemoProtocols(
       registry,
-      colorCore: this.colorCore,
-      sublimationUdpTransport: sublimation.simUdpTransport,
-      sublimationConnector: (printer, timeout) async =>
-          sublimation.simTcpDevice,
-      inkjetMdnsBrowser: inkjet.simMdnsBrowser.browse,
-      inkjetSoftApProbe: inkjet.simSoftApProbe.call,
-      inkjetNetworkBinder: inkjet.simNetworkBinder,
-      inkjetBleGattHooks: inkjet.simBleDevice.buildGattHooks(),
+      colorCore: colorCore,
+      sublimationUdpTransport: simulated ? sublimation.simUdpTransport : null,
+      sublimationConnector: simulated
+          ? (printer, timeout) async => sublimation.simTcpDevice
+          : null,
+      allowInkjetLoopback: simulated,
+      inkjetMdnsBrowser: simulated ? inkjet.simMdnsBrowser.browse : null,
+      inkjetSoftApProbe: simulated ? inkjet.simSoftApProbe.call : null,
+      inkjetNetworkBinder: simulated ? inkjet.simNetworkBinder : null,
+      inkjetBleGattHooks: simulated
+          ? inkjet.simBleDevice.buildGattHooks()
+          : null,
     );
   }
 
   final ColorCoreEngine colorCore;
   final ProtocolInspectorController inspector;
-  final CloudPrinterRegistry registry;
-  final RealTransportHelper realTransportHelper;
+  late CloudPrinterRegistry registry;
+  late RealTransportHelper realTransportHelper;
 
-  late final EscWanController escWan;
-  late final ThermalLanController thermalLan;
-  late final SublimationController sublimation;
-  late final InkjetController inkjet;
+  late EscWanController escWan;
+  late ThermalLanController thermalLan;
+  late SublimationController sublimation;
+  late InkjetController inkjet;
 
   DemoRunMode runMode = DemoRunMode.simulation;
   CloudPrinterFamily activeFamily = CloudPrinterFamily.escWanCloud;
 
-  void setRunMode(DemoRunMode next) {
-    if (runMode == next) return;
-    runMode = next;
+  bool switching = false;
+  bool _disposed = false;
+  Future<void>? _closingSession;
+
+  Future<void> setRunMode(DemoRunMode next) async {
+    if (switching || _disposed || runMode == next) return;
+    switching = true;
     notifyListeners();
+    try {
+      await (_closingSession = _closeSession());
+      if (_disposed) return;
+      _createSession(next);
+      runMode = next;
+    } finally {
+      switching = false;
+      _closingSession = null;
+      if (!_disposed) notifyListeners();
+    }
+  }
+
+  Future<void> _closeSession() async {
+    await Future.wait([
+      escWan.dispose(),
+      thermalLan.dispose(),
+      sublimation.dispose(),
+      inkjet.dispose(),
+    ]);
+    await realTransportHelper.dispose();
   }
 
   void setActiveFamily(CloudPrinterFamily family) {
@@ -80,11 +113,9 @@ class DemoCoordinator extends ChangeNotifier {
 
   @override
   Future<void> dispose() async {
-    await escWan.dispose();
-    await thermalLan.dispose();
-    await sublimation.dispose();
-    await inkjet.dispose();
-    await realTransportHelper.dispose();
+    if (_disposed) return;
+    _disposed = true;
+    await (_closingSession ?? _closeSession());
     inspector.dispose();
     super.dispose();
   }

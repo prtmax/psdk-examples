@@ -12,6 +12,8 @@ import '../models/protocol_inspector.dart';
 import '../stubs/sim_inkjet_stub.dart';
 import '../utils/test_image_generator.dart';
 
+import 'inspected_device.dart';
+
 enum InkjetSimFaultPreset {
   ready('Ready (0x00)', InkjetFaultCode.noError),
   yellowLow('Yellow Low (0x39)', InkjetFaultCode.colorYInkLowLevel),
@@ -57,6 +59,16 @@ class InkjetController extends ChangeNotifier {
   InkjetPrinterDriver? _driver;
   StreamSubscription<CloudStatusSnapshot>? _pushSub;
   CloudCancelToken? _printCancelToken;
+  CloudCancelToken? _provisionCancelToken;
+  WifiProvisioner? _activeProvisioner;
+  LanPrinterScanner? _activeScanner;
+  bool _disposed = false;
+
+  void _notifyIfAlive() {
+    if (!_disposed) {
+      notifyListeners();
+    }
+  }
 
   bool busy = false;
   String statusMessage = 'Ready (Simulation Mode)';
@@ -110,12 +122,15 @@ class InkjetController extends ChangeNotifier {
       if (mode == DemoRunMode.simulation) {
         simBleDevice.rejectNextProvision = rejectInSim;
       }
+      final cancelToken = CloudCancelToken();
+      _provisionCancelToken = cancelToken;
       final provisioner = InkjetBleProvisioner(
         device: _activeBleDevice,
         hooks: mode == DemoRunMode.simulation
             ? simBleDevice.buildGattHooks()
             : null,
       );
+      _activeProvisioner = provisioner;
       try {
         final result = await provisioner.provision(
           ProvisionRequest(
@@ -124,6 +139,7 @@ class InkjetController extends ChangeNotifier {
             password: password,
             gattProfile: BleGattProfile.inkjet,
             negotiatedMtu: 512,
+            cancelToken: cancelToken,
           ),
         );
         lastProvisionResult = result;
@@ -131,6 +147,8 @@ class InkjetController extends ChangeNotifier {
             ? 'ACL cmd=24 provisioned "$ssid"'
             : 'ACL provision rejected: ${result.message ?? result.errorCode.name}';
       } finally {
+        _provisionCancelToken = null;
+        _activeProvisioner = null;
         await provisioner.dispose();
       }
     });
@@ -165,11 +183,15 @@ class InkjetController extends ChangeNotifier {
                   ),
                 );
           },
-          networkBinder: DefaultInkjetNetworkBinder(),
+          networkBinder: InspectedNetworkBinder(
+            inspector,
+            CloudPrinterFamily.colorInkjetPjl,
+          ),
           enrichMdnsWithXslQuery: true,
         );
       }
 
+      _activeScanner = scanner;
       final found = <DiscoveredCloudPrinter>[];
       try {
         await for (final p in scanner.scan(
@@ -188,6 +210,7 @@ class InkjetController extends ChangeNotifier {
           }
         }
       } finally {
+        _activeScanner = null;
         await scanner.dispose();
         await realNsd?.dispose();
       }
@@ -201,6 +224,13 @@ class InkjetController extends ChangeNotifier {
   }
 
   Future<void> connectDriver([DiscoveredCloudPrinter? target]) async {
+    if (mode == DemoRunMode.realDevice &&
+        target == null &&
+        selectedPrinter == null) {
+      statusMessage = 'Discover or select a printer first';
+      _notifyIfAlive();
+      return;
+    }
     final printer =
         target ??
         selectedPrinter ??
@@ -217,13 +247,21 @@ class InkjetController extends ChangeNotifier {
         colorCore: colorCore,
         networkBinder: mode == DemoRunMode.simulation
             ? simNetworkBinder
-            : DefaultInkjetNetworkBinder(),
+            : InspectedNetworkBinder(
+                inspector,
+                CloudPrinterFamily.colorInkjetPjl,
+              ),
       );
       _driver = driver;
       await driver.connect(
         device: mode == DemoRunMode.simulation ? simTcpDevice : null,
         printer: mode == DemoRunMode.simulation ? null : printer,
       );
+      if (_disposed) {
+        await driver.dispose();
+        _driver = null;
+        return;
+      }
       selectedPrinter = printer;
       await _refreshStatusInternal();
       statusMessage =
@@ -234,7 +272,7 @@ class InkjetController extends ChangeNotifier {
   Future<void> queryFullStatus() async {
     if (!isConnected) {
       statusMessage = 'Connect Inkjet XSL/XPL first';
-      notifyListeners();
+      _notifyIfAlive();
       return;
     }
     await _runBusy('Querying XSL status & inkbox...', _refreshStatusInternal);
@@ -257,7 +295,7 @@ class InkjetController extends ChangeNotifier {
           await _pushSub?.cancel();
           _pushSub = _driver!.watchStatus().listen((snap) {
             lastSnapshot = snap;
-            notifyListeners();
+            _notifyIfAlive();
           });
           activePushEnabled = true;
         } else {
@@ -364,7 +402,7 @@ class InkjetController extends ChangeNotifier {
       if (isConnected) {
         await queryFullStatus();
       } else {
-        notifyListeners();
+        _notifyIfAlive();
       }
     }
   }
@@ -405,7 +443,7 @@ class InkjetController extends ChangeNotifier {
       if (isConnected) {
         await queryFullStatus();
       } else {
-        notifyListeners();
+        _notifyIfAlive();
       }
     }
   }
@@ -437,7 +475,7 @@ class InkjetController extends ChangeNotifier {
   Future<InkjetPreflightResult?> runPreflightCheck() async {
     if (!isConnected) {
       statusMessage = 'Connect Inkjet XSL/XPL first';
-      notifyListeners();
+      _notifyIfAlive();
       return null;
     }
     late InkjetPreflightResult result;
@@ -461,7 +499,7 @@ class InkjetController extends ChangeNotifier {
   }) async {
     if (!isConnected) {
       statusMessage = 'Connect Inkjet XSL/XPL first';
-      notifyListeners();
+      _notifyIfAlive();
       return null;
     }
     CloudPrintResult? result;
@@ -494,7 +532,7 @@ class InkjetController extends ChangeNotifier {
         cancelToken: cancelToken,
         onProgress: (p) {
           jobProgress = p;
-          notifyListeners();
+          _notifyIfAlive();
         },
       );
       lastPrintResult = result;
@@ -524,28 +562,36 @@ class InkjetController extends ChangeNotifier {
     activePushEnabled = false;
     await _driver?.dispose();
     _driver = null;
-    notifyListeners();
+    _notifyIfAlive();
   }
 
   Future<void> _runBusy(String label, Future<void> Function() action) async {
+    if (_disposed) return;
     busy = true;
     statusMessage = label;
-    notifyListeners();
+    _notifyIfAlive();
     try {
       await action();
     } catch (e) {
       statusMessage = 'Error: $e';
     } finally {
       busy = false;
-      notifyListeners();
+      _notifyIfAlive();
     }
   }
 
   @override
   Future<void> dispose() async {
+    if (_disposed) return;
+    _disposed = true;
+    _provisionCancelToken?.cancel('Disposed');
+    _printCancelToken?.cancel('Disposed');
+    await _activeProvisioner?.dispose();
+    await _activeScanner?.dispose();
     await disconnectDriver();
     await simBleDevice.disconnect();
     await simTcpDevice.disconnect();
+    await realBleDevice?.disconnect();
     super.dispose();
   }
 }

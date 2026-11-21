@@ -21,7 +21,7 @@ class CloudPrintDemoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Cloud & Color Print Demo',
+      title: 'Wi-Fi & Color Print Demo',
       theme: ThemeData(
         colorScheme: const ColorScheme.light(
           primary: Color(0xFF256B75),
@@ -114,7 +114,7 @@ class _CloudPrintDemoPageState extends State<CloudPrintDemoPage>
         return Scaffold(
           key: _scaffoldKey,
           appBar: AppBar(
-            title: const Text('Cloud Print Demo'),
+            title: const Text('Wi-Fi & Color Print'),
             actions: [
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -132,7 +132,9 @@ class _CloudPrintDemoPageState extends State<CloudPrintDemoPage>
                     ),
                   ],
                   selected: <DemoRunMode>{_coordinator.runMode},
-                  onSelectionChanged: (s) => _coordinator.setRunMode(s.first),
+                  onSelectionChanged: _coordinator.switching
+                      ? null
+                      : (s) => _coordinator.setRunMode(s.first),
                 ),
               ),
               IconButton(
@@ -161,27 +163,30 @@ class _CloudPrintDemoPageState extends State<CloudPrintDemoPage>
           ),
           endDrawer: ProtocolInspectorDrawer(inspector: _coordinator.inspector),
           body: SafeArea(
-            child: TabBarView(
-              controller: _tabController,
-              children: [
-                EscWanTab(
-                  controller: _coordinator.escWan,
-                  realTransportHelper: _coordinator.realTransportHelper,
-                ),
-                ThermalLanTab(
-                  controller: _coordinator.thermalLan,
-                  realTransportHelper: _coordinator.realTransportHelper,
-                ),
-                SublimationTab(
-                  controller: _coordinator.sublimation,
-                  realTransportHelper: _coordinator.realTransportHelper,
-                ),
-                InkjetTab(
-                  controller: _coordinator.inkjet,
-                  realTransportHelper: _coordinator.realTransportHelper,
-                ),
-              ],
-            ),
+            child: _coordinator.switching
+                ? const Center(child: CircularProgressIndicator())
+                : TabBarView(
+                    key: ValueKey(_coordinator.runMode),
+                    controller: _tabController,
+                    children: [
+                      EscWanTab(
+                        controller: _coordinator.escWan,
+                        realTransportHelper: _coordinator.realTransportHelper,
+                      ),
+                      ThermalLanTab(
+                        controller: _coordinator.thermalLan,
+                        realTransportHelper: _coordinator.realTransportHelper,
+                      ),
+                      SublimationTab(
+                        controller: _coordinator.sublimation,
+                        realTransportHelper: _coordinator.realTransportHelper,
+                      ),
+                      InkjetTab(
+                        controller: _coordinator.inkjet,
+                        realTransportHelper: _coordinator.realTransportHelper,
+                      ),
+                    ],
+                  ),
           ),
         );
       },

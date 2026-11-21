@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:cloud_print_demo/src/controllers/demo_coordinator.dart';
@@ -51,6 +52,111 @@ void main() {
         expect(entries[0].decodedSummary, isNot(contains('my-secret-pwd')));
         expect(entries[1].textPreview, isNot(contains('secret-inkjet')));
         expect(entries[1].decodedSummary, isNot(contains('wlan-secret')));
+      },
+    );
+
+    test(
+      'ProtocolInspectorController and all 4 stubs redact JSON tokens, ESetKey/EGetKey, MQTT CONNECT, Sublimation getLocalPwd, and chunked Inkjet ACL cmd=24',
+      () async {
+        String hexOf(String secret) => utf8
+            .encode(secret)
+            .map((b) => b.toRadixString(16).padLeft(2, '0').toUpperCase())
+            .join(' ');
+
+        void expectNoSecretLeak(String secret, String label) {
+          final secretHex = hexOf(secret);
+          for (final entry in coordinator.inspector.entries) {
+            expect(
+              entry.decodedSummary,
+              isNot(contains(secret)),
+              reason: '$label decodedSummary leaked $secret',
+            );
+            expect(
+              entry.textPreview ?? '',
+              isNot(contains(secret)),
+              reason: '$label textPreview leaked $secret',
+            );
+            expect(
+              entry.hexPreview,
+              isNot(contains(secretHex)),
+              reason: '$label hexPreview leaked hex of $secret',
+            );
+            final exported = entry.toExportLine();
+            expect(
+              exported,
+              isNot(contains(secret)),
+              reason: '$label export leaked $secret',
+            );
+            expect(
+              exported,
+              isNot(contains(secretHex)),
+              reason: '$label export leaked hex of $secret',
+            );
+          }
+        }
+
+        // 1. JSON quoted keys in redactSecrets
+        const jsonTok = 'TokSecret!9988';
+        const bearerTok = 'WanSecret!7788';
+        coordinator.inspector.recordText(
+          family: CloudPrinterFamily.escWanCloud,
+          transport: 'WAN HTTP',
+          direction: WireDirection.rx,
+          text: '{"deviceToken":"$jsonTok","token":"Bearer $bearerTok"}',
+          decodedSummary: '{"deviceToken":"$jsonTok","token":"$bearerTok"}',
+        );
+        expectNoSecretLeak(jsonTok, 'JSON deviceToken');
+        expectNoSecretLeak(bearerTok, 'JSON token');
+
+        // 2. ESC ESetKey, EGetKey & MQTT CONNECT
+        const escKey = 'EscKeySecret!4455';
+        await coordinator.escWan.provisionBleWifi(
+          ssid: 'CloudSecretLab',
+          password: 'EscWifiPass!9900',
+          key: escKey,
+        );
+        await coordinator.escWan.inspectEscDevice();
+        await coordinator.escWan.connectWan();
+        expectNoSecretLeak(escKey, 'ESC ESetKey/EGetKey');
+        expectNoSecretLeak('EscWifiPass!9900', 'ESC ESetWifi');
+        expectNoSecretLeak(
+          coordinator.escWan.simBackend.currentToken,
+          'MQTT CONNECT token',
+        );
+
+        // 3. Sublimation BLE Mesh getLocalWifiPassword
+        const subPwd = 'SubLocalSecret!321';
+        coordinator.sublimation.simBleDevice.localPassword = subPwd;
+        final meshGetPwd = SublimationBleMeshCodec.buildGetLocalWifiPassword();
+        await coordinator.sublimation.simBleDevice.write(meshGetPwd);
+        await Future<void>.delayed(Duration.zero);
+        expectNoSecretLeak(subPwd, 'Sublimation getLocalWifiPassword');
+
+        // 4. Inkjet BLE ACL cmd=24 sent in chunks < 178B (100B + 87B)
+        const aclPwd = 'InkAclSecret!654';
+        final fullAcl = InkjetAclCodec.encodeWifiConfigFrame(
+          ssid: 'InkLab-5G',
+          password: aclPwd,
+        );
+        expect(fullAcl.length, equals(187));
+        await coordinator.inkjet.simBleDevice.write(
+          Uint8List.sublistView(fullAcl, 0, 100),
+          sendDone: false,
+        );
+        await coordinator.inkjet.simBleDevice.write(
+          Uint8List.sublistView(fullAcl, 100),
+          sendDone: true,
+        );
+        await Future<void>.delayed(Duration.zero);
+        expect(
+          coordinator.inkjet.simBleDevice.lastProvisionedSsid,
+          equals('InkLab-5G'),
+        );
+        expect(
+          coordinator.inkjet.simBleDevice.lastProvisionedPassword,
+          equals(aclPwd),
+        );
+        expectNoSecretLeak(aclPwd, 'Chunked Inkjet ACL cmd=24');
       },
     );
 
@@ -177,6 +283,26 @@ void main() {
         expect(thermal.printProgress?.stage, equals(CloudJobStage.completed));
         expect(thermal.simLanBackend.totalTcpBytesReceived, greaterThan(0));
 
+        // Exercise ThermalLanController.cancelTsplPrintJob mid-stream
+        var cancelledTriggered = false;
+        void onThermalChange() {
+          if (!cancelledTriggered &&
+              thermal.busy &&
+              thermal.printProgress?.stage == CloudJobStage.sending) {
+            cancelledTriggered = true;
+            thermal.cancelTsplPrintJob();
+          }
+        }
+
+        thermal.addListener(onThermalChange);
+        try {
+          await thermal.streamTsplPrintJob(text: 'X' * 2048);
+        } finally {
+          thermal.removeListener(onThermalChange);
+        }
+        expect(cancelledTriggered, isTrue);
+        expect(thermal.lastStreamResult, contains('cancelled'));
+
         await thermal.resetTsplWlanDefaults();
         expect(thermal.lastTsplDiagSummary, equals('OK'));
         expect(
@@ -276,6 +402,20 @@ void main() {
         expect(
           sub.cardPosition?.position,
           equals(SublimationCardPosition.frontClipCard),
+        );
+
+        // A held card must be removed or recycled before moving it to RFID.
+        final moveSw = Stopwatch()..start();
+        await sub.runMechanicalAction(
+          'Move RFID after HoldEject',
+          (d) => d.cardOps.moveCard(SublimationMoveTarget.contactless),
+        );
+        moveSw.stop();
+        expect(moveSw.elapsed, lessThan(const Duration(seconds: 2)));
+        expect(sub.statusMessage, contains('takePaperOut'));
+        expect(
+          sub.cardPosition?.position,
+          SublimationCardPosition.frontClipCard,
         );
 
         await sub.runMechanicalAction(
@@ -468,6 +608,11 @@ void main() {
         );
         expect(cancelledRes.finalStage, equals(CloudJobStage.cancelled));
         await cancelDriver.dispose();
+
+        // Regression: subsequent XSL queryFullStatus() on the same simTcpDevice must succeed
+        await inkjet.queryFullStatus();
+        expect(inkjet.statusMessage, isNot(startsWith('Error:')));
+        expect(inkjet.lastQueryResult?.inkboxStatus?.cyan?.percent, equals(85));
 
         // Confirm inspector recorded frames for colorInkjetPjl
         expect(

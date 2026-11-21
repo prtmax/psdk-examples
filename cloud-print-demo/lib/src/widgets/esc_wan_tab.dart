@@ -32,7 +32,7 @@ class _EscWanTabState extends State<EscWanTab> {
     text: 'https://cprint-api.iprtapp.com',
   );
   final _mqttHostCtrl = TextEditingController(text: 'mqtt.iprtapp.com');
-  final _snCtrl = TextEditingController(text: 'SIM-ESC-2026001');
+  final _snCtrl = TextEditingController();
   final _tokenCtrl = TextEditingController();
 
   @override
@@ -286,30 +286,52 @@ class _EscWanTabState extends State<EscWanTab> {
                     const SizedBox(height: 8),
                     DropdownButtonFormField<int>(
                       initialValue: c.selectedFaultCode,
+                      isExpanded: true,
                       decoration: const InputDecoration(
                         labelText: 'Simulated Cloud Fault Code',
                       ),
                       items: const [
-                        DropdownMenuItem(value: 0, child: Text('0 - Normal')),
+                        DropdownMenuItem(
+                          value: 0,
+                          child: Text(
+                            '0 - Normal',
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
                         DropdownMenuItem(
                           value: 6001,
-                          child: Text('6001 - LACK_PAPER'),
+                          child: Text(
+                            '6001 - LACK_PAPER',
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         DropdownMenuItem(
                           value: 6003,
-                          child: Text('6003 - OVERHEAT'),
+                          child: Text(
+                            '6003 - OVERHEAT',
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         DropdownMenuItem(
                           value: 6004,
-                          child: Text('6004 - LOW_BATTERY'),
+                          child: Text(
+                            '6004 - LOW_BATTERY',
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         DropdownMenuItem(
                           value: 6006,
-                          child: Text('6006 - COVER_OPEN'),
+                          child: Text(
+                            '6006 - COVER_OPEN',
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         DropdownMenuItem(
                           value: 6013,
-                          child: Text('6013 - PAPER_ERROR'),
+                          child: Text(
+                            '6013 - PAPER_ERROR',
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                       onChanged: (v) {
@@ -319,6 +341,7 @@ class _EscWanTabState extends State<EscWanTab> {
                     const SizedBox(height: 8),
                     DropdownButtonFormField<SimCloudJobOutcome>(
                       initialValue: c.selectedJobOutcome,
+                      isExpanded: true,
                       decoration: const InputDecoration(
                         labelText: 'Next Cloud Job Outcome',
                       ),
@@ -327,15 +350,22 @@ class _EscWanTabState extends State<EscWanTab> {
                           value: SimCloudJobOutcome.success,
                           child: Text(
                             'Success (confirm -> printing -> success)',
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         DropdownMenuItem(
                           value: SimCloudJobOutcome.failWithFault,
-                          child: Text('Remote Fail (errCode fault)'),
+                          child: Text(
+                            'Remote Fail (errCode fault)',
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                         DropdownMenuItem(
                           value: SimCloudJobOutcome.stopPrintEvent,
-                          child: Text('Remote Stop Event (stop_print)'),
+                          child: Text(
+                            'Remote Stop Event (stop_print)',
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                       onChanged: (v) {

@@ -211,7 +211,16 @@ class SimulatedSublimationBleDevice extends ConnectedDevice<Object> {
       cmdCode,
       replyPayload,
     );
-    _emitBytes(encodedReply, 'BLE 0x180B Mesh', rxSummary);
+    final redactReply =
+        cmdEnum == SublimationBleMeshCommand.getLocalWifiPassword;
+    _emitBytes(
+      encodedReply,
+      'BLE 0x180B Mesh',
+      rxSummary,
+      logRawBytes: redactReply
+          ? encodedReply.sublist(0, encodedReply.length.clamp(0, 6))
+          : null,
+    );
   }
 
   void _emitBytes(
@@ -219,12 +228,13 @@ class SimulatedSublimationBleDevice extends ConnectedDevice<Object> {
     String transport,
     String summary, {
     int chunkSize = 0,
+    Uint8List? logRawBytes,
   }) {
     inspector.record(
       family: CloudPrinterFamily.sublimationRpc,
       transport: transport,
       direction: WireDirection.rx,
-      rawBytes: bytes,
+      rawBytes: logRawBytes ?? bytes,
       decodedSummary: summary,
     );
     scheduleMicrotask(() {
@@ -987,6 +997,7 @@ class SimulatedSublimationTcpDevice extends ConnectedDevice<Object> {
     if (op0 == 0x1C && op1 == 0xAA && op2 == 0x80) {
       final act = req.length > 23 ? req[23] : 0;
       if (act == 0) {
+        mainStatus = 0x4D000201;
         final ext = req.length > 22 ? req[22] : 0;
         switch (ext) {
           case 0:
@@ -1013,6 +1024,7 @@ class SimulatedSublimationTcpDevice extends ConnectedDevice<Object> {
     if (op0 == 0x1C && op1 == 0xAA && op2 == 0x82) {
       final act = req.length > 23 ? req[23] : 0;
       if (act == 0) {
+        mainStatus = 0x4D000201;
         cardPosition = 1;
       }
       _logTx(req, 'MoveCardBack act=$act (pos=1)');

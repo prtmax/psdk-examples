@@ -22,19 +22,21 @@ Unified 4-in-1 Flutter Material 3 example demonstrating all four `CloudPrinterFa
 
 ## Operating Modes & Protocol Inspector
 
-- **Simulation Mode (Default)**: Exercises 100% of real `psdk` encoders, decoders, drivers, and `PureDartColorCoreEngine` offline against in-process transport-boundary loopback stubs.
+- **Simulation Mode (Default)**: Exercises the `psdk` encoders, decoders, drivers, and `PureDartColorCoreEngine` offline against in-process transport-boundary loopback stubs.
 - **Real Device Mode**: Connects to physical hardware via `BLEBluetooth`, `Network.scoped`, and `CloudWanPrinterDriver`.
-- **Protocol Inspector Drawer**: Tap the terminal icon in the top AppBar to inspect every TX/RX frame (hex + decoded summary + secret redaction) filtered by `CloudPrinterFamily` and direction.
+- **Protocol Inspector Drawer**: Tap the terminal icon in the top AppBar to inspect simulated protocol frames and real BLE/TCP transfers, HTTP requests and MQTT traffic (hex + decoded summary + secret redaction) filtered by `CloudPrinterFamily` and direction. Real device traffic shows transfer sizes and bounded raster previews. Real HTTP/MQTT entries show request methods, status codes or byte counts; Simulation Mode also decodes cloud protocol fields.
 
 ## Run & Verify
 
 From a sibling checkout (`psdk/` and `psdk-examples/` sharing the same parent directory):
 
 ```sh
+cd cloud-print-demo
 flutter pub get
 dart format --output=none --set-exit-if-changed .
 flutter analyze
 flutter test
+flutter run
 ```
 
 > Inside a Git worktree (`.worktrees/<name>/cloud-print-demo/`), create a gitignored `pubspec_overrides.yaml` pointing the 13 `psdk_*` packages to `../../../../psdk/dart/...`; see [DEV_GUIDE.md](./DEV_GUIDE.md).

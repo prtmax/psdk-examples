@@ -220,6 +220,7 @@ class _InkjetTabState extends State<InkjetTab> {
                     const SizedBox(height: 8),
                     DropdownButtonFormField<InkjetFaultCode>(
                       initialValue: c.selectedCustomFault,
+                      isExpanded: true,
                       decoration: const InputDecoration(
                         labelText: 'All 31 InkjetFaultCode Values',
                       ),
@@ -229,6 +230,7 @@ class _InkjetTabState extends State<InkjetTab> {
                             value: fc,
                             child: Text(
                               '0x${fc.code.toRadixString(16).padLeft(2, "0").toUpperCase()} - ${fc.descriptionEn}',
+                              overflow: TextOverflow.ellipsis,
                             ),
                           ),
                       ],
@@ -326,10 +328,14 @@ class _InkjetTabState extends State<InkjetTab> {
                   const SizedBox(height: 10),
                   DropdownButtonFormField<CloudPrintQuality>(
                     initialValue: c.selectedQuality,
+                    isExpanded: true,
                     decoration: const InputDecoration(labelText: 'Quality'),
                     items: [
                       for (final q in CloudPrintQuality.values)
-                        DropdownMenuItem(value: q, child: Text(q.name)),
+                        DropdownMenuItem(
+                          value: q,
+                          child: Text(q.name, overflow: TextOverflow.ellipsis),
+                        ),
                     ],
                     onChanged: (v) {
                       if (v != null) setState(() => c.selectedQuality = v);
@@ -338,6 +344,7 @@ class _InkjetTabState extends State<InkjetTab> {
                   const SizedBox(height: 8),
                   DropdownButtonFormField<InkjetResolution>(
                     initialValue: c.selectedResolution,
+                    isExpanded: true,
                     decoration: const InputDecoration(
                       labelText: 'Resolution (16 DPI Modes)',
                     ),
@@ -347,6 +354,7 @@ class _InkjetTabState extends State<InkjetTab> {
                           value: r,
                           child: Text(
                             '${r.dpiX} x ${r.dpiY} DPI (id=${r.wireId})',
+                            overflow: TextOverflow.ellipsis,
                           ),
                         ),
                     ],
@@ -357,19 +365,29 @@ class _InkjetTabState extends State<InkjetTab> {
                   const SizedBox(height: 8),
                   DropdownButtonFormField<CloudColorMode>(
                     initialValue: c.selectedColorMode,
+                    isExpanded: true,
                     decoration: const InputDecoration(labelText: 'Color Mode'),
                     items: const [
                       DropdownMenuItem(
                         value: CloudColorMode.colorCmyk,
-                        child: Text('CMYK (K+C+M+Y)'),
+                        child: Text(
+                          'CMYK (K+C+M+Y)',
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       DropdownMenuItem(
                         value: CloudColorMode.colorMixedBlack,
-                        child: Text('CMY Mixed Black'),
+                        child: Text(
+                          'CMY Mixed Black',
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       DropdownMenuItem(
                         value: CloudColorMode.monochrome,
-                        child: Text('Monochrome (K only)'),
+                        child: Text(
+                          'Monochrome (K only)',
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                     onChanged: (v) {
@@ -379,39 +397,52 @@ class _InkjetTabState extends State<InkjetTab> {
                   const SizedBox(height: 8),
                   DropdownButtonFormField<CloudPaperSize>(
                     initialValue: c.selectedPaperSize,
+                    isExpanded: true,
                     decoration: const InputDecoration(labelText: 'Paper Size'),
                     items: const [
                       DropdownMenuItem(
                         value: CloudPaperSize.a4,
-                        child: Text('A4'),
+                        child: Text('A4', overflow: TextOverflow.ellipsis),
                       ),
                       DropdownMenuItem(
                         value: CloudPaperSize.a5,
-                        child: Text('A5'),
+                        child: Text('A5', overflow: TextOverflow.ellipsis),
                       ),
                       DropdownMenuItem(
                         value: CloudPaperSize.b5,
-                        child: Text('B5'),
+                        child: Text('B5', overflow: TextOverflow.ellipsis),
                       ),
                       DropdownMenuItem(
                         value: CloudPaperSize.letter,
-                        child: Text('Letter'),
+                        child: Text('Letter', overflow: TextOverflow.ellipsis),
                       ),
                       DropdownMenuItem(
                         value: CloudPaperSize.photo4R,
-                        child: Text('Photo 4R'),
+                        child: Text(
+                          'Photo 4R',
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       DropdownMenuItem(
                         value: CloudPaperSize.photo5R,
-                        child: Text('Photo 5R'),
+                        child: Text(
+                          'Photo 5R',
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       DropdownMenuItem(
                         value: CloudPaperSize.photo8R,
-                        child: Text('Photo 8R'),
+                        child: Text(
+                          'Photo 8R',
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       DropdownMenuItem(
                         value: CloudPaperSize.custom,
-                        child: Text('Custom (mm)'),
+                        child: Text(
+                          'Custom (mm)',
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                     ],
                     onChanged: (v) {
@@ -455,23 +486,24 @@ class _InkjetTabState extends State<InkjetTab> {
                   const SizedBox(height: 8),
                   DropdownButtonFormField<CloudNupLayout>(
                     initialValue: c.nupLayout,
+                    isExpanded: true,
                     decoration: const InputDecoration(labelText: 'N-up Layout'),
                     items: const [
                       DropdownMenuItem(
                         value: CloudNupLayout.oneUp,
-                        child: Text('1-up'),
+                        child: Text('1-up', overflow: TextOverflow.ellipsis),
                       ),
                       DropdownMenuItem(
                         value: CloudNupLayout.twoUp,
-                        child: Text('2-up'),
+                        child: Text('2-up', overflow: TextOverflow.ellipsis),
                       ),
                       DropdownMenuItem(
                         value: CloudNupLayout.fourUp,
-                        child: Text('4-up'),
+                        child: Text('4-up', overflow: TextOverflow.ellipsis),
                       ),
                       DropdownMenuItem(
                         value: CloudNupLayout.nineUp,
-                        child: Text('9-up'),
+                        child: Text('9-up', overflow: TextOverflow.ellipsis),
                       ),
                     ],
                     onChanged: (v) {

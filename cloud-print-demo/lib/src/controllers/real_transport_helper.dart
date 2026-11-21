@@ -1,14 +1,22 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/services.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:psdk_bluetooth_ble/psdk_bluetooth_ble.dart';
 import 'package:psdk_device_adapter/psdk_device_adapter.dart';
 import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
 import 'package:psdk_network/psdk_network.dart';
 
+import '../models/protocol_inspector.dart';
+import 'inspected_device.dart';
+
 /// Real-device transport coordinator wrapping `BLEBluetooth` and `Network`
 /// with graceful `MissingPluginException` / `PlatformException` guards.
 class RealTransportHelper {
+  RealTransportHelper(this.inspector);
+
+  final ProtocolInspectorController inspector;
   BLEBluetooth? _ble;
   StreamSubscription<BLEBluetoothDevice>? _bleSub;
   final List<BLEBluetoothDevice> discoveredBleDevices = <BLEBluetoothDevice>[];
@@ -48,6 +56,23 @@ class RealTransportHelper {
     discoveredBleDevices.clear();
     final seen = <String>{};
     try {
+      if (Platform.isAndroid) {
+        const sdk = MethodChannel(
+          'com.psdk.examples.cloud_print_demo/android_sdk',
+        );
+        final version = await sdk.invokeMethod<int>('sdkInt');
+        final permissions = (version ?? 31) >= 31
+            ? [Permission.bluetoothScan, Permission.bluetoothConnect]
+            : [Permission.locationWhenInUse];
+        final statuses = await permissions.request();
+        if (permissions.any(
+          (permission) => statuses[permission]?.isGranted != true,
+        )) {
+          lastError =
+              'Bluetooth discovery requires permission. Check the app permissions in Settings.';
+          return const [];
+        }
+      }
       final ble = _ensureBle(configForFamily(family));
       final available = await ble.availableBluetooth();
       if (!available) {
@@ -94,7 +119,12 @@ class RealTransportHelper {
     try {
       final config = configForFamily(family);
       final ble = _ensureBle(config);
-      return await ble.connect(device, timeout: timeout, config: config);
+      final connection = await ble.connect(
+        device,
+        timeout: timeout,
+        config: config,
+      );
+      return InspectedDevice(connection, inspector, family, 'BLE');
     } on MissingPluginException {
       lastError =
           'BLE plugin is not available on this platform (Android/iOS required)';

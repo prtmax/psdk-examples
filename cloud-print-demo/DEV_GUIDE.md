@@ -68,7 +68,7 @@ Both `pubspec_overrides.yaml` and `pubspec.lock` are listed in `cloud-print-demo
 ## 3. Simulation vs Real Device Mode
 
 - **Simulation Mode** injects loopback implementations at the transport boundary (`ConnectedDevice`, `SublimationUdpTransport`, `Network.scoped` socket binders, `CloudWanConfig.custom` factories, `InkjetMdnsBrowser`, `InkjetSoftApProbeTransport`, `InkjetNetworkBinder`) and resolves `PureDartColorCoreEngine()` automatically when native `libcolor_core.so` is absent.
-- **Real Device Mode** uses:
+- **Real Device Mode** starts a fresh device session. The inspector records BLE/TCP transfer sizes, bounded raster previews, sublimation UDP datagrams, HTTP methods and response codes, and MQTT byte counts. It omits real provisioning payloads and cloud credentials. The SDK opens the following connections.
   - `BLEBluetooth.scoped(config: BleConnectionConfig..., enableStatePolling: false)` with per-family GATT profiles (`BleConnectionConfig.sublimation`, `BleConnectionConfig.inkjet`, or `preferredMtu: 512`), guarding `MissingPluginException` / `PlatformException`.
   - `Network.scoped(...)` for UDP `22368`, mDNS `_printer._tcp`, SoftAP `:9100`, and TCP `:9100`.
   - `CloudWanPrinterDriver` against configured REST + MQTT v5 TLS endpoints.
@@ -86,4 +86,5 @@ dart format --output=none --set-exit-if-changed .
 flutter pub get
 flutter analyze
 flutter test
+flutter build apk --debug
 ```

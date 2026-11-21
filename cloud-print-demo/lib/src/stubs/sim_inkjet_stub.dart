@@ -24,6 +24,7 @@ class SimulatedInkjetBleDevice extends ConnectedDevice<Object> {
   Uint8List? lastAckFrame;
   String lastProvisionedSsid = '';
   String lastProvisionedPassword = '';
+  final List<int> _aclRxBuf = <int>[];
 
   @override
   Object origin() => 'sim://inkjet-ble-acl';
@@ -40,6 +41,7 @@ class SimulatedInkjetBleDevice extends ConnectedDevice<Object> {
   @override
   Future<void> disconnect() async {
     _state = ConnectionState.disconnected;
+    _aclRxBuf.clear();
     if (!_readController.isClosed) {
       await _readController.close();
     }
@@ -61,29 +63,64 @@ class SimulatedInkjetBleDevice extends ConnectedDevice<Object> {
   Future<void> write(Uint8List data, {bool sendDone = true}) async {
     if (_state != ConnectionState.connected || data.isEmpty) return;
 
-    int cmd = 0;
-    if (data.length >= 38 && data[34] == 0xAC && data[35] == 0x00) {
-      cmd = data[36] | (data[37] << 8);
-    }
+    _aclRxBuf.addAll(data);
+    while (_aclRxBuf.isNotEmpty) {
+      // Wait for at least the 34B PJL ACL prefix + 16B ACL header = 50B.
+      if (_aclRxBuf.length < 50) {
+        return;
+      }
 
-    if (cmd == InkjetAclCodec.commandWifiConfig && data.length >= 178) {
-      lastProvisionedSsid = _decodeFixedCString(data, 50, 64);
-      lastProvisionedPassword = _decodeFixedCString(data, 114, 64);
+      final hasAclHeader = _aclRxBuf[34] == 0xAC && _aclRxBuf[35] == 0x00;
+      if (!hasAclHeader) {
+        // Non-ACL fallback: consume and avoid logging raw credential tails.
+        final frame = Uint8List.fromList(_aclRxBuf);
+        _aclRxBuf.clear();
+        _handleAclFrame(frame, cmd: 0);
+        return;
+      }
+
+      final cmd = _aclRxBuf[36] | (_aclRxBuf[37] << 8);
+      final payloadLen = _aclRxBuf[38] | (_aclRxBuf[39] << 8);
+      // 34B prefix + 16B ACL header + payloadLen + 9B UEL = 59 + payloadLen.
+      final expectedTotal = 59 + payloadLen;
+      if (_aclRxBuf.length < expectedTotal) {
+        // Wait for remaining BLE write chunks before parsing/logging.
+        return;
+      }
+
+      final frame = Uint8List.fromList(_aclRxBuf.sublist(0, expectedTotal));
+      _aclRxBuf.removeRange(0, expectedTotal);
+      _handleAclFrame(frame, cmd: cmd);
+    }
+  }
+
+  void _handleAclFrame(Uint8List frame, {required int cmd}) {
+    if (cmd == InkjetAclCodec.commandWifiConfig && frame.length >= 178) {
+      lastProvisionedSsid = _decodeFixedCString(frame, 50, 64);
+      lastProvisionedPassword = _decodeFixedCString(frame, 114, 64);
       inspector.record(
         family: CloudPrinterFamily.colorInkjetPjl,
         transport: 'BLE 0x180A ACL',
         direction: WireDirection.tx,
-        rawBytes: data.sublist(0, 50),
+        rawBytes: frame.sublist(0, 50),
         decodedSummary:
-            'ACL cmd=24 (${data.length} B): ssid="$lastProvisionedSsid", password=[REDACTED]',
+            'ACL cmd=24 (${frame.length} B): ssid="$lastProvisionedSsid", password=[REDACTED]',
+      );
+    } else if (cmd == InkjetAclCodec.commandWifiConfig) {
+      inspector.record(
+        family: CloudPrinterFamily.colorInkjetPjl,
+        transport: 'BLE 0x180A ACL',
+        direction: WireDirection.tx,
+        rawBytes: frame.sublist(0, frame.length.clamp(0, 50)),
+        decodedSummary: 'ACL cmd=24 (${frame.length} B): [REDACTED]',
       );
     } else {
       inspector.record(
         family: CloudPrinterFamily.colorInkjetPjl,
         transport: 'BLE 0x180A ACL',
         direction: WireDirection.tx,
-        rawBytes: data,
-        decodedSummary: 'ACL cmd=$cmd (${data.length} B)',
+        rawBytes: frame,
+        decodedSummary: 'ACL cmd=$cmd (${frame.length} B)',
       );
     }
 
@@ -336,6 +373,9 @@ class SimulatedInkjetTcpDevice extends ConnectedDevice<Object> {
   @override
   Future<void> disconnect() async {
     _state = ConnectionState.disconnected;
+    _inXplMode = false;
+    _xplBuf.clear();
+    _xslRxAccum.clear();
     if (!_readController.isClosed) {
       await _readController.close();
     }
@@ -348,8 +388,23 @@ class SimulatedInkjetTcpDevice extends ConnectedDevice<Object> {
   Future<void> write(Uint8List data, {bool sendDone = true}) async {
     if (_state != ConnectionState.connected || data.isEmpty) return;
 
+    final asText = utf8.decode(data, allowMalformed: true);
+    if (_inXplMode &&
+        (asText.contains('@PJL ENTER LANGUAGE=XSL') ||
+            asText.contains('@PJL ENTER LANGUAGE=XPL'))) {
+      _inXplMode = false;
+      _xplBuf.clear();
+      _xslRxAccum.clear();
+      if (asText.contains('@PJL ENTER LANGUAGE=XSL') &&
+          !asText.startsWith(XslCodec.uel)) {
+        final enterIdx = asText.indexOf('@PJL ENTER LANGUAGE=XSL');
+        if (!asText.substring(0, enterIdx).contains(XslCodec.uel)) {
+          _xslRxAccum.write(XslCodec.uel);
+        }
+      }
+    }
+
     if (!_inXplMode) {
-      final asText = utf8.decode(data, allowMalformed: true);
       if (asText.contains('LANGUAGE=XPL')) {
         _inXplMode = true;
       } else if (asText.contains('LANGUAGE=XSL') || _xslRxAccum.isNotEmpty) {
