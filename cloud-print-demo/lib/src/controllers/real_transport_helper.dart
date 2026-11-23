@@ -406,13 +406,40 @@ class DemoBleConnection extends InspectedDevice {
 class DemoBleDevice {
   DemoBleDevice.windows(WindowsBluetoothDevice device)
     : windows = device,
-      ios = null;
+      ios = null,
+      _testName = null,
+      _testMac = null;
   DemoBleDevice.ios(ios_ble.BLEBluetoothDevice device)
     : ios = device,
-      windows = null;
+      windows = null,
+      _testName = null,
+      _testMac = null;
+  @visibleForTesting
+  DemoBleDevice.test({String? name, String? mac})
+    : windows = null,
+      ios = null,
+      _testName = name,
+      _testMac = mac;
   final WindowsBluetoothDevice? windows;
   final ios_ble.BLEBluetoothDevice? ios;
-  String? get name => windows?.name ?? ios?.name;
-  String? get mac => windows?.mac ?? ios?.mac;
+  final String? _testName;
+  final String? _testMac;
+  String? get name => windows?.name ?? ios?.name ?? _testName;
+  String? get mac => windows?.mac ?? ios?.mac ?? _testMac;
   bool get hasDisplayName => name?.trim().isNotEmpty ?? false;
+}
+
+List<String> parseBleNamePrefixes(String raw) {
+  return raw
+      .split(RegExp(r'[,，]'))
+      .map((part) => part.trim().toLowerCase())
+      .where((part) => part.isNotEmpty)
+      .toList(growable: false);
+}
+
+bool matchesBleNamePrefixes(String? deviceName, List<String> prefixes) {
+  final normalized = deviceName?.trim().toLowerCase() ?? '';
+  if (normalized.isEmpty) return false;
+  if (prefixes.isEmpty) return true;
+  return prefixes.any(normalized.startsWith);
 }

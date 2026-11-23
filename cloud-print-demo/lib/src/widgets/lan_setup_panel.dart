@@ -13,10 +13,12 @@ class LanSetupPanel extends StatefulWidget {
     required this.controller,
     required this.helper,
     this.disabled = false,
+    this.showBleNamePrefixFilter = false,
   });
   final LanSetupController controller;
   final RealTransportHelper helper;
   final bool disabled;
+  final bool showBleNamePrefixFilter;
 
   @override
   State<LanSetupPanel> createState() => _LanSetupPanelState();
@@ -31,11 +33,24 @@ class _LanSetupPanelState extends State<LanSetupPanel> {
         ? 'demo-password'
         : '',
   );
+  late final _blePrefixFilter = TextEditingController(
+    text: widget.controller.bleNamePrefixFilter,
+  );
+
+  @override
+  void didUpdateWidget(covariant LanSetupPanel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller &&
+        _blePrefixFilter.text != widget.controller.bleNamePrefixFilter) {
+      _blePrefixFilter.text = widget.controller.bleNamePrefixFilter;
+    }
+  }
 
   @override
   void dispose() {
     _ssid.dispose();
     _password.dispose();
+    _blePrefixFilter.dispose();
     super.dispose();
   }
 
@@ -55,6 +70,12 @@ class _LanSetupPanelState extends State<LanSetupPanel> {
                 family: c.family,
                 helper: widget.helper,
                 connectedDevice: c.realBleDevice,
+                namePrefixFilterController: widget.showBleNamePrefixFilter
+                    ? _blePrefixFilter
+                    : null,
+                onNamePrefixFilterChanged: widget.showBleNamePrefixFilter
+                    ? (value) => c.bleNamePrefixFilter = value
+                    : null,
                 onConnected: (device) =>
                     setState(() => c.realBleDevice = device),
                 onDisconnected: () => setState(() => c.realBleDevice = null),

@@ -30,15 +30,30 @@ class _InkjetTabState extends State<InkjetTab> {
         : '',
   );
   final _pwdCtrl = TextEditingController(text: 'lab-secret-2026');
+  final _manualIpCtrl = TextEditingController();
   final _customWCtrl = TextEditingController(text: '140');
   final _customHCtrl = TextEditingController(text: '200');
+  late final _blePrefixFilter = TextEditingController(
+    text: widget.controller.bleNamePrefixFilter,
+  );
+
+  @override
+  void didUpdateWidget(covariant InkjetTab oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.controller != widget.controller &&
+        _blePrefixFilter.text != widget.controller.bleNamePrefixFilter) {
+      _blePrefixFilter.text = widget.controller.bleNamePrefixFilter;
+    }
+  }
 
   @override
   void dispose() {
     _ssidCtrl.dispose();
     _pwdCtrl.dispose();
+    _manualIpCtrl.dispose();
     _customWCtrl.dispose();
     _customHCtrl.dispose();
+    _blePrefixFilter.dispose();
     super.dispose();
   }
 
@@ -50,6 +65,39 @@ class _InkjetTabState extends State<InkjetTab> {
       builder: (context, _) {
         final isSim = c.mode == DemoRunMode.simulation;
         final inkbox = c.lastQueryResult?.inkboxStatus;
+        final preferSnap =
+            c.activePushEnabled &&
+            c.lastPushAt != null &&
+            c.lastSnapshot != null;
+        final cyanCartridge = _resolveCartridge(
+          queryCartridge: inkbox?.cyan,
+          snap: c.lastSnapshot,
+          kind: CloudSupplyKind.cyanInk,
+          preferSnap: preferSnap,
+        );
+        final magentaCartridge = _resolveCartridge(
+          queryCartridge: inkbox?.magenta,
+          snap: c.lastSnapshot,
+          kind: CloudSupplyKind.magentaInk,
+          preferSnap: preferSnap,
+        );
+        final yellowCartridge = _resolveCartridge(
+          queryCartridge: inkbox?.yellow,
+          snap: c.lastSnapshot,
+          kind: CloudSupplyKind.yellowInk,
+          preferSnap: preferSnap,
+        );
+        final blackCartridge = _resolveCartridge(
+          queryCartridge: inkbox?.black,
+          snap: c.lastSnapshot,
+          kind: CloudSupplyKind.blackInk,
+          preferSnap: preferSnap,
+        );
+        final hasSupplies =
+            cyanCartridge != null ||
+            magentaCartridge != null ||
+            yellowCartridge != null ||
+            blackCartridge != null;
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
@@ -65,6 +113,9 @@ class _InkjetTabState extends State<InkjetTab> {
                 family: CloudPrinterFamily.colorInkjetPjl,
                 helper: widget.realTransportHelper,
                 connectedDevice: c.realBleDevice,
+                namePrefixFilterController: _blePrefixFilter,
+                onNamePrefixFilterChanged: (value) =>
+                    c.bleNamePrefixFilter = value,
                 onConnected: (dev) => setState(() => c.realBleDevice = dev),
                 onDisconnected: () => setState(() => c.realBleDevice = null),
               ),
@@ -121,6 +172,36 @@ class _InkjetTabState extends State<InkjetTab> {
                       ),
                     ],
                   ),
+                  if (!isSim) ...[
+                    const SizedBox(height: 10),
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            key: const Key('inkjet_manual_ip_field'),
+                            controller: _manualIpCtrl,
+                            enabled: !c.busy,
+                            keyboardType: TextInputType.number,
+                            decoration: const InputDecoration(
+                              labelText: '直连打印机 IP（可选）',
+                              hintText: '如 192.168.200.214',
+                              isDense: true,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        OutlinedButton.icon(
+                          key: const Key('inkjet_probe_manual_ip_btn'),
+                          onPressed: c.busy
+                              ? null
+                              : () => c.probeManualHost(_manualIpCtrl.text),
+                          icon: const Icon(Icons.radar, size: 18),
+                          label: const Text('探测'),
+                        ),
+                      ],
+                    ),
+                  ],
                   if (c.discoveredPrinters.isNotEmpty) ...[
                     const SizedBox(height: 8),
                     for (final p in c.discoveredPrinters)
@@ -179,6 +260,13 @@ class _InkjetTabState extends State<InkjetTab> {
                         icon: const Icon(Icons.refresh),
                         label: const Text('查询 XSL 状态'),
                       ),
+                      FilledButton.tonalIcon(
+                        onPressed: c.busy || !c.isConnected
+                            ? null
+                            : c.queryDeviceConfig,
+                        icon: const Icon(Icons.settings_ethernet),
+                        label: const Text('查询网络/电源/语言'),
+                      ),
                       FilterChip(
                         label: const Text('主动状态推送'),
                         selected: c.activePushEnabled,
@@ -188,39 +276,73 @@ class _InkjetTabState extends State<InkjetTab> {
                       ),
                     ],
                   ),
-                  if (inkbox != null) ...[
+                  if (hasSupplies ||
+                      c.activePushEnabled ||
+                      c.lastPushAt != null) ...[
                     const SizedBox(height: 12),
-                    _InkBar(
-                      label: '青色（C）',
-                      color: const Color(0xFF00AEEF),
-                      cartridge: inkbox.cyan,
-                    ),
-                    _InkBar(
-                      label: '品红（M）',
-                      color: const Color(0xFFEC008C),
-                      cartridge: inkbox.magenta,
-                    ),
-                    _InkBar(
-                      label: '黄色（Y）',
-                      color: const Color(0xFFFFC107),
-                      cartridge: inkbox.yellow,
-                    ),
-                    _InkBar(
-                      label: '黑色（K）',
-                      color: const Color(0xFF222222),
-                      cartridge: inkbox.black,
-                    ),
-                    const SizedBox(height: 6),
+                    if (hasSupplies) ...[
+                      _InkBar(
+                        label: '青色（C）',
+                        color: const Color(0xFF00AEEF),
+                        cartridge: cyanCartridge,
+                      ),
+                      _InkBar(
+                        label: '品红（M）',
+                        color: const Color(0xFFEC008C),
+                        cartridge: magentaCartridge,
+                      ),
+                      _InkBar(
+                        label: '黄色（Y）',
+                        color: const Color(0xFFFFC107),
+                        cartridge: yellowCartridge,
+                      ),
+                      _InkBar(
+                        label: '黑色（K）',
+                        color: const Color(0xFF222222),
+                        cartridge: blackCartridge,
+                      ),
+                      const SizedBox(height: 6),
+                    ],
                     KeyValueRow(
                       label: '硬件状态',
-                      value:
-                          '${c.lastQueryResult?.deviceStatus?.wireToken ?? "-"} · 故障：${c.lastQueryResult?.faultCode?.descriptionZh ?? "无故障"}',
+                      value: preferSnap
+                          ? '${demoLabel(c.lastSnapshot!.state.name)} · 故障：${c.lastSnapshot!.issues.isEmpty ? "无故障" : c.lastSnapshot!.issues.map((i) => i.message).join(" / ")}'
+                          : '${demoLabel(c.lastQueryResult?.deviceStatus?.wireToken)} · 故障：${c.lastQueryResult?.faultCode?.descriptionZh ?? "无故障"}',
                     ),
                     KeyValueRow(
                       label: '电量 / 页数',
                       value:
-                          '${c.lastQueryResult?.batteryInfo?.percent ?? "-"}% (${c.lastQueryResult?.batteryInfo?.state.wireToken ?? "-"}) · 已打印：${c.lastQueryResult?.printedTimes ?? "-"}',
+                          '${c.lastQueryResult?.batteryInfo?.percent ?? c.lastSnapshot?.batteryPercent ?? "-"}% (${demoLabel(c.lastQueryResult?.batteryInfo?.state.wireToken)}) · 已打印：${c.lastQueryResult?.printedTimes ?? "-"}',
                     ),
+                    if (c.activePushEnabled || c.lastPushAt != null)
+                      KeyValueRow(
+                        label: '主动推送最近更新',
+                        value: c.lastPushAt == null
+                            ? '等待首次状态回调…'
+                            : '${_formatClock(c.lastPushAt!)}（${demoLabel(c.lastSnapshot?.state.name)}）',
+                      ),
+                  ],
+                  if (c.lastWifiSta != null ||
+                      c.lastPowerConfig != null ||
+                      c.lastLanguage != null) ...[
+                    const SizedBox(height: 6),
+                    if (c.lastWifiSta != null)
+                      KeyValueRow(
+                        label: 'Wi-Fi STA',
+                        value:
+                            '${c.lastWifiSta!.ssid ?? "-"} · ${c.lastWifiSta!.ipv4 ?? "-"} / ${c.lastWifiSta!.subnetMask ?? "-"} / ${c.lastWifiSta!.gateway ?? "-"}',
+                      ),
+                    if (c.lastPowerConfig != null)
+                      KeyValueRow(
+                        label: '电源休眠',
+                        value:
+                            '${c.lastPowerConfig!.powerSave == true ? "开启" : "关闭"} · ${c.lastPowerConfig!.sleepMinutes ?? "-"} 分钟',
+                      ),
+                    if (c.lastLanguage != null)
+                      KeyValueRow(
+                        label: '设备语言',
+                        value: demoLabel(c.lastLanguage!.wireToken),
+                      ),
                   ],
                   if (isSim) ...[
                     const Divider(height: 20),
@@ -307,9 +429,7 @@ class _InkjetTabState extends State<InkjetTab> {
                       OutlinedButton(
                         onPressed: c.busy || !c.isConnected
                             ? null
-                            : () => c.executeMaintenance(
-                                InkjetMaintenanceAction.factoryRestore,
-                              ),
+                            : () => _confirmFactoryRestore(context, c),
                         child: const Text('恢复出厂设置'),
                       ),
                     ],
@@ -360,7 +480,7 @@ class _InkjetTabState extends State<InkjetTab> {
                         ),
                     ],
                     onChanged: (v) {
-                      if (v != null) setState(() => c.selectedQuality = v);
+                      if (v != null) c.setQuality(v);
                     },
                   ),
                   const SizedBox(height: 8),
@@ -454,6 +574,25 @@ class _InkjetTabState extends State<InkjetTab> {
                     ],
                     onChanged: (v) {
                       if (v != null) setState(() => c.selectedPaperSize = v);
+                    },
+                  ),
+                  const SizedBox(height: 8),
+                  DropdownButtonFormField<CloudPaperType>(
+                    initialValue: c.selectedPaperType,
+                    isExpanded: true,
+                    decoration: const InputDecoration(labelText: '纸张类型'),
+                    items: const [
+                      DropdownMenuItem(
+                        value: CloudPaperType.normal,
+                        child: Text('普通纸', overflow: TextOverflow.ellipsis),
+                      ),
+                      DropdownMenuItem(
+                        value: CloudPaperType.photo,
+                        child: Text('照片纸', overflow: TextOverflow.ellipsis),
+                      ),
+                    ],
+                    onChanged: (v) {
+                      if (v != null) setState(() => c.selectedPaperType = v);
                     },
                   ),
                   if (c.selectedPaperSize == CloudPaperSize.custom) ...[
@@ -664,6 +803,65 @@ class _InkjetTabState extends State<InkjetTab> {
       await c.printXplDocument();
     }
   }
+
+  Future<void> _confirmFactoryRestore(
+    BuildContext context,
+    InkjetController c,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('确认恢复出厂设置？'),
+        content: const Text('此操作可能清除打印机 Wi-Fi 配置并恢复出厂参数。'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: const Text('取消'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: const Text('确认恢复'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed == true && context.mounted) {
+      await c.executeMaintenance(InkjetMaintenanceAction.factoryRestore);
+    }
+  }
+}
+
+InkjetInkCartridgeStatus? _resolveCartridge({
+  required InkjetInkCartridgeStatus? queryCartridge,
+  required CloudStatusSnapshot? snap,
+  required CloudSupplyKind kind,
+  required bool preferSnap,
+}) {
+  if (preferSnap && snap != null) {
+    for (final s in snap.supplies) {
+      if (s.kind == kind) {
+        final state = switch (s.state) {
+          CloudSupplyState.normal => InkjetInkState.normal,
+          CloudSupplyState.low => InkjetInkState.low,
+          CloudSupplyState.empty => InkjetInkState.zero,
+          _ => InkjetInkState.error,
+        };
+        return InkjetInkCartridgeStatus(
+          kind: kind,
+          state: state,
+          percent: s.remainingPercent ?? 0,
+        );
+      }
+    }
+  }
+  return queryCartridge;
+}
+
+String _formatClock(DateTime dt) {
+  final h = dt.hour.toString().padLeft(2, '0');
+  final m = dt.minute.toString().padLeft(2, '0');
+  final s = dt.second.toString().padLeft(2, '0');
+  return '$h:$m:$s';
 }
 
 class _InkBar extends StatelessWidget {

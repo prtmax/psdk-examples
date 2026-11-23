@@ -215,6 +215,8 @@ class RealBleConnectorRow extends StatelessWidget {
     required this.connectedDevice,
     required this.onConnected,
     required this.onDisconnected,
+    this.namePrefixFilterController,
+    this.onNamePrefixFilterChanged,
   });
 
   final CloudPrinterFamily family;
@@ -222,6 +224,8 @@ class RealBleConnectorRow extends StatelessWidget {
   final adapter.ConnectedDevice<dynamic>? connectedDevice;
   final ValueChanged<adapter.ConnectedDevice<dynamic>> onConnected;
   final VoidCallback onDisconnected;
+  final TextEditingController? namePrefixFilterController;
+  final ValueChanged<String>? onNamePrefixFilterChanged;
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
@@ -233,40 +237,81 @@ class RealBleConnectorRow extends StatelessWidget {
     final connected =
         connectedDevice != null &&
         connectedDevice!.connectionState() == adapter.ConnectionState.connected;
+    final filterController = namePrefixFilterController;
     return DemoPanel(
       padding: const EdgeInsets.all(12),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Icon(
-            connected ? Icons.bluetooth_connected : Icons.bluetooth_searching,
-            color: Theme.of(context).colorScheme.primary,
+          Row(
+            children: [
+              Icon(
+                connected
+                    ? Icons.bluetooth_connected
+                    : Icons.bluetooth_searching,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
+                  connected
+                      ? 'BLE: ${connectedDevice!.deviceName() ?? connectedDevice!.deviceMac() ?? "已连接"}'
+                      : '真机蓝牙（${family.title})',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+                ),
+              ),
+              if (connected)
+                OutlinedButton(
+                  onPressed: helper.connecting
+                      ? null
+                      : () async {
+                          await connectedDevice!.disconnect();
+                          if (context.mounted) onDisconnected();
+                        },
+                  child: const Text('断开蓝牙'),
+                )
+              else
+                FilledButton.tonal(
+                  onPressed: helper.connecting
+                      ? null
+                      : () => _scanAndPick(context),
+                  child: Text(helper.connecting ? '连接中…' : '扫描蓝牙'),
+                ),
+            ],
           ),
-          const SizedBox(width: 10),
-          Expanded(
-            child: Text(
-              connected
-                  ? 'BLE: ${connectedDevice!.deviceName() ?? connectedDevice!.deviceMac() ?? "已连接"}'
-                  : '真机蓝牙（${family.title})',
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
+          if (filterController != null) ...[
+            const SizedBox(height: 10),
+            ValueListenableBuilder<TextEditingValue>(
+              valueListenable: filterController,
+              builder: (context, value, _) {
+                return TextField(
+                  key: const Key('ble_name_prefix_filter_field'),
+                  controller: filterController,
+                  onChanged: onNamePrefixFilterChanged,
+                  decoration: InputDecoration(
+                    isDense: true,
+                    labelText: '蓝牙名称前缀过滤（逗号分隔）',
+                    hintText: '例如：z11, h100（不区分大小写，留空不过滤）',
+                    helperText: '多个前缀用 , 分隔，不区分大小写；留空显示全部',
+                    helperMaxLines: 2,
+                    prefixIcon: const Icon(Icons.filter_alt_outlined, size: 18),
+                    suffixIcon: value.text.isEmpty
+                        ? null
+                        : IconButton(
+                            tooltip: '清空过滤',
+                            onPressed: () {
+                              filterController.clear();
+                              onNamePrefixFilterChanged?.call('');
+                            },
+                            icon: const Icon(Icons.clear, size: 18),
+                          ),
+                  ),
+                );
+              },
             ),
-          ),
-          if (connected)
-            OutlinedButton(
-              onPressed: helper.connecting
-                  ? null
-                  : () async {
-                      await connectedDevice!.disconnect();
-                      if (context.mounted) onDisconnected();
-                    },
-              child: const Text('断开蓝牙'),
-            )
-          else
-            FilledButton.tonal(
-              onPressed: helper.connecting ? null : () => _scanAndPick(context),
-              child: Text(helper.connecting ? '连接中…' : '扫描蓝牙'),
-            ),
+          ],
         ],
       ),
     );
@@ -277,7 +322,12 @@ class RealBleConnectorRow extends StatelessWidget {
     final selection = showModalBottomSheet<DemoBleDevice>(
       context: context,
       isScrollControlled: true,
-      builder: (ctx) => _BleDevicePicker(helper: helper, family: family),
+      builder: (ctx) => _BleDevicePicker(
+        helper: helper,
+        family: family,
+        namePrefixFilterController: namePrefixFilterController,
+        onNamePrefixFilterChanged: onNamePrefixFilterChanged,
+      ),
     );
     unawaited(helper.scanBle(family: family));
     final device = await selection;
@@ -299,20 +349,49 @@ class RealBleConnectorRow extends StatelessWidget {
 }
 
 class _BleDevicePicker extends StatelessWidget {
-  const _BleDevicePicker({required this.helper, required this.family});
+  const _BleDevicePicker({
+    required this.helper,
+    required this.family,
+    this.namePrefixFilterController,
+    this.onNamePrefixFilterChanged,
+  });
   final RealTransportHelper helper;
   final CloudPrinterFamily family;
+  final TextEditingController? namePrefixFilterController;
+  final ValueChanged<String>? onNamePrefixFilterChanged;
 
   @override
   Widget build(BuildContext context) => SizedBox(
     height: MediaQuery.sizeOf(context).height * 0.65,
     child: SafeArea(
       child: AnimatedBuilder(
-        animation: helper,
+        animation: Listenable.merge(<Listenable>[
+          helper,
+          ?namePrefixFilterController,
+        ]),
         builder: (context, _) {
-          final devices = helper.discoveredBleDevices
+          final allNamedDevices = helper.discoveredBleDevices
               .where((device) => device.hasDisplayName)
               .toList();
+          final prefixes = parseBleNamePrefixes(
+            namePrefixFilterController?.text ?? '',
+          );
+          final devices = allNamedDevices
+              .where((device) => matchesBleNamePrefixes(device.name, prefixes))
+              .toList();
+          final statusText =
+              helper.lastError ??
+              (prefixes.isEmpty
+                  ? (helper.scanning
+                        ? '正在扫描… 已发现 ${devices.length} 台有名称的设备'
+                        : devices.isEmpty
+                        ? '未发现有名称的蓝牙设备，请确认打印机已开启'
+                        : '已发现 ${devices.length} 台设备，点击即可连接')
+                  : (helper.scanning
+                        ? '正在扫描… 已匹配 ${devices.length} 台（共发现 ${allNamedDevices.length} 台）'
+                        : devices.isEmpty
+                        ? '未发现前缀匹配（${prefixes.join(" / ")}）的蓝牙设备（共发现 ${allNamedDevices.length} 台）'
+                        : '已匹配 ${devices.length} 台设备（共发现 ${allNamedDevices.length} 台），点击即可连接'));
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -335,19 +414,38 @@ class _BleDevicePicker extends StatelessWidget {
                 ),
               ),
               if (helper.scanning) const LinearProgressIndicator(),
+              if (prefixes.isNotEmpty)
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(20, 8, 12, 0),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          '前缀过滤：${prefixes.join(', ')}',
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(
+                                color: Theme.of(context).colorScheme.primary,
+                                fontWeight: FontWeight.w600,
+                              ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          namePrefixFilterController?.clear();
+                          onNamePrefixFilterChanged?.call('');
+                        },
+                        child: const Text('清空过滤'),
+                      ),
+                    ],
+                  ),
+                ),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 10,
                 ),
-                child: Text(
-                  helper.lastError ??
-                      (helper.scanning
-                          ? '正在扫描… 已发现 ${devices.length} 台有名称的设备'
-                          : devices.isEmpty
-                          ? '未发现有名称的蓝牙设备，请确认打印机已开启'
-                          : '已发现 ${devices.length} 台设备，点击即可连接'),
-                ),
+                child: Text(statusText),
               ),
               Expanded(
                 child: ListView.builder(
