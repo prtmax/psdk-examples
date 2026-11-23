@@ -1,3 +1,4 @@
+import '../models/demo_labels.dart';
 import 'package:flutter/material.dart';
 import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
 
@@ -6,6 +7,7 @@ import '../controllers/real_transport_helper.dart';
 import '../models/demo_mode.dart';
 import '../stubs/sim_esc_wan_stub.dart';
 import 'common_widgets.dart';
+import 'wifi_ssid_field.dart';
 
 class EscWanTab extends StatefulWidget {
   const EscWanTab({
@@ -22,7 +24,11 @@ class EscWanTab extends StatefulWidget {
 }
 
 class _EscWanTabState extends State<EscWanTab> {
-  final _ssidCtrl = TextEditingController(text: 'DemoOfficeWiFi');
+  late final _ssidCtrl = TextEditingController(
+    text: widget.controller.mode == DemoRunMode.simulation
+        ? 'DemoOfficeWiFi'
+        : '',
+  );
   final _pwdCtrl = TextEditingController(text: 'office-pass-2026');
   final _hostsCtrl = TextEditingController(
     text: 'cprint-api.iprtapp.com:30501',
@@ -79,34 +85,32 @@ class _EscWanTabState extends State<EscWanTab> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SectionHeader(
-                    title: '1. ESC BLE TLV Provisioning (psdk_fruit_esc)',
-                  ),
+                  const SectionHeader(title: '1. ESC 蓝牙 TLV 配网'),
                   const SizedBox(height: 10),
-                  TextField(
+                  WifiSsidField(
                     controller: _ssidCtrl,
-                    decoration: const InputDecoration(labelText: 'Wi-Fi SSID'),
+                    helper: widget.realTransportHelper,
+                    mode: c.mode,
+                    enabled: !c.busy,
                   ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: _pwdCtrl,
                     obscureText: true,
-                    decoration: const InputDecoration(
-                      labelText: 'Wi-Fi Password',
-                    ),
+                    decoration: const InputDecoration(labelText: 'Wi-Fi 密码'),
                   ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: _hostsCtrl,
                     decoration: const InputDecoration(
-                      labelText: 'Cloud Hosts (ESetHost)',
+                      labelText: '云端地址（ESetHost）',
                     ),
                   ),
                   const SizedBox(height: 8),
                   TextField(
                     controller: _keyCtrl,
                     decoration: const InputDecoration(
-                      labelText: 'Device Key (ESetKey)',
+                      labelText: '设备密钥（ESetKey）',
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -124,39 +128,36 @@ class _EscWanTabState extends State<EscWanTab> {
                                 key: _keyCtrl.text,
                               ),
                         icon: const Icon(Icons.wifi_tethering),
-                        label: const Text('Provision ESC TLV'),
+                        label: const Text('开始 TLV 配网'),
                       ),
                       FilledButton.tonalIcon(
                         onPressed: c.busy ? null : c.inspectEscDevice,
                         icon: const Icon(Icons.info_outline),
-                        label: const Text('Inspect ESC Info'),
+                        label: const Text('查询设备信息'),
                       ),
                       OutlinedButton.icon(
                         onPressed: c.busy ? null : c.resetNetworkInfo,
                         icon: const Icon(Icons.restart_alt),
-                        label: const Text('Reset Net Info'),
+                        label: const Text('重置网络信息'),
                       ),
                     ],
                   ),
                   if (c.lastSerialNumber != null ||
                       c.lastStaResult != null) ...[
                     const Divider(height: 20),
+                    KeyValueRow(label: '序列号', value: c.lastSerialNumber ?? '-'),
+                    KeyValueRow(label: 'MAC 地址', value: c.lastMac ?? '-'),
                     KeyValueRow(
-                      label: 'Serial Number',
-                      value: c.lastSerialNumber ?? '-',
-                    ),
-                    KeyValueRow(label: 'MAC Address', value: c.lastMac ?? '-'),
-                    KeyValueRow(
-                      label: 'Firmware',
+                      label: '固件版本',
                       value: c.lastFirmwareVersion ?? '-',
                     ),
                     KeyValueRow(
-                      label: 'Wi-Fi Name',
+                      label: 'Wi-Fi 名称',
                       value: c.lastWifiName ?? '-',
                     ),
                     KeyValueRow(
-                      label: 'STA Link State',
-                      value: c.lastStaResult?.state.name ?? '-',
+                      label: '路由器连接状态',
+                      value: demoLabel(c.lastStaResult?.state),
                     ),
                   ],
                 ],
@@ -168,9 +169,9 @@ class _EscWanTabState extends State<EscWanTab> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   SectionHeader(
-                    title: '2. Cloud WAN Driver (psdk_cloud_wan)',
+                    title: '2. 云端打印',
                     trailing: StatusPill(
-                      label: c.isWanConnected ? 'Connected' : 'Disconnected',
+                      label: c.isWanConnected ? '已连接' : '未连接',
                       color: c.isWanConnected
                           ? const Color(0xFF2E7D32)
                           : Theme.of(context).colorScheme.outline,
@@ -180,30 +181,24 @@ class _EscWanTabState extends State<EscWanTab> {
                   if (!isSim) ...[
                     TextField(
                       controller: _apiUrlCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Cloud API Base URL',
-                      ),
+                      decoration: const InputDecoration(labelText: '云端 API 地址'),
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: _mqttHostCtrl,
                       decoration: const InputDecoration(
-                        labelText: 'MQTT v5 TLS Host',
+                        labelText: 'MQTT v5 TLS 地址',
                       ),
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: _snCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Printer Serial Number',
-                      ),
+                      decoration: const InputDecoration(labelText: '打印机序列号'),
                     ),
                     const SizedBox(height: 8),
                     TextField(
                       controller: _tokenCtrl,
-                      decoration: const InputDecoration(
-                        labelText: 'Device Token (optional)',
-                      ),
+                      decoration: const InputDecoration(labelText: '设备令牌（选填）'),
                     ),
                     const SizedBox(height: 10),
                   ],
@@ -221,45 +216,45 @@ class _EscWanTabState extends State<EscWanTab> {
                                 deviceToken: _tokenCtrl.text,
                               ),
                         icon: const Icon(Icons.cloud_done_outlined),
-                        label: const Text('Connect WAN'),
+                        label: const Text('连接云端'),
                       ),
                       FilledButton.tonalIcon(
                         onPressed: c.busy || !c.isWanConnected
                             ? null
                             : c.queryWanStatus,
                         icon: const Icon(Icons.refresh),
-                        label: const Text('Query State'),
+                        label: const Text('查询状态'),
                       ),
                       FilledButton.icon(
                         onPressed: c.busy || !c.isWanConnected
                             ? null
                             : c.submitWanPrintJob,
                         icon: const Icon(Icons.print_outlined),
-                        label: const Text('Upload & Print .prn'),
+                        label: const Text('上传并打印 .prn'),
                       ),
                       if (c.busy && c.isWanConnected)
                         OutlinedButton.icon(
                           onPressed: c.cancelActiveWanJob,
                           icon: const Icon(Icons.cancel_outlined),
-                          label: const Text('Cancel Job'),
+                          label: const Text('取消任务'),
                         ),
                       if (c.isWanConnected)
                         OutlinedButton(
                           onPressed: c.busy ? null : c.disconnectWan,
-                          child: const Text('Disconnect'),
+                          child: const Text('断开连接'),
                         ),
                     ],
                   ),
                   if (c.wanSnapshot != null) ...[
                     const Divider(height: 20),
                     KeyValueRow(
-                      label: 'WAN State',
-                      value: c.wanSnapshot!.state.name,
+                      label: '云端状态',
+                      value: demoLabel(c.wanSnapshot!.state),
                     ),
                     KeyValueRow(
-                      label: 'Issues',
+                      label: '故障信息',
                       value: c.wanSnapshot!.issues.isEmpty
-                          ? 'None'
+                          ? '无'
                           : c.wanSnapshot!.issues
                                 .map((e) => '${e.code}: ${e.message}')
                                 .join('; '),
@@ -274,62 +269,58 @@ class _EscWanTabState extends State<EscWanTab> {
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      'Job Stage: ${c.jobProgress!.stage.name} — ${c.jobProgress!.message ?? ""}',
+                      '任务阶段：${demoLabel(c.jobProgress!.stage)} — ${c.jobProgress!.message ?? ""}',
                       style: Theme.of(context).textTheme.bodySmall,
                     ),
                   ],
                   if (isSim) ...[
                     const Divider(height: 20),
-                    const SectionHeader(
-                      title: 'Simulation Fault & Fallback Controls',
-                    ),
+                    const SectionHeader(title: '模拟故障与异常处理'),
                     const SizedBox(height: 8),
                     DropdownButtonFormField<int>(
                       initialValue: c.selectedFaultCode,
                       isExpanded: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Simulated Cloud Fault Code',
-                      ),
+                      decoration: const InputDecoration(labelText: '模拟云端故障码'),
                       items: const [
                         DropdownMenuItem(
                           value: 0,
                           child: Text(
-                            '0 - Normal',
+                            '0 - 正常',
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         DropdownMenuItem(
                           value: 6001,
                           child: Text(
-                            '6001 - LACK_PAPER',
+                            '6001 - 缺纸',
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         DropdownMenuItem(
                           value: 6003,
                           child: Text(
-                            '6003 - OVERHEAT',
+                            '6003 - 过热',
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         DropdownMenuItem(
                           value: 6004,
                           child: Text(
-                            '6004 - LOW_BATTERY',
+                            '6004 - 电量低',
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         DropdownMenuItem(
                           value: 6006,
                           child: Text(
-                            '6006 - COVER_OPEN',
+                            '6006 - 上盖打开',
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         DropdownMenuItem(
                           value: 6013,
                           child: Text(
-                            '6013 - PAPER_ERROR',
+                            '6013 - 纸张异常',
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -342,28 +333,26 @@ class _EscWanTabState extends State<EscWanTab> {
                     DropdownButtonFormField<SimCloudJobOutcome>(
                       initialValue: c.selectedJobOutcome,
                       isExpanded: true,
-                      decoration: const InputDecoration(
-                        labelText: 'Next Cloud Job Outcome',
-                      ),
+                      decoration: const InputDecoration(labelText: '下次云端任务结果'),
                       items: const [
                         DropdownMenuItem(
                           value: SimCloudJobOutcome.success,
                           child: Text(
-                            'Success (confirm -> printing -> success)',
+                            '成功（确认 → 打印 → 完成）',
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         DropdownMenuItem(
                           value: SimCloudJobOutcome.failWithFault,
                           child: Text(
-                            'Remote Fail (errCode fault)',
+                            '远程失败（故障码）',
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                         DropdownMenuItem(
                           value: SimCloudJobOutcome.stopPrintEvent,
                           child: Text(
-                            'Remote Stop Event (stop_print)',
+                            '远程停止（stop_print）',
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
@@ -378,9 +367,7 @@ class _EscWanTabState extends State<EscWanTab> {
                           ? null
                           : c.simulateThreePollFailures,
                       icon: const Icon(Icons.cloud_off_outlined),
-                      label: const Text(
-                        'Simulate >=3 Poll Failures -> Offline',
-                      ),
+                      label: const Text('模拟连续 3 次轮询失败 → 离线'),
                     ),
                   ],
                 ],

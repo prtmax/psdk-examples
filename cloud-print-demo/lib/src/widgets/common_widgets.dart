@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:psdk_device_adapter/psdk_device_adapter.dart' as adapter;
 import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
@@ -222,7 +224,12 @@ class RealBleConnectorRow extends StatelessWidget {
   final VoidCallback onDisconnected;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) => AnimatedBuilder(
+    animation: helper,
+    builder: (context, _) => _buildConnectionRow(context),
+  );
+
+  Widget _buildConnectionRow(BuildContext context) {
     final connected =
         connectedDevice != null &&
         connectedDevice!.connectionState() == adapter.ConnectionState.connected;
@@ -238,8 +245,8 @@ class RealBleConnectorRow extends StatelessWidget {
           Expanded(
             child: Text(
               connected
-                  ? 'BLE: ${connectedDevice!.deviceName() ?? connectedDevice!.deviceMac() ?? "Connected"}'
-                  : 'Real Device BLE (${family.title})',
+                  ? 'BLE: ${connectedDevice!.deviceName() ?? connectedDevice!.deviceMac() ?? "已连接"}'
+                  : '真机蓝牙（${family.title})',
               style: Theme.of(
                 context,
               ).textTheme.bodySmall?.copyWith(fontWeight: FontWeight.w600),
@@ -247,16 +254,18 @@ class RealBleConnectorRow extends StatelessWidget {
           ),
           if (connected)
             OutlinedButton(
-              onPressed: () async {
-                await connectedDevice!.disconnect();
-                if (context.mounted) onDisconnected();
-              },
-              child: const Text('Disconnect BLE'),
+              onPressed: helper.connecting
+                  ? null
+                  : () async {
+                      await connectedDevice!.disconnect();
+                      if (context.mounted) onDisconnected();
+                    },
+              child: const Text('断开蓝牙'),
             )
           else
             FilledButton.tonal(
-              onPressed: () => _scanAndPick(context),
-              child: const Text('Scan BLE'),
+              onPressed: helper.connecting ? null : () => _scanAndPick(context),
+              child: Text(helper.connecting ? '连接中…' : '扫描蓝牙'),
             ),
         ],
       ),
@@ -264,49 +273,109 @@ class RealBleConnectorRow extends StatelessWidget {
   }
 
   Future<void> _scanAndPick(BuildContext context) async {
-    final devices = await helper.scanBle(family: family);
-    if (!context.mounted) return;
-    if (helper.lastError != null) {
+    // 先创建弹窗，再开始扫描；设备通过 helper 的通知逐条加入列表。
+    final selection = showModalBottomSheet<DemoBleDevice>(
+      context: context,
+      isScrollControlled: true,
+      builder: (ctx) => _BleDevicePicker(helper: helper, family: family),
+    );
+    unawaited(helper.scanBle(family: family));
+    final device = await selection;
+    await helper.stopBleScan();
+    if (device == null || !context.mounted) return;
+    final connection = await helper.connectBle(family: family, device: device);
+    if (!context.mounted) {
+      await connection?.disconnect();
+      return;
+    }
+    if (connection != null) {
+      onConnected(connection);
+    } else if (helper.lastError != null) {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text(helper.lastError!)));
-      return;
     }
-    if (devices.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('No BLE devices found')));
-      return;
-    }
-    await showModalBottomSheet<void>(
-      context: context,
-      builder: (ctx) => ListView.builder(
-        shrinkWrap: true,
-        itemCount: devices.length,
-        itemBuilder: (ctx, i) {
-          final dev = devices[i];
-          return ListTile(
-            leading: const Icon(Icons.print_outlined),
-            title: Text(dev.name ?? 'Unnamed BLE Printer'),
-            subtitle: Text(dev.mac ?? 'Unknown MAC'),
-            onTap: () async {
-              Navigator.of(ctx).pop();
-              final conn = await helper.connectBle(family: family, device: dev);
-              if (!context.mounted) {
-                await conn?.disconnect();
-                return;
-              }
-              if (conn != null) {
-                onConnected(conn);
-              } else if (context.mounted && helper.lastError != null) {
-                ScaffoldMessenger.of(
-                  context,
-                ).showSnackBar(SnackBar(content: Text(helper.lastError!)));
-              }
-            },
+  }
+}
+
+class _BleDevicePicker extends StatelessWidget {
+  const _BleDevicePicker({required this.helper, required this.family});
+  final RealTransportHelper helper;
+  final CloudPrinterFamily family;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    height: MediaQuery.sizeOf(context).height * 0.65,
+    child: SafeArea(
+      child: AnimatedBuilder(
+        animation: helper,
+        builder: (context, _) {
+          final devices = helper.discoveredBleDevices
+              .where((device) => device.hasDisplayName)
+              .toList();
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(20, 12, 8, 8),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        '选择蓝牙打印机',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                    ),
+                    IconButton(
+                      tooltip: '关闭扫描',
+                      onPressed: () => Navigator.of(context).pop(),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
+                ),
+              ),
+              if (helper.scanning) const LinearProgressIndicator(),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                child: Text(
+                  helper.lastError ??
+                      (helper.scanning
+                          ? '正在扫描… 已发现 ${devices.length} 台有名称的设备'
+                          : devices.isEmpty
+                          ? '未发现有名称的蓝牙设备，请确认打印机已开启'
+                          : '已发现 ${devices.length} 台设备，点击即可连接'),
+                ),
+              ),
+              Expanded(
+                child: ListView.builder(
+                  itemCount: devices.length,
+                  itemBuilder: (context, index) {
+                    final device = devices[index];
+                    return ListTile(
+                      leading: const Icon(Icons.print_outlined),
+                      title: Text(device.name!.trim()),
+                      subtitle: Text(device.mac ?? '未知 MAC 地址'),
+                      onTap: () => Navigator.of(context).pop(device),
+                    );
+                  },
+                ),
+              ),
+              if (!helper.scanning)
+                Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: FilledButton.tonalIcon(
+                    onPressed: () => unawaited(helper.scanBle(family: family)),
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('重新扫描'),
+                  ),
+                ),
+            ],
           );
         },
       ),
-    );
-  }
+    ),
+  );
 }

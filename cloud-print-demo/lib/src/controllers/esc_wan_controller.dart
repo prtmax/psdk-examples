@@ -1,3 +1,4 @@
+import '../models/demo_labels.dart';
 import 'dart:async';
 import 'dart:convert';
 
@@ -42,7 +43,7 @@ class EscWanController extends ChangeNotifier {
   }
 
   bool busy = false;
-  String statusMessage = 'Ready (Simulation Mode)';
+  String statusMessage = '就绪';
   ProvisionResult? lastProvisionResult;
   EscWifiStaResult? lastStaResult;
   String? lastWifiName;
@@ -65,7 +66,7 @@ class EscWanController extends ChangeNotifier {
     if (mode == DemoRunMode.simulation) return simDevice;
     final dev = realBleDevice;
     if (dev == null) {
-      throw StateError('No Real BLE ESC device connected');
+      throw StateError('请先连接 ESC 打印机蓝牙');
     }
     return dev;
   }
@@ -77,7 +78,7 @@ class EscWanController extends ChangeNotifier {
     String key = 'demo-device-key',
     bool requireCloudConnected = true,
   }) async {
-    await _runBusy('Provisioning ESC Wi-Fi via TLV...', () async {
+    await _runBusy('正在通过 TLV 配置 ESC Wi-Fi…', () async {
       final hosts = hostsText
           .split(RegExp(r'[|\s,]+'))
           .where((e) => e.trim().isNotEmpty)
@@ -109,8 +110,8 @@ class EscWanController extends ChangeNotifier {
         );
         lastProvisionResult = result;
         statusMessage = result.success
-            ? 'Provisioned "$ssid" (${result.finalState.name})'
-            : 'Provision failed: ${result.message ?? result.errorCode.name}';
+            ? '配网成功："$ssid" (${demoLabel(result.finalState)})'
+            : '配网失败：${result.message ?? result.errorCode.name}';
       } finally {
         _provisionCancelToken = null;
         _activeProvisioner = null;
@@ -120,7 +121,7 @@ class EscWanController extends ChangeNotifier {
   }
 
   Future<void> inspectEscDevice() async {
-    await _runBusy('Querying ESC device info...', () async {
+    await _runBusy('正在查询 ESC 设备信息…', () async {
       final dev = _activeEscDevice;
       final snBytes = await _exchangeEsc(
         dev,
@@ -166,12 +167,12 @@ class EscWanController extends ChangeNotifier {
       lastStaResult = EscWifiResponseParser.parseWifiSta(staBytes);
 
       statusMessage =
-          'ESC Info: SN=${lastSerialNumber ?? "?"}, Wi-Fi=${lastWifiName ?? "?"}, STA=${lastStaResult?.state.name ?? "?"}';
+          'ESC 信息：SN=${lastSerialNumber ?? "?"}, Wi-Fi=${lastWifiName ?? "?"}, STA=${demoLabel(lastStaResult?.state)}';
     });
   }
 
   Future<void> resetNetworkInfo() async {
-    await _runBusy('Resetting ESC network info...', () async {
+    await _runBusy('正在重置 ESC 网络信息…', () async {
       final dev = _activeEscDevice;
       final reply = await _exchangeEsc(
         dev,
@@ -185,9 +186,7 @@ class EscWanController extends ChangeNotifier {
         validity: EscReplyValidity.valid,
         state: EscWifiLinkState.disconnected,
       );
-      statusMessage = ack.isSuccess
-          ? 'Network info reset complete'
-          : 'Network reset reply invalid';
+      statusMessage = ack.isSuccess ? '网络信息已重置' : '网络重置回复无效';
     });
   }
 
@@ -199,7 +198,7 @@ class EscWanController extends ChangeNotifier {
     String? serialNumber,
     String? deviceToken,
   }) async {
-    await _runBusy('Connecting to Cloud WAN...', () async {
+    await _runBusy('正在连接云端…', () async {
       await disconnectWan();
       final CloudWanConfig config;
       if (mode == DemoRunMode.simulation) {
@@ -251,21 +250,21 @@ class EscWanController extends ChangeNotifier {
       });
       wanSnapshot = await driver.queryStatus();
       statusMessage =
-          'WAN connected (${driver.serialNumber ?? "?"}) -> ${wanSnapshot?.state.name ?? "ready"}';
+          '云端已连接（${driver.serialNumber ?? "?"}) -> ${demoLabel(wanSnapshot?.state)}';
     });
   }
 
   Future<void> queryWanStatus() async {
     final driver = _driver;
     if (driver == null || !driver.isConnected) {
-      statusMessage = 'Connect Cloud WAN first';
+      statusMessage = '请先连接云端';
       _notifyIfAlive();
       return;
     }
-    await _runBusy('Querying WAN printer state...', () async {
+    await _runBusy('正在查询云端设备状态…', () async {
       wanSnapshot = await driver.queryStatus();
       statusMessage =
-          'WAN State: ${wanSnapshot?.state.name ?? "unknown"} (${wanSnapshot?.issues.length ?? 0} issues)';
+          '云端状态：${demoLabel(wanSnapshot?.state)} (${wanSnapshot?.issues.length ?? 0} issues)';
     });
   }
 
@@ -275,11 +274,11 @@ class EscWanController extends ChangeNotifier {
   }) async {
     final driver = _driver;
     if (driver == null || !driver.isConnected) {
-      statusMessage = 'Connect Cloud WAN first';
+      statusMessage = '请先连接云端';
       _notifyIfAlive();
       return;
     }
-    await _runBusy('Uploading & submitting Cloud WAN job...', () async {
+    await _runBusy('正在上传并提交云打印任务…', () async {
       final cancelToken = CloudCancelToken();
       _jobCancelToken = cancelToken;
       final payload =
@@ -306,10 +305,10 @@ class EscWanController extends ChangeNotifier {
       lastPrintResult = result;
       _jobCancelToken = null;
       statusMessage = result.success
-          ? 'WAN job ${result.remoteJobId ?? result.jobId} succeeded (${result.bytesTransferred} B)'
+          ? '云端任务 ${result.remoteJobId ?? result.jobId} succeeded (${result.bytesTransferred} B)'
           : result.finalStage == CloudJobStage.cancelled
-          ? 'WAN job cancelled'
-          : 'WAN job failed: ${result.error?.message ?? "error"}';
+          ? '云端任务 cancelled'
+          : '云端任务 failed: ${result.error?.message ?? "error"}';
     });
   }
 
@@ -339,18 +338,17 @@ class EscWanController extends ChangeNotifier {
   Future<void> simulateThreePollFailures() async {
     final monitor = _driver?.statusMonitor;
     if (mode != DemoRunMode.simulation || monitor == null) {
-      statusMessage = 'Connect Cloud WAN in Simulation Mode first';
+      statusMessage = '请先在模拟模式连接云端';
       _notifyIfAlive();
       return;
     }
-    await _runBusy('Simulating >=3 HTTP poll failures...', () async {
+    await _runBusy('正在模拟连续 3 次 HTTP 轮询失败…', () async {
       simBackend.simulateHttpPollFailure = true;
       try {
         for (var i = 0; i < 3; i++) {
           await monitor.pollOnce(timeout: const Duration(seconds: 2));
         }
-        statusMessage =
-            'Poll fallback triggered -> state=${wanSnapshot?.state.name ?? "offline"}';
+        statusMessage = '轮询降级后的状态：${demoLabel(wanSnapshot?.state)}';
       } finally {
         simBackend.simulateHttpPollFailure = false;
       }
@@ -408,7 +406,7 @@ class EscWanController extends ChangeNotifier {
     try {
       await action();
     } catch (e) {
-      statusMessage = 'Error: $e';
+      statusMessage = '操作失败：$e';
     } finally {
       busy = false;
       _notifyIfAlive();

@@ -3,11 +3,25 @@ import 'package:cloud_print_demo/src/controllers/demo_coordinator.dart';
 import 'package:cloud_print_demo/src/controllers/inkjet_controller.dart';
 import 'package:cloud_print_demo/src/models/demo_mode.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:psdk_color_core/psdk_color_core.dart';
 import 'package:psdk_fruit_inkjet/psdk_fruit_inkjet.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  const wifiChannel = MethodChannel('dev.fluttercommunity.plus/network_info');
+  setUp(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(
+          wifiChannel,
+          (call) async => call.method == 'wifiName' ? 'TestOfficeWifi' : null,
+        );
+  });
+  tearDown(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(wifiChannel, null);
+  });
   testWidgets(
     'switches all 4 CloudPrinterFamily tabs, toggles Sim/Real mode, and opens/filters Protocol Inspector Drawer',
     (WidgetTester tester) async {
@@ -28,11 +42,8 @@ void main() {
 
       // Default is Simulation Mode & ESC WAN tab
       expect(coordinator.runMode, equals(DemoRunMode.simulation));
-      expect(find.text('ESC WAN Cloud'), findsOneWidget);
-      expect(
-        find.text('1. ESC BLE TLV Provisioning (psdk_fruit_esc)'),
-        findsOneWidget,
-      );
+      expect(find.text('ESC 云打印'), findsOneWidget);
+      expect(find.text('1. ESC 蓝牙 TLV 配网'), findsOneWidget);
 
       // Trigger ESC provisioning inside real async zone (uses Timer/DateTime deadlines)
       await tester.runAsync(() async {
@@ -53,29 +64,20 @@ void main() {
       // Switch to Thermal LAN tab
       await tester.tap(find.byKey(const Key('tab_thermalLanStream')));
       await tester.pumpAndSettle();
-      expect(find.text('Thermal LAN Stream'), findsOneWidget);
-      expect(
-        find.text('1. Dual-Dialect Wi-Fi Provisioning (psdk_fruit_wifi)'),
-        findsOneWidget,
-      );
+      expect(find.text('热敏局域网打印'), findsOneWidget);
+      expect(find.text('1. 蓝牙配网与局域网发现'), findsOneWidget);
 
       // Switch to Sublimation tab
       await tester.tap(find.byKey(const Key('tab_sublimationRpc')));
       await tester.pumpAndSettle();
-      expect(find.text('Sublimation RPC'), findsOneWidget);
-      expect(
-        find.text('1. Dual-Mode BLE Provisioning (0x180B AT & 0xA5 0x53 Mesh)'),
-        findsOneWidget,
-      );
+      expect(find.text('热升华 RPC'), findsOneWidget);
+      expect(find.text('1. 蓝牙配网与局域网发现'), findsOneWidget);
 
       // Switch to Color Inkjet tab
       await tester.tap(find.byKey(const Key('tab_colorInkjetPjl')));
       await tester.pumpAndSettle();
-      expect(find.text('Color Inkjet PJL'), findsOneWidget);
-      expect(
-        find.text('1. BLE ACL Provisioning & mDNS / SoftAP Discovery'),
-        findsOneWidget,
-      );
+      expect(find.text('彩色喷墨 PJL'), findsOneWidget);
+      expect(find.text('1. 蓝牙 ACL 配网与局域网发现'), findsOneWidget);
 
       // Connect XSL/XPL, trigger Yellow Low preset, and verify Preflight Confirmation Dialog
       await tester.runAsync(() async {
@@ -86,8 +88,8 @@ void main() {
       });
       await tester.pumpAndSettle();
       expect(coordinator.inkjet.isConnected, isTrue);
-      expect(find.text('Yellow (Y)'), findsOneWidget);
-      expect(find.text('12% (LOW)'), findsOneWidget);
+      expect(find.text('黄色（Y）'), findsOneWidget);
+      expect(find.text('12% (墨量低)'), findsOneWidget);
 
       // Verify preflight result triggers confirmation flow and completes XPL print
       final preflight = await tester.runAsync(
@@ -107,29 +109,27 @@ void main() {
       expect(coordinator.inkjet.lastPrintResult?.success, isTrue);
 
       // Toggle Global Mode Switcher to Real Device and back to Simulation
-      await tester.tap(find.text('Real'));
+      await tester.tap(find.text('真机'));
       await tester.pumpAndSettle();
       expect(coordinator.runMode, equals(DemoRunMode.realDevice));
-      await coordinator.sublimation.setUdp1901Status(1);
-      expect(
-        coordinator.sublimation.statusMessage,
-        contains('Select a discovered printer'),
-      );
-      expect(coordinator.sublimation.lastUdp1901Status, isNull);
-      expect(find.text('Scan BLE'), findsOneWidget);
+      await coordinator.sublimation.connectDriver();
+      expect(coordinator.sublimation.statusMessage, contains('请先发现并选择打印机'));
+      expect(coordinator.sublimation.isConnected, isFalse);
+      expect(find.text('扫描蓝牙'), findsOneWidget);
+      expect(find.text('TestOfficeWifi'), findsOneWidget);
       expect(coordinator.inkjet.isConnected, isFalse);
       expect(coordinator.inkjet.selectedPrinter, isNull);
 
-      await tester.tap(find.text('Sim'));
+      await tester.tap(find.text('模拟'));
       await tester.pumpAndSettle();
       expect(coordinator.runMode, equals(DemoRunMode.simulation));
 
       // Open Protocol Inspector Drawer and verify captured frames & clear button
       await tester.tap(find.byKey(const Key('open_protocol_inspector')));
       await tester.pumpAndSettle();
-      expect(find.textContaining('Protocol Inspector ('), findsOneWidget);
+      expect(find.textContaining('协议日志（'), findsOneWidget);
 
-      await tester.tap(find.byTooltip('Clear logs'));
+      await tester.tap(find.byTooltip('清空日志'));
       await tester.pumpAndSettle();
       expect(coordinator.inspector.count, equals(0));
     },
@@ -149,6 +149,7 @@ void main() {
       final prevOnError = FlutterError.onError;
       FlutterError.onError = (details) {
         errors.add(details);
+        prevOnError?.call(details);
       };
       addTearDown(() {
         FlutterError.onError = prevOnError;
@@ -184,8 +185,9 @@ void main() {
       await tester.ensureVisible(thermalTab);
       await tester.tap(thermalTab);
       await tester.pumpAndSettle();
-      expect(find.text('Thermal LAN Stream'), findsOneWidget);
-      await tester.tap(find.text('TSPL WLAN'));
+      expect(find.text('热敏局域网打印'), findsOneWidget);
+      expect(find.text('开始配网'), findsOneWidget);
+      expect(find.textContaining('Mesh'), findsNothing);
       await tester.pumpAndSettle();
       await scrollCurrentTab();
 
@@ -194,7 +196,7 @@ void main() {
       await tester.ensureVisible(subTab);
       await tester.tap(subTab);
       await tester.pumpAndSettle();
-      expect(find.text('Sublimation RPC'), findsOneWidget);
+      expect(find.text('热升华 RPC'), findsOneWidget);
       await tester.runAsync(() => coordinator.sublimation.connectDriver());
       await tester.pumpAndSettle();
       await scrollCurrentTab();
@@ -204,7 +206,7 @@ void main() {
       await tester.ensureVisible(inkjetTab);
       await tester.tap(inkjetTab);
       await tester.pumpAndSettle();
-      expect(find.text('Color Inkjet PJL'), findsOneWidget);
+      expect(find.text('彩色喷墨 PJL'), findsOneWidget);
       await tester.runAsync(() => coordinator.inkjet.connectDriver());
       await tester.pumpAndSettle();
       await scrollCurrentTab();
@@ -214,7 +216,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.text('TX'));
       await tester.pumpAndSettle();
-      await tester.tap(find.text('All').last);
+      await tester.tap(find.text('全部').last);
       await tester.pumpAndSettle();
 
       expect(
@@ -238,7 +240,7 @@ void main() {
       await tester.pumpWidget(const CloudPrintDemoApp());
       await tester.pumpAndSettle();
 
-      final provisionBtn = find.text('Provision ESC TLV');
+      final provisionBtn = find.text('开始 TLV 配网');
       await tester.ensureVisible(provisionBtn);
       await tester.tap(provisionBtn);
       await tester.pump(const Duration(milliseconds: 5));

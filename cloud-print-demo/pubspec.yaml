@@ -10,10 +10,16 @@ dependencies:
   flutter:
     sdk: flutter
 
+  bluetooth_low_energy: 6.2.1
+  network_info_plus: 7.0.0
+  flutter_localizations:
+    sdk: flutter
   permission_handler: ^12.0.1
 
   psdk_color_core:
     path: ../../psdk/dart/algorithms/color_core
+  psdk_bluetooth_windows:
+    path: ../../psdk/dart/devices/bluetooth_windows
   psdk_bluetooth_ble:
     path: ../../psdk/dart/devices/bluetooth_ble
   psdk_bluetooth_traits:
@@ -40,6 +46,8 @@ dependencies:
     path: ../../psdk/dart/devices/network
 
 dependency_overrides:
+  psdk_bluetooth_windows:
+    path: ../../psdk/dart/devices/bluetooth_windows
   psdk_bluetooth_ble:
     path: ../../psdk/dart/devices/bluetooth_ble
   psdk_bluetooth_traits:

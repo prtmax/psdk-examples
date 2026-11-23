@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
 
 import 'src/controllers/demo_coordinator.dart';
@@ -21,7 +22,10 @@ class CloudPrintDemoApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Wi-Fi & Color Print Demo',
+      locale: const Locale('zh', 'CN'),
+      supportedLocales: const [Locale('zh', 'CN')],
+      localizationsDelegates: GlobalMaterialLocalizations.delegates,
+      title: '云打印测试',
       theme: ThemeData(
         colorScheme: const ColorScheme.light(
           primary: Color(0xFF256B75),
@@ -114,7 +118,7 @@ class _CloudPrintDemoPageState extends State<CloudPrintDemoPage>
         return Scaffold(
           key: _scaffoldKey,
           appBar: AppBar(
-            title: const Text('Wi-Fi & Color Print'),
+            title: const Text('打印测试'),
             actions: [
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 8),
@@ -124,11 +128,11 @@ class _CloudPrintDemoPageState extends State<CloudPrintDemoPage>
                   segments: const [
                     ButtonSegment(
                       value: DemoRunMode.simulation,
-                      label: Text('Sim'),
+                      label: Text('模拟'),
                     ),
                     ButtonSegment(
                       value: DemoRunMode.realDevice,
-                      label: Text('Real'),
+                      label: Text('真机'),
                     ),
                   ],
                   selected: <DemoRunMode>{_coordinator.runMode},
@@ -139,7 +143,7 @@ class _CloudPrintDemoPageState extends State<CloudPrintDemoPage>
               ),
               IconButton(
                 key: const Key('open_protocol_inspector'),
-                tooltip: 'Protocol Inspector',
+                tooltip: '协议日志',
                 onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
                 icon: Badge(
                   isLabelVisible: _coordinator.inspector.count > 0,

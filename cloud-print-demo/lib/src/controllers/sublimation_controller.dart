@@ -1,18 +1,19 @@
+import '../models/demo_labels.dart';
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:psdk_color_core/psdk_color_core.dart';
-import 'package:psdk_device_adapter/psdk_device_adapter.dart';
 import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
 import 'package:psdk_fruit_sublimation/psdk_fruit_sublimation.dart';
 
 import '../models/demo_mode.dart';
 import '../models/protocol_inspector.dart';
 import '../stubs/sim_sublimation_stub.dart';
+import '../stubs/sim_lan_ble_device.dart';
 import '../utils/test_image_generator.dart';
 
 import 'inspected_device.dart';
-import 'inspected_udp.dart';
+import 'lan_setup_controller.dart';
 
 class SublimationController extends ChangeNotifier {
   SublimationController({
@@ -21,25 +22,31 @@ class SublimationController extends ChangeNotifier {
     required this.colorCore,
     required DemoRunMode Function() modeGetter,
   }) : _modeGetter = modeGetter,
-       simBleDevice = SimulatedSublimationBleDevice(inspector: inspector),
+       simBleDevice = SimulatedLanBleDevice(inspector: inspector),
        simUdpTransport = SimulatedSublimationUdpTransport(inspector: inspector),
-       simTcpDevice = SimulatedSublimationTcpDevice(inspector: inspector);
+       simTcpDevice = SimulatedSublimationTcpDevice(inspector: inspector) {
+    setup = LanSetupController(
+      family: CloudPrinterFamily.sublimationRpc,
+      inspector: inspector,
+      modeGetter: modeGetter,
+      simBleDevice: simBleDevice,
+      simScannerFactory: () =>
+          SublimationLanScanner(transport: simUdpTransport),
+    )..addListener(_notifyIfAlive);
+  }
 
   final ProtocolInspectorController inspector;
   final CloudPrinterRegistry registry;
   final ColorCoreEngine colorCore;
   final DemoRunMode Function() _modeGetter;
 
-  final SimulatedSublimationBleDevice simBleDevice;
+  final SimulatedLanBleDevice simBleDevice;
   final SimulatedSublimationUdpTransport simUdpTransport;
   final SimulatedSublimationTcpDevice simTcpDevice;
 
-  ConnectedDevice<dynamic>? realBleDevice;
+  late final LanSetupController setup;
   SublimationPrinterDriver? _driver;
   CloudCancelToken? _printCancelToken;
-  CloudCancelToken? _provisionCancelToken;
-  WifiProvisioner? _activeProvisioner;
-  LanPrinterScanner? _activeScanner;
   bool _disposed = false;
 
   void _notifyIfAlive() {
@@ -48,17 +55,13 @@ class SublimationController extends ChangeNotifier {
     }
   }
 
-  bool busy = false;
-  String statusMessage = 'Ready (Simulation Mode)';
+  bool _busy = false;
+  bool get busy => _busy || setup.busy;
+  String statusMessage = '就绪';
 
-  WifiProvisionProtocol selectedProvisionProtocol =
-      WifiProvisionProtocol.sublimationBleBinaryMesh;
-  WifiTargetMode selectedTargetMode = WifiTargetMode.station;
-  ProvisionResult? lastProvisionResult;
-
-  List<DiscoveredCloudPrinter> discoveredPrinters = <DiscoveredCloudPrinter>[];
-  DiscoveredCloudPrinter? selectedPrinter;
-  int? lastUdp1901Status;
+  DiscoveredCloudPrinter? get selectedPrinter => setup.selectedPrinter;
+  set selectedPrinter(DiscoveredCloudPrinter? value) =>
+      setup.selectedPrinter = value;
 
   CloudStatusSnapshot? dashboardSnapshot;
   SublimationPrinterStatus? rawStatus;
@@ -85,168 +88,11 @@ class SublimationController extends ChangeNotifier {
   DemoRunMode get mode => _modeGetter();
   bool get isConnected => _driver?.isConnected ?? false;
 
-  ConnectedDevice<dynamic> get _activeBleDevice {
-    if (mode == DemoRunMode.simulation) return simBleDevice;
-    final dev = realBleDevice;
-    if (dev == null) {
-      throw StateError('No Real BLE Sublimation device connected');
-    }
-    return dev;
-  }
-
-  Future<void> provisionWifi({
-    required String ssid,
-    required String password,
-    WifiProvisionProtocol? protocol,
-    WifiTargetMode? targetMode,
-  }) async {
-    final proto = protocol ?? selectedProvisionProtocol;
-    final target = targetMode ?? selectedTargetMode;
-    selectedProvisionProtocol = proto;
-    selectedTargetMode = target;
-
-    await _runBusy(
-      'Provisioning sublimation Wi-Fi (${proto.name})...',
-      () async {
-        final cancelToken = CloudCancelToken();
-        _provisionCancelToken = cancelToken;
-        final provisioner = registry.requireProvisioner(
-          proto,
-          device: _activeBleDevice,
-        );
-        _activeProvisioner = provisioner;
-        try {
-          final result = await provisioner.provision(
-            ProvisionRequest(
-              protocol: proto,
-              ssid: ssid,
-              password: password,
-              targetMode: target,
-              gattProfile: BleGattProfile.sublimation,
-              negotiatedMtu: 512,
-              settleDelay: mode == DemoRunMode.simulation
-                  ? const Duration(milliseconds: 15)
-                  : const Duration(seconds: 2),
-              pollInterval: mode == DemoRunMode.simulation
-                  ? const Duration(milliseconds: 15)
-                  : const Duration(milliseconds: 500),
-              cancelToken: cancelToken,
-            ),
-          );
-          lastProvisionResult = result;
-          statusMessage = result.success
-              ? 'Provisioned ${proto.name} (${result.assignedIp ?? ssid})'
-              : 'Provision failed: ${result.message ?? result.errorCode.name}';
-        } finally {
-          _provisionCancelToken = null;
-          _activeProvisioner = null;
-          await provisioner.dispose();
-        }
-      },
-    );
-  }
-
-  Future<void> discoverPrinters({
-    Set<LanDiscoveryProtocol> protocols = const <LanDiscoveryProtocol>{
-      LanDiscoveryProtocol.udp22368Text,
-      LanDiscoveryProtocol.udp1901Binary,
-    },
-  }) async {
-    await _runBusy(
-      'Discovering sublimation printers (UDP 22368/1901)...',
-      () async {
-        final scanner = SublimationLanScanner(
-          transport: mode == DemoRunMode.simulation
-              ? simUdpTransport
-              : InspectedSublimationUdp(inspector),
-        );
-        _activeScanner = scanner;
-        final found = <DiscoveredCloudPrinter>[];
-        try {
-          await for (final p in scanner.scan(
-            LanScanOptions(
-              protocols: protocols,
-              timeout: mode == DemoRunMode.simulation
-                  ? const Duration(milliseconds: 120)
-                  : const Duration(seconds: 4),
-              probeInterval: mode == DemoRunMode.simulation
-                  ? const Duration(milliseconds: 50)
-                  : const Duration(seconds: 1),
-            ),
-          )) {
-            final idx = found.indexWhere((e) => e.id == p.id);
-            if (idx >= 0) {
-              found[idx] = found[idx].mergeWith(p);
-            } else {
-              found.add(p);
-            }
-          }
-        } finally {
-          _activeScanner = null;
-          await scanner.dispose();
-        }
-        discoveredPrinters = List<DiscoveredCloudPrinter>.unmodifiable(found);
-        if (discoveredPrinters.isNotEmpty) {
-          selectedPrinter = discoveredPrinters.first;
-        }
-        statusMessage =
-            'Discovered ${discoveredPrinters.length} sublimation printer(s)';
-      },
-    );
-  }
-
-  Future<void> queryUdp1901Status() => _udpStatus();
-
-  Future<void> setUdp1901Status(int statusByte) => _udpStatus(statusByte);
-
-  Future<void> _udpStatus([int? statusByte]) async {
-    await _runBusy('UDP 1901 status...', () async {
-      final target = selectedPrinter;
-      final simulated = mode == DemoRunMode.simulation;
-      final host = target?.host ?? (simulated ? '192.168.1.88' : null);
-      final mac = target?.macAddress ?? (simulated ? '11:22:33:44:55:66' : '');
-      if (host == null ||
-          !RegExp(r'^[0-9a-fA-F]{2}(:[0-9a-fA-F]{2}){5}$').hasMatch(mac)) {
-        statusMessage =
-            'Select a discovered printer with an IP and MAC address first';
-        return;
-      }
-      final macBytes = Uint8List.fromList(
-        mac.split(':').map((p) => int.parse(p, radix: 16)).toList(),
-      );
-      final client = SublimationUdp1901CommandClient(
-        transport: simulated
-            ? simUdpTransport
-            : InspectedSublimationUdp(inspector),
-        targetHost: host,
-        targetPort: 1901,
-        bindPort: 0,
-        timeout: const Duration(seconds: 2),
-      );
-      final credentials = Uint8List(12);
-      final subCommand = Uint8List.fromList([1]);
-      final reply = statusByte == null
-          ? await client.getStatus(
-              macBytes: macBytes,
-              credentials12Bytes: credentials,
-              subCommand: subCommand,
-            )
-          : await client.setStatus(
-              macBytes: macBytes,
-              credentials12Bytes: credentials,
-              subCommand: subCommand,
-              statusByte: statusByte,
-            );
-      lastUdp1901Status = reply.statusCode;
-      statusMessage = 'UDP 1901 status = ${reply.statusCode}';
-    });
-  }
-
   Future<void> connectDriver([DiscoveredCloudPrinter? target]) async {
     if (mode == DemoRunMode.realDevice &&
         target == null &&
         selectedPrinter == null) {
-      statusMessage = 'Discover or select a printer first';
+      statusMessage = '请先发现并选择打印机';
       _notifyIfAlive();
       return;
     }
@@ -261,7 +107,7 @@ class SublimationController extends ChangeNotifier {
           port: 9100,
           macAddress: '11:22:33:44:55:66',
         );
-    await _runBusy('Connecting Sublimation RPC...', () async {
+    await _runBusy('正在连接热升华打印机…', () async {
       await disconnectDriver();
       final driver = SublimationPrinterDriver(
         colorCore: colorCore,
@@ -292,20 +138,17 @@ class SublimationController extends ChangeNotifier {
       selectedPrinter = printer;
       await _refreshDashboardInternal();
       statusMessage =
-          'Connected ${printerInfo?.model ?? printer.displayName} (${rawStatus?.mainStatus.label ?? "Ready"})';
+          '已连接 ${printerInfo?.model ?? printer.displayName} (${demoLabel(rawStatus?.mainStatus)})';
     });
   }
 
   Future<void> queryDashboard() async {
     if (!isConnected) {
-      statusMessage = 'Connect Sublimation RPC first';
+      statusMessage = '请先连接热升华打印机 RPC';
       _notifyIfAlive();
       return;
     }
-    await _runBusy(
-      'Querying sublimation dashboard...',
-      _refreshDashboardInternal,
-    );
+    await _runBusy('正在查询热升华设备状态…', _refreshDashboardInternal);
   }
 
   Future<void> _refreshDashboardInternal() async {
@@ -319,19 +162,18 @@ class SublimationController extends ChangeNotifier {
     cardPosition = await driver.dataOps.readCardPosition();
     printerSetting = await driver.dataOps.readPrinterSetting();
     statusMessage =
-        'Dashboard: ${rawStatus?.mainStatus.label}, Ribbon ${consumables?.ribbonRemainingPercent ?? 0}%, Pos: ${cardPosition?.position.label}';
+        '设备状态：${demoLabel(rawStatus?.mainStatus)}, Ribbon ${consumables?.ribbonRemainingPercent ?? 0}%, Pos: ${demoLabel(cardPosition?.position)}';
   }
 
   Future<void> updateAutoShutDownMinutes(int minutes) async {
     if (!isConnected) return;
-    await _runBusy('Setting autoShutDownMinutes=$minutes...', () async {
+    await _runBusy('正在设置自动关机分钟数：$minutes...', () async {
       final current =
           printerSetting ?? await _driver!.dataOps.readPrinterSetting();
       final updated = current.copyWith(autoShutDownMinutes: minutes);
       await _driver!.dataOps.writePrinterSetting(updated);
       printerSetting = await _driver!.dataOps.readPrinterSetting();
-      statusMessage =
-          'Auto shutdown updated to ${printerSetting?.autoShutDownMinutes} min';
+      statusMessage = '自动关机分钟数已更新：${printerSetting?.autoShutDownMinutes} min';
     });
   }
 
@@ -340,25 +182,24 @@ class SublimationController extends ChangeNotifier {
     Future<void> Function(SublimationPrinterDriver driver) fn,
   ) async {
     if (!isConnected) {
-      statusMessage = 'Connect Sublimation RPC first';
+      statusMessage = '请先连接热升华打印机 RPC';
       _notifyIfAlive();
       return;
     }
-    await _runBusy('Running $label...', () async {
+    await _runBusy('正在执行：$label…', () async {
       await fn(_driver!);
       await _refreshDashboardInternal();
-      statusMessage =
-          '$label complete (${cardPosition?.position.label ?? "OK"})';
+      statusMessage = '$label 已完成（${demoLabel(cardPosition?.position)})';
     });
   }
 
   Future<void> printTestCardJob() async {
     if (!isConnected) {
-      statusMessage = 'Connect Sublimation RPC first';
+      statusMessage = '请先连接热升华打印机 RPC';
       _notifyIfAlive();
       return;
     }
-    await _runBusy('Encoding & printing sublimation card...', () async {
+    await _runBusy('正在编码并打印卡片…', () async {
       final cancelToken = CloudCancelToken();
       _printCancelToken = cancelToken;
       observedJobStages.clear();
@@ -425,12 +266,11 @@ class SublimationController extends ChangeNotifier {
       if (result.success) {
         await _refreshDashboardInternal();
         statusMessage =
-            'Printed ${result.pagesPrinted} side(s) (${result.bytesTransferred} B)';
+            '任务完成：${result.pagesPrinted} side(s) (${result.bytesTransferred} B)';
       } else if (result.finalStage == CloudJobStage.cancelled) {
-        statusMessage = 'Sublimation job cancelled';
+        statusMessage = '热升华任务已取消';
       } else {
-        statusMessage =
-            'Print failed: ${result.error?.message ?? "unknown error"}';
+        statusMessage = '打印失败：${result.error?.message ?? "unknown error"}';
       }
     });
   }
@@ -448,15 +288,15 @@ class SublimationController extends ChangeNotifier {
 
   Future<void> _runBusy(String label, Future<void> Function() action) async {
     if (_disposed) return;
-    busy = true;
+    _busy = true;
     statusMessage = label;
     _notifyIfAlive();
     try {
       await action();
     } catch (e) {
-      statusMessage = 'Error: $e';
+      statusMessage = '操作失败：$e';
     } finally {
-      busy = false;
+      _busy = false;
       _notifyIfAlive();
     }
   }
@@ -465,14 +305,10 @@ class SublimationController extends ChangeNotifier {
   Future<void> dispose() async {
     if (_disposed) return;
     _disposed = true;
-    _provisionCancelToken?.cancel('Disposed');
     _printCancelToken?.cancel('Disposed');
-    await _activeProvisioner?.dispose();
-    await _activeScanner?.dispose();
+    await setup.dispose();
     await disconnectDriver();
-    await simBleDevice.disconnect();
     await simTcpDevice.disconnect();
-    await realBleDevice?.disconnect();
     super.dispose();
   }
 }

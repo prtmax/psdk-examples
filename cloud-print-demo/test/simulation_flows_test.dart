@@ -12,7 +12,6 @@ import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
 import 'package:psdk_fruit_esc/psdk_fruit_esc.dart';
 import 'package:psdk_fruit_inkjet/psdk_fruit_inkjet.dart';
 import 'package:psdk_fruit_sublimation/psdk_fruit_sublimation.dart';
-import 'package:psdk_fruit_wifi/psdk_fruit_wifi.dart';
 
 void main() {
   group('Simulation E2E Protocol Flows', () {
@@ -56,7 +55,7 @@ void main() {
     );
 
     test(
-      'ProtocolInspectorController and all 4 stubs redact JSON tokens, ESetKey/EGetKey, MQTT CONNECT, Sublimation getLocalPwd, and chunked Inkjet ACL cmd=24',
+      'ProtocolInspectorController and all 4 stubs redact JSON tokens, ESetKey/EGetKey, MQTT CONNECT, shared BLE SETSSID, and chunked Inkjet ACL cmd=24',
       () async {
         String hexOf(String secret) => utf8
             .encode(secret)
@@ -124,13 +123,13 @@ void main() {
           'MQTT CONNECT token',
         );
 
-        // 3. Sublimation BLE Mesh getLocalWifiPassword
-        const subPwd = 'SubLocalSecret!321';
-        coordinator.sublimation.simBleDevice.localPassword = subPwd;
-        final meshGetPwd = SublimationBleMeshCodec.buildGetLocalWifiPassword();
-        await coordinator.sublimation.simBleDevice.write(meshGetPwd);
-        await Future<void>.delayed(Duration.zero);
-        expectNoSecretLeak(subPwd, 'Sublimation getLocalWifiPassword');
+        // 3. Shared BLUETOOTH SETSSID credentials are redacted.
+        const subPwd = 'SubWifiSecret!321';
+        await coordinator.sublimation.setup.provisionWifi(
+          ssid: 'SubLab',
+          password: subPwd,
+        );
+        expectNoSecretLeak(subPwd, 'Shared BLE provisioning');
 
         // 4. Inkjet BLE ACL cmd=24 sent in chunks < 178B (100B + 87B)
         const aclPwd = 'InkAclSecret!654';
@@ -235,32 +234,21 @@ void main() {
     );
 
     test(
-      'thermalLanStream: Bluetooth AT & TSPL WLAN dual dialects, UDP 22368 discovery redaction, TCP :9100 stream & cancel',
+      'thermalLanStream: shared Bluetooth Wi-Fi provisioning, UDP 22368 discovery redaction, TCP :9100 stream & cancel',
       () async {
         final thermal = coordinator.thermalLan;
 
-        await thermal.runBluetoothAtProvisioning(
+        await thermal.setup.provisionWifi(
           ssid: 'ThermalLab',
           password: 'at-secret-password',
         );
-        expect(thermal.lastAtSsid, equals('ThermalLab'));
-        expect(
-          thermal.lastAtLinkState,
-          equals(BluetoothWifiLinkState.connected),
-        );
+        expect(thermal.setup.lastSsid, equals('ThermalLab'));
+        expect(thermal.setup.lastProvisionResult?.success, isTrue);
 
-        await thermal.runTsplWlanProvisioning(
-          ssid: 'ThermalLab-Static',
-          password: 'wlan-secret-password',
-          dhcp: false,
-          staticIp: '192.168.1.80',
-        );
-        expect(thermal.lastTsplDiagSummary, contains('192.168.1.80'));
-
-        await thermal.discoverLanPrinters();
+        await thermal.setup.discoverPrinters();
         expect(thermal.discoveredPrinters, hasLength(1));
         final discovered = thermal.discoveredPrinters.first;
-        expect(discovered.host, equals('192.168.1.80'));
+        expect(discovered.host, equals('192.168.1.77'));
         expect(discovered.metadata.containsKey('wifiPassword'), isFalse);
         final thermalLogs = coordinator.inspector.filtered(
           family: CloudPrinterFamily.thermalLanStream,
@@ -271,7 +259,7 @@ void main() {
         );
         expect(
           thermalLogs.any(
-            (e) => (e.textPreview ?? '').contains('wlan-secret-password'),
+            (e) => (e.textPreview ?? '').contains('at-secret-password'),
           ),
           isFalse,
         );
@@ -301,10 +289,8 @@ void main() {
           thermal.removeListener(onThermalChange);
         }
         expect(cancelledTriggered, isTrue);
-        expect(thermal.lastStreamResult, contains('cancelled'));
+        expect(thermal.lastStreamResult, contains('已取消'));
 
-        await thermal.resetTsplWlanDefaults();
-        expect(thermal.lastTsplDiagSummary, equals('OK'));
         expect(
           coordinator.inspector.filtered(
             family: CloudPrinterFamily.thermalLanStream,
@@ -315,7 +301,7 @@ void main() {
     );
 
     test(
-      'sublimationRpc: registry, Mode A AT & Mode B Mesh STA/AP, UDP 22368/1901, dashboard/autoShutDown, mechanical actions, 1B 44 + cache > 0 flow',
+      'sublimationRpc: registry, shared Bluetooth Wi-Fi provisioning, UDP 22368, dashboard/autoShutDown, mechanical actions, 1B 44 + cache > 0 flow',
       () async {
         expect(
           coordinator.registry.supportsFamily(
@@ -326,39 +312,21 @@ void main() {
         final sub = coordinator.sublimation;
 
         // Mode A: AT Text
-        await sub.provisionWifi(
+        await sub.setup.provisionWifi(
           ssid: 'SubAT-WiFi',
           password: 'at-password',
-          protocol: WifiProvisionProtocol.bluetoothAtText,
         );
-        expect(sub.lastProvisionResult?.success, isTrue);
+        expect(sub.setup.lastProvisionResult?.success, isTrue);
 
-        // Mode B: Binary Mesh STA & SoftAP
-        await sub.provisionWifi(
-          ssid: 'SubMesh-WiFi',
-          password: 'mesh-password',
-          protocol: WifiProvisionProtocol.sublimationBleBinaryMesh,
-          targetMode: WifiTargetMode.station,
+        // UDP 22368 discovery only.
+        await sub.setup.discoverPrinters();
+        expect(sub.setup.discoveredPrinters, isNotEmpty);
+        expect(
+          coordinator.inspector.entries.any(
+            (entry) => entry.transport.contains('1901'),
+          ),
+          isFalse,
         );
-        expect(sub.lastProvisionResult?.success, isTrue);
-        expect(sub.lastProvisionResult?.assignedIp, equals('192.168.1.88'));
-
-        await sub.provisionWifi(
-          ssid: 'D300_SoftAP',
-          password: 'ap-password',
-          protocol: WifiProvisionProtocol.sublimationBleBinaryMesh,
-          targetMode: WifiTargetMode.softAp,
-        );
-        expect(sub.lastProvisionResult?.success, isTrue);
-        expect(sub.lastProvisionResult?.assignedIp, equals('192.168.4.1'));
-
-        // Dual discovery (UDP 22368 + 1901) & UDP 1901 command
-        await sub.discoverPrinters();
-        expect(sub.discoveredPrinters, isNotEmpty);
-        await sub.setUdp1901Status(3);
-        expect(sub.lastUdp1901Status, equals(3));
-        await sub.queryUdp1901Status();
-        expect(sub.lastUdp1901Status, equals(3));
 
         // RPC Connect, Dashboard & autoShutDownMinutes
         await sub.connectDriver();
@@ -504,7 +472,15 @@ void main() {
 
         // mDNS + SoftAP discovery (with password redaction)
         await inkjet.discoverPrinters();
-        expect(inkjet.discoveredPrinters, hasLength(2));
+        expect(inkjet.discoveredPrinters, hasLength(1));
+        expect(inkjet.discoveredPrinters.single.port, equals(9100));
+        expect(
+          inkjet.discoveredPrinters.single.discoveredVia,
+          containsAll(<LanDiscoveryProtocol>{
+            LanDiscoveryProtocol.mdnsPrinterTcp,
+            LanDiscoveryProtocol.softApProbe,
+          }),
+        );
         expect(
           inkjet.discoveredPrinters.first.metadata['wifi_pwd'],
           equals('[REDACTED]'),
@@ -611,7 +587,7 @@ void main() {
 
         // Regression: subsequent XSL queryFullStatus() on the same simTcpDevice must succeed
         await inkjet.queryFullStatus();
-        expect(inkjet.statusMessage, isNot(startsWith('Error:')));
+        expect(inkjet.statusMessage, isNot(startsWith('操作失败：')));
         expect(inkjet.lastQueryResult?.inkboxStatus?.cyan?.percent, equals(85));
 
         // Confirm inspector recorded frames for colorInkjetPjl

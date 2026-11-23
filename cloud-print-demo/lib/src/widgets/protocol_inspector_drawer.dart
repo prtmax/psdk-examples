@@ -42,13 +42,13 @@ class _ProtocolInspectorDrawerState extends State<ProtocolInspectorDrawer> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                          'Protocol Inspector (${entries.length})',
+                          '协议日志（${entries.length})',
                           style: Theme.of(context).textTheme.titleMedium
                               ?.copyWith(fontWeight: FontWeight.w700),
                         ),
                       ),
                       IconButton(
-                        tooltip: 'Copy all logs',
+                        tooltip: '复制全部日志',
                         onPressed: entries.isEmpty
                             ? null
                             : () async {
@@ -61,15 +61,13 @@ class _ProtocolInspectorDrawerState extends State<ProtocolInspectorDrawer> {
                                 );
                                 if (!context.mounted) return;
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Protocol logs copied'),
-                                  ),
+                                  const SnackBar(content: Text('协议日志已复制')),
                                 );
                               },
                         icon: const Icon(Icons.copy_all_outlined),
                       ),
                       IconButton(
-                        tooltip: 'Clear logs',
+                        tooltip: '清空日志',
                         onPressed: widget.inspector.count == 0
                             ? null
                             : widget.inspector.clear,
@@ -84,7 +82,7 @@ class _ProtocolInspectorDrawerState extends State<ProtocolInspectorDrawer> {
                   child: Row(
                     children: [
                       FilterChip(
-                        label: const Text('All'),
+                        label: const Text('全部'),
                         selected: _familyFilter == null,
                         onSelected: (_) => setState(() => _familyFilter = null),
                       ),
@@ -108,7 +106,7 @@ class _ProtocolInspectorDrawerState extends State<ProtocolInspectorDrawer> {
                   padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
                   child: SegmentedButton<WireDirection?>(
                     segments: const [
-                      ButtonSegment(value: null, label: Text('All')),
+                      ButtonSegment(value: null, label: Text('全部')),
                       ButtonSegment(value: WireDirection.tx, label: Text('TX')),
                       ButtonSegment(value: WireDirection.rx, label: Text('RX')),
                     ],
@@ -122,7 +120,7 @@ class _ProtocolInspectorDrawerState extends State<ProtocolInspectorDrawer> {
                   child: entries.isEmpty
                       ? const Center(
                           child: Text(
-                            'No wire frames recorded yet.\nRun any provisioning, query, or print action.',
+                            '暂无协议记录。\n请执行配网、查询或打印操作。',
                             textAlign: TextAlign.center,
                           ),
                         )

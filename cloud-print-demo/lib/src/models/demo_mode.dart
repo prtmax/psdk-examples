@@ -8,18 +8,18 @@ extension DemoRunModeUi on DemoRunMode {
   String get label {
     switch (this) {
       case DemoRunMode.simulation:
-        return 'Simulation';
+        return '模拟模式';
       case DemoRunMode.realDevice:
-        return 'Real Device';
+        return '真机模式';
     }
   }
 
   String get description {
     switch (this) {
       case DemoRunMode.simulation:
-        return 'In-process protocol loopback stubs (offline runnable)';
+        return '进程内协议模拟，可离线运行';
       case DemoRunMode.realDevice:
-        return 'Physical BLE GATT, LAN UDP/mDNS/TCP, and WAN Cloud';
+        return '真机蓝牙、局域网及云端连接';
     }
   }
 }
@@ -28,26 +28,26 @@ extension CloudPrinterFamilyUi on CloudPrinterFamily {
   String get tabLabel {
     switch (this) {
       case CloudPrinterFamily.escWanCloud:
-        return 'ESC WAN';
+        return 'ESC 云端';
       case CloudPrinterFamily.thermalLanStream:
-        return 'Thermal LAN';
+        return '热敏局域网';
       case CloudPrinterFamily.sublimationRpc:
-        return 'Sublimation';
+        return '热升华';
       case CloudPrinterFamily.colorInkjetPjl:
-        return 'Color Inkjet';
+        return '彩色喷墨';
     }
   }
 
   String get title {
     switch (this) {
       case CloudPrinterFamily.escWanCloud:
-        return 'ESC WAN Cloud';
+        return 'ESC 云打印';
       case CloudPrinterFamily.thermalLanStream:
-        return 'Thermal LAN Stream';
+        return '热敏局域网打印';
       case CloudPrinterFamily.sublimationRpc:
-        return 'Sublimation RPC';
+        return '热升华 RPC';
       case CloudPrinterFamily.colorInkjetPjl:
-        return 'Color Inkjet PJL';
+        return '彩色喷墨 PJL';
     }
   }
 
@@ -56,11 +56,11 @@ extension CloudPrinterFamilyUi on CloudPrinterFamily {
       case CloudPrinterFamily.escWanCloud:
         return 'psdk_fruit_esc TLV + psdk_cloud_wan REST/MQTT v5/OSS';
       case CloudPrinterFamily.thermalLanStream:
-        return 'psdk_fruit_wifi AT/WLAN + psdk_network UDP 22368 & TCP :9100';
+        return '共用蓝牙 Wi-Fi 配网、UDP 22368 发现；TCP 9100 打印';
       case CloudPrinterFamily.sublimationRpc:
-        return 'psdk_fruit_sublimation AT/Mesh, UDP 22368/1901 & 1B 44 RPC';
+        return '共用蓝牙 Wi-Fi 配网、UDP 22368 发现；RPC 卡片打印';
       case CloudPrinterFamily.colorInkjetPjl:
-        return 'psdk_fruit_inkjet ACL, mDNS/SoftAP, XSL & XPL JBIG-1';
+        return 'psdk_fruit_inkjet ACL, UDP 22368 / 4201 / mDNS, XSL & XPL JBIG-1';
     }
   }
 
