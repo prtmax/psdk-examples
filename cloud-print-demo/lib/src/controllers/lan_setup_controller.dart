@@ -16,6 +16,7 @@ class LanSetupController extends ChangeNotifier {
     required DemoRunMode Function() modeGetter,
     required this.simBleDevice,
     required this.simScannerFactory,
+    this.bleNamePrefixFilter = '',
   }) : _modeGetter = modeGetter;
 
   final CloudPrinterFamily family;
@@ -23,6 +24,7 @@ class LanSetupController extends ChangeNotifier {
   final DemoRunMode Function() _modeGetter;
   final ConnectedDevice<dynamic> simBleDevice;
   final LanPrinterScanner Function() simScannerFactory;
+  String bleNamePrefixFilter;
   ConnectedDevice<dynamic>? realBleDevice;
   ProvisionResult? lastProvisionResult;
   String? lastSsid;

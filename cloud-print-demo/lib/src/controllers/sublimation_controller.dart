@@ -32,6 +32,7 @@ class SublimationController extends ChangeNotifier {
       simBleDevice: simBleDevice,
       simScannerFactory: () =>
           SublimationLanScanner(transport: simUdpTransport),
+      bleNamePrefixFilter: 'z11',
     )..addListener(_notifyIfAlive);
   }
 

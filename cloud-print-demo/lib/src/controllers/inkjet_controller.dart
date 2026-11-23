@@ -41,6 +41,7 @@ class InkjetController extends ChangeNotifier {
     AndroidLanDiscoverySession? lanDiscoverySession,
     LanPrinterScanner Function()? discoveryScannerFactory,
     this.postProvisionDiscoveryDelay = const Duration(seconds: 3),
+    this.bleNamePrefixFilter = 'h100',
   }) : _modeGetter = modeGetter,
        _multicastLock = multicastLock ?? AndroidMulticastLock(),
        _lanDiscoverySession =
@@ -73,6 +74,7 @@ class InkjetController extends ChangeNotifier {
   late final SimulatedInkjetSoftApProbe simSoftApProbe;
   late final SimulatedInkjetNetworkBinder simNetworkBinder;
 
+  String bleNamePrefixFilter;
   ConnectedDevice<dynamic>? realBleDevice;
   InkjetPrinterDriver? _driver;
   StreamSubscription<CloudStatusSnapshot>? _pushSub;
@@ -98,13 +100,17 @@ class InkjetController extends ChangeNotifier {
 
   InkjetXslQueryResult? lastQueryResult;
   CloudStatusSnapshot? lastSnapshot;
+  DateTime? lastPushAt;
+  InkjetWifiStaConfig? lastWifiSta;
+  InkjetPowerConfig? lastPowerConfig;
+  InkjetLanguageCode? lastLanguage;
   bool activePushEnabled = false;
   InkjetSimFaultPreset selectedFaultPreset = InkjetSimFaultPreset.ready;
   InkjetFaultCode selectedCustomFault = InkjetFaultCode.noError;
 
   // Print options
   CloudPrintQuality selectedQuality = CloudPrintQuality.standard;
-  InkjetResolution selectedResolution = InkjetResolution.dpi300x300;
+  InkjetResolution selectedResolution = InkjetResolution.dpi600x600;
   CloudColorMode selectedColorMode = CloudColorMode.colorCmyk;
   CloudPaperSize selectedPaperSize = CloudPaperSize.a4;
   CloudPaperType selectedPaperType = CloudPaperType.normal;
@@ -113,7 +119,7 @@ class InkjetController extends ChangeNotifier {
   bool borderless = false;
   int copies = 1;
   CloudNupLayout nupLayout = CloudNupLayout.oneUp;
-  int pageCount = 2;
+  int pageCount = 1;
   bool continueOnLowSupply = false;
   bool fallbackToMonoWhenColorEmpty = false;
 
@@ -431,6 +437,31 @@ class InkjetController extends ChangeNotifier {
           },
           networkBinder: networkBinder,
           enrichMdnsWithXslQuery: true,
+          subnetHostsProvider: () async {
+            final interfaces = await localIpv4Provider();
+            final primaryHosts = <String>[];
+            final overflowHosts = <String>[];
+            final seen = <String>{};
+            for (final iface in interfaces) {
+              final dotPrefix = _ipv4Slash24Prefix(iface.address);
+              final enumerated = SubnetCalculator.enumerateSubnetHosts(
+                iface.address,
+                prefixLength: iface.prefixLength,
+                minPrefixLength: 23,
+              );
+              for (final ip in enumerated) {
+                if (!seen.add(ip)) continue;
+                if (dotPrefix != null && ip.startsWith(dotPrefix)) {
+                  primaryHosts.add(ip);
+                } else {
+                  overflowHosts.add(ip);
+                }
+              }
+            }
+            return <String>[...primaryHosts, ...overflowHosts];
+          },
+          subnetFallbackDelay: const Duration(seconds: 2),
+          subnetConnectTimeout: const Duration(milliseconds: 350),
           udp22368ScannerFactory: () => realNetwork!.createScanner(
             networkInterface: wifiInterface,
             enableSubnetHostEnumerationFallback: true,
@@ -549,13 +580,94 @@ class InkjetController extends ChangeNotifier {
     );
   }
 
+  static String? _ipv4Slash24Prefix(String ip) {
+    final lastDot = ip.lastIndexOf('.');
+    return lastDot > 0 ? ip.substring(0, lastDot + 1) : null;
+  }
+
+  Future<void> probeManualHost(String rawHost) async {
+    final host = rawHost.trim();
+    if (host.isEmpty ||
+        SubnetCalculator.ipv4ToInt(host) == null ||
+        !SubnetCalculator.isUsablePrinterHost(host)) {
+      statusMessage = '请输入有效的 IPv4 地址（例如 192.168.200.214）';
+      _notifyIfAlive();
+      return;
+    }
+
+    await _runBusy('正在探测 $host:$inkjetTcpPort…', () async {
+      var networkSessionHeld = false;
+      String? wifiInterface;
+      InkjetDiscoveryAdapter? adapter;
+      try {
+        if (mode == DemoRunMode.simulation) {
+          adapter = InkjetDiscoveryAdapter(
+            softApProbeTransport: simSoftApProbe.call,
+            allowLoopbackForTesting: true,
+          );
+        } else {
+          try {
+            networkSessionHeld = await _lanDiscoverySession.begin();
+            if (networkSessionHeld) {
+              try {
+                final androidNetwork = await _lanDiscoverySession
+                    .currentNetwork();
+                wifiInterface = androidNetwork?.interfaceName;
+              } catch (_) {}
+            }
+          } catch (error) {
+            _recordDiscoveryWarning('Android Wi-Fi 网络绑定失败：$error');
+          }
+          final networkBinder = InspectedNetworkBinder(
+            inspector,
+            CloudPrinterFamily.colorInkjetPjl,
+          );
+          wifiInterface ??= await networkBinder.resolveWifiInterfaceName();
+          adapter = InkjetDiscoveryAdapter(networkBinder: networkBinder);
+        }
+
+        final probed = await adapter.probeHost(
+          host,
+          timeout: const Duration(seconds: 4),
+          networkInterface: wifiInterface,
+        );
+        if (probed == null) {
+          statusMessage = '未在 $host:$inkjetTcpPort 检测到支持 XSL 的喷墨打印机';
+          return;
+        }
+        final candidate = canonicalizeInkjetPrinter(probed);
+        final updated = List<DiscoveredCloudPrinter>.from(discoveredPrinters);
+        final index = updated.indexWhere(
+          (existing) => isSameInkjetPrinter(existing, candidate),
+        );
+        if (index >= 0) {
+          updated[index] = updated[index].mergeWith(candidate);
+        } else {
+          updated.add(candidate);
+        }
+        discoveredPrinters = List<DiscoveredCloudPrinter>.unmodifiable(updated);
+        selectedPrinter = index >= 0 ? discoveredPrinters[index] : candidate;
+        _verifiedPrinterIpCache.remember(candidate.host);
+        statusMessage =
+            '已通过直连发现：${selectedPrinter!.displayName} '
+            '(${selectedPrinter!.host}:${selectedPrinter!.port})';
+      } finally {
+        await adapter?.dispose();
+        if (networkSessionHeld) {
+          try {
+            await _lanDiscoverySession.end();
+          } catch (_) {}
+        }
+      }
+    });
+  }
+
   void selectPrinter(DiscoveredCloudPrinter printer) {
     final candidate = canonicalizeInkjetPrinter(printer);
     final index = discoveredPrinters.indexWhere(
       (existing) => isSameInkjetPrinter(existing, candidate),
     );
-    selectedPrinter =
-        index >= 0 ? discoveredPrinters[index] : candidate;
+    selectedPrinter = index >= 0 ? discoveredPrinters[index] : candidate;
     statusMessage =
         '已选择 ${selectedPrinter!.displayName}'
         '（${selectedPrinter!.host}:${selectedPrinter!.port}）';
@@ -571,16 +683,16 @@ class InkjetController extends ChangeNotifier {
       return;
     }
     final printer = canonicalizeInkjetPrinter(
-        target ??
-            selectedPrinter ??
-            DiscoveredCloudPrinter(
-              id: 'sim-inkjet',
-              displayName: 'SimColorJet-Pro',
-              family: CloudPrinterFamily.colorInkjetPjl,
-              host: '192.168.1.92',
-              port: 9100,
-            ),
-      );
+      target ??
+          selectedPrinter ??
+          DiscoveredCloudPrinter(
+            id: 'sim-inkjet',
+            displayName: 'SimColorJet-Pro',
+            family: CloudPrinterFamily.colorInkjetPjl,
+            host: '192.168.1.92',
+            port: 9100,
+          ),
+    );
     _verifiedPrinterIpCache.remember(printer.host);
     await _runBusy('正在连接喷墨打印机…', () async {
       await disconnectDriver();
@@ -610,6 +722,14 @@ class InkjetController extends ChangeNotifier {
     });
   }
 
+  void setQuality(CloudPrintQuality quality) {
+    selectedQuality = quality;
+    selectedResolution = InkjetQualityPreset.fromCloudQuality(
+      quality,
+    ).defaultResolution;
+    _notifyIfAlive();
+  }
+
   Future<void> queryFullStatus() async {
     if (!isConnected) {
       statusMessage = '请先连接喷墨打印机 XSL/XPL';
@@ -627,15 +747,74 @@ class InkjetController extends ChangeNotifier {
         'XSL: ${result.deviceStatus?.wireToken ?? "?"}, Fault=${result.faultCode?.descriptionZh ?? "无"}';
   }
 
+  Future<void> queryDeviceConfig() async {
+    if (!isConnected) {
+      statusMessage = '请先连接喷墨打印机 XSL/XPL';
+      _notifyIfAlive();
+      return;
+    }
+    await _runBusy('正在查询网络、电源与语言配置…', _refreshConfigInternal);
+  }
+
+  Future<void> _refreshConfigInternal() async {
+    final monitor = _driver!.statusMonitor;
+    final wifi = await monitor.executeQuery(XslCodec.buildWifiStaQuery());
+    final power = await monitor.executeQuery(XslCodec.buildPowerQuery());
+    final lang = await monitor.executeQuery(XslCodec.buildLanguageQuery());
+    lastWifiSta = wifi.wifiSta;
+    lastPowerConfig = power.powerConfig;
+    lastLanguage = lang.language;
+    statusMessage =
+        '配置已更新：STA=${lastWifiSta?.ipv4 ?? "-"}, '
+        '休眠=${lastPowerConfig?.sleepMinutes ?? "-"}min, '
+        '语言=${demoLabel(lastLanguage?.wireToken)}';
+  }
+
+  Future<void> configurePower({
+    required bool savePower,
+    required int sleepMinutes,
+  }) async {
+    if (!isConnected) return;
+    await _runBusy('正在设置电源与休眠配置…', () async {
+      await _driver!.configurePower(
+        savePower: savePower,
+        sleepMinutes: sleepMinutes,
+      );
+      try {
+        await _refreshConfigInternal();
+      } catch (_) {}
+      statusMessage =
+          '电源设置完成：节能=${savePower ? "ON" : "OFF"}, 休眠=$sleepMinutes分钟';
+    });
+  }
+
+  Future<void> configureLanguage(InkjetLanguageCode language) async {
+    if (!isConnected) return;
+    await _runBusy('正在切换设备语言：${demoLabel(language.wireToken)}…', () async {
+      await _driver!.configureLanguage(language);
+      try {
+        await _refreshConfigInternal();
+      } catch (_) {}
+      statusMessage = '设备语言已切换为 ${demoLabel(language.wireToken)}';
+    });
+  }
+
   Future<void> toggleActivePush(bool enable) async {
     if (!isConnected) return;
     await _runBusy(enable ? '正在开启 XSL 主动推送…' : '正在关闭 XSL 主动推送…', () async {
       if (enable) {
         await _pushSub?.cancel();
-        _pushSub = _driver!.watchStatus().listen((snap) {
-          lastSnapshot = snap;
-          _notifyIfAlive();
-        });
+        _pushSub = _driver!.watchStatus().listen(
+          (snap) {
+            lastSnapshot = snap;
+            lastPushAt = DateTime.now();
+            _notifyIfAlive();
+          },
+          onError: (Object error) {
+            statusMessage = '主动推送异常：$error';
+            _notifyIfAlive();
+          },
+        );
         activePushEnabled = true;
       } else {
         await _driver!.stopWatchingStatus();
@@ -647,29 +826,58 @@ class InkjetController extends ChangeNotifier {
     });
   }
 
+  String _formatXsetError(String cmd, Object error) {
+    final text = error.toString();
+    if (error is FormatException &&
+        (text.contains('Printer rejected XSET') ||
+            text.contains('XSET FAIL'))) {
+      return '打印机拒绝指令 $cmd（可能正忙或当前固件不支持）';
+    }
+    return '指令 $cmd 失败：$error';
+  }
+
   Future<void> executeMaintenance(InkjetMaintenanceAction action) async {
     if (!isConnected) return;
     await _runBusy('正在执行维护：${action.name}...', () async {
-      await _driver!.executeMaintenance(action);
-      await _refreshStatusInternal();
-      statusMessage = '维护指令 ${action.pjlCommand} completed';
+      try {
+        await _driver!.executeMaintenance(action);
+      } on FormatException catch (error) {
+        statusMessage = _formatXsetError(action.pjlCommand, error);
+        return;
+      }
+      try {
+        await _refreshStatusInternal();
+      } catch (_) {}
+      statusMessage = '维护指令 ${action.pjlCommand} 已执行';
     });
   }
 
   Future<void> scheduleNozzleWet(InkjetWetScheduleHours hours) async {
     if (!isConnected) return;
     await _runBusy('正在设置喷头保湿：${hours.hours}h...', () async {
-      await _driver!.scheduleNozzleWet(hours);
+      try {
+        await _driver!.scheduleNozzleWet(hours);
+      } on FormatException catch (error) {
+        statusMessage = _formatXsetError('NOZZLE WET=${hours.hours}', error);
+        return;
+      }
       statusMessage = '喷头保湿定时：${hours.hours}h';
     });
   }
 
   Future<void> printBuiltInPage(InkjetBuiltInPage page) async {
     if (!isConnected) return;
-    await _runBusy('正在打印内置页：${page.name}...', () async {
-      await _driver!.printBuiltInPage(page);
-      await _refreshStatusInternal();
-      statusMessage = '内置页指令 ${page.pjlCommand} sent';
+    await _runBusy('正在打印内置页：${demoLabel(page)}...', () async {
+      try {
+        await _driver!.printBuiltInPage(page);
+      } on FormatException catch (error) {
+        statusMessage = _formatXsetError(page.pjlCommand, error);
+        return;
+      }
+      try {
+        await _refreshStatusInternal();
+      } catch (_) {}
+      statusMessage = '内置页指令 ${page.pjlCommand} 已发送';
     });
   }
 
@@ -893,6 +1101,10 @@ class InkjetController extends ChangeNotifier {
     await _pushSub?.cancel();
     _pushSub = null;
     activePushEnabled = false;
+    lastPushAt = null;
+    lastWifiSta = null;
+    lastPowerConfig = null;
+    lastLanguage = null;
     await _driver?.dispose();
     _driver = null;
     _notifyIfAlive();

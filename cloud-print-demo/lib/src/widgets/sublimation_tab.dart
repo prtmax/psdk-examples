@@ -51,6 +51,7 @@ class _SublimationTabState extends State<SublimationTab> {
               controller: c.setup,
               helper: widget.realTransportHelper,
               disabled: c.busy,
+              showBleNamePrefixFilter: true,
             ),
             const SizedBox(height: 12),
             DemoPanel(

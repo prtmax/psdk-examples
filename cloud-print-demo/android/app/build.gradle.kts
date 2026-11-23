@@ -28,6 +28,18 @@ android {
         // flag during build.
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        externalNativeBuild {
+            cmake {
+                arguments("-DBUILD_TESTING=OFF", "-DBUILD_SHARED_LIBS=ON")
+            }
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path = file("../../../../psdk/clang/color_core/CMakeLists.txt")
+        }
     }
 
     buildTypes {
