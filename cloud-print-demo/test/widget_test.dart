@@ -5,6 +5,7 @@ import 'package:cloud_print_demo/src/controllers/real_transport_helper.dart';
 import 'package:cloud_print_demo/src/controllers/sublimation_controller.dart';
 import 'package:cloud_print_demo/src/models/demo_mode.dart';
 import 'package:cloud_print_demo/src/models/protocol_inspector.dart';
+import 'package:cloud_print_demo/src/widgets/common_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -589,6 +590,12 @@ void main() {
         await tester.tap(find.byTooltip('关闭扫描'));
         await tester.pumpAndSettle();
 
+        expect(find.byKey(const Key('lan_manual_ip_field')), findsOneWidget);
+        expect(
+          find.byKey(const Key('lan_probe_manual_ip_btn')),
+          findsOneWidget,
+        );
+
         await tester.pumpWidget(
           MaterialApp(
             home: Scaffold(
@@ -731,6 +738,130 @@ void main() {
         );
         await tester.pumpAndSettle();
         expect(find.text('纸张类型'), findsOneWidget);
+
+        expect(
+          errors,
+          isEmpty,
+          reason: errors.map((e) => e.exceptionAsString()).join('\n'),
+        );
+      },
+    );
+  });
+
+  group('Unified interactive feedback UX', () {
+    testWidgets(
+      'SublimationTab shows SnackBar and ActionStatusBanner feedback on settings update and invalid input at 360x640',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(360, 640);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        final errors = <FlutterErrorDetails>[];
+        final prevOnError = FlutterError.onError;
+        FlutterError.onError = (details) {
+          errors.add(details);
+          prevOnError?.call(details);
+        };
+        addTearDown(() {
+          FlutterError.onError = prevOnError;
+        });
+
+        final coordinator = DemoCoordinator(
+          colorCore: const PureDartColorCoreEngine(),
+        );
+        addTearDown(coordinator.dispose);
+
+        await tester.pumpWidget(CloudPrintDemoApp(coordinator: coordinator));
+        await tester.pumpAndSettle();
+
+        final subTab = find.byKey(const Key('tab_sublimationRpc'));
+        await tester.ensureVisible(subTab);
+        await tester.tap(subTab);
+        await tester.pumpAndSettle();
+
+        await tester.runAsync(() => coordinator.sublimation.connectDriver());
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 50));
+
+        expect(find.byKey(const Key('demo_feedback_snackbar')), findsOneWidget);
+        expect(find.byType(ActionStatusBanner), findsAtLeastNWidgets(1));
+
+        final listScrollable = find
+            .descendant(
+              of: find.byType(ListView).first,
+              matching: find.byType(Scrollable),
+            )
+            .first;
+        final applyBtn = find.widgetWithText(FilledButton, '应用');
+        await tester.scrollUntilVisible(
+          applyBtn,
+          60,
+          scrollable: listScrollable,
+        );
+        await tester.pumpAndSettle();
+
+        final autoShutDownField = find.widgetWithText(TextField, '15');
+        await tester.enterText(autoShutDownField, '30');
+        await tester.pump();
+        await Scrollable.ensureVisible(
+          tester.element(applyBtn),
+          alignment: 0.5,
+        );
+        await tester.pumpAndSettle();
+
+        Future<void> waitSubIdle() => tester.runAsync(() async {
+          final deadline = DateTime.now().add(const Duration(seconds: 3));
+          while (coordinator.sublimation.busy &&
+              DateTime.now().isBefore(deadline)) {
+            await Future<void>.delayed(const Duration(milliseconds: 10));
+          }
+        });
+
+        await tester.tap(applyBtn);
+        await tester.pump();
+        await waitSubIdle();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 200));
+
+        expect(coordinator.sublimation.lastActionFailed, isFalse);
+        expect(
+          coordinator.sublimation.statusMessage,
+          contains('自动关机分钟数已更新：30 min'),
+        );
+        expect(
+          find.descendant(
+            of: find.byKey(const Key('demo_feedback_snackbar')),
+            matching: find.textContaining('自动关机分钟数已更新：30 min'),
+          ),
+          findsOneWidget,
+        );
+
+        await tester.enterText(find.widgetWithText(TextField, '30'), '1');
+        await tester.pump();
+        await Scrollable.ensureVisible(
+          tester.element(applyBtn),
+          alignment: 0.5,
+        );
+        await tester.pumpAndSettle();
+        await tester.tap(applyBtn);
+        await tester.pump();
+        await waitSubIdle();
+        await tester.pump();
+        await tester.pump(const Duration(milliseconds: 200));
+
+        expect(coordinator.sublimation.lastActionFailed, isTrue);
+        expect(
+          find.descendant(
+            of: find.byKey(const Key('demo_feedback_snackbar')),
+            matching: find.textContaining(
+              'autoShutDownMinutes must be 0 or in 2..65535 minutes',
+            ),
+          ),
+          findsOneWidget,
+        );
 
         expect(
           errors,

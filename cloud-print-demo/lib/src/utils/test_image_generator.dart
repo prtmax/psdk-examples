@@ -80,6 +80,94 @@ final class TestImageGenerator {
     return rgba;
   }
 
+  /// Generates a full-bleed opaque RGBA8888 photo test pattern scaled
+  /// proportionally to [width] x [height] (e.g. `1800x1280` for Z11).
+  static Uint8List generateSublimationPhotoRgba({
+    int width = 1800,
+    int height = 1280,
+    int variant = 0,
+  }) {
+    final rgba = Uint8List(width * height * 4);
+    final headerH = (height * 0.22).round();
+    final border = (height * 0.025).round().clamp(1, 32);
+    final gradLeft = (width * 0.06).round();
+    final gradRight = (width * 0.44).round();
+    final gradTop = headerH + border * 2;
+    final gradBottom = height - border * 3;
+    final barsLeft = (width * 0.50).round();
+    final barsRight = width - border * 3;
+    final midY = (gradTop + gradBottom) ~/ 2;
+    final barHalfH = (height * 0.03).round().clamp(1, 48);
+    final barGap = (height * 0.14).round().clamp(2, 200);
+    final stripeMod = (width * 0.025).round().clamp(4, 60);
+    final stripeOn = (stripeMod * 2) ~/ 3;
+
+    for (var y = 0; y < height; y++) {
+      final inBorderY = y < border || y >= height - border;
+      final inHeader = y < headerH;
+      final inGradY = y >= gradTop && y < gradBottom;
+      final inBarRow =
+          (y >= midY - barGap - barHalfH && y < midY - barGap + barHalfH) ||
+          (y >= midY - barHalfH && y < midY + barHalfH) ||
+          (y >= midY + barGap - barHalfH && y < midY + barGap + barHalfH);
+      for (var x = 0; x < width; x++) {
+        final offset = (y * width + x) * 4;
+        int r = 248;
+        int g = 249;
+        int b = 247;
+
+        if (inBorderY || x < border || x >= width - border) {
+          r = 32;
+          g = 72;
+          b = 84;
+        } else if (inHeader) {
+          final band = (x * 4) ~/ width;
+          switch ((band + variant) % 4) {
+            case 0:
+              r = 37;
+              g = 107;
+              b = 117;
+              break;
+            case 1:
+              r = 212;
+              g = 85;
+              b = 64;
+              break;
+            case 2:
+              r = 230;
+              g = 175;
+              b = 46;
+              break;
+            default:
+              r = 58;
+              g = 140;
+              b = 110;
+              break;
+          }
+        } else if (inGradY && x >= gradLeft && x < gradRight) {
+          final gx = (x - gradLeft) / (gradRight - gradLeft);
+          final gy = (y - gradTop) / (gradBottom - gradTop);
+          r = (24 + gx * 216).round().clamp(0, 255);
+          g = (36 + gy * 184).round().clamp(0, 255);
+          b = (210 - ((gx + gy) * 90)).round().clamp(0, 255);
+        } else if (inBarRow && x >= barsLeft && x < barsRight) {
+          final inThirdRow = y >= midY + barGap - barHalfH;
+          if (!inThirdRow || (x % stripeMod) < stripeOn) {
+            r = 16;
+            g = 16;
+            b = 16;
+          }
+        }
+
+        rgba[offset] = r;
+        rgba[offset + 1] = g;
+        rgba[offset + 2] = b;
+        rgba[offset + 3] = 255;
+      }
+    }
+    return rgba;
+  }
+
   /// Generates an opaque RGBA8888 K-only overlay mask (vertical bars + border).
   static Uint8List generateSublimationOverlayMaskRgba({
     int width = 96,

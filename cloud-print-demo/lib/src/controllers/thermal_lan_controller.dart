@@ -6,6 +6,7 @@ import 'package:psdk_device_adapter/psdk_device_adapter.dart';
 import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
 import 'package:psdk_network/psdk_network.dart';
 
+import '../models/demo_feedback.dart';
 import '../models/demo_mode.dart';
 import '../models/protocol_inspector.dart';
 import '../stubs/sim_thermal_lan_stub.dart';
@@ -19,6 +20,7 @@ class ThermalLanController extends ChangeNotifier {
     required this.inspector,
     required DemoRunMode Function() modeGetter,
     required this.realTransportHelper,
+    this.feedback,
   }) : _modeGetter = modeGetter {
     simBleDevice = SimulatedLanBleDevice(
       inspector: inspector,
@@ -32,6 +34,7 @@ class ThermalLanController extends ChangeNotifier {
     setup = LanSetupController(
       family: CloudPrinterFamily.thermalLanStream,
       inspector: inspector,
+      feedback: feedback,
       modeGetter: modeGetter,
       simBleDevice: simBleDevice,
       simScannerFactory: () {
@@ -42,6 +45,7 @@ class ThermalLanController extends ChangeNotifier {
   }
 
   final ProtocolInspectorController inspector;
+  final DemoFeedbackCenter? feedback;
   final DemoRunMode Function() _modeGetter;
   final RealTransportHelper realTransportHelper;
 
@@ -62,6 +66,7 @@ class ThermalLanController extends ChangeNotifier {
 
   bool _busy = false;
   bool get busy => _busy || setup.busy;
+  bool lastActionFailed = false;
   String statusMessage = '就绪';
 
   List<DiscoveredCloudPrinter> get discoveredPrinters =>
@@ -80,7 +85,12 @@ class ThermalLanController extends ChangeNotifier {
   Future<void> connectTcpPrinter([DiscoveredCloudPrinter? target]) async {
     final printer = target ?? selectedPrinter;
     if (printer == null) {
+      lastActionFailed = true;
       statusMessage = '请先发现并选择打印机';
+      feedback?.emitError(
+        statusMessage,
+        family: CloudPrinterFamily.thermalLanStream,
+      );
       _notifyIfAlive();
       return;
     }
@@ -117,7 +127,12 @@ class ThermalLanController extends ChangeNotifier {
   }) async {
     final tcp = _tcpDevice;
     if (tcp == null || tcp.connectionState() != ConnectionState.connected) {
+      lastActionFailed = true;
       statusMessage = '请先连接 TCP 9100 打印机';
+      feedback?.emitError(
+        statusMessage,
+        family: CloudPrinterFamily.thermalLanStream,
+      );
       _notifyIfAlive();
       return;
     }
@@ -177,23 +192,42 @@ class ThermalLanController extends ChangeNotifier {
     _printCancelToken?.cancel('Cancelled by user');
   }
 
-  Future<void> disconnectTcpPrinter() async {
+  Future<void> disconnectTcpPrinter({bool notifyFeedback = false}) async {
+    final wasConnected = _tcpDevice != null;
     await _tcpDevice?.disconnect();
     _tcpDevice = null;
+    if (notifyFeedback && wasConnected) {
+      lastActionFailed = false;
+      statusMessage = '已断开 TCP 9100 连接';
+      feedback?.emitInfo(
+        statusMessage,
+        family: CloudPrinterFamily.thermalLanStream,
+      );
+    }
     _notifyIfAlive();
   }
 
   Future<void> _runBusy(String label, Future<void> Function() action) async {
     if (_disposed) return;
     _busy = true;
+    lastActionFailed = false;
     statusMessage = label;
     _notifyIfAlive();
     try {
       await action();
+      lastActionFailed = DemoFeedbackCenter.isErrorMessage(statusMessage);
     } catch (e) {
-      statusMessage = '操作失败：$e';
+      lastActionFailed = true;
+      statusMessage = '操作失败：${DemoFeedbackCenter.formatMessage('$e')}';
     } finally {
       _busy = false;
+      if (!_disposed) {
+        feedback?.emitOutcome(
+          statusMessage,
+          forceError: lastActionFailed,
+          family: CloudPrinterFamily.thermalLanStream,
+        );
+      }
       _notifyIfAlive();
     }
   }

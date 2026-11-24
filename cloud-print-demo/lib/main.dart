@@ -4,6 +4,7 @@ import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
 
 import 'src/controllers/demo_coordinator.dart';
 import 'src/models/demo_mode.dart';
+import 'src/widgets/common_widgets.dart';
 import 'src/widgets/esc_wan_tab.dart';
 import 'src/widgets/inkjet_tab.dart';
 import 'src/widgets/protocol_inspector_drawer.dart';
@@ -76,12 +77,29 @@ class _CloudPrintDemoPageState extends State<CloudPrintDemoPage>
   late final bool _ownsCoordinator;
   late final TabController _tabController;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  int _lastFeedbackId = 0;
+
+  void _onFeedbackChanged() {
+    final event = _coordinator.feedback.latest;
+    if (event == null || event.id <= _lastFeedbackId) return;
+    _lastFeedbackId = event.id;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      showDemoFeedbackSnackBar(
+        context,
+        kind: event.kind,
+        message: event.message,
+      );
+    });
+  }
 
   @override
   void initState() {
     super.initState();
     _ownsCoordinator = widget.coordinator == null;
     _coordinator = widget.coordinator ?? DemoCoordinator();
+    _lastFeedbackId = _coordinator.feedback.latest?.id ?? 0;
+    _coordinator.feedback.addListener(_onFeedbackChanged);
     _tabController = TabController(
       length: CloudPrinterFamily.values.length,
       vsync: this,
@@ -100,6 +118,7 @@ class _CloudPrintDemoPageState extends State<CloudPrintDemoPage>
 
   @override
   void dispose() {
+    _coordinator.feedback.removeListener(_onFeedbackChanged);
     _tabController.dispose();
     if (_ownsCoordinator) {
       _coordinator.dispose();
