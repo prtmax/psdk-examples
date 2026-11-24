@@ -1,29 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
 
-/// Global operating mode for the unified 4-in-1 demo.
-enum DemoRunMode { simulation, realDevice }
-
-extension DemoRunModeUi on DemoRunMode {
-  String get label {
-    switch (this) {
-      case DemoRunMode.simulation:
-        return '模拟模式';
-      case DemoRunMode.realDevice:
-        return '真机模式';
-    }
-  }
-
-  String get description {
-    switch (this) {
-      case DemoRunMode.simulation:
-        return '进程内协议模拟，可离线运行';
-      case DemoRunMode.realDevice:
-        return '真机蓝牙、局域网及云端连接';
-    }
-  }
-}
-
 extension CloudPrinterFamilyUi on CloudPrinterFamily {
   String get tabLabel {
     switch (this) {

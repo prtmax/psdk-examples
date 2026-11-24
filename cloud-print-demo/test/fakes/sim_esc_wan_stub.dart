@@ -7,7 +7,7 @@ import 'package:psdk_cloud_wan/psdk_cloud_wan.dart';
 import 'package:psdk_device_adapter/psdk_device_adapter.dart';
 import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
 
-import '../models/protocol_inspector.dart';
+import 'package:cloud_print_demo/src/models/protocol_inspector.dart';
 import 'in_memory_io.dart';
 
 /// Loopback BLE/Serial [ConnectedDevice] implementing `psdk_fruit_esc`

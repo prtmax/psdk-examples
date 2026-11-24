@@ -1,21 +1,18 @@
 import 'package:flutter/material.dart';
 
 import '../controllers/real_transport_helper.dart';
-import '../models/demo_mode.dart';
 
-/// 真机自动读取 SSID，模拟模式保留示例，允许用户手动修改和重新读取。
+/// 真机自动读取 SSID，并允许用户手动修改和重新读取。
 class WifiSsidField extends StatefulWidget {
   const WifiSsidField({
     super.key,
     required this.controller,
     required this.helper,
-    required this.mode,
     this.enabled = true,
   });
 
   final TextEditingController controller;
   final RealTransportHelper helper;
-  final DemoRunMode mode;
   final bool enabled;
 
   @override
@@ -30,7 +27,7 @@ class _WifiSsidFieldState extends State<WifiSsidField> {
   @override
   void initState() {
     super.initState();
-    if (widget.mode == DemoRunMode.realDevice) _load();
+    _load();
   }
 
   Future<void> _load({bool replace = false}) async {
@@ -65,9 +62,7 @@ class _WifiSsidFieldState extends State<WifiSsidField> {
       labelText: 'Wi-Fi 名称（SSID）',
       helperText: _message,
       helperMaxLines: 3,
-      suffixIcon: widget.mode == DemoRunMode.simulation
-          ? null
-          : _loading
+      suffixIcon: _loading
           ? const Padding(
               padding: EdgeInsets.all(14),
               child: SizedBox(

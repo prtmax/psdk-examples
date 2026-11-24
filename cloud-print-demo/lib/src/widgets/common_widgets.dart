@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:psdk_device_adapter/psdk_device_adapter.dart' as adapter;
 import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
+import 'package:psdk_network/psdk_network.dart';
 
 import '../controllers/real_transport_helper.dart';
 import '../models/demo_feedback.dart';
 import '../models/demo_mode.dart';
+import '../utils/local_image_service.dart';
 
 void showDemoFeedbackSnackBar(
   BuildContext context, {
@@ -166,13 +168,11 @@ class HeroBanner extends StatelessWidget {
   const HeroBanner({
     super.key,
     required this.family,
-    required this.runMode,
     required this.statusMessage,
     this.busy = false,
   });
 
   final CloudPrinterFamily family;
-  final DemoRunMode runMode;
   final String statusMessage;
   final bool busy;
 
@@ -213,12 +213,6 @@ class HeroBanner extends StatelessWidget {
                     ),
                   ],
                 ),
-              ),
-              StatusPill(
-                label: runMode.label,
-                color: runMode == DemoRunMode.simulation
-                    ? scheme.primary
-                    : scheme.secondary,
               ),
             ],
           ),
@@ -623,4 +617,330 @@ class _BleDevicePicker extends StatelessWidget {
       ),
     ),
   );
+}
+
+class DirectApWifiPanel extends StatefulWidget {
+  const DirectApWifiPanel({
+    super.key,
+    required this.title,
+    required this.ssid,
+    required this.password,
+    required this.hostOverride,
+    required this.formRevision,
+    required this.connectedInfo,
+    required this.busy,
+    required this.onQueryBle,
+    required this.onConnectDirect,
+    required this.onQueryBleAndConnect,
+    required this.onDisconnectDirect,
+  });
+
+  final String title;
+  final String ssid;
+  final String password;
+  final String hostOverride;
+  final int formRevision;
+  final PrinterWifiConnectionInfo? connectedInfo;
+  final bool busy;
+  final Future<Object?> Function() onQueryBle;
+  final Future<void> Function(String ssid, String password, String host)
+  onConnectDirect;
+  final Future<void> Function(String host) onQueryBleAndConnect;
+  final Future<void> Function() onDisconnectDirect;
+
+  @override
+  State<DirectApWifiPanel> createState() => _DirectApWifiPanelState();
+}
+
+class _DirectApWifiPanelState extends State<DirectApWifiPanel> {
+  late final TextEditingController _ssidCtrl = TextEditingController(
+    text: widget.ssid,
+  );
+  late final TextEditingController _passwordCtrl = TextEditingController(
+    text: widget.password,
+  );
+  late final TextEditingController _hostCtrl = TextEditingController(
+    text: widget.hostOverride,
+  );
+  bool _obscurePassword = true;
+
+  @override
+  void didUpdateWidget(covariant DirectApWifiPanel oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.formRevision != widget.formRevision) {
+      if (_ssidCtrl.text != widget.ssid) {
+        _ssidCtrl.text = widget.ssid;
+      }
+      if (_passwordCtrl.text != widget.password) {
+        _passwordCtrl.text = widget.password;
+      }
+      if (_hostCtrl.text != widget.hostOverride) {
+        _hostCtrl.text = widget.hostOverride;
+      }
+    }
+  }
+
+  @override
+  void dispose() {
+    _ssidCtrl.dispose();
+    _passwordCtrl.dispose();
+    _hostCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final info = widget.connectedInfo;
+    final connected = info != null;
+    final scheme = Theme.of(context).colorScheme;
+    return DemoPanel(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          SectionHeader(
+            title: widget.title,
+            trailing: StatusPill(
+              label: connected ? '已连热点: ${info.ssid}' : '未直连',
+              color: connected ? const Color(0xFF2E7D32) : scheme.outline,
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            '将手机直接连接到打印机自带 Wi-Fi 后下发打印。可手动输入热点名/密码，或先连接蓝牙读取设备热点信息。',
+            style: Theme.of(context).textTheme.bodySmall,
+          ),
+          const SizedBox(height: 10),
+          TextField(
+            key: const Key('ap_ssid_field'),
+            controller: _ssidCtrl,
+            enabled: !widget.busy,
+            decoration: const InputDecoration(
+              labelText: '打印机热点 Wi-Fi 名称（SSID）',
+              hintText: '例如 Z11_FAF8 或 H100-84D242',
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            key: const Key('ap_password_field'),
+            controller: _passwordCtrl,
+            enabled: !widget.busy,
+            obscureText: _obscurePassword,
+            decoration: InputDecoration(
+              labelText: '打印机热点密码（开放热点可留空）',
+              suffixIcon: IconButton(
+                tooltip: _obscurePassword ? '显示密码' : '隐藏密码',
+                onPressed: () =>
+                    setState(() => _obscurePassword = !_obscurePassword),
+                icon: Icon(
+                  _obscurePassword ? Icons.visibility : Icons.visibility_off,
+                ),
+              ),
+            ),
+          ),
+          const SizedBox(height: 8),
+          TextField(
+            key: const Key('ap_host_field'),
+            controller: _hostCtrl,
+            enabled: !widget.busy,
+            keyboardType: TextInputType.number,
+            decoration: const InputDecoration(
+              labelText: '热点打印机 IP（可选，默认自动探测网关/192.168.4.1）',
+              hintText: '如 192.168.4.1',
+              isDense: true,
+            ),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              OutlinedButton.icon(
+                key: const Key('ap_query_ble_btn'),
+                onPressed: widget.busy ? null : () => widget.onQueryBle(),
+                icon: const Icon(Icons.bluetooth_searching),
+                label: const Text('蓝牙读取热点'),
+              ),
+              FilledButton.icon(
+                key: const Key('ap_connect_wifi_btn'),
+                onPressed: widget.busy
+                    ? null
+                    : () => widget.onConnectDirect(
+                        _ssidCtrl.text,
+                        _passwordCtrl.text,
+                        _hostCtrl.text,
+                      ),
+                icon: const Icon(Icons.wifi),
+                label: const Text('连接打印机 Wi-Fi'),
+              ),
+              FilledButton.tonalIcon(
+                key: const Key('ap_query_and_connect_btn'),
+                onPressed: widget.busy
+                    ? null
+                    : () => widget.onQueryBleAndConnect(_hostCtrl.text),
+                icon: const Icon(Icons.flash_on),
+                label: const Text('蓝牙查热点并直连'),
+              ),
+              if (connected)
+                OutlinedButton.icon(
+                  key: const Key('ap_disconnect_btn'),
+                  onPressed: widget.busy
+                      ? null
+                      : () => widget.onDisconnectDirect(),
+                  icon: const Icon(Icons.link_off),
+                  label: const Text('断开热点'),
+                ),
+            ],
+          ),
+          if (connected && (info.address != null || info.gateway != null)) ...[
+            const SizedBox(height: 8),
+            Text(
+              '本机 IP：${info.address ?? "-"} · 网关：${info.gateway ?? "-"} · 网卡：${info.interfaceName ?? "-"}',
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+class LocalImagePrintCard extends StatelessWidget {
+  const LocalImagePrintCard({
+    super.key,
+    required this.keyPrefix,
+    required this.selectedImage,
+    required this.busy,
+    required this.canPrint,
+    required this.hintText,
+    required this.printButtonLabel,
+    required this.onPickImage,
+    required this.onClearImage,
+    required this.onPrintImage,
+  });
+
+  final String keyPrefix;
+  final PickedLocalImage? selectedImage;
+  final bool busy;
+  final bool canPrint;
+  final String hintText;
+  final String printButtonLabel;
+  final VoidCallback onPickImage;
+  final VoidCallback onClearImage;
+  final VoidCallback onPrintImage;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final img = selectedImage;
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: scheme.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: scheme.outlineVariant),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.photo_library_outlined, size: 18),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  '本地图片打印',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                ),
+              ),
+              if (img != null)
+                const StatusPill(label: '已选', color: Color(0xFF2E7D32)),
+            ],
+          ),
+          const SizedBox(height: 8),
+          if (img != null)
+            Container(
+              key: Key('${keyPrefix}_local_image_preview'),
+              padding: const EdgeInsets.all(8),
+              decoration: BoxDecoration(
+                color: scheme.surface,
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(color: scheme.outlineVariant),
+              ),
+              child: Row(
+                children: [
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(6),
+                    child: SizedBox(
+                      width: 56,
+                      height: 56,
+                      child: Image.memory(
+                        img.previewBytes,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, _, _) => Container(
+                          color: scheme.surfaceContainerHighest,
+                          alignment: Alignment.center,
+                          child: const Icon(Icons.image_outlined),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          img.name,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          '${img.width} × ${img.height} px',
+                          style: Theme.of(context).textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ),
+                  IconButton(
+                    key: Key('${keyPrefix}_clear_local_image_btn'),
+                    tooltip: '清除图片',
+                    onPressed: busy ? null : onClearImage,
+                    icon: const Icon(Icons.close, size: 18),
+                  ),
+                ],
+              ),
+            )
+          else
+            Text(hintText, style: Theme.of(context).textTheme.bodySmall),
+          const SizedBox(height: 8),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              OutlinedButton.icon(
+                key: Key('${keyPrefix}_pick_local_image_btn'),
+                onPressed: busy ? null : onPickImage,
+                icon: const Icon(Icons.add_photo_alternate_outlined),
+                label: Text(img == null ? '选择本地图片' : '更换图片'),
+              ),
+              FilledButton.tonalIcon(
+                key: Key('${keyPrefix}_print_local_image_btn'),
+                onPressed: (busy || !canPrint || img == null)
+                    ? null
+                    : onPrintImage,
+                icon: const Icon(Icons.print_outlined),
+                label: Text(printButtonLabel),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 }

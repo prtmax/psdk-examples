@@ -25,13 +25,25 @@ class ProtocolTrafficEntry {
     String? textPreview,
     DateTime? timestamp,
   }) : timestamp = timestamp ?? DateTime.now().toUtc(),
-       rawBytes = Uint8List.fromList(rawBytes),
+       rawBytes = _redactRawBytes(rawBytes),
        decodedSummary = ProtocolInspectorController.redactSecrets(
          decodedSummary,
        ),
        textPreview = textPreview == null
            ? null
            : ProtocolInspectorController.redactSecrets(textPreview);
+
+  static Uint8List _redactRawBytes(Uint8List bytes) {
+    if (bytes.isEmpty) {
+      return Uint8List(0);
+    }
+    final decoded = utf8.decode(bytes, allowMalformed: true);
+    final redacted = ProtocolInspectorController.redactSecrets(decoded);
+    if (redacted != decoded) {
+      return Uint8List.fromList(utf8.encode(redacted));
+    }
+    return Uint8List.fromList(bytes);
+  }
 
   String get hexPreview {
     if (rawBytes.isEmpty) {
@@ -180,10 +192,10 @@ class ProtocolInspectorController extends ChangeNotifier {
       ),
       (m) => '${m.group(1)}[REDACTED]',
     );
-    // AT GETPASSWORD reply
+    // AT APPASSWORD / GETPASSWORD reply
     out = out.replaceAllMapped(
       RegExp(
-        r'(BLUETOOTH\s+GETPASSWORD\s*(?:->|:|=)\s*)([^\r\n]+)',
+        r'((?:DIAGNOSTIC\s+REPORT\s+APPASSWORD|APPASSWORD|BLUETOOTH\s+GETPASSWORD|GETPASSWORD)\s*(?:->|:|=)\s*)([^\r\n]+)',
         caseSensitive: false,
       ),
       (m) => '${m.group(1)}[REDACTED]',

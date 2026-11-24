@@ -6,7 +6,7 @@ import 'package:psdk_device_adapter/psdk_device_adapter.dart';
 import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
 import 'package:psdk_fruit_sublimation/psdk_fruit_sublimation.dart';
 
-import '../models/protocol_inspector.dart';
+import 'package:cloud_print_demo/src/models/protocol_inspector.dart';
 
 class _SimSublimationUdpSocket implements SublimationUdpSocket {
   _SimSublimationUdpSocket({required this.localPort, required this.transport});

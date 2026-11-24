@@ -41,7 +41,6 @@ class _ThermalLanTabState extends State<ThermalLanTab> {
           children: [
             HeroBanner(
               family: CloudPrinterFamily.thermalLanStream,
-              runMode: c.mode,
               statusMessage: c.statusMessage,
               busy: c.busy,
             ),
@@ -111,6 +110,18 @@ class _ThermalLanTabState extends State<ThermalLanTab> {
                           label: const Text('取消'),
                         ),
                     ],
+                  ),
+                  const Divider(height: 20),
+                  LocalImagePrintCard(
+                    keyPrefix: 'thermal',
+                    selectedImage: c.selectedLocalImage,
+                    busy: c.busy,
+                    canPrint: c.isTcpConnected,
+                    hintText: '选择手机本地图片后，自动缩放编码为 TSPL BITMAP 并经 TCP 9100 发送。',
+                    printButtonLabel: '发送本地图片 TSPL',
+                    onPickImage: c.pickLocalImage,
+                    onClearImage: c.clearLocalImage,
+                    onPrintImage: c.streamLocalImageTsplPrintJob,
                   ),
                   if (c.printProgress != null) ...[
                     const SizedBox(height: 8),

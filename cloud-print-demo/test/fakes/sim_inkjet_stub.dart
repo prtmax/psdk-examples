@@ -7,7 +7,7 @@ import 'package:psdk_device_adapter/psdk_device_adapter.dart';
 import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
 import 'package:psdk_fruit_inkjet/psdk_fruit_inkjet.dart';
 
-import '../models/protocol_inspector.dart';
+import 'package:cloud_print_demo/src/models/protocol_inspector.dart';
 
 /// Loopback BLE GATT `0x180A/0xFF00` [ConnectedDevice] handling `psdk_fruit_inkjet`
 /// `ACL` frames (`cmd=23` query & `cmd=24` `187B` Wi-Fi config + `16B` ACK).
@@ -24,6 +24,9 @@ class SimulatedInkjetBleDevice extends ConnectedDevice<Object> {
   Uint8List? lastAckFrame;
   String lastProvisionedSsid = '';
   String lastProvisionedPassword = '';
+  String sapSsid = 'H100-SIM-AP';
+  String sapPassword = '12345678';
+  String sapIpv4 = '192.168.4.1,255.255.255.0,192.168.4.1';
   final List<int> _aclRxBuf = <int>[];
 
   @override
@@ -72,6 +75,16 @@ class SimulatedInkjetBleDevice extends ConnectedDevice<Object> {
 
       final hasAclHeader = _aclRxBuf[34] == 0xAC && _aclRxBuf[35] == 0x00;
       if (!hasAclHeader) {
+        final rawText = utf8.decode(_aclRxBuf, allowMalformed: true);
+        if (rawText.contains('@PJL ENTER LANGUAGE=XSL')) {
+          final secondUel = rawText.indexOf(XslCodec.uel, XslCodec.uel.length);
+          if (secondUel < 0) {
+            return;
+          }
+          _aclRxBuf.clear();
+          _handleBleXslSapQuery(rawText);
+          return;
+        }
         // Non-ACL fallback: consume and avoid logging raw credential tails.
         final frame = Uint8List.fromList(_aclRxBuf);
         _aclRxBuf.clear();
@@ -144,6 +157,40 @@ class SimulatedInkjetBleDevice extends ConnectedDevice<Object> {
     scheduleMicrotask(() {
       if (!_readController.isClosed && _state == ConnectionState.connected) {
         _readController.add(ack);
+      }
+    });
+  }
+
+  void _handleBleXslSapQuery(String queryText) {
+    inspector.recordText(
+      family: CloudPrinterFamily.colorInkjetPjl,
+      transport: 'BLE 0x180A XSL',
+      direction: WireDirection.tx,
+      text: queryText,
+      decodedSummary: 'BLE XSL SoftAP Query',
+    );
+    final triple = sapIpv4.split(',');
+    final ip = triple.isNotEmpty ? triple[0] : '192.168.4.1';
+    final mask = triple.length > 1 ? triple[1] : '255.255.255.0';
+    final gw = triple.length > 2 ? triple[2] : ip;
+    final reply =
+        '${XslCodec.uel}'
+        '@PJL WIFI SAP ENABLE=ON\r\n'
+        '@PJL WIFI SAP CFG="$sapSsid","$sapPassword"\r\n'
+        '@PJL WIFI SAP IPV4="$ip","$mask","$gw"\r\n'
+        '@PJL XQUERY OK\r\n'
+        '${XslCodec.uel}';
+    inspector.recordText(
+      family: CloudPrinterFamily.colorInkjetPjl,
+      transport: 'BLE 0x180A XSL',
+      direction: WireDirection.rx,
+      text: reply,
+      decodedSummary: 'BLE XSL SoftAP Reply: ssid="$sapSsid"',
+    );
+    final bytes = Uint8List.fromList(utf8.encode(reply));
+    scheduleMicrotask(() {
+      if (!_readController.isClosed && _state == ConnectionState.connected) {
+        _readController.add(bytes);
       }
     });
   }

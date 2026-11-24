@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../controllers/lan_setup_controller.dart';
 import '../controllers/real_transport_helper.dart';
-import '../models/demo_mode.dart';
 import 'common_widgets.dart';
 import 'wifi_ssid_field.dart';
 
@@ -25,14 +24,8 @@ class LanSetupPanel extends StatefulWidget {
 }
 
 class _LanSetupPanelState extends State<LanSetupPanel> {
-  late final _ssid = TextEditingController(
-    text: widget.controller.mode == DemoRunMode.simulation ? 'Demo-WiFi' : '',
-  );
-  late final _password = TextEditingController(
-    text: widget.controller.mode == DemoRunMode.simulation
-        ? 'demo-password'
-        : '',
-  );
+  final _ssid = TextEditingController();
+  final _password = TextEditingController();
   late final _blePrefixFilter = TextEditingController(
     text: widget.controller.bleNamePrefixFilter,
   );
@@ -65,26 +58,23 @@ class _LanSetupPanelState extends State<LanSetupPanel> {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          if (c.mode == DemoRunMode.realDevice) ...[
-            AbsorbPointer(
-              absorbing: disabled,
-              child: RealBleConnectorRow(
-                family: c.family,
-                helper: widget.helper,
-                connectedDevice: c.realBleDevice,
-                namePrefixFilterController: widget.showBleNamePrefixFilter
-                    ? _blePrefixFilter
-                    : null,
-                onNamePrefixFilterChanged: widget.showBleNamePrefixFilter
-                    ? (value) => c.bleNamePrefixFilter = value
-                    : null,
-                onConnected: (device) =>
-                    setState(() => c.realBleDevice = device),
-                onDisconnected: () => setState(() => c.realBleDevice = null),
-              ),
+          AbsorbPointer(
+            absorbing: disabled,
+            child: RealBleConnectorRow(
+              family: c.family,
+              helper: widget.helper,
+              connectedDevice: c.realBleDevice,
+              namePrefixFilterController: widget.showBleNamePrefixFilter
+                  ? _blePrefixFilter
+                  : null,
+              onNamePrefixFilterChanged: widget.showBleNamePrefixFilter
+                  ? (value) => c.bleNamePrefixFilter = value
+                  : null,
+              onConnected: (device) => setState(() => c.realBleDevice = device),
+              onDisconnected: () => setState(() => c.realBleDevice = null),
             ),
-            const SizedBox(height: 12),
-          ],
+          ),
+          const SizedBox(height: 12),
           DemoPanel(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -96,7 +86,6 @@ class _LanSetupPanelState extends State<LanSetupPanel> {
                 WifiSsidField(
                   controller: _ssid,
                   helper: widget.helper,
-                  mode: c.mode,
                   enabled: !disabled,
                 ),
                 const SizedBox(height: 8),
@@ -128,36 +117,34 @@ class _LanSetupPanelState extends State<LanSetupPanel> {
                     ),
                   ],
                 ),
-                if (c.mode == DemoRunMode.realDevice) ...[
-                  const SizedBox(height: 10),
-                  Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: TextField(
-                          key: const Key('lan_manual_ip_field'),
-                          controller: _manualIpCtrl,
-                          enabled: !disabled,
-                          keyboardType: TextInputType.number,
-                          decoration: const InputDecoration(
-                            labelText: '直连打印机 IP（可选）',
-                            hintText: '如 192.168.200.161',
-                            isDense: true,
-                          ),
+                const SizedBox(height: 10),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        key: const Key('lan_manual_ip_field'),
+                        controller: _manualIpCtrl,
+                        enabled: !disabled,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          labelText: '直连打印机 IP（可选）',
+                          hintText: '如 192.168.200.161',
+                          isDense: true,
                         ),
                       ),
-                      const SizedBox(width: 8),
-                      OutlinedButton.icon(
-                        key: const Key('lan_probe_manual_ip_btn'),
-                        onPressed: disabled
-                            ? null
-                            : () => c.probeManualHost(_manualIpCtrl.text),
-                        icon: const Icon(Icons.radar, size: 18),
-                        label: const Text('探测'),
-                      ),
-                    ],
-                  ),
-                ],
+                    ),
+                    const SizedBox(width: 8),
+                    OutlinedButton.icon(
+                      key: const Key('lan_probe_manual_ip_btn'),
+                      onPressed: disabled
+                          ? null
+                          : () => c.probeManualHost(_manualIpCtrl.text),
+                      icon: const Icon(Icons.radar, size: 18),
+                      label: const Text('探测'),
+                    ),
+                  ],
+                ),
                 const SizedBox(height: 10),
                 ActionStatusBanner(
                   message: c.statusMessage,
