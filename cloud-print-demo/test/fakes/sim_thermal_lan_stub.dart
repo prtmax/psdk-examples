@@ -6,7 +6,7 @@ import 'dart:typed_data';
 import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
 import 'package:psdk_network/psdk_network.dart';
 
-import '../models/protocol_inspector.dart';
+import 'package:cloud_print_demo/src/models/protocol_inspector.dart';
 import 'in_memory_io.dart';
 import 'sim_lan_ble_device.dart';
 

@@ -51,7 +51,6 @@ class _SublimationTabState extends State<SublimationTab> {
           children: [
             HeroBanner(
               family: CloudPrinterFamily.sublimationRpc,
-              runMode: c.mode,
               statusMessage: c.statusMessage,
               busy: c.busy,
             ),
@@ -61,6 +60,25 @@ class _SublimationTabState extends State<SublimationTab> {
               helper: widget.realTransportHelper,
               disabled: c.busy,
               showBleNamePrefixFilter: true,
+            ),
+            const SizedBox(height: 12),
+            DirectApWifiPanel(
+              title: '1B. 直连打印机热点（AP 模式）',
+              ssid: c.directWifiSsid,
+              password: c.directWifiPassword,
+              hostOverride: c.directWifiHostOverride,
+              formRevision: c.directWifiFormRevision,
+              connectedInfo: c.directWifiInfo,
+              busy: c.busy,
+              onQueryBle: c.queryApWifiViaBle,
+              onConnectDirect: (ssid, pwd, host) => c.connectDirectApWifi(
+                ssid: ssid,
+                password: pwd,
+                hostOverride: host,
+              ),
+              onQueryBleAndConnect: (host) =>
+                  c.queryBleAndConnectDirectAp(hostOverride: host),
+              onDisconnectDirect: c.disconnectDirectApWifi,
             ),
             const SizedBox(height: 12),
             DemoPanel(
@@ -402,6 +420,18 @@ class _SublimationTabState extends State<SublimationTab> {
                           label: const Text('取消'),
                         ),
                     ],
+                  ),
+                  const SizedBox(height: 12),
+                  LocalImagePrintCard(
+                    keyPrefix: 'sub',
+                    selectedImage: c.selectedLocalImage,
+                    busy: c.busy,
+                    canPrint: c.isConnected,
+                    hintText: '选择本地图片后，按卡面方向自动旋转并等比适应缩放（Z11 1800×1280）后打印。',
+                    printButtonLabel: '打印本地图片',
+                    onPickImage: c.pickLocalImage,
+                    onClearImage: c.clearLocalImage,
+                    onPrintImage: c.printLocalImageJob,
                   ),
                   if (c.jobProgress != null) ...[
                     const SizedBox(height: 10),

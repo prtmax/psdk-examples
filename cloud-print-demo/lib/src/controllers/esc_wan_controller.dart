@@ -1,35 +1,48 @@
-import '../models/demo_labels.dart';
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:psdk_cloud_wan/psdk_cloud_wan.dart';
 import 'package:psdk_device_adapter/psdk_device_adapter.dart';
 import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
+import 'package:psdk_frame_father/father/command/print/commander.dart';
 import 'package:psdk_fruit_esc/psdk_fruit_esc.dart';
+import 'package:psdk_fruit_tspl/psdk_fruit_tspl.dart';
 
 import '../models/demo_feedback.dart';
-import '../models/demo_mode.dart';
+import '../models/demo_labels.dart';
 import '../models/protocol_inspector.dart';
-import '../stubs/sim_esc_wan_stub.dart';
-
+import '../utils/local_image_service.dart';
 import 'inspected_wan.dart';
+
+typedef CloudWanConfigFactory =
+    CloudWanConfig Function({
+      String? apiBaseUrl,
+      String? mqttHost,
+      int mqttPort,
+      bool mqttUseTls,
+      String? serialNumber,
+      String? deviceToken,
+    });
 
 class EscWanController extends ChangeNotifier {
   EscWanController({
     required this.inspector,
-    required DemoRunMode Function() modeGetter,
     this.feedback,
-  }) : _modeGetter = modeGetter,
-       simDevice = SimEscConnectedDevice(inspector: inspector),
-       simBackend = SimCloudWanBackend(inspector: inspector);
+    LocalImagePickerService? localImagePicker,
+    CloudWanConfigFactory? wanConfigFactory,
+    this.provisionSettleDelay = const Duration(seconds: 2),
+    this.provisionPollInterval = const Duration(milliseconds: 500),
+  }) : _localImagePicker = localImagePicker ?? const LocalImagePickerService(),
+       _wanConfigFactory = wanConfigFactory;
 
   final ProtocolInspectorController inspector;
   final DemoFeedbackCenter? feedback;
-  final DemoRunMode Function() _modeGetter;
-  final SimEscConnectedDevice simDevice;
-  final SimCloudWanBackend simBackend;
+  final LocalImagePickerService _localImagePicker;
+  final CloudWanConfigFactory? _wanConfigFactory;
+  final Duration provisionSettleDelay;
+  final Duration provisionPollInterval;
 
+  PickedLocalImage? selectedLocalImage;
   ConnectedDevice<dynamic>? realBleDevice;
   CloudWanPrinterDriver? _driver;
   StreamSubscription<CloudStatusSnapshot>? _statusSub;
@@ -60,16 +73,15 @@ class EscWanController extends ChangeNotifier {
   CloudStatusSnapshot? wanSnapshot;
   CloudJobProgress? jobProgress;
   CloudPrintResult? lastPrintResult;
-  int selectedFaultCode = 0;
-  SimCloudJobOutcome selectedJobOutcome = SimCloudJobOutcome.success;
 
-  DemoRunMode get mode => _modeGetter();
   bool get isWanConnected => _driver?.isConnected ?? false;
 
+  @visibleForTesting
+  CloudWanStatusMonitor? get debugStatusMonitor => _driver?.statusMonitor;
+
   ConnectedDevice<dynamic> get _activeEscDevice {
-    if (mode == DemoRunMode.simulation) return simDevice;
     final dev = realBleDevice;
-    if (dev == null) {
+    if (dev == null || dev.connectionState() != ConnectionState.connected) {
       throw StateError('请先连接 ESC 打印机蓝牙');
     }
     return dev;
@@ -103,12 +115,8 @@ class EscWanController extends ChangeNotifier {
             protocol: WifiProvisionProtocol.escBinaryTlv,
             ssid: ssid,
             password: password,
-            settleDelay: mode == DemoRunMode.simulation
-                ? const Duration(milliseconds: 15)
-                : const Duration(seconds: 2),
-            pollInterval: mode == DemoRunMode.simulation
-                ? const Duration(milliseconds: 15)
-                : const Duration(milliseconds: 500),
+            settleDelay: provisionSettleDelay,
+            pollInterval: provisionPollInterval,
             cancelToken: cancelToken,
           ),
         );
@@ -204,13 +212,21 @@ class EscWanController extends ChangeNotifier {
   }) async {
     await _runBusy('正在连接云端…', () async {
       await disconnectWan();
+      final effectiveSerial = (serialNumber ?? '').trim().isNotEmpty
+          ? serialNumber!.trim()
+          : lastSerialNumber;
+      final effectiveToken = (deviceToken ?? '').trim().isNotEmpty
+          ? deviceToken!.trim()
+          : null;
       final CloudWanConfig config;
-      if (mode == DemoRunMode.simulation) {
-        config = simBackend.createConfig(
-          overrideSerialNumber:
-              (serialNumber != null && serialNumber.trim().isNotEmpty)
-              ? serialNumber.trim()
-              : (lastSerialNumber ?? simBackend.serialNumber),
+      if (_wanConfigFactory != null) {
+        config = _wanConfigFactory(
+          apiBaseUrl: apiBaseUrl,
+          mqttHost: mqttHost,
+          mqttPort: mqttPort,
+          mqttUseTls: mqttUseTls,
+          serialNumber: effectiveSerial,
+          deviceToken: effectiveToken,
         );
       } else {
         final wan = InspectedWan(inspector);
@@ -225,12 +241,8 @@ class EscWanController extends ChangeNotifier {
               : 'mqtt.iprtapp.com',
           mqttPort: mqttPort,
           mqttUseTls: mqttUseTls,
-          serialNumber: (serialNumber ?? '').trim().isNotEmpty
-              ? serialNumber!.trim()
-              : lastSerialNumber,
-          deviceToken: (deviceToken ?? '').trim().isNotEmpty
-              ? deviceToken!.trim()
-              : null,
+          serialNumber: effectiveSerial,
+          deviceToken: effectiveToken,
         );
       }
 
@@ -240,9 +252,7 @@ class EscWanController extends ChangeNotifier {
       );
       _driver = driver;
 
-      await driver.connect(
-        device: mode == DemoRunMode.simulation ? simDevice : realBleDevice,
-      );
+      await driver.connect(device: realBleDevice);
       if (_disposed) {
         await driver.dispose();
         _driver = null;
@@ -277,6 +287,80 @@ class EscWanController extends ChangeNotifier {
     });
   }
 
+  void setLocalImage(PickedLocalImage? image) {
+    selectedLocalImage = image;
+    _notifyIfAlive();
+  }
+
+  void clearLocalImage() {
+    if (selectedLocalImage == null) return;
+    selectedLocalImage = null;
+    statusMessage = '已清除已选本地图片';
+    _notifyIfAlive();
+  }
+
+  Future<PickedLocalImage?> pickLocalImage() async {
+    try {
+      final picked = await _localImagePicker.pickImage();
+      if (picked == null || _disposed) return null;
+      selectedLocalImage = picked;
+      lastActionFailed = false;
+      statusMessage =
+          '已选择本地图片：${picked.name} (${picked.width}×${picked.height})';
+      feedback?.emitInfo(statusMessage, family: CloudPrinterFamily.escWanCloud);
+      _notifyIfAlive();
+      return picked;
+    } catch (e) {
+      lastActionFailed = true;
+      statusMessage = '操作失败：${DemoFeedbackCenter.formatMessage('$e')}';
+      feedback?.emitError(
+        statusMessage,
+        family: CloudPrinterFamily.escWanCloud,
+      );
+      _notifyIfAlive();
+      return null;
+    }
+  }
+
+  static String _sanitizeJobName(String raw) {
+    final cleaned = raw.replaceAll(RegExp(r'[^A-Za-z0-9._-]'), '_').trim();
+    if (cleaned.isEmpty) return 'local_image';
+    return cleaned.length > 48 ? cleaned.substring(0, 48) : cleaned;
+  }
+
+  Future<void> _submitWanRawJob({
+    required CloudWanPrinterDriver driver,
+    required String jobName,
+    required Uint8List payload,
+  }) async {
+    final cancelToken = CloudCancelToken();
+    _jobCancelToken = cancelToken;
+    try {
+      final req = CloudPrintJobRequest(
+        jobId: 'wan_${DateTime.now().millisecondsSinceEpoch}',
+        jobName: jobName,
+        rawPayload: payload,
+        cancelToken: cancelToken,
+      );
+      final result = await driver.printJob(
+        req,
+        cancelToken: cancelToken,
+        onProgress: (p) {
+          jobProgress = p;
+          _notifyIfAlive();
+        },
+      );
+      lastPrintResult = result;
+      statusMessage = result.success
+          ? '云端任务 ${result.remoteJobId ?? result.jobId} succeeded (${result.bytesTransferred} B)'
+          : result.finalStage == CloudJobStage.cancelled
+          ? '云端任务 cancelled'
+          : '云端任务 failed: ${result.error?.message ?? "error"}';
+    } finally {
+      _jobCancelToken = null;
+    }
+  }
+
   Future<void> submitWanPrintJob({
     String jobName = 'cloud_demo_label.prn',
     Uint8List? rawPayload,
@@ -293,67 +377,38 @@ class EscWanController extends ChangeNotifier {
       return;
     }
     await _runBusy('正在上传并提交云打印任务…', () async {
-      final cancelToken = CloudCancelToken();
-      _jobCancelToken = cancelToken;
       final payload =
           rawPayload ??
-          Uint8List.fromList(
-            utf8.encode(
-              'SIZE 58 mm,40 mm\r\nCLS\r\nTEXT 20,20,"TSS24.BF2",0,1,1,"ESC WAN Cloud Demo"\r\nPRINT 1,1\r\n',
-            ),
-          );
-      final req = CloudPrintJobRequest(
-        jobId: 'wan_${DateTime.now().millisecondsSinceEpoch}',
+          Commander.make()
+              .pushArg(TPage(width: 58, height: 40))
+              .pushArg(TClear())
+              .pushArg(
+                TText(
+                  x: 20,
+                  y: 20,
+                  font: TFont.tss24,
+                  xmulty: 1,
+                  ymulty: 1,
+                  isBold: false,
+                  content: 'ESC WAN Cloud Demo',
+                ),
+              )
+              .pushArg(TPrint(copies: 1))
+              .command()
+              .binary();
+      await _submitWanRawJob(
+        driver: driver,
         jobName: jobName,
-        rawPayload: payload,
-        cancelToken: cancelToken,
+        payload: payload,
       );
-      final result = await driver.printJob(
-        req,
-        cancelToken: cancelToken,
-        onProgress: (p) {
-          jobProgress = p;
-          _notifyIfAlive();
-        },
-      );
-      lastPrintResult = result;
-      _jobCancelToken = null;
-      statusMessage = result.success
-          ? '云端任务 ${result.remoteJobId ?? result.jobId} succeeded (${result.bytesTransferred} B)'
-          : result.finalStage == CloudJobStage.cancelled
-          ? '云端任务 cancelled'
-          : '云端任务 failed: ${result.error?.message ?? "error"}';
     });
   }
 
-  Future<void> cancelActiveWanJob() async {
-    _jobCancelToken?.cancel('Cancelled by user');
-    await _driver?.cancel('Cancelled by user');
-  }
-
-  void setSimulatedFaultCode(int code) {
-    selectedFaultCode = code;
-    if (mode == DemoRunMode.simulation) {
-      simBackend.injectFaultCode(code);
-    }
-    _notifyIfAlive();
-  }
-
-  void setSimulatedJobOutcome(SimCloudJobOutcome outcome) {
-    selectedJobOutcome = outcome;
-    if (mode == DemoRunMode.simulation) {
-      simBackend.nextJobOutcome = outcome;
-    }
-    _notifyIfAlive();
-  }
-
-  /// Simulates 3+ consecutive HTTP polling failures so `CloudWanStatusMonitor`
-  /// emits `CloudPrinterState.offline`.
-  Future<void> simulateThreePollFailures() async {
-    final monitor = _driver?.statusMonitor;
-    if (mode != DemoRunMode.simulation || monitor == null) {
+  Future<void> submitLocalImageWanPrintJob() async {
+    final driver = _driver;
+    if (driver == null || !driver.isConnected) {
       lastActionFailed = true;
-      statusMessage = '请先在模拟模式连接云端';
+      statusMessage = '请先连接云端';
       feedback?.emitError(
         statusMessage,
         family: CloudPrinterFamily.escWanCloud,
@@ -361,17 +416,34 @@ class EscWanController extends ChangeNotifier {
       _notifyIfAlive();
       return;
     }
-    await _runBusy('正在模拟连续 3 次 HTTP 轮询失败…', () async {
-      simBackend.simulateHttpPollFailure = true;
-      try {
-        for (var i = 0; i < 3; i++) {
-          await monitor.pollOnce(timeout: const Duration(seconds: 2));
-        }
-        statusMessage = '轮询降级后的状态：${demoLabel(wanSnapshot?.state)}';
-      } finally {
-        simBackend.simulateHttpPollFailure = false;
-      }
+    final img = selectedLocalImage;
+    if (img == null) {
+      lastActionFailed = true;
+      statusMessage = '请先选择本地图片';
+      feedback?.emitError(
+        statusMessage,
+        family: CloudPrinterFamily.escWanCloud,
+      );
+      _notifyIfAlive();
+      return;
+    }
+    await _runBusy('正在编码并上传本地图片云打印任务…', () async {
+      final payload = await buildEscImagePayloadInIsolate(
+        rgbaBytes: img.rgbaBytes,
+        width: img.width,
+        height: img.height,
+      );
+      await _submitWanRawJob(
+        driver: driver,
+        jobName: '${_sanitizeJobName(img.name)}.prn',
+        payload: payload,
+      );
     });
+  }
+
+  Future<void> cancelActiveWanJob() async {
+    _jobCancelToken?.cancel('Cancelled by user');
+    await _driver?.cancel('Cancelled by user');
   }
 
   Future<void> disconnectWan({bool notifyFeedback = false}) async {
@@ -455,10 +527,8 @@ class EscWanController extends ChangeNotifier {
     _disposeToken.cancel('Disposed');
     _provisionCancelToken?.cancel('Disposed');
     _jobCancelToken?.cancel('Disposed');
-    simBackend.dispose();
     await _activeProvisioner?.dispose();
     await disconnectWan();
-    await simDevice.disconnect();
     await realBleDevice?.disconnect();
     super.dispose();
   }

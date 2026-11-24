@@ -5,80 +5,65 @@ import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
 import '../models/demo_mode.dart';
 import '../models/protocol_inspector.dart';
 
-class ProtocolInspectorDrawer extends StatefulWidget {
-  const ProtocolInspectorDrawer({super.key, required this.inspector});
+class ProtocolInspectorPage extends StatefulWidget {
+  const ProtocolInspectorPage({super.key, required this.inspector});
 
   final ProtocolInspectorController inspector;
 
   @override
-  State<ProtocolInspectorDrawer> createState() =>
-      _ProtocolInspectorDrawerState();
+  State<ProtocolInspectorPage> createState() => _ProtocolInspectorPageState();
 }
 
-class _ProtocolInspectorDrawerState extends State<ProtocolInspectorDrawer> {
+class _ProtocolInspectorPageState extends State<ProtocolInspectorPage> {
   CloudPrinterFamily? _familyFilter;
   WireDirection? _directionFilter;
 
   @override
   Widget build(BuildContext context) {
-    return Drawer(
-      width: 420,
-      child: SafeArea(
-        child: AnimatedBuilder(
-          animation: widget.inspector,
-          builder: (context, _) {
-            final entries = widget.inspector
-                .filtered(family: _familyFilter, direction: _directionFilter)
-                .reversed
-                .toList(growable: false);
-            return Column(
+    return AnimatedBuilder(
+      animation: widget.inspector,
+      builder: (context, _) {
+        final entries = widget.inspector
+            .filtered(family: _familyFilter, direction: _directionFilter)
+            .reversed
+            .toList(growable: false);
+        return Scaffold(
+          appBar: AppBar(
+            title: Text('协议日志（${entries.length})'),
+            actions: [
+              IconButton(
+                tooltip: '复制全部日志',
+                onPressed: entries.isEmpty
+                    ? null
+                    : () async {
+                        final text = widget.inspector.exportAll(
+                          family: _familyFilter,
+                          direction: _directionFilter,
+                        );
+                        await Clipboard.setData(ClipboardData(text: text));
+                        if (!context.mounted) return;
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(content: Text('协议日志已复制')),
+                        );
+                      },
+                icon: const Icon(Icons.copy_all_outlined),
+              ),
+              IconButton(
+                tooltip: '清空日志',
+                onPressed: widget.inspector.count == 0
+                    ? null
+                    : widget.inspector.clear,
+                icon: const Icon(Icons.delete_sweep_outlined),
+              ),
+            ],
+          ),
+          body: SafeArea(
+            child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 12, 8, 8),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.terminal_outlined),
-                      const SizedBox(width: 8),
-                      Expanded(
-                        child: Text(
-                          '协议日志（${entries.length})',
-                          style: Theme.of(context).textTheme.titleMedium
-                              ?.copyWith(fontWeight: FontWeight.w700),
-                        ),
-                      ),
-                      IconButton(
-                        tooltip: '复制全部日志',
-                        onPressed: entries.isEmpty
-                            ? null
-                            : () async {
-                                final text = widget.inspector.exportAll(
-                                  family: _familyFilter,
-                                  direction: _directionFilter,
-                                );
-                                await Clipboard.setData(
-                                  ClipboardData(text: text),
-                                );
-                                if (!context.mounted) return;
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('协议日志已复制')),
-                                );
-                              },
-                        icon: const Icon(Icons.copy_all_outlined),
-                      ),
-                      IconButton(
-                        tooltip: '清空日志',
-                        onPressed: widget.inspector.count == 0
-                            ? null
-                            : widget.inspector.clear,
-                        icon: const Icon(Icons.delete_sweep_outlined),
-                      ),
-                    ],
-                  ),
-                ),
                 SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.fromLTRB(12, 8, 12, 4),
                   child: Row(
                     children: [
                       FilterChip(
@@ -103,7 +88,7 @@ class _ProtocolInspectorDrawerState extends State<ProtocolInspectorDrawer> {
                   ),
                 ),
                 Padding(
-                  padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
+                  padding: const EdgeInsets.fromLTRB(12, 4, 12, 8),
                   child: SegmentedButton<WireDirection?>(
                     segments: const [
                       ButtonSegment(value: null, label: Text('全部')),
@@ -133,10 +118,10 @@ class _ProtocolInspectorDrawerState extends State<ProtocolInspectorDrawer> {
                         ),
                 ),
               ],
-            );
-          },
-        ),
-      ),
+            ),
+          ),
+        );
+      },
     );
   }
 }

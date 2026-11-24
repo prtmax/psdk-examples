@@ -3,8 +3,8 @@ import 'dart:io';
 
 import 'package:bluetooth_low_energy/bluetooth_low_energy.dart'
     hide ConnectionState;
-import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:network_info_plus/network_info_plus.dart';
 import 'package:psdk_bluetooth_windows/psdk_bluetooth_windows.dart';
@@ -137,10 +137,7 @@ class RealTransportHelper extends ChangeNotifier {
     _notifyIfAlive();
     try {
       if (Platform.isAndroid) {
-        const sdk = MethodChannel(
-          'com.psdk.examples.cloud_print_demo/android_sdk',
-        );
-        final version = await sdk.invokeMethod<int>('sdkInt');
+        final version = await AndroidLanDiscoverySession().sdkInt();
         final permissions = (version ?? 31) >= 31
             ? [Permission.bluetoothScan, Permission.bluetoothConnect]
             : [Permission.locationWhenInUse];

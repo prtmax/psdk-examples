@@ -16,9 +16,14 @@ void main() {
 }
 
 class CloudPrintDemoApp extends StatelessWidget {
-  const CloudPrintDemoApp({super.key, this.coordinator});
+  const CloudPrintDemoApp({
+    super.key,
+    this.coordinator,
+    @visibleForTesting this.disposeCoordinatorOnUnmount = false,
+  });
 
   final DemoCoordinator? coordinator;
+  final bool disposeCoordinatorOnUnmount;
 
   @override
   Widget build(BuildContext context) {
@@ -57,15 +62,23 @@ class CloudPrintDemoApp extends StatelessWidget {
           ),
         ),
       ),
-      home: CloudPrintDemoPage(coordinator: coordinator),
+      home: CloudPrintDemoPage(
+        coordinator: coordinator,
+        disposeCoordinatorOnUnmount: disposeCoordinatorOnUnmount,
+      ),
     );
   }
 }
 
 class CloudPrintDemoPage extends StatefulWidget {
-  const CloudPrintDemoPage({super.key, this.coordinator});
+  const CloudPrintDemoPage({
+    super.key,
+    this.coordinator,
+    @visibleForTesting this.disposeCoordinatorOnUnmount = false,
+  });
 
   final DemoCoordinator? coordinator;
+  final bool disposeCoordinatorOnUnmount;
 
   @override
   State<CloudPrintDemoPage> createState() => _CloudPrintDemoPageState();
@@ -76,7 +89,6 @@ class _CloudPrintDemoPageState extends State<CloudPrintDemoPage>
   late final DemoCoordinator _coordinator;
   late final bool _ownsCoordinator;
   late final TabController _tabController;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   int _lastFeedbackId = 0;
 
   void _onFeedbackChanged() {
@@ -120,7 +132,7 @@ class _CloudPrintDemoPageState extends State<CloudPrintDemoPage>
   void dispose() {
     _coordinator.feedback.removeListener(_onFeedbackChanged);
     _tabController.dispose();
-    if (_ownsCoordinator) {
+    if (_ownsCoordinator || widget.disposeCoordinatorOnUnmount) {
       _coordinator.dispose();
     }
     super.dispose();
@@ -135,35 +147,21 @@ class _CloudPrintDemoPageState extends State<CloudPrintDemoPage>
       ]),
       builder: (context, _) {
         return Scaffold(
-          key: _scaffoldKey,
           appBar: AppBar(
             title: const Text('打印测试'),
             actions: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 8),
-                child: SegmentedButton<DemoRunMode>(
-                  key: const Key('global_mode_switcher'),
-                  showSelectedIcon: false,
-                  segments: const [
-                    ButtonSegment(
-                      value: DemoRunMode.simulation,
-                      label: Text('模拟'),
-                    ),
-                    ButtonSegment(
-                      value: DemoRunMode.realDevice,
-                      label: Text('真机'),
-                    ),
-                  ],
-                  selected: <DemoRunMode>{_coordinator.runMode},
-                  onSelectionChanged: _coordinator.switching
-                      ? null
-                      : (s) => _coordinator.setRunMode(s.first),
-                ),
-              ),
               IconButton(
                 key: const Key('open_protocol_inspector'),
                 tooltip: '协议日志',
-                onPressed: () => _scaffoldKey.currentState?.openEndDrawer(),
+                onPressed: () {
+                  Navigator.of(context).push(
+                    MaterialPageRoute<void>(
+                      builder: (_) => ProtocolInspectorPage(
+                        inspector: _coordinator.inspector,
+                      ),
+                    ),
+                  );
+                },
                 icon: Badge(
                   isLabelVisible: _coordinator.inspector.count > 0,
                   label: Text('${_coordinator.inspector.count}'),
@@ -184,32 +182,28 @@ class _CloudPrintDemoPageState extends State<CloudPrintDemoPage>
               ],
             ),
           ),
-          endDrawer: ProtocolInspectorDrawer(inspector: _coordinator.inspector),
           body: SafeArea(
-            child: _coordinator.switching
-                ? const Center(child: CircularProgressIndicator())
-                : TabBarView(
-                    key: ValueKey(_coordinator.runMode),
-                    controller: _tabController,
-                    children: [
-                      EscWanTab(
-                        controller: _coordinator.escWan,
-                        realTransportHelper: _coordinator.realTransportHelper,
-                      ),
-                      ThermalLanTab(
-                        controller: _coordinator.thermalLan,
-                        realTransportHelper: _coordinator.realTransportHelper,
-                      ),
-                      SublimationTab(
-                        controller: _coordinator.sublimation,
-                        realTransportHelper: _coordinator.realTransportHelper,
-                      ),
-                      InkjetTab(
-                        controller: _coordinator.inkjet,
-                        realTransportHelper: _coordinator.realTransportHelper,
-                      ),
-                    ],
-                  ),
+            child: TabBarView(
+              controller: _tabController,
+              children: [
+                EscWanTab(
+                  controller: _coordinator.escWan,
+                  realTransportHelper: _coordinator.realTransportHelper,
+                ),
+                ThermalLanTab(
+                  controller: _coordinator.thermalLan,
+                  realTransportHelper: _coordinator.realTransportHelper,
+                ),
+                SublimationTab(
+                  controller: _coordinator.sublimation,
+                  realTransportHelper: _coordinator.realTransportHelper,
+                ),
+                InkjetTab(
+                  controller: _coordinator.inkjet,
+                  realTransportHelper: _coordinator.realTransportHelper,
+                ),
+              ],
+            ),
           ),
         );
       },

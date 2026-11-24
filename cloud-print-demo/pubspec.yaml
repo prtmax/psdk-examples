@@ -38,6 +38,8 @@ dependencies:
     path: ../../psdk/dart/fruits/inkjet
   psdk_fruit_sublimation:
     path: ../../psdk/dart/fruits/sublimation
+  psdk_fruit_tspl:
+    path: ../../psdk/dart/fruits/tspl
   psdk_fruit_wifi:
     path: ../../psdk/dart/fruits/wifi
   psdk_imageb:
@@ -68,6 +70,8 @@ dependency_overrides:
     path: ../../psdk/dart/fruits/inkjet
   psdk_fruit_sublimation:
     path: ../../psdk/dart/fruits/sublimation
+  psdk_fruit_tspl:
+    path: ../../psdk/dart/fruits/tspl
   psdk_fruit_wifi:
     path: ../../psdk/dart/fruits/wifi
   psdk_imageb:

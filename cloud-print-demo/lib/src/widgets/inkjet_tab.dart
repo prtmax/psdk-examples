@@ -5,7 +5,6 @@ import 'package:psdk_fruit_inkjet/psdk_fruit_inkjet.dart';
 
 import '../controllers/inkjet_controller.dart';
 import '../controllers/real_transport_helper.dart';
-import '../models/demo_mode.dart';
 import 'common_widgets.dart';
 import 'wifi_ssid_field.dart';
 
@@ -24,12 +23,8 @@ class InkjetTab extends StatefulWidget {
 }
 
 class _InkjetTabState extends State<InkjetTab> {
-  late final _ssidCtrl = TextEditingController(
-    text: widget.controller.mode == DemoRunMode.simulation
-        ? 'InkjetLab-WiFi'
-        : '',
-  );
-  final _pwdCtrl = TextEditingController(text: 'lab-secret-2026');
+  final _ssidCtrl = TextEditingController();
+  final _pwdCtrl = TextEditingController();
   final _manualIpCtrl = TextEditingController();
   final _customWCtrl = TextEditingController(text: '140');
   final _customHCtrl = TextEditingController(text: '200');
@@ -63,7 +58,6 @@ class _InkjetTabState extends State<InkjetTab> {
     return AnimatedBuilder(
       animation: c,
       builder: (context, _) {
-        final isSim = c.mode == DemoRunMode.simulation;
         final inkbox = c.lastQueryResult?.inkboxStatus;
         final preferSnap =
             c.activePushEnabled &&
@@ -103,24 +97,21 @@ class _InkjetTabState extends State<InkjetTab> {
           children: [
             HeroBanner(
               family: CloudPrinterFamily.colorInkjetPjl,
-              runMode: c.mode,
               statusMessage: c.statusMessage,
               busy: c.busy,
             ),
             const SizedBox(height: 12),
-            if (!isSim) ...[
-              RealBleConnectorRow(
-                family: CloudPrinterFamily.colorInkjetPjl,
-                helper: widget.realTransportHelper,
-                connectedDevice: c.realBleDevice,
-                namePrefixFilterController: _blePrefixFilter,
-                onNamePrefixFilterChanged: (value) =>
-                    c.bleNamePrefixFilter = value,
-                onConnected: (dev) => setState(() => c.realBleDevice = dev),
-                onDisconnected: () => setState(() => c.realBleDevice = null),
-              ),
-              const SizedBox(height: 12),
-            ],
+            RealBleConnectorRow(
+              family: CloudPrinterFamily.colorInkjetPjl,
+              helper: widget.realTransportHelper,
+              connectedDevice: c.realBleDevice,
+              namePrefixFilterController: _blePrefixFilter,
+              onNamePrefixFilterChanged: (value) =>
+                  c.bleNamePrefixFilter = value,
+              onConnected: (dev) => setState(() => c.realBleDevice = dev),
+              onDisconnected: () => setState(() => c.realBleDevice = null),
+            ),
+            const SizedBox(height: 12),
             DemoPanel(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -130,7 +121,6 @@ class _InkjetTabState extends State<InkjetTab> {
                   WifiSsidField(
                     controller: _ssidCtrl,
                     helper: widget.realTransportHelper,
-                    mode: c.mode,
                     enabled: !c.busy,
                   ),
                   const SizedBox(height: 8),
@@ -172,36 +162,34 @@ class _InkjetTabState extends State<InkjetTab> {
                       ),
                     ],
                   ),
-                  if (!isSim) ...[
-                    const SizedBox(height: 10),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            key: const Key('inkjet_manual_ip_field'),
-                            controller: _manualIpCtrl,
-                            enabled: !c.busy,
-                            keyboardType: TextInputType.number,
-                            decoration: const InputDecoration(
-                              labelText: '直连打印机 IP（可选）',
-                              hintText: '如 192.168.200.214',
-                              isDense: true,
-                            ),
+                  const SizedBox(height: 10),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          key: const Key('inkjet_manual_ip_field'),
+                          controller: _manualIpCtrl,
+                          enabled: !c.busy,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            labelText: '直连打印机 IP（可选）',
+                            hintText: '如 192.168.200.214',
+                            isDense: true,
                           ),
                         ),
-                        const SizedBox(width: 8),
-                        OutlinedButton.icon(
-                          key: const Key('inkjet_probe_manual_ip_btn'),
-                          onPressed: c.busy
-                              ? null
-                              : () => c.probeManualHost(_manualIpCtrl.text),
-                          icon: const Icon(Icons.radar, size: 18),
-                          label: const Text('探测'),
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                      const SizedBox(width: 8),
+                      OutlinedButton.icon(
+                        key: const Key('inkjet_probe_manual_ip_btn'),
+                        onPressed: c.busy
+                            ? null
+                            : () => c.probeManualHost(_manualIpCtrl.text),
+                        icon: const Icon(Icons.radar, size: 18),
+                        label: const Text('探测'),
+                      ),
+                    ],
+                  ),
                   if (c.discoveredPrinters.isNotEmpty) ...[
                     const SizedBox(height: 8),
                     for (final p in c.discoveredPrinters)
@@ -233,6 +221,25 @@ class _InkjetTabState extends State<InkjetTab> {
                   ],
                 ],
               ),
+            ),
+            const SizedBox(height: 12),
+            DirectApWifiPanel(
+              title: '1B. 直连打印机热点（AP 模式）',
+              ssid: c.directWifiSsid,
+              password: c.directWifiPassword,
+              hostOverride: c.directWifiHostOverride,
+              formRevision: c.directWifiFormRevision,
+              connectedInfo: c.directWifiInfo,
+              busy: c.busy,
+              onQueryBle: c.queryApWifiViaBle,
+              onConnectDirect: (ssid, pwd, host) => c.connectDirectApWifi(
+                ssid: ssid,
+                password: pwd,
+                hostOverride: host,
+              ),
+              onQueryBleAndConnect: (host) =>
+                  c.queryBleAndConnectDirectAp(hostOverride: host),
+              onDisconnectDirect: c.disconnectDirectApWifi,
             ),
             const SizedBox(height: 12),
             DemoPanel(
@@ -343,49 +350,6 @@ class _InkjetTabState extends State<InkjetTab> {
                         label: '设备语言',
                         value: demoLabel(c.lastLanguage!.wireToken),
                       ),
-                  ],
-                  if (isSim) ...[
-                    const Divider(height: 20),
-                    const Text(
-                      '模拟故障与墨量（打印预检测试）：',
-                      style: TextStyle(fontWeight: FontWeight.w600),
-                    ),
-                    const SizedBox(height: 8),
-                    Wrap(
-                      spacing: 6,
-                      runSpacing: 6,
-                      children: [
-                        for (final preset in InkjetSimFaultPreset.values)
-                          ChoiceChip(
-                            label: Text(preset.label),
-                            selected: c.selectedFaultPreset == preset,
-                            onSelected: c.busy
-                                ? null
-                                : (_) => c.applyFaultPreset(preset),
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    DropdownButtonFormField<InkjetFaultCode>(
-                      initialValue: c.selectedCustomFault,
-                      isExpanded: true,
-                      decoration: const InputDecoration(labelText: '全部喷墨故障码'),
-                      items: [
-                        for (final fc in InkjetFaultCode.values)
-                          DropdownMenuItem(
-                            value: fc,
-                            child: Text(
-                              '0x${fc.code.toRadixString(16).padLeft(2, "0").toUpperCase()} - ${fc.descriptionZh}',
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                      ],
-                      onChanged: c.busy
-                          ? null
-                          : (v) {
-                              if (v != null) c.applyCustomFaultCode(v);
-                            },
-                    ),
                   ],
                   const Divider(height: 20),
                   const SectionHeader(title: '喷头维护、保湿定时与内置页面'),
@@ -700,6 +664,19 @@ class _InkjetTabState extends State<InkjetTab> {
                         ),
                     ],
                   ),
+                  const SizedBox(height: 12),
+                  LocalImagePrintCard(
+                    keyPrefix: 'inkjet',
+                    selectedImage: c.selectedLocalImage,
+                    busy: c.busy,
+                    canPrint: c.isConnected,
+                    hintText: '选择本地图片后，执行预检并编码为 XPL JBIG-1 页面下发喷墨打印。',
+                    printButtonLabel: '预检并打印本地图片',
+                    onPickImage: c.pickLocalImage,
+                    onClearImage: c.clearLocalImage,
+                    onPrintImage: () =>
+                        _preflightAndPrint(context, useLocalImage: true),
+                  ),
                   if (c.jobProgress != null) ...[
                     const SizedBox(height: 10),
                     LinearProgressIndicator(value: c.jobProgress!.fraction),
@@ -718,13 +695,21 @@ class _InkjetTabState extends State<InkjetTab> {
     );
   }
 
-  Future<void> _preflightAndPrint(BuildContext context) async {
+  Future<void> _preflightAndPrint(
+    BuildContext context, {
+    bool useLocalImage = false,
+  }) async {
     final c = widget.controller;
+    Future<CloudPrintResult?> runPrint({
+      CloudPrintSettings? settingsOverride,
+    }) => useLocalImage
+        ? c.printLocalImageXplDocument(settingsOverride: settingsOverride)
+        : c.printXplDocument(settingsOverride: settingsOverride);
     final preflight = await c.runPreflightCheck();
     if (!context.mounted || preflight == null) return;
 
     if (preflight.outcome == InkjetPreflightOutcome.proceed) {
-      await c.printXplDocument();
+      await runPrint();
       return;
     }
 
@@ -753,7 +738,7 @@ class _InkjetTabState extends State<InkjetTab> {
               FilledButton(
                 onPressed: () async {
                   Navigator.of(ctx).pop();
-                  await c.printXplDocument(
+                  await runPrint(
                     settingsOverride: c.buildCurrentSettings(
                       continueOnLowOverride: true,
                     ),
@@ -765,7 +750,7 @@ class _InkjetTabState extends State<InkjetTab> {
               FilledButton(
                 onPressed: () async {
                   Navigator.of(ctx).pop();
-                  await c.printXplDocument(
+                  await runPrint(
                     settingsOverride: c.buildCurrentSettings(
                       fallbackToMonoOverride: true,
                     ),
@@ -800,7 +785,7 @@ class _InkjetTabState extends State<InkjetTab> {
       ),
     );
     if (confirmed == true) {
-      await c.printXplDocument();
+      await runPrint();
     }
   }
 
