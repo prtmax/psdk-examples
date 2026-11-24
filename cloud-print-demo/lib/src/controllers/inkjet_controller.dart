@@ -7,6 +7,7 @@ import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
 import 'package:psdk_fruit_inkjet/psdk_fruit_inkjet.dart';
 import 'package:psdk_network/psdk_network.dart';
 
+import '../models/demo_feedback.dart';
 import '../models/demo_labels.dart';
 import '../models/demo_mode.dart';
 import '../models/protocol_inspector.dart';
@@ -37,6 +38,7 @@ class InkjetController extends ChangeNotifier {
     required this.registry,
     required this.colorCore,
     required DemoRunMode Function() modeGetter,
+    this.feedback,
     AndroidMulticastLock? multicastLock,
     AndroidLanDiscoverySession? lanDiscoverySession,
     LanPrinterScanner Function()? discoveryScannerFactory,
@@ -58,6 +60,7 @@ class InkjetController extends ChangeNotifier {
   }
 
   final ProtocolInspectorController inspector;
+  final DemoFeedbackCenter? feedback;
   final CloudPrinterRegistry registry;
   final ColorCoreEngine colorCore;
   final DemoRunMode Function() _modeGetter;
@@ -93,6 +96,7 @@ class InkjetController extends ChangeNotifier {
   }
 
   bool busy = false;
+  bool lastActionFailed = false;
   String statusMessage = '就绪';
   ProvisionResult? lastProvisionResult;
   List<DiscoveredCloudPrinter> discoveredPrinters = <DiscoveredCloudPrinter>[];
@@ -590,7 +594,12 @@ class InkjetController extends ChangeNotifier {
     if (host.isEmpty ||
         SubnetCalculator.ipv4ToInt(host) == null ||
         !SubnetCalculator.isUsablePrinterHost(host)) {
+      lastActionFailed = true;
       statusMessage = '请输入有效的 IPv4 地址（例如 192.168.200.214）';
+      feedback?.emitError(
+        statusMessage,
+        family: CloudPrinterFamily.colorInkjetPjl,
+      );
       _notifyIfAlive();
       return;
     }
@@ -668,9 +677,14 @@ class InkjetController extends ChangeNotifier {
       (existing) => isSameInkjetPrinter(existing, candidate),
     );
     selectedPrinter = index >= 0 ? discoveredPrinters[index] : candidate;
+    lastActionFailed = false;
     statusMessage =
         '已选择 ${selectedPrinter!.displayName}'
         '（${selectedPrinter!.host}:${selectedPrinter!.port}）';
+    feedback?.emitInfo(
+      statusMessage,
+      family: CloudPrinterFamily.colorInkjetPjl,
+    );
     _notifyIfAlive();
   }
 
@@ -678,7 +692,12 @@ class InkjetController extends ChangeNotifier {
     if (mode == DemoRunMode.realDevice &&
         target == null &&
         selectedPrinter == null) {
+      lastActionFailed = true;
       statusMessage = '请先发现并选择打印机';
+      feedback?.emitError(
+        statusMessage,
+        family: CloudPrinterFamily.colorInkjetPjl,
+      );
       _notifyIfAlive();
       return;
     }
@@ -732,7 +751,12 @@ class InkjetController extends ChangeNotifier {
 
   Future<void> queryFullStatus() async {
     if (!isConnected) {
+      lastActionFailed = true;
       statusMessage = '请先连接喷墨打印机 XSL/XPL';
+      feedback?.emitError(
+        statusMessage,
+        family: CloudPrinterFamily.colorInkjetPjl,
+      );
       _notifyIfAlive();
       return;
     }
@@ -749,7 +773,12 @@ class InkjetController extends ChangeNotifier {
 
   Future<void> queryDeviceConfig() async {
     if (!isConnected) {
+      lastActionFailed = true;
       statusMessage = '请先连接喷墨打印机 XSL/XPL';
+      feedback?.emitError(
+        statusMessage,
+        family: CloudPrinterFamily.colorInkjetPjl,
+      );
       _notifyIfAlive();
       return;
     }
@@ -1020,7 +1049,12 @@ class InkjetController extends ChangeNotifier {
 
   Future<InkjetPreflightResult?> runPreflightCheck() async {
     if (!isConnected) {
+      lastActionFailed = true;
       statusMessage = '请先连接喷墨打印机 XSL/XPL';
+      feedback?.emitError(
+        statusMessage,
+        family: CloudPrinterFamily.colorInkjetPjl,
+      );
       _notifyIfAlive();
       return null;
     }
@@ -1041,7 +1075,12 @@ class InkjetController extends ChangeNotifier {
     int rasterHeight = 160,
   }) async {
     if (!isConnected) {
+      lastActionFailed = true;
       statusMessage = '请先连接喷墨打印机 XSL/XPL';
+      feedback?.emitError(
+        statusMessage,
+        family: CloudPrinterFamily.colorInkjetPjl,
+      );
       _notifyIfAlive();
       return null;
     }
@@ -1097,7 +1136,8 @@ class InkjetController extends ChangeNotifier {
     await _driver?.cancel('Cancelled by user');
   }
 
-  Future<void> disconnectDriver() async {
+  Future<void> disconnectDriver({bool notifyFeedback = false}) async {
+    final wasConnected = _driver != null;
     await _pushSub?.cancel();
     _pushSub = null;
     activePushEnabled = false;
@@ -1107,20 +1147,38 @@ class InkjetController extends ChangeNotifier {
     lastLanguage = null;
     await _driver?.dispose();
     _driver = null;
+    if (notifyFeedback && wasConnected) {
+      lastActionFailed = false;
+      statusMessage = '已断开喷墨 XSL/XPL 连接';
+      feedback?.emitInfo(
+        statusMessage,
+        family: CloudPrinterFamily.colorInkjetPjl,
+      );
+    }
     _notifyIfAlive();
   }
 
   Future<void> _runBusy(String label, Future<void> Function() action) async {
     if (_disposed) return;
     busy = true;
+    lastActionFailed = false;
     statusMessage = label;
     _notifyIfAlive();
     try {
       await action();
+      lastActionFailed = DemoFeedbackCenter.isErrorMessage(statusMessage);
     } catch (e) {
-      statusMessage = '操作失败：$e';
+      lastActionFailed = true;
+      statusMessage = '操作失败：${DemoFeedbackCenter.formatMessage('$e')}';
     } finally {
       busy = false;
+      if (!_disposed) {
+        feedback?.emitOutcome(
+          statusMessage,
+          forceError: lastActionFailed,
+          family: CloudPrinterFamily.colorInkjetPjl,
+        );
+      }
       _notifyIfAlive();
     }
   }

@@ -24,6 +24,7 @@ class SublimationTab extends StatefulWidget {
 
 class _SublimationTabState extends State<SublimationTab> {
   final _autoShutDownCtrl = TextEditingController(text: '15');
+  int? _lastSyncedAutoShutDown;
 
   @override
   void dispose() {
@@ -37,6 +38,14 @@ class _SublimationTabState extends State<SublimationTab> {
     return AnimatedBuilder(
       animation: c,
       builder: (context, _) {
+        final serverAuto = c.printerSetting?.autoShutDownMinutes;
+        if (serverAuto != null && serverAuto != _lastSyncedAutoShutDown) {
+          _lastSyncedAutoShutDown = serverAuto;
+          final nextText = '$serverAuto';
+          if (_autoShutDownCtrl.text != nextText) {
+            _autoShutDownCtrl.text = nextText;
+          }
+        }
         return ListView(
           padding: const EdgeInsets.all(16),
           children: [
@@ -86,16 +95,43 @@ class _SublimationTabState extends State<SublimationTab> {
                       ),
                       if (c.isConnected)
                         OutlinedButton(
-                          onPressed: c.busy ? null : c.disconnectDriver,
+                          onPressed: c.busy
+                              ? null
+                              : () => c.disconnectDriver(notifyFeedback: true),
                           child: const Text('断开连接'),
                         ),
                     ],
                   ),
+                  const SizedBox(height: 8),
+                  ActionStatusBanner(
+                    message: c.statusMessage,
+                    busy: c.busy,
+                    isError: c.lastActionFailed,
+                  ),
                   if (c.rawStatus != null) ...[
                     const Divider(height: 20),
                     KeyValueRow(
+                      label: '型号 / 固件',
+                      value:
+                          '${c.printerInfo?.model ?? "-"} · ${c.printerInfo?.firmwareVersion ?? c.versionInfo?.firmwareVersion ?? "-"}',
+                    ),
+                    KeyValueRow(
+                      label: 'Boot / FPGA',
+                      value:
+                          '${c.versionInfo?.bootVersion ?? "-"} · ${c.versionInfo?.fpgaVersion ?? "-"}',
+                    ),
+                    KeyValueRow(
+                      label: '序列号',
+                      value: c.printerInfo?.serialNumber ?? '-',
+                    ),
+                    KeyValueRow(
                       label: '主状态',
                       value: demoLabel(c.rawStatus!.mainStatus),
+                    ),
+                    KeyValueRow(
+                      label: '故障 / 警告',
+                      value:
+                          '${demoLabel(c.rawStatus!.errorStatus)} · ${demoLabel(c.rawStatus!.warningStatus)}',
                     ),
                     KeyValueRow(
                       label: '色带余量',
@@ -119,12 +155,17 @@ class _SublimationTabState extends State<SublimationTab> {
                     KeyValueRow(
                       label: '电量 / 缓存',
                       value:
-                          '${c.rawStatus!.estimatedBatteryPercent ?? "-"}% (${c.rawStatus!.isCharging ? "充电中" : "放电中"}) · 缓存槽：${c.rawStatus!.printerCacheSlots}',
+                          '${c.rawStatus!.batteryPercent ?? c.rawStatus!.estimatedBatteryPercent ?? "-"}% (${c.rawStatus!.isCharging ? "充电中" : "放电中"}) · 缓存槽：${c.rawStatus!.printerCacheSlots}',
                     ),
                     KeyValueRow(
                       label: '卡片计数',
                       value:
                           '已发卡 ${c.cardCount?.cardIssuedCount ?? 0} · 总计 ${c.cardCount?.printTotalCount ?? 0}',
+                    ),
+                    KeyValueRow(
+                      label: '蜂鸣器 / 自动关机',
+                      value:
+                          '${(c.printerSetting?.buzzerEnabled ?? false) ? "开启" : "关闭"} · ${c.printerSetting?.autoShutDownMinutes ?? "-"} 分钟',
                     ),
                     const SizedBox(height: 8),
                     Row(
@@ -164,7 +205,9 @@ class _SublimationTabState extends State<SublimationTab> {
                               ? null
                               : () => c.runMechanicalAction(
                                   '进卡',
-                                  (d) => d.cardOps.injectCard(),
+                                  (d) => d.cardOps.injectCard(
+                                    mode: SublimationInjectMode.auto,
+                                  ),
                                 ),
                           child: const Text('进卡'),
                         ),
@@ -236,12 +279,7 @@ class _SublimationTabState extends State<SublimationTab> {
                           child: const Text('初始化'),
                         ),
                         OutlinedButton(
-                          onPressed: c.busy
-                              ? null
-                              : () => c.runMechanicalAction(
-                                  '清空缓存',
-                                  (d) => d.printerOps.clearPrinterCache(),
-                                ),
+                          onPressed: c.busy ? null : c.clearPrinterCache,
                           child: const Text('清空缓存'),
                         ),
                         OutlinedButton(
@@ -275,6 +313,14 @@ class _SublimationTabState extends State<SublimationTab> {
                 children: [
                   const SectionHeader(title: '3. 1B 44 多色面卡片打印与流控'),
                   const SizedBox(height: 10),
+                  if (c.isZ11PhotoPrinter)
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 8),
+                      child: Text(
+                        '已识别 Z11 照片打印机：单面 Y/M/C/O 全彩（1800×1280 · 300×300 DPI）',
+                        style: Theme.of(context).textTheme.bodySmall,
+                      ),
+                    ),
                   DropdownButtonFormField<CloudColorMode>(
                     initialValue: c.selectedColorMode,
                     isExpanded: true,
@@ -292,9 +338,13 @@ class _SublimationTabState extends State<SublimationTab> {
                         child: Text('黑白（仅 K）', overflow: TextOverflow.ellipsis),
                       ),
                     ],
-                    onChanged: (v) {
-                      if (v != null) setState(() => c.selectedColorMode = v);
-                    },
+                    onChanged: c.isZ11PhotoPrinter
+                        ? null
+                        : (v) {
+                            if (v != null) {
+                              setState(() => c.selectedColorMode = v);
+                            }
+                          },
                   ),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<SublimationDitherMode>(
@@ -327,8 +377,13 @@ class _SublimationTabState extends State<SublimationTab> {
                   SwitchListTile(
                     contentPadding: EdgeInsets.zero,
                     title: const Text('双面打印（翻卡）'),
-                    value: c.dualSided,
-                    onChanged: (v) => setState(() => c.dualSided = v),
+                    subtitle: c.isZ11PhotoPrinter
+                        ? const Text('Z11 无翻卡器，不支持双面')
+                        : null,
+                    value: c.isZ11PhotoPrinter ? false : c.dualSided,
+                    onChanged: c.isZ11PhotoPrinter
+                        ? null
+                        : (v) => setState(() => c.dualSided = v),
                   ),
                   Wrap(
                     spacing: 8,

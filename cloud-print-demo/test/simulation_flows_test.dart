@@ -3,8 +3,14 @@ import 'dart:typed_data';
 
 import 'package:cloud_print_demo/src/controllers/demo_coordinator.dart';
 import 'package:cloud_print_demo/src/controllers/inkjet_controller.dart';
+import 'package:cloud_print_demo/src/controllers/lan_setup_controller.dart';
+import 'package:cloud_print_demo/src/controllers/sublimation_controller.dart';
+import 'package:cloud_print_demo/src/models/demo_feedback.dart';
+import 'package:cloud_print_demo/src/models/demo_mode.dart';
 import 'package:cloud_print_demo/src/models/protocol_inspector.dart';
 import 'package:cloud_print_demo/src/stubs/sim_esc_wan_stub.dart';
+import 'package:cloud_print_demo/src/stubs/sim_lan_ble_device.dart';
+import 'package:cloud_print_demo/src/stubs/sim_sublimation_stub.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:psdk_color_core/psdk_color_core.dart';
 import 'package:psdk_device_adapter/psdk_device_adapter.dart';
@@ -442,6 +448,131 @@ void main() {
           ),
           isNotEmpty,
         );
+      },
+    );
+
+    test(
+      'SublimationController.clearPrinterCache in simulation mode succeeds with feedback event',
+      () async {
+        final sub = coordinator.sublimation;
+        await sub.connectDriver();
+        expect(sub.isConnected, isTrue);
+
+        await sub.clearPrinterCache();
+
+        expect(sub.lastActionFailed, isFalse);
+        expect(sub.statusMessage, contains('清空缓存 已完成'));
+        expect(
+          coordinator.feedback.latest?.kind,
+          equals(DemoFeedbackKind.success),
+        );
+        expect(coordinator.feedback.latest?.message, contains('清空缓存 已完成'));
+      },
+    );
+
+    test(
+      'LanSetupController.probeManualHost validates IPv4 and SublimationController enforces Z11 Y/M/C/O single-sided rules',
+      () async {
+        final inspector = ProtocolInspectorController();
+        final simBle = SimulatedLanBleDevice(inspector: inspector);
+        final simUdp = SimulatedSublimationUdpTransport(inspector: inspector);
+        final probedHosts = <String>[];
+        final setup = LanSetupController(
+          family: CloudPrinterFamily.sublimationRpc,
+          inspector: inspector,
+          modeGetter: () => DemoRunMode.realDevice,
+          simBleDevice: simBle,
+          simScannerFactory: () => SublimationLanScanner(transport: simUdp),
+          manualHostProber: (host, iface) async {
+            probedHosts.add(host);
+            return DiscoveredCloudPrinter(
+              id: host,
+              displayName: 'Z11',
+              family: CloudPrinterFamily.sublimationRpc,
+              host: host,
+              port: 9100,
+              model: 'Z11',
+            );
+          },
+        );
+        addTearDown(() async {
+          await setup.dispose();
+          inspector.dispose();
+        });
+
+        await setup.probeManualHost('invalid-ip');
+        expect(setup.statusMessage, contains('有效的 IPv4'));
+        expect(probedHosts, isEmpty);
+
+        await setup.probeManualHost('0.0.0.0');
+        expect(setup.statusMessage, contains('有效的 IPv4'));
+        expect(probedHosts, isEmpty);
+
+        await setup.probeManualHost('192.168.200.161');
+        expect(probedHosts, <String>['192.168.200.161']);
+        expect(setup.discoveredPrinters, hasLength(1));
+        expect(setup.selectedPrinter?.host, '192.168.200.161');
+        expect(setup.statusMessage, contains('Z11'));
+
+        // Z11 controller auto-detects Z11 model and omits K plane & dualSided
+        final z11Controller = SublimationController(
+          inspector: inspector,
+          registry: coordinator.registry,
+          colorCore: coordinator.colorCore,
+          modeGetter: () => DemoRunMode.simulation,
+          simTcpDevice: SimulatedSublimationTcpDevice(
+            inspector: inspector,
+            modelName: 'Z11',
+          ),
+        );
+        addTearDown(z11Controller.dispose);
+
+        await z11Controller.connectDriver();
+        expect(z11Controller.isConnected, isTrue);
+        expect(z11Controller.isZ11PhotoPrinter, isTrue);
+        expect(z11Controller.printerSetting?.autoShutDownMinutes, 15);
+
+        z11Controller.selectedColorMode = CloudColorMode.monochrome;
+        await z11Controller.printTestCardJob();
+        expect(z11Controller.statusMessage, contains('不支持黑白'));
+
+        z11Controller.selectedColorMode = CloudColorMode.colorCmyk;
+        z11Controller.dualSided = true;
+        await z11Controller.printTestCardJob();
+        expect(z11Controller.statusMessage, contains('不支持双面'));
+
+        z11Controller.dualSided = false;
+        await z11Controller.printTestCardJob();
+        expect(z11Controller.lastPrintResult?.success, isTrue);
+        expect(
+          z11Controller.simTcpDevice.capturedPlanes
+              .map((p) => p.replaceAll('\x00', ''))
+              .toList(),
+          equals(const <String>['Yellow', 'Magenta', 'Cyan', 'OverCort']),
+        );
+
+        // Top-level Isolate photo generator does not capture controller state.
+        final photoRgba = await SublimationController.generateRealPhotoRgba(
+          width: 96,
+          height: 64,
+        );
+        expect(photoRgba.length, equals(96 * 64 * 4));
+
+        // DemoFeedbackCenter formats protocol errors cleanly and redacts secrets.
+        final formattedError = DemoFeedbackCenter.formatMessage(
+          '操作失败：SublimationProtocolException(argsError, rawStatusCode: null, message: autoShutDownMinutes must be 0 or in 2..65535 minutes)\n <- trace line',
+        );
+        expect(
+          formattedError,
+          equals(
+            'autoShutDownMinutes must be 0 or in 2..65535 minutes (argsError)',
+          ),
+        );
+        final redacted = DemoFeedbackCenter.formatMessage(
+          'BLUETOOTH SETSSID,AIYIN8,secret-pass-123',
+        );
+        expect(redacted, isNot(contains('secret-pass-123')));
+        expect(redacted, contains('[REDACTED]'));
       },
     );
 

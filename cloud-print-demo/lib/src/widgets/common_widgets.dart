@@ -5,7 +5,138 @@ import 'package:psdk_device_adapter/psdk_device_adapter.dart' as adapter;
 import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
 
 import '../controllers/real_transport_helper.dart';
+import '../models/demo_feedback.dart';
 import '../models/demo_mode.dart';
+
+void showDemoFeedbackSnackBar(
+  BuildContext context, {
+  required DemoFeedbackKind kind,
+  required String message,
+}) {
+  final messenger = ScaffoldMessenger.maybeOf(context);
+  if (messenger == null) return;
+  final clean = DemoFeedbackCenter.formatMessage(message);
+  final Color bgColor;
+  final IconData icon;
+  final Duration duration;
+  switch (kind) {
+    case DemoFeedbackKind.success:
+      bgColor = const Color(0xFF1E5E36);
+      icon = Icons.check_circle_outline;
+      duration = const Duration(seconds: 3);
+    case DemoFeedbackKind.error:
+      bgColor = const Color(0xFFB4473D);
+      icon = Icons.error_outline;
+      duration = const Duration(seconds: 4);
+    case DemoFeedbackKind.info:
+      bgColor = const Color(0xFF254B52);
+      icon = Icons.info_outline;
+      duration = const Duration(seconds: 3);
+  }
+  messenger
+    ..removeCurrentSnackBar()
+    ..showSnackBar(
+      SnackBar(
+        behavior: SnackBarBehavior.floating,
+        backgroundColor: bgColor,
+        duration: duration,
+        showCloseIcon: true,
+        closeIconColor: Colors.white,
+        content: Row(
+          key: const Key('demo_feedback_snackbar'),
+          children: [
+            Icon(icon, color: Colors.white, size: 18),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                clean,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+}
+
+class ActionStatusBanner extends StatelessWidget {
+  const ActionStatusBanner({
+    super.key,
+    required this.message,
+    this.busy = false,
+    this.isError = false,
+  });
+
+  final String message;
+  final bool busy;
+  final bool isError;
+
+  @override
+  Widget build(BuildContext context) {
+    final scheme = Theme.of(context).colorScheme;
+    final Color bgColor;
+    final Color borderColor;
+    final Color fgColor;
+    if (isError) {
+      bgColor = scheme.errorContainer.withValues(alpha: 0.45);
+      borderColor = scheme.error.withValues(alpha: 0.45);
+      fgColor = scheme.error;
+    } else if (busy) {
+      bgColor = scheme.secondaryContainer.withValues(alpha: 0.5);
+      borderColor = scheme.primary.withValues(alpha: 0.35);
+      fgColor = scheme.primary;
+    } else {
+      bgColor = const Color(0xFFEAF4EE);
+      borderColor = const Color(0xFF2E7D32).withValues(alpha: 0.35);
+      fgColor = const Color(0xFF1E5E36);
+    }
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: bgColor,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(color: borderColor),
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (busy)
+            const Padding(
+              padding: EdgeInsets.only(top: 2),
+              child: SizedBox(
+                width: 14,
+                height: 14,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
+          else
+            Padding(
+              padding: const EdgeInsets.only(top: 1),
+              child: Icon(
+                isError ? Icons.error_outline : Icons.check_circle_outline,
+                size: 16,
+                color: fgColor,
+              ),
+            ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              message,
+              style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                color: fgColor,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
 
 class DemoPanel extends StatelessWidget {
   const DemoPanel({
@@ -268,7 +399,14 @@ class RealBleConnectorRow extends StatelessWidget {
                       ? null
                       : () async {
                           await connectedDevice!.disconnect();
-                          if (context.mounted) onDisconnected();
+                          if (context.mounted) {
+                            showDemoFeedbackSnackBar(
+                              context,
+                              kind: DemoFeedbackKind.info,
+                              message: '已断开蓝牙连接',
+                            );
+                            onDisconnected();
+                          }
                         },
                   child: const Text('断开蓝牙'),
                 )
@@ -339,11 +477,20 @@ class RealBleConnectorRow extends StatelessWidget {
       return;
     }
     if (connection != null) {
+      final bleName =
+          connection.deviceName() ?? connection.deviceMac() ?? '蓝牙打印机';
+      showDemoFeedbackSnackBar(
+        context,
+        kind: DemoFeedbackKind.success,
+        message: '已连接蓝牙：$bleName',
+      );
       onConnected(connection);
     } else if (helper.lastError != null) {
-      ScaffoldMessenger.of(
+      showDemoFeedbackSnackBar(
         context,
-      ).showSnackBar(SnackBar(content: Text(helper.lastError!)));
+        kind: DemoFeedbackKind.error,
+        message: helper.lastError!,
+      );
     }
   }
 }

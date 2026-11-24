@@ -3,6 +3,7 @@ import 'package:psdk_color_core/psdk_color_core.dart';
 import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
 import 'package:psdk_fruit_sublimation/psdk_fruit_sublimation.dart';
 
+import '../models/demo_feedback.dart';
 import '../models/demo_mode.dart';
 import '../models/protocol_inspector.dart';
 import '../protocol_registry.dart';
@@ -18,27 +19,35 @@ import 'thermal_lan_controller.dart';
 class DemoCoordinator extends ChangeNotifier {
   DemoCoordinator({ColorCoreEngine? colorCore})
     : colorCore = colorCore ?? SublimationColorCoreResolver.resolve(),
-      inspector = ProtocolInspectorController() {
+      inspector = ProtocolInspectorController(),
+      feedback = DemoFeedbackCenter() {
     _createSession(runMode);
   }
 
   void _createSession(DemoRunMode mode) {
     registry = CloudPrinterRegistry();
     realTransportHelper = RealTransportHelper(inspector);
-    escWan = EscWanController(inspector: inspector, modeGetter: () => mode);
+    escWan = EscWanController(
+      inspector: inspector,
+      feedback: feedback,
+      modeGetter: () => mode,
+    );
     thermalLan = ThermalLanController(
       inspector: inspector,
+      feedback: feedback,
       modeGetter: () => mode,
       realTransportHelper: realTransportHelper,
     );
     sublimation = SublimationController(
       inspector: inspector,
+      feedback: feedback,
       registry: registry,
       colorCore: colorCore,
       modeGetter: () => mode,
     );
     inkjet = InkjetController(
       inspector: inspector,
+      feedback: feedback,
       registry: registry,
       colorCore: colorCore,
       modeGetter: () => mode,
@@ -64,6 +73,7 @@ class DemoCoordinator extends ChangeNotifier {
 
   final ColorCoreEngine colorCore;
   final ProtocolInspectorController inspector;
+  final DemoFeedbackCenter feedback;
   late CloudPrinterRegistry registry;
   late RealTransportHelper realTransportHelper;
 
@@ -88,6 +98,7 @@ class DemoCoordinator extends ChangeNotifier {
       if (_disposed) return;
       _createSession(next);
       runMode = next;
+      feedback.emitInfo('已切换至${next.label}');
     } finally {
       switching = false;
       _closingSession = null;
@@ -117,6 +128,7 @@ class DemoCoordinator extends ChangeNotifier {
     _disposed = true;
     await (_closingSession ?? _closeSession());
     inspector.dispose();
+    feedback.dispose();
     super.dispose();
   }
 }

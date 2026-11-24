@@ -79,7 +79,11 @@ class _ThermalLanTabState extends State<ThermalLanTab> {
                       ),
                       if (c.isTcpConnected)
                         OutlinedButton(
-                          onPressed: c.busy ? null : c.disconnectTcpPrinter,
+                          onPressed: c.busy
+                              ? null
+                              : () => c.disconnectTcpPrinter(
+                                  notifyFeedback: true,
+                                ),
                           child: const Text('断开 TCP'),
                         ),
                     ],

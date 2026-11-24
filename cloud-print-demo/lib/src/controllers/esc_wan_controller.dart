@@ -8,6 +8,7 @@ import 'package:psdk_device_adapter/psdk_device_adapter.dart';
 import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
 import 'package:psdk_fruit_esc/psdk_fruit_esc.dart';
 
+import '../models/demo_feedback.dart';
 import '../models/demo_mode.dart';
 import '../models/protocol_inspector.dart';
 import '../stubs/sim_esc_wan_stub.dart';
@@ -18,11 +19,13 @@ class EscWanController extends ChangeNotifier {
   EscWanController({
     required this.inspector,
     required DemoRunMode Function() modeGetter,
+    this.feedback,
   }) : _modeGetter = modeGetter,
        simDevice = SimEscConnectedDevice(inspector: inspector),
        simBackend = SimCloudWanBackend(inspector: inspector);
 
   final ProtocolInspectorController inspector;
+  final DemoFeedbackCenter? feedback;
   final DemoRunMode Function() _modeGetter;
   final SimEscConnectedDevice simDevice;
   final SimCloudWanBackend simBackend;
@@ -43,6 +46,7 @@ class EscWanController extends ChangeNotifier {
   }
 
   bool busy = false;
+  bool lastActionFailed = false;
   String statusMessage = '就绪';
   ProvisionResult? lastProvisionResult;
   EscWifiStaResult? lastStaResult;
@@ -257,7 +261,12 @@ class EscWanController extends ChangeNotifier {
   Future<void> queryWanStatus() async {
     final driver = _driver;
     if (driver == null || !driver.isConnected) {
+      lastActionFailed = true;
       statusMessage = '请先连接云端';
+      feedback?.emitError(
+        statusMessage,
+        family: CloudPrinterFamily.escWanCloud,
+      );
       _notifyIfAlive();
       return;
     }
@@ -274,7 +283,12 @@ class EscWanController extends ChangeNotifier {
   }) async {
     final driver = _driver;
     if (driver == null || !driver.isConnected) {
+      lastActionFailed = true;
       statusMessage = '请先连接云端';
+      feedback?.emitError(
+        statusMessage,
+        family: CloudPrinterFamily.escWanCloud,
+      );
       _notifyIfAlive();
       return;
     }
@@ -338,7 +352,12 @@ class EscWanController extends ChangeNotifier {
   Future<void> simulateThreePollFailures() async {
     final monitor = _driver?.statusMonitor;
     if (mode != DemoRunMode.simulation || monitor == null) {
+      lastActionFailed = true;
       statusMessage = '请先在模拟模式连接云端';
+      feedback?.emitError(
+        statusMessage,
+        family: CloudPrinterFamily.escWanCloud,
+      );
       _notifyIfAlive();
       return;
     }
@@ -355,11 +374,17 @@ class EscWanController extends ChangeNotifier {
     });
   }
 
-  Future<void> disconnectWan() async {
+  Future<void> disconnectWan({bool notifyFeedback = false}) async {
+    final wasConnected = _driver != null;
     await _statusSub?.cancel();
     _statusSub = null;
     await _driver?.dispose();
     _driver = null;
+    if (notifyFeedback && wasConnected) {
+      lastActionFailed = false;
+      statusMessage = '已断开云端连接';
+      feedback?.emitInfo(statusMessage, family: CloudPrinterFamily.escWanCloud);
+    }
     _notifyIfAlive();
   }
 
@@ -401,14 +426,24 @@ class EscWanController extends ChangeNotifier {
   Future<void> _runBusy(String label, Future<void> Function() action) async {
     if (_disposed) return;
     busy = true;
+    lastActionFailed = false;
     statusMessage = label;
     _notifyIfAlive();
     try {
       await action();
+      lastActionFailed = DemoFeedbackCenter.isErrorMessage(statusMessage);
     } catch (e) {
-      statusMessage = '操作失败：$e';
+      lastActionFailed = true;
+      statusMessage = '操作失败：${DemoFeedbackCenter.formatMessage('$e')}';
     } finally {
       busy = false;
+      if (!_disposed) {
+        feedback?.emitOutcome(
+          statusMessage,
+          forceError: lastActionFailed,
+          family: CloudPrinterFamily.escWanCloud,
+        );
+      }
       _notifyIfAlive();
     }
   }

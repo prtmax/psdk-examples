@@ -240,7 +240,9 @@ class _EscWanTabState extends State<EscWanTab> {
                         ),
                       if (c.isWanConnected)
                         OutlinedButton(
-                          onPressed: c.busy ? null : c.disconnectWan,
+                          onPressed: c.busy
+                              ? null
+                              : () => c.disconnectWan(notifyFeedback: true),
                           child: const Text('断开连接'),
                         ),
                     ],

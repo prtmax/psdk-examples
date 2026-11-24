@@ -36,6 +36,7 @@ class _LanSetupPanelState extends State<LanSetupPanel> {
   late final _blePrefixFilter = TextEditingController(
     text: widget.controller.bleNamePrefixFilter,
   );
+  final _manualIpCtrl = TextEditingController();
 
   @override
   void didUpdateWidget(covariant LanSetupPanel oldWidget) {
@@ -51,6 +52,7 @@ class _LanSetupPanelState extends State<LanSetupPanel> {
     _ssid.dispose();
     _password.dispose();
     _blePrefixFilter.dispose();
+    _manualIpCtrl.dispose();
     super.dispose();
   }
 
@@ -126,9 +128,42 @@ class _LanSetupPanelState extends State<LanSetupPanel> {
                     ),
                   ],
                 ),
+                if (c.mode == DemoRunMode.realDevice) ...[
+                  const SizedBox(height: 10),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          key: const Key('lan_manual_ip_field'),
+                          controller: _manualIpCtrl,
+                          enabled: !disabled,
+                          keyboardType: TextInputType.number,
+                          decoration: const InputDecoration(
+                            labelText: '直连打印机 IP（可选）',
+                            hintText: '如 192.168.200.161',
+                            isDense: true,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      OutlinedButton.icon(
+                        key: const Key('lan_probe_manual_ip_btn'),
+                        onPressed: disabled
+                            ? null
+                            : () => c.probeManualHost(_manualIpCtrl.text),
+                        icon: const Icon(Icons.radar, size: 18),
+                        label: const Text('探测'),
+                      ),
+                    ],
+                  ),
+                ],
                 const SizedBox(height: 10),
-                if (c.busy) const LinearProgressIndicator(),
-                Text(c.statusMessage),
+                ActionStatusBanner(
+                  message: c.statusMessage,
+                  busy: c.busy,
+                  isError: c.lastActionFailed,
+                ),
                 for (final printer in c.discoveredPrinters)
                   ListTile(
                     contentPadding: EdgeInsets.zero,
@@ -142,7 +177,7 @@ class _LanSetupPanelState extends State<LanSetupPanel> {
                       '${printer.displayName} (${printer.host}:${printer.port})',
                     ),
                     subtitle: Text(
-                      'MAC：${printer.macAddress ?? "未知"} · UDP 22368',
+                      'MAC：${printer.macAddress ?? "未知"} · ${printer.discoveredVia.isEmpty ? "手动直连" : "UDP 22368"}',
                     ),
                     onTap: disabled ? null : () => c.selectPrinter(printer),
                   ),
