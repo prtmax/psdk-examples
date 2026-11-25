@@ -1,8 +1,39 @@
+import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
+
 /// 仅用于界面展示；协议标识和线上数据不经过此转换。
 String demoLabel(Object? value) {
   if (value == null) return '-';
   final name = value is Enum ? value.name : value.toString();
   return _labels[name] ?? name;
+}
+
+String formatDiscoveryProtocols(Set<LanDiscoveryProtocol> protocols) {
+  if (protocols.isEmpty) return '手动直连';
+  return protocols
+      .map((p) {
+        return switch (p) {
+          LanDiscoveryProtocol.udp22368Text => 'UDP 22368',
+          LanDiscoveryProtocol.udp4201Multicast => 'UDP 4201',
+          LanDiscoveryProtocol.udp1901Binary => 'UDP 1901',
+          LanDiscoveryProtocol.mdnsPrinterTcp => 'mDNS',
+          LanDiscoveryProtocol.softApProbe => 'SoftAP',
+        };
+      })
+      .join(' / ');
+}
+
+String formatDiscoveredPrinterSubtitle(DiscoveredCloudPrinter printer) {
+  final parts = <String>[];
+  final model = printer.model?.trim() ?? '';
+  if (model.isNotEmpty) {
+    parts.add('型号：$model');
+  }
+  final mac = printer.macAddress?.trim() ?? '';
+  if (mac.isNotEmpty) {
+    parts.add('MAC：$mac');
+  }
+  parts.add('发现方式：${formatDiscoveryProtocols(printer.discoveredVia)}');
+  return parts.join(' · ');
 }
 
 const _labels = <String, String>{

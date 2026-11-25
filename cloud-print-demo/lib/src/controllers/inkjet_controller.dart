@@ -24,6 +24,7 @@ class InkjetController extends ChangeNotifier {
     this.feedback,
     AndroidMulticastLock? multicastLock,
     AndroidLanDiscoverySession? lanDiscoverySession,
+    VerifiedPrinterIpCache? ipCache,
     PrinterWifiSession? printerWifiSession,
     LocalImagePickerService? localImagePicker,
     LanPrinterScanner Function()? discoveryScannerFactory,
@@ -46,6 +47,7 @@ class InkjetController extends ChangeNotifier {
   }) : _multicastLock = multicastLock ?? AndroidMulticastLock(),
        _lanDiscoverySession =
            lanDiscoverySession ?? AndroidLanDiscoverySession(),
+       _verifiedPrinterIpCache = ipCache ?? VerifiedPrinterIpCache(),
        _printerWifiSession = printerWifiSession ?? PrinterWifiSession(),
        _localImagePicker = localImagePicker ?? const LocalImagePickerService(),
        _discoveryScannerFactory = discoveryScannerFactory,
@@ -79,8 +81,7 @@ class InkjetController extends ChangeNotifier {
   final int discoveryAttempts;
   final int localImageMaxWidth;
   final int localImageMaxHeight;
-  final VerifiedPrinterIpCache _verifiedPrinterIpCache =
-      VerifiedPrinterIpCache();
+  final VerifiedPrinterIpCache _verifiedPrinterIpCache;
 
   PickedLocalImage? selectedLocalImage;
   String bleNamePrefixFilter;
@@ -90,7 +91,7 @@ class InkjetController extends ChangeNotifier {
   CloudCancelToken? _printCancelToken;
   CloudCancelToken? _provisionCancelToken;
   WifiProvisioner? _activeProvisioner;
-  LanPrinterScanner? _activeScanner;
+  LanPrinterDiscovery? _activeDiscoveryRunner;
   Future<void>? _activeDiscovery;
   Future<void> _discoveryTail = Future<void>.value();
   bool _disposed = false;
@@ -230,12 +231,7 @@ class InkjetController extends ChangeNotifier {
   }
 
   Future<void> discoverPrinters({
-    Set<LanDiscoveryProtocol> protocols = const <LanDiscoveryProtocol>{
-      LanDiscoveryProtocol.udp22368Text,
-      LanDiscoveryProtocol.udp4201Multicast,
-      LanDiscoveryProtocol.mdnsPrinterTcp,
-      LanDiscoveryProtocol.softApProbe,
-    },
+    Set<LanDiscoveryProtocol> protocols = LanPrinterDiscovery.allProtocols,
     Duration? timeout,
   }) async {
     final effectiveTimeout = timeout ?? discoveryTimeout;
@@ -243,7 +239,7 @@ class InkjetController extends ChangeNotifier {
       protocols: protocols,
       timeout: effectiveTimeout,
       label:
-          '正在通过 UDP 22368 / UDP 4201 / mDNS 发现打印机'
+          '正在发现局域网打印机'
           '（最多 ${discoveryAttempts.clamp(1, 5)} 次，每次最长 ${effectiveTimeout.inSeconds} 秒）…',
     );
   }
@@ -251,12 +247,7 @@ class InkjetController extends ChangeNotifier {
   Future<void> _startDiscovery({
     required String label,
     required Duration timeout,
-    Set<LanDiscoveryProtocol> protocols = const <LanDiscoveryProtocol>{
-      LanDiscoveryProtocol.udp22368Text,
-      LanDiscoveryProtocol.udp4201Multicast,
-      LanDiscoveryProtocol.mdnsPrinterTcp,
-      LanDiscoveryProtocol.softApProbe,
-    },
+    Set<LanDiscoveryProtocol> protocols = LanPrinterDiscovery.allProtocols,
     bool skipIfFound = false,
   }) {
     final previous = _discoveryTail;
@@ -289,12 +280,7 @@ class InkjetController extends ChangeNotifier {
   }
 
   Future<void> _discoverPrintersInternal({
-    Set<LanDiscoveryProtocol> protocols = const <LanDiscoveryProtocol>{
-      LanDiscoveryProtocol.udp22368Text,
-      LanDiscoveryProtocol.udp4201Multicast,
-      LanDiscoveryProtocol.mdnsPrinterTcp,
-      LanDiscoveryProtocol.softApProbe,
-    },
+    Set<LanDiscoveryProtocol> protocols = LanPrinterDiscovery.allProtocols,
     required Duration timeout,
   }) async {
     final previousSelectedPrinter = selectedPrinter;
@@ -302,253 +288,82 @@ class InkjetController extends ChangeNotifier {
     discoveredPrinters = const <DiscoveredCloudPrinter>[];
     selectedPrinter = null;
     _notifyIfAlive();
+
     final attempts = discoveryAttempts.clamp(1, 5);
-    for (var attempt = 0; attempt < attempts; attempt++) {
-      if (_disposed) return;
-      if (attempt > 0) {
-        statusMessage = '第一次扫描未发现打印机，正在重建 Wi-Fi 网络绑定并重试…';
-        _notifyIfAlive();
-        await Future<void>.delayed(const Duration(milliseconds: 300));
-        if (_disposed) return;
-      }
-      await _runDiscoveryAttempt(
-        protocols: protocols,
-        timeout: timeout,
-        attempt: attempt,
-        attempts: attempts,
-        found: found,
-        previousSelectedPrinter: previousSelectedPrinter,
-      );
-      if (found.isNotEmpty) break;
-    }
-    discoveredPrinters = List<DiscoveredCloudPrinter>.unmodifiable(found);
-    selectedPrinter = _selectedAfterDiscovery(found, previousSelectedPrinter);
-    statusMessage = discoveredPrinters.isEmpty
-        ? '未发现喷墨打印机，请确认打印机已重新连入同一 Wi-Fi 后再扫描'
-        : '发现 ${discoveredPrinters.length} 台喷墨打印机';
-  }
-
-  Future<void> _runDiscoveryAttempt({
-    required Set<LanDiscoveryProtocol> protocols,
-    required Duration timeout,
-    required int attempt,
-    required int attempts,
-    required List<DiscoveredCloudPrinter> found,
-    required DiscoveredCloudPrinter? previousSelectedPrinter,
-  }) async {
-    FlutterNsdMdnsSource? realNsd;
-    Network? realNetwork;
-    InkjetNetworkBinder? networkBinder;
-    AndroidLanDiscoveryNetwork? androidNetwork;
-    String? wifiInterface;
-    LanPrinterScanner? scanner;
-    var networkSessionHeld = false;
-    var multicastLockHeld = false;
-    try {
-      if (useAndroidDiscoveryHooks) {
-        try {
-          networkSessionHeld = await _lanDiscoverySession.begin();
-          if (networkSessionHeld) {
-            _recordDiscoveryInfo('Android 已临时绑定当前 Wi-Fi 网络');
-            try {
-              androidNetwork = await _lanDiscoverySession.currentNetwork();
-              wifiInterface = androidNetwork?.interfaceName;
-            } catch (error) {
-              _recordDiscoveryWarning('Android Wi-Fi 网络信息读取失败：$error');
-            }
-          }
-        } catch (error) {
-          _recordDiscoveryWarning('Android Wi-Fi 网络绑定失败：$error');
-        }
-        try {
-          multicastLockHeld = await _multicastLock.acquire();
-        } catch (error) {
-          _recordDiscoveryWarning('Android 多播锁开启失败：$error');
-        }
-      }
-
-      final injectedScannerFactory = _discoveryScannerFactory;
-      if (injectedScannerFactory != null) {
-        scanner = injectedScannerFactory();
-      } else {
-        networkBinder =
+    LanPrinterScanner Function()? customScannerFactory =
+        _discoveryScannerFactory;
+    if (customScannerFactory == null &&
+        (_mdnsBrowserOverride != null || _softApProbeOverride != null)) {
+      customScannerFactory = () => InkjetDiscoveryAdapter(
+        mdnsBrowser: _mdnsBrowserOverride,
+        networkBinder:
             _networkBinderOverride ??
             InspectedNetworkBinder(
               inspector,
               CloudPrinterFamily.colorInkjetPjl,
-            );
-        if (useAndroidDiscoveryHooks) {
-          try {
-            wifiInterface ??= await networkBinder.resolveWifiInterfaceName();
-            if (wifiInterface != null) {
-              _recordDiscoveryInfo('UDP 发现使用 Wi-Fi 网卡：$wifiInterface');
-            }
-          } catch (error) {
-            _recordDiscoveryWarning('Wi-Fi 网卡解析失败：$error');
-          }
-        }
-        final activeAndroidNetwork = androidNetwork;
-        LocalIpv4InterfacesProvider localIpv4Provider =
-            defaultLocalIpv4InterfacesProvider;
-        if (activeAndroidNetwork != null) {
-          localIpv4Provider = () async => <LocalIpv4Interface>[
-            LocalIpv4Interface(
-              name:
-                  activeAndroidNetwork.interfaceName ??
-                  wifiInterface ??
-                  'wlan0',
-              address: activeAndroidNetwork.address,
-              prefixLength: activeAndroidNetwork.prefixLength,
             ),
-          ];
-          _recordDiscoveryInfo(
-            'Wi-Fi 地址 ${activeAndroidNetwork.address}/'
-            '${activeAndroidNetwork.prefixLength}',
-          );
-        }
-        realNetwork = Network.scoped(
-          localIpv4Provider: localIpv4Provider,
-          verifiedIpCache: _verifiedPrinterIpCache,
-          debugLogger: (message) => inspector.recordText(
-            family: CloudPrinterFamily.colorInkjetPjl,
-            transport: 'Network',
-            direction: WireDirection.rx,
-            text: message,
-            decodedSummary: message,
-          ),
-        );
-        final mdnsBrowser =
-            _mdnsBrowserOverride ??
-            (() {
-              realNsd = FlutterNsdMdnsSource();
-              return (String serviceType, {String? networkInterface}) {
-                return realNsd!
-                    .discover(serviceType)
-                    .map(
-                      (rec) => InkjetMdnsEndpoint(
-                        serviceName: rec.name ?? 'inkjet._printer._tcp',
-                        host: rec.hostAddresses.isNotEmpty
-                            ? rec.hostAddresses.first
-                            : (rec.hostname ?? ''),
-                        hostAddresses: rec.hostAddresses,
-                        hostname: rec.hostname,
-                        port: rec.port ?? 9100,
-                        txtRecords: rec.txt,
-                        networkInterface: networkInterface,
-                      ),
-                    );
-              };
-            })();
-        scanner = InkjetDiscoveryAdapter(
-          mdnsBrowser: mdnsBrowser,
-          networkBinder: networkBinder,
-          softApProbeTransport: _softApProbeOverride,
-          allowLoopbackForTesting: allowLoopbackForTesting,
-          enrichMdnsWithXslQuery: true,
-          subnetHostsProvider: () async {
-            final interfaces = await localIpv4Provider();
-            final primaryHosts = <String>[];
-            final overflowHosts = <String>[];
-            final seen = <String>{};
-            for (final iface in interfaces) {
-              final dotPrefix = _ipv4Slash24Prefix(iface.address);
-              final enumerated = SubnetCalculator.enumerateSubnetHosts(
-                iface.address,
-                prefixLength: iface.prefixLength,
-                minPrefixLength: 23,
-              );
-              for (final ip in enumerated) {
-                if (!seen.add(ip)) continue;
-                if (dotPrefix != null && ip.startsWith(dotPrefix)) {
-                  primaryHosts.add(ip);
-                } else {
-                  overflowHosts.add(ip);
-                }
-              }
-            }
-            return <String>[...primaryHosts, ...overflowHosts];
-          },
-          subnetFallbackDelay: const Duration(seconds: 2),
-          subnetConnectTimeout: const Duration(milliseconds: 350),
-          udp22368ScannerFactory: () => realNetwork!.createScanner(
-            networkInterface: wifiInterface,
-            enableSubnetHostEnumerationFallback: true,
-          ),
-          udp4201ScannerFactory: () => realNetwork!.createScanner(
-            networkInterface: wifiInterface,
-            enableSubnetHostEnumerationFallback: true,
-          ),
-        );
-      }
-      final activeScanner = scanner;
-      _activeScanner = activeScanner;
-      statusMessage =
-          '正在发现喷墨打印机（第 ${attempt + 1}/$attempts 次，'
-          '每次最长 ${timeout.inSeconds} 秒）…';
-      _notifyIfAlive();
-      await for (final p in activeScanner.scan(
-        LanScanOptions(
-          protocols: protocols,
-          timeout: timeout,
-          cachedIps: _verifiedPrinterIpCache.ips,
-          probeInterval: discoveryProbeInterval,
-          defaultPort: inkjetTcpPort,
-        ),
+        softApProbeTransport: _softApProbeOverride,
+        allowLoopbackForTesting: allowLoopbackForTesting,
+        enrichMdnsWithXslQuery: true,
+      );
+    }
+
+    final discovery = LanPrinterDiscovery(
+      lanDiscoverySession: _lanDiscoverySession,
+      multicastLock: _multicastLock,
+      ipCache: _verifiedPrinterIpCache,
+      scannerFactory: customScannerFactory,
+      useAndroidDiscoveryHooks: useAndroidDiscoveryHooks,
+      allowLoopbackResponses: allowLoopbackForTesting,
+      debugLogger: _recordDiscoveryInfo,
+    );
+    _activeDiscoveryRunner = discovery;
+    try {
+      await for (final printer in discovery.discover(
+        protocols: protocols,
+        timeout: timeout,
+        probeInterval: discoveryProbeInterval,
+        maxAttempts: attempts,
+        defaultPort: inkjetTcpPort,
+        onAttempt: (attempt, maxAttempts) {
+          if (_disposed) return;
+          statusMessage = attempt > 1
+              ? '第一次扫描未发现打印机，正在重建 Wi-Fi 网络绑定并重试（第 $attempt/$maxAttempts 次）…'
+              : '正在发现局域网打印机（第 $attempt/$maxAttempts 次，'
+                    '每次最长 ${timeout.inSeconds} 秒）…';
+          _notifyIfAlive();
+        },
       )) {
-        final candidate = canonicalizeInkjetPrinter(p);
+        if (_disposed) break;
         final idx = found.indexWhere(
-          (existing) => isSameInkjetPrinter(existing, candidate),
+          (existing) => isSameInkjetPrinter(existing, printer),
         );
         if (idx >= 0) {
-          found[idx] = found[idx].mergeWith(candidate);
+          found[idx] = found[idx].mergeWith(printer);
         } else {
-          found.add(candidate);
+          found.add(printer);
         }
-        _verifiedPrinterIpCache.remember(candidate.host);
         discoveredPrinters = List<DiscoveredCloudPrinter>.unmodifiable(found);
         selectedPrinter = _selectedAfterDiscovery(
           found,
           previousSelectedPrinter,
         );
-        statusMessage =
-            '已发现 ${discoveredPrinters.length} 台喷墨打印机'
-            '（第 ${attempt + 1}/$attempts 次）…';
+        statusMessage = '已发现 ${discoveredPrinters.length} 台打印机…';
         _notifyIfAlive();
       }
     } finally {
-      if (identical(_activeScanner, scanner)) {
-        _activeScanner = null;
+      if (identical(_activeDiscoveryRunner, discovery)) {
+        _activeDiscoveryRunner = null;
       }
-      try {
-        await scanner?.dispose();
-      } catch (error) {
-        _recordDiscoveryWarning('LAN 扫描器释放失败：$error');
-      }
-      try {
-        await realNsd?.dispose();
-      } catch (error) {
-        _recordDiscoveryWarning('mDNS 扫描器释放失败：$error');
-      }
-      try {
-        realNetwork?.dispose();
-      } catch (error) {
-        _recordDiscoveryWarning('LAN 网络资源释放失败：$error');
-      }
-      if (multicastLockHeld) {
-        try {
-          await _multicastLock.release();
-        } catch (error) {
-          _recordDiscoveryWarning('Android 多播锁释放失败：$error');
-        }
-      }
-      if (networkSessionHeld) {
-        try {
-          await _lanDiscoverySession.end();
-        } catch (error) {
-          _recordDiscoveryWarning('Android Wi-Fi 网络恢复失败：$error');
-        }
-      }
+      await discovery.dispose();
     }
+
+    if (_disposed) return;
+    discoveredPrinters = List<DiscoveredCloudPrinter>.unmodifiable(found);
+    selectedPrinter = _selectedAfterDiscovery(found, previousSelectedPrinter);
+    statusMessage = discoveredPrinters.isEmpty
+        ? '未发现局域网打印机，请确认打印机已重新连入同一 Wi-Fi 后再扫描'
+        : '发现 ${discoveredPrinters.length} 台打印机';
   }
 
   DiscoveredCloudPrinter? _selectedAfterDiscovery(
@@ -584,11 +399,6 @@ class InkjetController extends ChangeNotifier {
       text: message,
       decodedSummary: message,
     );
-  }
-
-  static String? _ipv4Slash24Prefix(String ip) {
-    final lastDot = ip.lastIndexOf('.');
-    return lastDot > 0 ? ip.substring(0, lastDot + 1) : null;
   }
 
   Future<void> probeManualHost(String rawHost) async {
@@ -1372,7 +1182,7 @@ class InkjetController extends ChangeNotifier {
     _provisionCancelToken?.cancel('Disposed');
     _printCancelToken?.cancel('Disposed');
     await _activeProvisioner?.dispose();
-    await _activeScanner?.dispose();
+    await _activeDiscoveryRunner?.dispose();
     await disconnectDriver();
     if (directWifiInfo != null) {
       await _printerWifiSession.disconnectPrinterWifi().catchError((_) {});

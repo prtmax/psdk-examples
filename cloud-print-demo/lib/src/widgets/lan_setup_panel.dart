@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../controllers/lan_setup_controller.dart';
 import '../controllers/real_transport_helper.dart';
+import '../models/demo_labels.dart';
 import 'common_widgets.dart';
 import 'wifi_ssid_field.dart';
 
@@ -113,7 +114,7 @@ class _LanSetupPanelState extends State<LanSetupPanel> {
                     FilledButton.tonalIcon(
                       onPressed: disabled ? null : c.discoverPrinters,
                       icon: const Icon(Icons.radar),
-                      label: const Text('发现打印机（UDP）'),
+                      label: const Text('发现局域网打印机'),
                     ),
                   ],
                 ),
@@ -163,9 +164,7 @@ class _LanSetupPanelState extends State<LanSetupPanel> {
                     title: Text(
                       '${printer.displayName} (${printer.host}:${printer.port})',
                     ),
-                    subtitle: Text(
-                      'MAC：${printer.macAddress ?? "未知"} · ${printer.discoveredVia.isEmpty ? "手动直连" : "UDP 22368"}',
-                    ),
+                    subtitle: Text(formatDiscoveredPrinterSubtitle(printer)),
                     onTap: disabled ? null : () => c.selectPrinter(printer),
                   ),
               ],
