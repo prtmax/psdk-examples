@@ -24,6 +24,7 @@ class DemoCoordinator extends ChangeNotifier {
     ProtocolInspectorController? inspector,
     DemoFeedbackCenter? feedback,
     PrinterWifiSession? printerWifiSession,
+    VerifiedPrinterIpCache? sharedIpCache,
     RealTransportHelper? realTransportHelper,
     EscWanController? escWan,
     ThermalLanController? thermalLan,
@@ -35,7 +36,8 @@ class DemoCoordinator extends ChangeNotifier {
        inspector = inspector ?? ProtocolInspectorController(),
        feedback = feedback ?? DemoFeedbackCenter(),
        registry = registry ?? CloudPrinterRegistry(),
-       printerWifiSession = printerWifiSession ?? PrinterWifiSession() {
+       printerWifiSession = printerWifiSession ?? PrinterWifiSession(),
+       sharedIpCache = sharedIpCache ?? VerifiedPrinterIpCache() {
     this.realTransportHelper =
         realTransportHelper ?? RealTransportHelper(this.inspector);
     this.escWan =
@@ -50,6 +52,7 @@ class DemoCoordinator extends ChangeNotifier {
         ThermalLanController(
           inspector: this.inspector,
           feedback: this.feedback,
+          ipCache: this.sharedIpCache,
           localImagePicker: this.localImagePicker,
           realTransportHelper: this.realTransportHelper,
         );
@@ -60,6 +63,7 @@ class DemoCoordinator extends ChangeNotifier {
           feedback: this.feedback,
           registry: this.registry,
           colorCore: this.colorCore,
+          ipCache: this.sharedIpCache,
           printerWifiSession: this.printerWifiSession,
           localImagePicker: this.localImagePicker,
         );
@@ -70,6 +74,7 @@ class DemoCoordinator extends ChangeNotifier {
           feedback: this.feedback,
           registry: this.registry,
           colorCore: this.colorCore,
+          ipCache: this.sharedIpCache,
           printerWifiSession: this.printerWifiSession,
           localImagePicker: this.localImagePicker,
         );
@@ -87,6 +92,7 @@ class DemoCoordinator extends ChangeNotifier {
   final DemoFeedbackCenter feedback;
   final CloudPrinterRegistry registry;
   final PrinterWifiSession printerWifiSession;
+  final VerifiedPrinterIpCache sharedIpCache;
   late final RealTransportHelper realTransportHelper;
 
   late final EscWanController escWan;

@@ -3,24 +3,24 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:psdk_device_adapter/psdk_device_adapter.dart';
 import 'package:psdk_frame_cloud/psdk_frame_cloud.dart';
-import 'package:psdk_fruit_inkjet/psdk_fruit_inkjet.dart';
 import 'package:psdk_fruit_sublimation/psdk_fruit_sublimation.dart';
 import 'package:psdk_network/psdk_network.dart';
 
 import '../models/demo_feedback.dart';
 import '../models/protocol_inspector.dart';
-import 'inspected_device.dart';
 import 'real_transport_helper.dart';
 
-/// 热敏与热升华共用的连接流程；打印协议仍由各自控制器负责。
+/// 热敏与热升华共用的连接与统一局域网发现流程；打印协议仍由各自控制器负责。
 class LanSetupController extends ChangeNotifier {
   LanSetupController({
     required this.family,
     required this.inspector,
     this.feedback,
     this.bleNamePrefixFilter = '',
+    VerifiedPrinterIpCache? ipCache,
     AndroidMulticastLock? multicastLock,
     AndroidLanDiscoverySession? lanDiscoverySession,
+    LanPrinterDiscovery? discovery,
     this.manualHostProber,
     this.scannerFactory,
     this.useAndroidDiscoveryHooks = true,
@@ -30,15 +30,18 @@ class LanSetupController extends ChangeNotifier {
     this.scanTimeout = const Duration(seconds: 5),
     this.scanProbeInterval = const Duration(seconds: 1),
     this.discoveryAttempts = 2,
-  }) : _multicastLock = multicastLock ?? AndroidMulticastLock(),
+  }) : _verifiedPrinterIpCache = ipCache ?? VerifiedPrinterIpCache(),
+       _multicastLock = multicastLock ?? AndroidMulticastLock(),
        _lanDiscoverySession =
-           lanDiscoverySession ?? AndroidLanDiscoverySession();
+           lanDiscoverySession ?? AndroidLanDiscoverySession(),
+       _discoveryOverride = discovery;
 
   final CloudPrinterFamily family;
   final ProtocolInspectorController inspector;
   final DemoFeedbackCenter? feedback;
   final AndroidMulticastLock _multicastLock;
   final AndroidLanDiscoverySession _lanDiscoverySession;
+  final LanPrinterDiscovery? _discoveryOverride;
   final Future<DiscoveredCloudPrinter?> Function(
     String host,
     String? networkInterface,
@@ -52,8 +55,7 @@ class LanSetupController extends ChangeNotifier {
   final Duration scanTimeout;
   final Duration scanProbeInterval;
   final int discoveryAttempts;
-  final VerifiedPrinterIpCache _verifiedPrinterIpCache =
-      VerifiedPrinterIpCache();
+  final VerifiedPrinterIpCache _verifiedPrinterIpCache;
 
   String bleNamePrefixFilter;
   ConnectedDevice<dynamic>? realBleDevice;
@@ -67,7 +69,7 @@ class LanSetupController extends ChangeNotifier {
   bool _disposed = false;
   CloudCancelToken? _cancelToken;
   WifiProvisioner? _provisioner;
-  LanPrinterScanner? _scanner;
+  LanPrinterDiscovery? _activeDiscovery;
 
   ConnectedDevice<dynamic> get activeBleDevice {
     final device = realBleDevice;
@@ -123,157 +125,112 @@ class LanSetupController extends ChangeNotifier {
     await discoverPrinters();
   }
 
-  Future<void> discoverPrinters() => _run('正在发现局域网打印机（UDP 22368）…', () async {
-    final found = <String, DiscoveredCloudPrinter>{};
-    final previousHost = selectedPrinter?.host;
+  Future<void> discoverPrinters({
+    Set<LanDiscoveryProtocol> protocols = LanPrinterDiscovery.allProtocols,
+  }) => _run('正在发现局域网打印机…', () async {
+    final found = <DiscoveredCloudPrinter>[];
+    final previousSelected = selectedPrinter;
     discoveredPrinters = const [];
     selectedPrinter = null;
     if (!_disposed) notifyListeners();
 
     final attempts = discoveryAttempts.clamp(1, 5);
-    for (var attempt = 0; attempt < attempts; attempt++) {
-      if (_disposed) return;
-      if (attempt > 0) {
-        statusMessage =
-            '首次扫描未发现打印机，正在重建 Wi-Fi 绑定并重试（第 ${attempt + 1}/$attempts 次）…';
-        if (!_disposed) notifyListeners();
-        await Future<void>.delayed(const Duration(milliseconds: 300));
-        if (_disposed) return;
+    final discovery =
+        _discoveryOverride ??
+        LanPrinterDiscovery(
+          lanDiscoverySession: _lanDiscoverySession,
+          multicastLock: _multicastLock,
+          ipCache: _verifiedPrinterIpCache,
+          scannerFactory: scannerFactory,
+          useAndroidDiscoveryHooks: useAndroidDiscoveryHooks,
+          debugLogger: _recordDiscoveryLog,
+        );
+    _activeDiscovery = discovery;
+
+    try {
+      await for (final printer in discovery.discover(
+        protocols: protocols,
+        timeout: scanTimeout,
+        probeInterval: scanProbeInterval,
+        maxAttempts: attempts,
+        cancelToken: _cancelToken,
+        onAttempt: (attempt, maxAttempts) {
+          if (_disposed) return;
+          if (attempt > 1) {
+            statusMessage =
+                '首次扫描未发现打印机，正在重建 Wi-Fi 绑定并重试（第 $attempt/$maxAttempts 次）…';
+            notifyListeners();
+          }
+        },
+      )) {
+        if (_disposed) break;
+        _mergeDiscoveredPrinter(found, printer);
+        discoveredPrinters = List.unmodifiable(found);
+        selectedPrinter = _pickSelectedPrinter(found, previousSelected);
+        statusMessage = '已发现 ${discoveredPrinters.length} 台打印机…';
+        notifyListeners();
       }
-      await _runDiscoveryAttempt(found: found);
-      if (found.isNotEmpty) break;
+    } finally {
+      if (identical(_activeDiscovery, discovery)) {
+        _activeDiscovery = null;
+      }
+      if (!identical(discovery, _discoveryOverride)) {
+        await discovery.dispose();
+      }
     }
 
     if (_disposed) return;
-    discoveredPrinters = List.unmodifiable(found.values);
-    for (final printer in discoveredPrinters) {
-      if (printer.host == previousHost) selectedPrinter = printer;
-    }
-    selectedPrinter ??= discoveredPrinters.firstOrNull;
+    discoveredPrinters = List.unmodifiable(found);
+    selectedPrinter = _pickSelectedPrinter(found, previousSelected);
     statusMessage = discoveredPrinters.isEmpty
         ? '未发现局域网打印机，请确认设备已连入同一 Wi-Fi 或尝试手动输入 IP 探测'
         : '发现 ${discoveredPrinters.length} 台打印机，请选择目标设备';
   });
 
-  Future<void> _runDiscoveryAttempt({
-    required Map<String, DiscoveredCloudPrinter> found,
-  }) async {
-    Network? network;
-    LanPrinterScanner? scanner;
-    AndroidLanDiscoveryNetwork? androidNetwork;
-    String? wifiInterface;
-    var networkSessionHeld = false;
-    var multicastLockHeld = false;
-    try {
-      if (scannerFactory != null) {
-        scanner = scannerFactory!();
-      } else {
-        if (useAndroidDiscoveryHooks) {
-          try {
-            networkSessionHeld = await _lanDiscoverySession.begin();
-            if (networkSessionHeld) {
-              _recordDiscoveryLog('Android 已临时绑定当前 Wi-Fi 网络');
-              try {
-                androidNetwork = await _lanDiscoverySession.currentNetwork();
-                wifiInterface = androidNetwork?.interfaceName;
-              } catch (error) {
-                _recordDiscoveryLog('Android Wi-Fi 网络信息读取失败：$error');
-              }
-            }
-          } catch (error) {
-            _recordDiscoveryLog('Android Wi-Fi 网络绑定失败：$error');
-          }
-          try {
-            multicastLockHeld = await _multicastLock.acquire();
-          } catch (error) {
-            _recordDiscoveryLog('Android 多播锁开启失败：$error');
-          }
+  static void _mergeDiscoveredPrinter(
+    List<DiscoveredCloudPrinter> list,
+    DiscoveredCloudPrinter incoming,
+  ) {
+    final idx = list.indexWhere((p) => _isSamePrinter(p, incoming));
+    if (idx >= 0) {
+      list[idx] = list[idx].mergeWith(incoming);
+    } else {
+      list.add(incoming);
+    }
+  }
 
-          try {
-            wifiInterface ??= await DefaultInkjetNetworkBinder()
-                .resolveWifiInterfaceName();
-          } catch (_) {}
+  static DiscoveredCloudPrinter? _pickSelectedPrinter(
+    List<DiscoveredCloudPrinter> list,
+    DiscoveredCloudPrinter? previous,
+  ) {
+    if (list.isEmpty) return null;
+    if (previous != null) {
+      for (final p in list) {
+        if (_isSamePrinter(p, previous)) {
+          return p;
         }
-
-        final activeAndroidNetwork = androidNetwork;
-        LocalIpv4InterfacesProvider localIpv4Provider =
-            defaultLocalIpv4InterfacesProvider;
-        if (activeAndroidNetwork != null) {
-          localIpv4Provider = () async => <LocalIpv4Interface>[
-            LocalIpv4Interface(
-              name:
-                  activeAndroidNetwork.interfaceName ??
-                  wifiInterface ??
-                  'wlan0',
-              address: activeAndroidNetwork.address,
-              prefixLength: activeAndroidNetwork.prefixLength,
-            ),
-          ];
-          _recordDiscoveryLog(
-            'Wi-Fi 地址 ${activeAndroidNetwork.address}/${activeAndroidNetwork.prefixLength}',
-          );
-        }
-        network = Network.scoped(
-          localIpv4Provider: localIpv4Provider,
-          verifiedIpCache: _verifiedPrinterIpCache,
-          debugLogger: (message) => _recordDiscoveryLog(message),
-        );
-        scanner = network.createScanner(
-          networkInterface: wifiInterface,
-          enableSubnetHostEnumerationFallback: true,
-        );
-      }
-      _scanner = scanner;
-
-      await for (final printer in scanner.scan(
-        LanScanOptions(
-          protocols: const {LanDiscoveryProtocol.udp22368Text},
-          timeout: scanTimeout,
-          probeInterval: scanProbeInterval,
-          cancelToken: _cancelToken,
-        ),
-      )) {
-        final key = printer.host.isEmpty ? printer.id : printer.host;
-        final enriched =
-            (printer.networkInterface == null && wifiInterface != null)
-            ? DiscoveredCloudPrinter(
-                id: printer.id,
-                displayName: printer.displayName,
-                family: printer.family,
-                discoveredVia: printer.discoveredVia,
-                host: printer.host,
-                port: printer.port,
-                model: printer.model,
-                serialNumber: printer.serialNumber,
-                firmwareVersion: printer.firmwareVersion,
-                macAddress: printer.macAddress,
-                wlanMacAddress: printer.wlanMacAddress,
-                wifiSsid: printer.wifiSsid,
-                networkInterface: wifiInterface,
-                metadata: printer.metadata,
-                lastSeen: printer.lastSeen,
-              )
-            : printer;
-        found[key] = found[key]?.mergeWith(enriched) ?? enriched;
-        if (enriched.host.isNotEmpty) {
-          _verifiedPrinterIpCache.remember(enriched.host);
-        }
-      }
-    } finally {
-      _scanner = null;
-      await scanner?.dispose();
-      network?.dispose();
-      if (multicastLockHeld) {
-        try {
-          await _multicastLock.release();
-        } catch (_) {}
-      }
-      if (networkSessionHeld) {
-        try {
-          await _lanDiscoverySession.end();
-        } catch (_) {}
       }
     }
+    return list.first;
+  }
+
+  static bool _isSamePrinter(
+    DiscoveredCloudPrinter left,
+    DiscoveredCloudPrinter right,
+  ) {
+    final leftHost = left.host.trim().toLowerCase();
+    final rightHost = right.host.trim().toLowerCase();
+    if (leftHost.isNotEmpty &&
+        leftHost == rightHost &&
+        left.port == right.port) {
+      return true;
+    }
+    final leftSerial = (left.serialNumber ?? '').trim().toUpperCase();
+    final rightSerial = (right.serialNumber ?? '').trim().toUpperCase();
+    if (leftSerial.isNotEmpty && leftSerial == rightSerial) return true;
+    final leftMac = (left.macAddress ?? '').replaceAll(':', '').toUpperCase();
+    final rightMac = (right.macAddress ?? '').replaceAll(':', '').toUpperCase();
+    return leftMac.isNotEmpty && leftMac == rightMac;
   }
 
   Future<void> probeManualHost(String rawHost) async {
@@ -305,22 +262,24 @@ class LanSetupController extends ChangeNotifier {
           } catch (error) {
             _recordDiscoveryLog('Android Wi-Fi 网络绑定失败：$error');
           }
-          wifiInterface ??= await DefaultInkjetNetworkBinder()
-              .resolveWifiInterfaceName();
+          wifiInterface ??= await defaultResolveWifiInterfaceName();
         }
 
         DiscoveredCloudPrinter? probed;
         if (manualHostProber != null) {
           probed = await manualHostProber!(host, wifiInterface);
         } else {
-          final binder = InspectedNetworkBinder(inspector, family);
-          final dev = await binder.connectDevice(
-            host,
-            9100,
-            timeout: const Duration(seconds: 4),
-            networkInterface: wifiInterface,
-          );
-          await dev.disconnect();
+          final network = RealTransportHelper(inspector).createRealNetwork();
+          try {
+            final dev = await network.connect(
+              host,
+              9100,
+              networkInterface: wifiInterface,
+            );
+            await dev.disconnect();
+          } finally {
+            network.dispose();
+          }
           probed = DiscoveredCloudPrinter(
             id: host,
             displayName: host,
@@ -360,14 +319,9 @@ class LanSetupController extends ChangeNotifier {
 
   void upsertAndSelectPrinter(DiscoveredCloudPrinter printer) {
     final updated = List<DiscoveredCloudPrinter>.from(discoveredPrinters);
-    final idx = updated.indexWhere((p) => p.host == printer.host);
-    if (idx >= 0) {
-      updated[idx] = updated[idx].mergeWith(printer);
-    } else {
-      updated.add(printer);
-    }
+    _mergeDiscoveredPrinter(updated, printer);
     discoveredPrinters = List<DiscoveredCloudPrinter>.unmodifiable(updated);
-    selectedPrinter = idx >= 0 ? discoveredPrinters[idx] : printer;
+    selectedPrinter = _pickSelectedPrinter(updated, printer);
     _verifiedPrinterIpCache.remember(printer.host);
   }
 
@@ -413,7 +367,8 @@ class LanSetupController extends ChangeNotifier {
     _disposed = true;
     _cancelToken?.cancel('连接流程已关闭');
     await _provisioner?.dispose();
-    await _scanner?.dispose();
+    await _activeDiscovery?.dispose();
+    await _discoveryOverride?.dispose();
     await realBleDevice?.disconnect();
     super.dispose();
   }

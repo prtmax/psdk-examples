@@ -123,6 +123,16 @@ class SimulatedSublimationUdpTransport implements SublimationUdpTransport {
       }
       return;
     }
+    if (port == UdpBinary1901Codec.port) {
+      inspector.record(
+        family: CloudPrinterFamily.sublimationRpc,
+        transport: 'UDP 1901',
+        direction: WireDirection.tx,
+        rawBytes: data,
+        decodedSummary: 'UDP 1901 binary discovery probe (${data.length} B)',
+      );
+      return;
+    }
   }
 }
 

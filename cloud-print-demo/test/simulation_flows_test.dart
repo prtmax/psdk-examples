@@ -591,14 +591,14 @@ void main() {
         );
         expect(sub.setup.lastProvisionResult?.success, isTrue);
 
-        // UDP 22368 discovery only.
+        // Unified multi-protocol discovery includes both UDP 22368 and UDP 1901.
         await sub.setup.discoverPrinters();
         expect(sub.setup.discoveredPrinters, isNotEmpty);
         expect(
           rig.coordinator.inspector.entries.any(
             (entry) => entry.transport.contains('1901'),
           ),
-          isFalse,
+          isTrue,
         );
 
         // RPC Connect, Dashboard & autoShutDownMinutes
@@ -1306,7 +1306,130 @@ void main() {
         guardInspector.dispose();
       },
     );
+
+    test(
+      'Sublimation, ThermalLan, and Inkjet all use unified allProtocols Wi-Fi '
+      'discovery and discover both Z11 and H100 without filtering',
+      () async {
+        final recordedProtocolSets = <Set<LanDiscoveryProtocol>>[];
+
+        LanPrinterScanner makeMixedScanner() => _MixedDiscoveryTestScanner(
+          onScan: (options) => recordedProtocolSets.add(options.protocols),
+        );
+
+        final inspector = ProtocolInspectorController();
+        final feedback = DemoFeedbackCenter();
+        final sharedCache = VerifiedPrinterIpCache();
+        final helper = RealTransportHelper(inspector);
+
+        final thermal = ThermalLanController(
+          inspector: inspector,
+          feedback: feedback,
+          ipCache: sharedCache,
+          realTransportHelper: helper,
+          discoveryScannerFactory: makeMixedScanner,
+          useAndroidDiscoveryHooks: false,
+          scanTimeout: const Duration(milliseconds: 50),
+          discoveryAttempts: 1,
+        );
+        final sub = SublimationController(
+          inspector: inspector,
+          feedback: feedback,
+          ipCache: sharedCache,
+          registry: CloudPrinterRegistry(),
+          colorCore: const PureDartColorCoreEngine(),
+          discoveryScannerFactory: makeMixedScanner,
+          useAndroidDiscoveryHooks: false,
+          scanTimeout: const Duration(milliseconds: 50),
+          discoveryAttempts: 1,
+        );
+        final inkjet = InkjetController(
+          inspector: inspector,
+          feedback: feedback,
+          ipCache: sharedCache,
+          registry: CloudPrinterRegistry(),
+          colorCore: const PureDartColorCoreEngine(),
+          discoveryScannerFactory: makeMixedScanner,
+          useAndroidDiscoveryHooks: false,
+          discoveryTimeout: const Duration(milliseconds: 50),
+          discoveryAttempts: 1,
+        );
+
+        addTearDown(() async {
+          await thermal.dispose();
+          await sub.dispose();
+          await inkjet.dispose();
+          inspector.dispose();
+          feedback.dispose();
+        });
+
+        await thermal.setup.discoverPrinters();
+        await sub.setup.discoverPrinters();
+        await inkjet.discoverPrinters();
+
+        expect(recordedProtocolSets, hasLength(3));
+        for (final set in recordedProtocolSets) {
+          expect(set, equals(LanPrinterDiscovery.allProtocols));
+        }
+        for (final list in <List<DiscoveredCloudPrinter>>[
+          thermal.discoveredPrinters,
+          sub.setup.discoveredPrinters,
+          inkjet.discoveredPrinters,
+        ]) {
+          expect(
+            list.map((p) => p.model).toSet(),
+            equals(<String?>{'Z11', 'H100'}),
+          );
+        }
+      },
+    );
   });
+}
+
+class _MixedDiscoveryTestScanner extends LanPrinterScanner {
+  _MixedDiscoveryTestScanner({required this.onScan});
+
+  final void Function(LanScanOptions options) onScan;
+
+  @override
+  Set<LanDiscoveryProtocol> get supportedProtocols =>
+      LanPrinterDiscovery.allProtocols;
+
+  @override
+  Stream<DiscoveredCloudPrinter> scan(LanScanOptions options) {
+    onScan(options);
+    return Stream<DiscoveredCloudPrinter>.fromIterable(<DiscoveredCloudPrinter>[
+      DiscoveredCloudPrinter(
+        id: '192.168.1.50',
+        displayName: 'Z11_001',
+        discoveredVia: const <LanDiscoveryProtocol>{
+          LanDiscoveryProtocol.udp22368Text,
+        },
+        host: '192.168.1.50',
+        port: 9100,
+        model: 'Z11',
+        macAddress: 'AA:BB:CC:00:00:11',
+      ),
+      DiscoveredCloudPrinter(
+        id: '192.168.1.88',
+        displayName: 'H100_002',
+        discoveredVia: const <LanDiscoveryProtocol>{
+          LanDiscoveryProtocol.udp4201Multicast,
+          LanDiscoveryProtocol.mdnsPrinterTcp,
+        },
+        host: '192.168.1.88',
+        port: 9100,
+        model: 'H100',
+        serialNumber: 'H100-SN-02',
+      ),
+    ]);
+  }
+
+  @override
+  Future<void> stop() async {}
+
+  @override
+  Future<void> dispose() async {}
 }
 
 class _CancellingDeviceWrapper extends DelegatingSimDevice {

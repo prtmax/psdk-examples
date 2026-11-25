@@ -153,7 +153,7 @@ class _InkjetTabState extends State<InkjetTab> {
                       FilledButton.tonalIcon(
                         onPressed: c.busy ? null : c.discoverPrinters,
                         icon: const Icon(Icons.wifi_find),
-                        label: const Text('局域网发现（最长 15 秒）'),
+                        label: const Text('发现局域网打印机'),
                       ),
                       FilledButton.icon(
                         onPressed: c.busy ? null : c.connectDriver,
@@ -211,9 +211,7 @@ class _InkjetTabState extends State<InkjetTab> {
                             title: Text(
                               '${p.displayName} (${p.host}:${p.port})',
                             ),
-                            subtitle: Text(
-                              '发现方式：${p.discoveredVia.map((e) => e.name).join(", ")}',
-                            ),
+                            subtitle: Text(formatDiscoveredPrinterSubtitle(p)),
                             onTap: c.busy ? null : () => c.selectPrinter(p),
                           );
                         },

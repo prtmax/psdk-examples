@@ -109,6 +109,10 @@ class SimThermalLanBackend {
     Duration timeout = const Duration(seconds: 5),
     String? networkInterface,
   }) async {
+    final trimmedHost = host.trim();
+    if (trimmedHost != wifiDevice.assignedIp && trimmedHost != '127.0.0.1') {
+      throw SocketException('No simulated printer at $host:$port');
+    }
     final buffer = BytesBuilder(copy: false);
     late final InMemorySocket sock;
     sock = InMemorySocket(
