@@ -364,6 +364,17 @@ class _SublimationTabState extends State<SublimationTab> {
                             }
                           },
                   ),
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: const Text('ICC 色彩校正'),
+                    subtitle: Text(
+                      c.selectedColorMode.usesColor
+                          ? '开启后使用 Z11 / D300Kp 原厂 ICC'
+                          : '黑白模式不应用 ICC',
+                    ),
+                    value: c.iccEnabled,
+                    onChanged: (v) => setState(() => c.iccEnabled = v),
+                  ),
                   const SizedBox(height: 8),
                   DropdownButtonFormField<SublimationDitherMode>(
                     initialValue: c.selectedDitherMode,

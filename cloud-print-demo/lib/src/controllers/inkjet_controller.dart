@@ -10,6 +10,7 @@ import 'package:psdk_network/psdk_network.dart';
 import '../models/demo_feedback.dart';
 import '../models/demo_labels.dart';
 import '../models/protocol_inspector.dart';
+import '../utils/icc_profile_loader.dart';
 import '../utils/local_image_service.dart';
 import '../utils/test_image_generator.dart';
 
@@ -137,6 +138,7 @@ class InkjetController extends ChangeNotifier {
   int copies = 1;
   CloudNupLayout nupLayout = CloudNupLayout.oneUp;
   int pageCount = 1;
+  bool iccEnabled = false;
   bool continueOnLowSupply = false;
   bool fallbackToMonoWhenColorEmpty = false;
 
@@ -1004,11 +1006,16 @@ class InkjetController extends ChangeNotifier {
     final cancelToken = CloudCancelToken();
     _printCancelToken = cancelToken;
     try {
+      final settings = settingsOverride ?? buildCurrentSettings();
+      final iccProfileBytes = iccEnabled && settings.colorMode.usesColor
+          ? await IccProfileLoader.load(IccProfileLoader.h100Chart)
+          : null;
       final req = CloudPrintJobRequest(
         jobId: '${DateTime.now().millisecondsSinceEpoch % 100000}',
         jobName: jobName,
-        settings: settingsOverride ?? buildCurrentSettings(),
+        settings: settings,
         pages: pages,
+        iccProfileBytes: iccProfileBytes,
         metadata: <String, Object?>{'inkjetResolution': selectedResolution},
         cancelToken: cancelToken,
       );

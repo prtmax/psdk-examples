@@ -855,6 +855,77 @@ void main() {
     );
   });
 
+  group('ICC color correction controls', () {
+    testWidgets(
+      'toggles independent ICC switches on sublimation and inkjet tabs',
+      (WidgetTester tester) async {
+        tester.view.physicalSize = const Size(1080, 1920);
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() {
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+
+        final inspector = ProtocolInspectorController();
+        final registry = CloudPrinterRegistry();
+        final subController = SublimationController(
+          inspector: inspector,
+          registry: registry,
+          colorCore: const PureDartColorCoreEngine(),
+        );
+        final inkjetController = InkjetController(
+          inspector: inspector,
+          registry: registry,
+          colorCore: const PureDartColorCoreEngine(),
+        );
+        final helper = _TestRealTransportHelper(
+          inspector,
+          const <DemoBleDevice>[],
+        );
+        addTearDown(() async {
+          await subController.dispose();
+          await inkjetController.dispose();
+          await helper.dispose();
+          inspector.dispose();
+        });
+
+        Future<Finder> showIccSwitch(Widget tab) async {
+          await tester.pumpWidget(MaterialApp(home: Scaffold(body: tab)));
+          await tester.pumpAndSettle();
+          final label = find.text('ICC 色彩校正');
+          await tester.dragUntilVisible(
+            label,
+            find.byType(ListView).first,
+            const Offset(0, -300),
+          );
+          await tester.pumpAndSettle();
+          return find.widgetWithText(SwitchListTile, 'ICC 色彩校正');
+        }
+
+        final subSwitch = await showIccSwitch(
+          SublimationTab(
+            controller: subController,
+            realTransportHelper: helper,
+          ),
+        );
+        expect(subController.iccEnabled, isFalse);
+        await tester.tap(subSwitch);
+        await tester.pumpAndSettle();
+        expect(subController.iccEnabled, isTrue);
+        expect(find.text('开启后使用 Z11 / D300Kp 原厂 ICC'), findsOneWidget);
+
+        final inkjetSwitch = await showIccSwitch(
+          InkjetTab(controller: inkjetController, realTransportHelper: helper),
+        );
+        expect(inkjetController.iccEnabled, isFalse);
+        await tester.tap(inkjetSwitch);
+        await tester.pumpAndSettle();
+        expect(inkjetController.iccEnabled, isTrue);
+        expect(find.text('开启后使用 H100 原厂 ICC'), findsOneWidget);
+      },
+    );
+  });
+
   group('InkjetTab UX and regression guards', () {
     testWidgets(
       'syncs resolution when quality changes, shows paperType dropdown, confirms factoryRestore, and avoids 360x640 overflow',

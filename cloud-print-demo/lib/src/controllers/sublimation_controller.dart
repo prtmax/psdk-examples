@@ -12,6 +12,7 @@ import 'package:psdk_network/psdk_network.dart';
 import '../models/demo_feedback.dart';
 import '../models/demo_labels.dart';
 import '../models/protocol_inspector.dart';
+import '../utils/icc_profile_loader.dart';
 import '../utils/local_image_service.dart';
 import '../utils/test_image_generator.dart';
 import 'inspected_device.dart';
@@ -171,6 +172,7 @@ class SublimationController extends ChangeNotifier {
   bool fontBeautify = true;
   bool includeOvercoat = true;
   bool dualSided = false;
+  bool iccEnabled = false;
 
   CloudJobProgress? jobProgress;
   final List<CloudJobStage> observedJobStages = <CloudJobStage>[];
@@ -724,20 +726,25 @@ class SublimationController extends ChangeNotifier {
     _printCancelToken = cancelToken;
     observedJobStages.clear();
     try {
+      final settings = CloudPrintSettings(
+        paperSize: CloudPaperSize.card,
+        paperType: CloudPaperType.pvcCard,
+        colorMode: selectedColorMode,
+        quality: printQuality,
+        copies: 1,
+      );
+      final iccProfileBytes = iccEnabled && settings.colorMode.usesColor
+          ? await IccProfileLoader.load(IccProfileLoader.z11D380)
+          : null;
       final req = CloudPrintJobRequest(
         jobId: 'sub_${DateTime.now().millisecondsSinceEpoch}',
         jobName: jobName,
-        settings: CloudPrintSettings(
-          paperSize: CloudPaperSize.card,
-          paperType: CloudPaperType.pvcCard,
-          colorMode: selectedColorMode,
-          quality: printQuality,
-          copies: 1,
-        ),
+        settings: settings,
         pages: <CloudPageRaster>[
           CloudPageRaster(width: width, height: height, rgbaBytes: frontRgba),
           ?backRaster,
         ],
+        iccProfileBytes: iccProfileBytes,
         metadata: <String, Object?>{
           'fontBeautify': fontBeautify,
           'includeOvercoat': includeOvercoat,
